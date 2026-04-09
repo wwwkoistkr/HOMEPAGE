@@ -36,7 +36,8 @@ export function layout(opts: {
         extend: {
           colors: {
             primary: { DEFAULT: '${s.primary_color || '#1E3A5F'}', light: '#2D5A8E', lighter: '#4A7AB5' },
-            accent: { DEFAULT: '${s.accent_color || '#2563EB'}', dark: '#1D4ED8', light: '#60A5FA' },
+            accent: { DEFAULT: '${s.accent_color || '#3B82F6'}', dark: '#2563EB', light: '#60A5FA' },
+            surface: { DEFAULT: '#FAFBFC', dark: '#F5F6FA', light: '#FEFEFE' },
           },
           fontFamily: {
             sans: ['"Noto Sans KR"', 'system-ui', '-apple-system', 'sans-serif'],
@@ -61,14 +62,14 @@ export function layout(opts: {
     * { font-family: 'Noto Sans KR', system-ui, -apple-system, sans-serif; }
     
     /* Fluid Typography */
-    html { font-size: clamp(14px, 1vw + 10px, 18px); }
+    html { font-size: clamp(15px, 1vw + 10px, 18px); }
     
     /* Smooth scroll */
     html { scroll-behavior: smooth; }
     
     /* Custom scrollbar */
     ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-track { background: #F0F2F5; }
     ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #64748b; }
     
@@ -98,14 +99,14 @@ export function layout(opts: {
     
     /* Card hover effect */
     .service-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-    .service-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(37,99,235,0.1); }
+    .service-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(100,116,139,0.15); }
     
     /* Popup styles */
     .popup-overlay { backdrop-filter: blur(2px); }
   </style>
   ${opts.headExtra || ''}
 </head>
-<body class="bg-gray-50 text-gray-800 ${opts.bodyClass || ''}">
+<body class="bg-[#F5F6FA] text-[#2D3748] ${opts.bodyClass || ''}">
 
   <!-- GNB Navigation -->
   <header id="gnb" class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md shadow-sm transition-all duration-300">
@@ -193,7 +194,7 @@ export function layout(opts: {
   </main>
 
   <!-- Footer -->
-  <footer class="bg-gray-800 text-gray-300 mt-auto">
+  <footer class="bg-[#1E293B] text-gray-300 mt-auto">
     <div class="w-[min(92vw,1400px)] mx-auto px-[clamp(1rem,3vw,3rem)] py-[clamp(2rem,4vh,4rem)]">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
         <!-- Company Info -->

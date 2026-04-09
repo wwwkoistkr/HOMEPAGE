@@ -32,12 +32,12 @@ export function servicePage(dept: Department, pages: DepPage[], currentPage: Dep
         <!-- Sidebar Navigation -->
         ${pages.length > 1 ? `
         <aside class="lg:w-60 shrink-0">
-          <div class="bg-white rounded-xl border border-gray-100 overflow-hidden sticky top-24">
-            <div class="px-4 py-3 bg-gray-50 border-b font-bold text-sm text-gray-700">${dept.name}</div>
+          <div class="bg-[#FAFBFC] rounded-xl border border-slate-200/60 overflow-hidden sticky top-24">
+            <div class="px-4 py-3 bg-slate-50 border-b border-slate-200/60 font-bold text-sm text-[#2D3748]">${dept.name}</div>
             <nav class="p-2">
               ${pages.filter(p => p.is_active).map(p => `
               <a href="/services/${dept.slug}/${p.slug}" 
-                 class="block px-4 py-2.5 rounded-lg text-sm transition-colors ${currentPage?.id === p.id ? 'bg-blue-50 text-blue-600 font-medium' : 'text-gray-600 hover:bg-gray-50'}">
+                 class="block px-4 py-2.5 rounded-lg text-sm transition-colors ${currentPage?.id === p.id ? 'bg-accent/8 text-accent font-medium' : 'text-[#4A5568] hover:bg-slate-50'}">
                 ${p.title}
               </a>
               `).join('')}
@@ -48,18 +48,18 @@ export function servicePage(dept: Department, pages: DepPage[], currentPage: Dep
 
         <!-- Main Content -->
         <div class="flex-1 min-w-0">
-          <div class="bg-white rounded-xl border border-gray-100 p-[clamp(1.5rem,3vw,3rem)]">
-            <div class="prose prose-gray max-w-none">
+          <div class="bg-[#FAFBFC] rounded-xl border border-slate-200/60 p-[clamp(1.5rem,3vw,3rem)]">
+            <div class="prose prose-slate max-w-none">
               ${currentPage ? currentPage.content : (pages.length > 0 ? pages[0].content : '<p class="text-gray-500">콘텐츠가 준비 중입니다.</p>')}
             </div>
           </div>
 
           <!-- Contact CTA -->
-          <div class="mt-6 bg-gradient-to-r from-accent/5 to-blue-50 rounded-xl p-6 border border-accent/10">
+          <div class="mt-6 bg-gradient-to-r from-accent/5 to-slate-50 rounded-xl p-6 border border-slate-200/60">
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
-                <h3 class="font-bold text-gray-800">${dept.name}에 대해 궁금하신 점이 있으신가요?</h3>
-                <p class="text-sm text-gray-500 mt-1">전문 상담원이 친절하게 안내해 드립니다.</p>
+                <h3 class="font-bold text-[#2D3748]">${dept.name}에 대해 궁금하신 점이 있으신가요?</h3>
+                <p class="text-sm text-[#64748B] mt-1">전문 상담원이 친절하게 안내해 드립니다.</p>
               </div>
               <div class="flex gap-3">
                 <a href="tel:${s.phone || '02-586-1230'}" class="inline-flex items-center gap-2 bg-accent text-white px-5 py-2.5 rounded-lg font-medium text-sm hover:bg-accent-dark transition-colors">
@@ -87,9 +87,9 @@ export function noticeListPage(notices: Notice[], page: number, total: number, p
   </section>
   <section class="py-[clamp(2rem,4vh,4rem)]">
     <div class="w-[min(92vw,1200px)] mx-auto px-[clamp(1rem,3vw,3rem)]">
-      <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <div class="bg-[#FAFBFC] rounded-xl border border-slate-200/60 overflow-hidden">
         <table class="w-full">
-          <thead><tr class="bg-gray-50 text-sm text-gray-500">
+          <thead><tr class="bg-slate-50 text-sm text-[#64748B]">
             <th class="py-3 px-4 text-left w-16">번호</th>
             <th class="py-3 px-4 text-left">제목</th>
             <th class="py-3 px-4 text-center w-24">조회수</th>
@@ -97,11 +97,11 @@ export function noticeListPage(notices: Notice[], page: number, total: number, p
           </tr></thead>
           <tbody>
             ${notices.map((n, i) => `
-            <tr class="border-t hover:bg-gray-50 transition-colors">
-              <td class="py-3 px-4 text-sm text-gray-400">${n.is_pinned ? '<span class="text-red-500 font-bold">공지</span>' : (total - (page - 1) * perPage - i)}</td>
-              <td class="py-3 px-4"><a href="/support/notice/${n.id}" class="text-gray-800 hover:text-accent transition-colors font-medium">${n.title}</a></td>
-              <td class="py-3 px-4 text-center text-sm text-gray-400">${n.views}</td>
-              <td class="py-3 px-4 text-center text-sm text-gray-400">${n.created_at?.split('T')[0] || ''}</td>
+            <tr class="border-t border-slate-100 hover:bg-slate-50/50 transition-colors">
+              <td class="py-3 px-4 text-sm text-[#94A3B8]">${n.is_pinned ? '<span class="text-red-500 font-bold">공지</span>' : (total - (page - 1) * perPage - i)}</td>
+              <td class="py-3 px-4"><a href="/support/notice/${n.id}" class="text-[#334155] hover:text-accent transition-colors font-medium">${n.title}</a></td>
+              <td class="py-3 px-4 text-center text-sm text-[#94A3B8]">${n.views}</td>
+              <td class="py-3 px-4 text-center text-sm text-[#94A3B8]">${n.created_at?.split('T')[0] || ''}</td>
             </tr>
             `).join('')}
             ${notices.length === 0 ? '<tr><td colspan="4" class="py-8 text-center text-gray-400">등록된 공지사항이 없습니다.</td></tr>' : ''}
@@ -133,11 +133,11 @@ export function noticeDetailPage(notice: Notice) {
   </section>
   <section class="py-[clamp(2rem,4vh,4rem)]">
     <div class="w-[min(92vw,1000px)] mx-auto px-[clamp(1rem,3vw,3rem)]">
-      <div class="bg-white rounded-xl border border-gray-100 p-[clamp(1.5rem,3vw,3rem)]">
-        <div class="prose prose-gray max-w-none">${notice.content}</div>
+      <div class="bg-[#FAFBFC] rounded-xl border border-slate-200/60 p-[clamp(1.5rem,3vw,3rem)]">
+        <div class="prose prose-slate max-w-none">${notice.content}</div>
       </div>
       <div class="mt-4 text-center">
-        <a href="/support/notice" class="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-6 py-2.5 rounded-lg hover:bg-gray-200 transition-colors text-sm"><i class="fas fa-list"></i> 목록</a>
+        <a href="/support/notice" class="inline-flex items-center gap-2 bg-slate-100 text-[#4A5568] px-6 py-2.5 rounded-lg hover:bg-slate-200 transition-colors text-sm"><i class="fas fa-list"></i> 목록</a>
       </div>
     </div>
   </section>`;
@@ -154,16 +154,16 @@ export function faqPage(faqs: FAQ[]) {
     <div class="w-[min(92vw,1000px)] mx-auto px-[clamp(1rem,3vw,3rem)]">
       <div class="space-y-3">
         ${faqs.map((f, i) => `
-        <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
-          <button onclick="toggleFaq(${i})" class="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors">
-            <span class="font-medium text-gray-800 flex items-center gap-3">
+        <div class="bg-[#FAFBFC] rounded-xl border border-slate-200/60 overflow-hidden">
+          <button onclick="toggleFaq(${i})" class="w-full flex items-center justify-between p-5 text-left hover:bg-slate-50 transition-colors">
+            <span class="font-medium text-[#2D3748] flex items-center gap-3">
               <span class="w-7 h-7 bg-accent/10 text-accent rounded-full flex items-center justify-center text-xs font-bold">Q</span>
               ${f.question}
             </span>
             <i class="fas fa-chevron-down text-gray-400 transition-transform" id="faq-icon-${i}"></i>
           </button>
           <div id="faq-body-${i}" class="hidden px-5 pb-5">
-            <div class="pl-10 text-gray-600 text-sm leading-relaxed prose prose-sm max-w-none">${f.answer}</div>
+            <div class="pl-10 text-[#4A5568] text-sm leading-relaxed prose prose-sm max-w-none">${f.answer}</div>
           </div>
         </div>
         `).join('')}
@@ -191,18 +191,18 @@ export function inquiryPage(settings: SettingsMap) {
   </section>
   <section class="py-[clamp(2rem,4vh,4rem)]">
     <div class="w-[min(92vw,800px)] mx-auto px-[clamp(1rem,3vw,3rem)]">
-      <div class="bg-blue-50 rounded-xl p-5 mb-6 border border-blue-100">
-        <p class="text-sm text-blue-700"><i class="fas fa-info-circle mr-1"></i> 빠른 상담은 전화(<strong>${s.phone || '02-586-1230'}</strong>)로 연락주시면 더욱 빠르게 안내받으실 수 있습니다.</p>
+      <div class="bg-accent/5 rounded-xl p-5 mb-6 border border-accent/10">
+        <p class="text-sm text-accent"><i class="fas fa-info-circle mr-1"></i> 빠른 상담은 전화(<strong>${s.phone || '02-586-1230'}</strong>)로 연락주시면 더욱 빠르게 안내받으실 수 있습니다.</p>
       </div>
-      <form id="inquiryForm" class="bg-white rounded-xl border border-gray-100 p-[clamp(1.5rem,3vw,2.5rem)]">
+      <form id="inquiryForm" class="bg-[#FAFBFC] rounded-xl border border-slate-200/60 p-[clamp(1.5rem,3vw,2.5rem)]">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div><label class="block text-sm font-medium text-gray-700 mb-1">이름 <span class="text-red-500">*</span></label><input type="text" name="name" required class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"></div>
-          <div><label class="block text-sm font-medium text-gray-700 mb-1">회사명</label><input type="text" name="company" class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"></div>
-          <div><label class="block text-sm font-medium text-gray-700 mb-1">이메일</label><input type="email" name="email" class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"></div>
-          <div><label class="block text-sm font-medium text-gray-700 mb-1">연락처</label><input type="tel" name="phone" class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"></div>
+          <div><label class="block text-sm font-medium text-[#2D3748] mb-1">이름 <span class="text-red-500">*</span></label><input type="text" name="name" required class="w-full px-4 py-2.5 border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"></div>
+          <div><label class="block text-sm font-medium text-[#2D3748] mb-1">회사명</label><input type="text" name="company" class="w-full px-4 py-2.5 border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"></div>
+          <div><label class="block text-sm font-medium text-[#2D3748] mb-1">이메일</label><input type="email" name="email" class="w-full px-4 py-2.5 border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"></div>
+          <div><label class="block text-sm font-medium text-[#2D3748] mb-1">연락처</label><input type="tel" name="phone" class="w-full px-4 py-2.5 border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"></div>
         </div>
-        <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-1">제목 <span class="text-red-500">*</span></label><input type="text" name="subject" required class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"></div>
-        <div class="mb-6"><label class="block text-sm font-medium text-gray-700 mb-1">문의 내용 <span class="text-red-500">*</span></label><textarea name="message" rows="6" required class="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent resize-y"></textarea></div>
+        <div class="mb-4"><label class="block text-sm font-medium text-[#2D3748] mb-1">제목 <span class="text-red-500">*</span></label><input type="text" name="subject" required class="w-full px-4 py-2.5 border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"></div>
+        <div class="mb-6"><label class="block text-sm font-medium text-[#2D3748] mb-1">문의 내용 <span class="text-red-500">*</span></label><textarea name="message" rows="6" required class="w-full px-4 py-2.5 border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent resize-y"></textarea></div>
         <button type="submit" id="inquiryBtn" class="w-full bg-accent hover:bg-accent-dark text-white py-3 rounded-lg font-medium transition-colors"><i class="fas fa-paper-plane mr-1"></i> 문의하기</button>
         <div id="inquiryMsg" class="hidden mt-4 p-4 rounded-lg text-sm"></div>
       </form>
@@ -246,9 +246,9 @@ export function progressPage(items: ProgressItem[]) {
   </section>
   <section class="py-[clamp(2rem,4vh,4rem)]">
     <div class="w-[min(92vw,1200px)] mx-auto px-[clamp(1rem,3vw,3rem)]">
-      <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+      <div class="bg-[#FAFBFC] rounded-xl border border-slate-200/60 overflow-hidden">
         <table class="w-full text-sm">
-          <thead><tr class="bg-gray-50 text-gray-500">
+          <thead><tr class="bg-slate-50 text-[#64748B]">
             <th class="py-3 px-4 text-left">구분</th>
             <th class="py-3 px-4 text-left">제품명</th>
             <th class="py-3 px-4 text-left">업체</th>
@@ -257,10 +257,10 @@ export function progressPage(items: ProgressItem[]) {
           </tr></thead>
           <tbody>
             ${items.map(p => `
-            <tr class="border-t hover:bg-gray-50">
-              <td class="py-3 px-4 text-gray-500">${p.category}</td>
-              <td class="py-3 px-4 font-medium text-gray-800">${p.product_name}</td>
-              <td class="py-3 px-4 text-gray-600">${p.company || '-'}</td>
+            <tr class="border-t border-slate-100 hover:bg-slate-50/50">
+              <td class="py-3 px-4 text-[#64748B]">${p.category}</td>
+              <td class="py-3 px-4 font-medium text-[#334155]">${p.product_name}</td>
+              <td class="py-3 px-4 text-[#4A5568]">${p.company || '-'}</td>
               <td class="py-3 px-4 text-center"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${p.status === '완료' ? 'bg-green-50 text-green-600' : 'bg-yellow-50 text-yellow-600'}">${p.status}</span></td>
               <td class="py-3 px-4 text-center text-gray-400">${p.start_date || '-'}</td>
             </tr>
@@ -284,11 +284,11 @@ export function downloadsPage(downloads: { id: number; title: string; descriptio
     <div class="w-[min(92vw,1200px)] mx-auto px-[clamp(1rem,3vw,3rem)]">
       <div class="space-y-3">
         ${downloads.map(d => `
-        <div class="bg-white rounded-xl border border-gray-100 p-5 flex items-center justify-between gap-4 hover:shadow-sm transition-shadow">
+        <div class="bg-[#FAFBFC] rounded-xl border border-slate-200/60 p-5 flex items-center justify-between gap-4 hover:shadow-sm transition-shadow">
           <div class="flex items-center gap-4 min-w-0">
-            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center shrink-0"><i class="fas fa-file-lines text-blue-500"></i></div>
+            <div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center shrink-0"><i class="fas fa-file-lines text-accent"></i></div>
             <div class="min-w-0">
-              <h3 class="font-medium text-gray-800 truncate">${d.title}</h3>
+              <h3 class="font-medium text-[#334155] truncate">${d.title}</h3>
               <p class="text-xs text-gray-400 mt-0.5">${d.file_name || ''} | ${d.created_at?.split('T')[0] || ''} | 다운로드 ${d.download_count}회</p>
             </div>
           </div>

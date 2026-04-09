@@ -16,7 +16,7 @@ INSERT OR IGNORE INTO site_settings (key, value, category, description) VALUES
 ('logo_url', '/static/images/logo.png', 'theme', '로고 이미지 경로'),
 ('main_bg_url', '', 'theme', '메인 배경 이미지'),
 ('primary_color', '#1E3A5F', 'theme', '주요 색상'),
-('accent_color', '#2563EB', 'theme', '강조 색상'),
+('accent_color', '#3B82F6', 'theme', '강조 색상'),
 ('meta_description', 'CC평가,CC평가기관,평가인증,소프트웨어시험,보안적합성,정보보호준비도,성능평가 등 제공(02-586-1230)', 'seo', 'SEO 메타 설명'),
 ('meta_keywords', 'CC평가,CC평가기관,평가인증,소프트웨어시험,보안적합성,정보보호준비도,성능평가,KOIST,한국정보보안기술원', 'seo', 'SEO 키워드'),
 ('google_analytics_id', 'AW-11333861621', 'seo', 'Google Analytics ID'),
