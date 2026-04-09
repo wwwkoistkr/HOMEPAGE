@@ -114,6 +114,8 @@ admin.put('/departments/:id', async (c) => {
 });
 
 admin.delete('/departments/:id', async (c) => {
+  // Also delete sub-pages
+  await c.env.DB.prepare('DELETE FROM dep_pages WHERE dept_id = ?').bind(c.req.param('id')).run();
   await c.env.DB.prepare('DELETE FROM departments WHERE id = ?').bind(c.req.param('id')).run();
   return c.json({ success: true });
 });
@@ -134,7 +136,7 @@ admin.post('/departments/:id/pages', async (c) => {
 admin.put('/dep-pages/:id', async (c) => {
   const id = c.req.param('id');
   const body = await c.req.json();
-  const fields = ['title', 'slug', 'content', 'sort_order', 'is_active'];
+  const fields = ['title', 'slug', 'content', 'sort_order', 'is_active', 'meta_description'];
   const updates: string[] = [];
   const values: any[] = [];
   for (const f of fields) { if (body[f] !== undefined) { updates.push(`${f} = ?`); values.push(body[f]); } }
@@ -190,6 +192,7 @@ admin.put('/progress/:id', async (c) => {
   const updates: string[] = [];
   const values: any[] = [];
   for (const f of fields) { if (body[f] !== undefined) { updates.push(`${f} = ?`); values.push(body[f]); } }
+  if (updates.length === 0) return c.json({ error: 'No fields' }, 400);
   values.push(c.req.param('id'));
   await c.env.DB.prepare(`UPDATE progress_items SET ${updates.join(', ')} WHERE id = ?`).bind(...values).run();
   return c.json({ success: true });
@@ -213,8 +216,14 @@ admin.post('/faqs', async (c) => {
 });
 
 admin.put('/faqs/:id', async (c) => {
-  const { question, answer, category, sort_order, is_active } = await c.req.json();
-  await c.env.DB.prepare('UPDATE faqs SET question=?, answer=?, category=?, sort_order=?, is_active=? WHERE id=?').bind(question, answer, category||'general', sort_order||0, is_active??1, c.req.param('id')).run();
+  const body = await c.req.json();
+  const fields = ['question', 'answer', 'category', 'sort_order', 'is_active'];
+  const updates: string[] = [];
+  const values: any[] = [];
+  for (const f of fields) { if (body[f] !== undefined) { updates.push(`${f} = ?`); values.push(body[f]); } }
+  if (updates.length === 0) return c.json({ error: 'No fields' }, 400);
+  values.push(c.req.param('id'));
+  await c.env.DB.prepare(`UPDATE faqs SET ${updates.join(', ')} WHERE id = ?`).bind(...values).run();
   return c.json({ success: true });
 });
 
@@ -235,6 +244,11 @@ admin.put('/inquiries/:id', async (c) => {
   return c.json({ success: true });
 });
 
+admin.delete('/inquiries/:id', async (c) => {
+  await c.env.DB.prepare('DELETE FROM inquiries WHERE id = ?').bind(c.req.param('id')).run();
+  return c.json({ success: true });
+});
+
 // ---- Downloads CRUD ----
 admin.get('/downloads', async (c) => {
   const result = await c.env.DB.prepare('SELECT * FROM downloads ORDER BY created_at DESC').all();
@@ -247,8 +261,50 @@ admin.post('/downloads', async (c) => {
   return c.json({ success: true });
 });
 
+admin.put('/downloads/:id', async (c) => {
+  const body = await c.req.json();
+  const fields = ['title', 'description', 'file_url', 'file_name', 'file_size', 'category'];
+  const updates: string[] = [];
+  const values: any[] = [];
+  for (const f of fields) { if (body[f] !== undefined) { updates.push(`${f} = ?`); values.push(body[f]); } }
+  if (updates.length === 0) return c.json({ error: 'No fields' }, 400);
+  values.push(c.req.param('id'));
+  await c.env.DB.prepare(`UPDATE downloads SET ${updates.join(', ')} WHERE id = ?`).bind(...values).run();
+  return c.json({ success: true });
+});
+
 admin.delete('/downloads/:id', async (c) => {
   await c.env.DB.prepare('DELETE FROM downloads WHERE id = ?').bind(c.req.param('id')).run();
+  return c.json({ success: true });
+});
+
+// ---- About Pages CRUD ----
+admin.get('/about-pages', async (c) => {
+  const result = await c.env.DB.prepare('SELECT * FROM about_pages ORDER BY sort_order').all();
+  return c.json({ success: true, data: result.results });
+});
+
+admin.post('/about-pages', async (c) => {
+  const { title, slug, content, sort_order } = await c.req.json();
+  if (!title || !slug || !content) return c.json({ error: '제목, 슬러그, 내용은 필수입니다.' }, 400);
+  await c.env.DB.prepare('INSERT INTO about_pages (title, slug, content, sort_order) VALUES (?,?,?,?)').bind(title, slug, content, sort_order||0).run();
+  return c.json({ success: true });
+});
+
+admin.put('/about-pages/:id', async (c) => {
+  const body = await c.req.json();
+  const fields = ['title', 'content', 'sort_order'];
+  const updates: string[] = [];
+  const values: any[] = [];
+  for (const f of fields) { if (body[f] !== undefined) { updates.push(`${f} = ?`); values.push(body[f]); } }
+  updates.push('updated_at = CURRENT_TIMESTAMP');
+  values.push(c.req.param('id'));
+  await c.env.DB.prepare(`UPDATE about_pages SET ${updates.join(', ')} WHERE id = ?`).bind(...values).run();
+  return c.json({ success: true });
+});
+
+admin.delete('/about-pages/:id', async (c) => {
+  await c.env.DB.prepare('DELETE FROM about_pages WHERE id = ?').bind(c.req.param('id')).run();
   return c.json({ success: true });
 });
 

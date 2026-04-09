@@ -89,6 +89,16 @@ api.get('/faqs', async (c) => {
   return c.json({ success: true, data: result.results });
 });
 
+// GET /api/downloads/:id/file - Redirect to file URL and increment counter
+api.get('/downloads/:id/file', async (c) => {
+  const db = c.env.DB;
+  const id = c.req.param('id');
+  const dl = await db.prepare('SELECT * FROM downloads WHERE id = ?').bind(id).first<{ file_url: string }>();
+  if (!dl || !dl.file_url) return c.json({ error: 'File not found' }, 404);
+  await db.prepare('UPDATE downloads SET download_count = download_count + 1 WHERE id = ?').bind(id).run();
+  return c.redirect(dl.file_url, 302);
+});
+
 // POST /api/inquiries
 api.post('/inquiries', async (c) => {
   const db = c.env.DB;

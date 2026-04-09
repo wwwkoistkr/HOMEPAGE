@@ -122,4 +122,14 @@ export type AdminUser = {
 };
 
 // Settings를 key-value 맵으로
+export interface AboutPage {
+  id: number;
+  title: string;
+  slug: string;
+  content: string;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export type SettingsMap = Record<string, string>;

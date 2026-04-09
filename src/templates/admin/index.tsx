@@ -197,6 +197,7 @@ export function adminDashboardPage(content: string, activeMenu = 'dashboard') {
     { id: 'downloads', icon: 'fa-download', label: '자료실', href: '/admin/downloads' },
     { id: 'faqs', icon: 'fa-circle-question', label: 'FAQ', href: '/admin/faqs' },
     { id: 'inquiries', icon: 'fa-envelope', label: '상담문의', href: '/admin/inquiries' },
+    { id: 'about', icon: 'fa-info-circle', label: '소개 페이지', href: '/admin/about' },
     { id: 'account', icon: 'fa-user-shield', label: '계정 관리', href: '/admin/change-password' },
   ];
 

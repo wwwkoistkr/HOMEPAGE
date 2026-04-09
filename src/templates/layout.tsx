@@ -226,7 +226,11 @@ export function layout(opts: {
       <div class="border-t border-gray-700 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
         <p class="text-xs text-gray-500">&copy; ${new Date().getFullYear()} ${siteName}. All rights reserved.</p>
         <div class="flex items-center gap-4 text-xs text-gray-500">
-          <a href="/admin" class="hover:text-gray-300 transition-colors">관리자</a>
+          <a href="/about/greeting" class="hover:text-gray-300 transition-colors">KOIST 소개</a>
+          <span class="text-gray-700">|</span>
+          <a href="/support/inquiry" class="hover:text-gray-300 transition-colors">문의하기</a>
+          <span class="text-gray-700">|</span>
+          <a href="/admin" class="hover:text-gray-300 transition-colors" title="관리자"><i class="fas fa-lock text-[10px] mr-0.5"></i>관리자</a>
         </div>
       </div>
     </div>
