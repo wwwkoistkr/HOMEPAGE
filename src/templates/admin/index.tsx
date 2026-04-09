@@ -222,7 +222,7 @@ export function adminDashboardPage(content: string, activeMenu = 'dashboard') {
     // === Admin Utility Functions (must load before page scripts) ===
     function logout() {
       document.cookie = 'koist_token=;path=/;max-age=0';
-      window.location.href = '/admin';
+      window.location.href = '/';
     }
     function getToken() {
       return document.cookie.match(/koist_token=([^;]*)/)?.[1] || '';
