@@ -35,9 +35,9 @@ export function layout(opts: {
       theme: {
         extend: {
           colors: {
-            primary: { DEFAULT: '${s.primary_color || '#1E3A5F'}', light: '#2D5A8E', lighter: '#4A7AB5' },
-            accent: { DEFAULT: '${s.accent_color || '#3B82F6'}', dark: '#2563EB', light: '#60A5FA' },
-            surface: { DEFAULT: '#FAFBFC', dark: '#F5F6FA', light: '#FEFEFE' },
+            primary: { DEFAULT: '${s.primary_color || '#0F172A'}', light: '#1E293B', lighter: '#334155', mid: '#1E3A5F' },
+            accent: { DEFAULT: '${s.accent_color || '#3B82F6'}', dark: '#2563EB', light: '#60A5FA', teal: '#14B8A6' },
+            surface: { DEFAULT: '#F8F9FC', warm: '#F1F3F8', card: '#FFFFFF', muted: '#E8EBF0' },
           },
           fontFamily: {
             sans: ['"Noto Sans KR"', 'system-ui', '-apple-system', 'sans-serif'],
@@ -69,9 +69,9 @@ export function layout(opts: {
     
     /* Custom scrollbar */
     ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #F0F2F5; }
-    ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+    ::-webkit-scrollbar-track { background: #E8EBF0; }
+    ::-webkit-scrollbar-thumb { background: #64748b; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
     
     /* GNB dropdown */
     .gnb-item:hover .gnb-dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
@@ -99,17 +99,23 @@ export function layout(opts: {
     
     /* Card hover effect */
     .service-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-    .service-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(100,116,139,0.15); }
+    .service-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(15,23,42,0.12); }
+
+    /* Section rhythm backgrounds */
+    .section-warm { background: #F1F3F8; }
+    .section-light { background: #F8F9FC; }
+    .section-white { background: #FFFFFF; }
+    .section-dark { background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); }
     
     /* Popup styles */
     .popup-overlay { backdrop-filter: blur(2px); }
   </style>
   ${opts.headExtra || ''}
 </head>
-<body class="bg-[#F5F6FA] text-[#2D3748] ${opts.bodyClass || ''}">
+<body class="bg-[#F1F3F8] text-[#334155] ${opts.bodyClass || ''}">
 
   <!-- GNB Navigation -->
-  <header id="gnb" class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md shadow-sm transition-all duration-300">
+  <header id="gnb" class="fixed top-0 left-0 right-0 z-50 bg-[#0F172A]/[0.97] backdrop-blur-md shadow-lg shadow-black/10 transition-all duration-300">
     <div class="w-[min(92vw,1400px)] mx-auto px-[clamp(0.5rem,2vw,1.5rem)]">
       <div class="flex items-center justify-between h-[clamp(56px,8vh,80px)]">
         <!-- Logo -->
@@ -120,8 +126,8 @@ export function layout(opts: {
           <div class="flex items-center">
             <i class="fas fa-shield-halved text-accent text-[clamp(1.2rem,2.5vw,2rem)]"></i>
             <div class="ml-2">
-              <div class="text-[clamp(0.7rem,1.2vw,1rem)] font-bold text-primary leading-tight">한국정보보안기술원</div>
-              <div class="text-[clamp(0.45rem,0.7vw,0.65rem)] text-gray-400 tracking-wider">KOIST</div>
+              <div class="text-[clamp(0.7rem,1.2vw,1rem)] font-bold text-white leading-tight">한국정보보안기술원</div>
+              <div class="text-[clamp(0.45rem,0.7vw,0.65rem)] text-slate-400 tracking-wider">KOIST</div>
             </div>
           </div>
           `}
@@ -131,11 +137,11 @@ export function layout(opts: {
         <nav class="hidden xl:flex items-center gap-[clamp(0.3rem,1vw,1.2rem)]">
           ${deps.filter(d => d.is_active).map(dept => `
           <div class="gnb-item relative group">
-            <a href="/services/${dept.slug}" class="px-[clamp(0.3rem,0.8vw,0.8rem)] py-2 text-[clamp(0.65rem,0.85vw,0.9rem)] font-medium text-gray-700 hover:text-accent transition-colors whitespace-nowrap">${dept.name}</a>
+            <a href="/services/${dept.slug}" class="px-[clamp(0.3rem,0.8vw,0.8rem)] py-2 text-[clamp(0.65rem,0.85vw,0.9rem)] font-medium text-slate-300 hover:text-white transition-colors whitespace-nowrap">${dept.name}</a>
             <div class="gnb-dropdown absolute top-full left-0 pt-2 min-w-[180px]" id="gnb-drop-${dept.slug}"></div>
           </div>
           `).join('')}
-          <a href="/support/notice" class="px-[clamp(0.3rem,0.8vw,0.8rem)] py-2 text-[clamp(0.65rem,0.85vw,0.9rem)] font-medium text-gray-700 hover:text-accent transition-colors whitespace-nowrap">고객지원</a>
+          <a href="/support/notice" class="px-[clamp(0.3rem,0.8vw,0.8rem)] py-2 text-[clamp(0.65rem,0.85vw,0.9rem)] font-medium text-slate-300 hover:text-white transition-colors whitespace-nowrap">고객지원</a>
         </nav>
 
         <!-- Contact Quick & Mobile Toggle -->
@@ -144,7 +150,7 @@ export function layout(opts: {
             <i class="fas fa-phone text-xs"></i>
             <span>${s.phone || '02-586-1230'}</span>
           </a>
-          <button id="mobileMenuBtn" class="xl:hidden p-2 text-gray-700 hover:text-accent" aria-label="메뉴">
+          <button id="mobileMenuBtn" class="xl:hidden p-2 text-slate-300 hover:text-white" aria-label="메뉴">
             <i class="fas fa-bars text-xl"></i>
           </button>
         </div>
@@ -194,7 +200,7 @@ export function layout(opts: {
   </main>
 
   <!-- Footer -->
-  <footer class="bg-[#1E293B] text-gray-300 mt-auto">
+  <footer class="bg-[#0B1120] text-gray-300 mt-auto">
     <div class="w-[min(92vw,1400px)] mx-auto px-[clamp(1rem,3vw,3rem)] py-[clamp(2rem,4vh,4rem)]">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
         <!-- Company Info -->
@@ -232,14 +238,14 @@ export function layout(opts: {
           </div>
         </div>
       </div>
-      <div class="border-t border-gray-700 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-        <p class="text-xs text-gray-500">&copy; ${new Date().getFullYear()} ${siteName}. All rights reserved.</p>
-        <div class="flex items-center gap-4 text-xs text-gray-500">
-          <a href="/about/greeting" class="hover:text-gray-300 transition-colors">KOIST 소개</a>
-          <span class="text-gray-700">|</span>
-          <a href="/support/inquiry" class="hover:text-gray-300 transition-colors">문의하기</a>
-          <span class="text-gray-700">|</span>
-          <a href="/admin" class="hover:text-gray-300 transition-colors" title="관리자"><i class="fas fa-lock text-[10px] mr-0.5"></i>관리자</a>
+      <div class="border-t border-slate-800/60 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p class="text-xs text-slate-500">&copy; ${new Date().getFullYear()} ${siteName}. All rights reserved.</p>
+        <div class="flex items-center gap-4 text-xs text-slate-400">
+          <a href="/about/greeting" class="hover:text-white transition-colors">KOIST 소개</a>
+          <span class="text-slate-600">|</span>
+          <a href="/support/inquiry" class="hover:text-white transition-colors">문의하기</a>
+          <span class="text-slate-600">|</span>
+          <a href="/admin" class="hover:text-white transition-colors" title="관리자"><i class="fas fa-lock text-[10px] mr-0.5"></i>관리자</a>
         </div>
       </div>
     </div>
