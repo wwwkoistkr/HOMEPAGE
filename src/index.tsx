@@ -26,14 +26,14 @@ app.get('/api/init-db', async (c) => {
   const existing = await db.prepare('SELECT id FROM admin_users WHERE username = ?').bind('admin').first();
   if (existing) return c.json({ message: 'Already initialized' });
 
-  // Create admin user with default password: 1234
+  // Create admin user with default password: admin1234
   const salt = await generateSalt();
-  const hash = await hashPassword('1234', salt);
+  const hash = await hashPassword('admin1234', salt);
   await db.prepare(
-    'INSERT INTO admin_users (username, password_hash, salt, must_change_password) VALUES (?, ?, ?, 1)'
+    'INSERT INTO admin_users (username, password_hash, salt, must_change_password) VALUES (?, ?, ?, 0)'
   ).bind('admin', hash, salt).run();
 
-  return c.json({ success: true, message: 'Admin user created (admin/1234). Please change password after login.' });
+  return c.json({ success: true, message: 'Admin user created (admin/admin1234).' });
 });
 
 // ===== Public API Routes =====
@@ -49,9 +49,9 @@ app.post('/api/admin/login', async (c) => {
   const adminCount = await db.prepare('SELECT COUNT(*) as cnt FROM admin_users').first<{cnt: number}>();
   if (!adminCount || adminCount.cnt === 0) {
     const salt = await generateSalt();
-    const hash = await hashPassword('1234', salt);
+    const hash = await hashPassword('admin1234', salt);
     await db.prepare(
-      'INSERT INTO admin_users (username, password_hash, salt, must_change_password) VALUES (?, ?, ?, 1)'
+      'INSERT INTO admin_users (username, password_hash, salt, must_change_password) VALUES (?, ?, ?, 0)'
     ).bind('admin', hash, salt).run();
   }
   
