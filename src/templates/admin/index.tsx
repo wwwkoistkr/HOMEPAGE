@@ -186,7 +186,7 @@ export function changePasswordPage(forced = false) {
 </html>`;
 }
 
-export function adminDashboardPage(content: string, activeMenu = 'dashboard') {
+export function adminDashboardPage(content: string, activeMenu = 'dashboard', logoUrl = '') {
   const menuItems = [
     { id: 'dashboard', icon: 'fa-chart-pie', label: '대시보드', href: '/admin/dashboard' },
     { id: 'site-settings', icon: 'fa-cog', label: '사이트 설정', href: '/admin/site-settings' },
@@ -250,7 +250,11 @@ export function adminDashboardPage(content: string, activeMenu = 'dashboard') {
     <aside class="w-64 bg-white border-r border-gray-200 fixed top-0 left-0 bottom-0 z-30 overflow-y-auto hidden lg:block">
       <div class="p-5 border-b">
         <a href="/admin/dashboard" class="flex items-center gap-2">
+          ${logoUrl && logoUrl.trim() !== '' && logoUrl !== '/static/images/logo.png' ? `
+          <img src="${logoUrl}" alt="KOIST Admin" class="h-8 w-auto object-contain">
+          ` : `
           <i class="fas fa-shield-halved text-blue-500 text-xl"></i>
+          `}
           <div>
             <div class="font-bold text-gray-800 text-sm">KOIST Admin</div>
             <div class="text-[10px] text-gray-400">관리자 대시보드</div>
@@ -299,7 +303,11 @@ export function adminDashboardPage(content: string, activeMenu = 'dashboard') {
   <aside id="mobileSidebar" class="mobile-sidebar fixed top-0 left-0 bottom-0 w-64 bg-white border-r border-gray-200 z-[35] overflow-y-auto lg:hidden">
     <div class="p-5 border-b flex justify-between items-center">
       <a href="/admin/dashboard" class="flex items-center gap-2">
+        ${logoUrl && logoUrl.trim() !== '' && logoUrl !== '/static/images/logo.png' ? `
+        <img src="${logoUrl}" alt="KOIST Admin" class="h-8 w-auto object-contain">
+        ` : `
         <i class="fas fa-shield-halved text-blue-500 text-xl"></i>
+        `}
         <div>
           <div class="font-bold text-gray-800 text-sm">KOIST Admin</div>
           <div class="text-[10px] text-gray-400">관리자 대시보드</div>

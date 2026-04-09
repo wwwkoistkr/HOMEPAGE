@@ -35,8 +35,8 @@ export function layout(opts: {
       theme: {
         extend: {
           colors: {
-            primary: { DEFAULT: '${s.primary_color || '#0F172A'}', light: '#1E293B', lighter: '#334155' },
-            accent: { DEFAULT: '${s.accent_color || '#3B82F6'}', dark: '#2563EB', light: '#60A5FA' },
+            primary: { DEFAULT: '${s.primary_color || '#1E3A5F'}', light: '#2D5A8E', lighter: '#4A7AB5' },
+            accent: { DEFAULT: '${s.accent_color || '#2563EB'}', dark: '#1D4ED8', light: '#60A5FA' },
           },
           fontFamily: {
             sans: ['"Noto Sans KR"', 'system-ui', '-apple-system', 'sans-serif'],
@@ -98,7 +98,7 @@ export function layout(opts: {
     
     /* Card hover effect */
     .service-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-    .service-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+    .service-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(37,99,235,0.1); }
     
     /* Popup styles */
     .popup-overlay { backdrop-filter: blur(2px); }
@@ -113,6 +113,9 @@ export function layout(opts: {
       <div class="flex items-center justify-between h-[clamp(56px,8vh,80px)]">
         <!-- Logo -->
         <a href="/" class="flex items-center gap-2 shrink-0">
+          ${s.logo_url && s.logo_url.trim() !== '' && s.logo_url !== '/static/images/logo.png' ? `
+          <img src="${s.logo_url}" alt="${siteName}" class="h-[clamp(32px,5vw,48px)] w-auto object-contain">
+          ` : `
           <div class="flex items-center">
             <i class="fas fa-shield-halved text-accent text-[clamp(1.2rem,2.5vw,2rem)]"></i>
             <div class="ml-2">
@@ -120,6 +123,7 @@ export function layout(opts: {
               <div class="text-[clamp(0.45rem,0.7vw,0.65rem)] text-gray-400 tracking-wider">KOIST</div>
             </div>
           </div>
+          `}
         </a>
 
         <!-- Desktop GNB -->
@@ -189,14 +193,18 @@ export function layout(opts: {
   </main>
 
   <!-- Footer -->
-  <footer class="bg-primary text-gray-300 mt-auto">
+  <footer class="bg-gray-800 text-gray-300 mt-auto">
     <div class="w-[min(92vw,1400px)] mx-auto px-[clamp(1rem,3vw,3rem)] py-[clamp(2rem,4vh,4rem)]">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
         <!-- Company Info -->
         <div>
           <div class="flex items-center gap-2 mb-4">
+            ${s.logo_url && s.logo_url.trim() !== '' && s.logo_url !== '/static/images/logo.png' ? `
+            <img src="${s.logo_url}" alt="${siteName}" class="h-8 w-auto object-contain brightness-0 invert">
+            ` : `
             <i class="fas fa-shield-halved text-accent text-xl"></i>
             <span class="font-bold text-white text-lg">KOIST</span>
+            `}
           </div>
           <p class="text-sm leading-relaxed text-gray-400">${s.site_slogan || '최상의 시험·인증 서비스로 정보보안 기술을 완성'}</p>
         </div>

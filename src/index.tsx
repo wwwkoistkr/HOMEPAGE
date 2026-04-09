@@ -252,6 +252,7 @@ app.get('/admin/change-password', (c) => c.html(changePasswordPage(true)));
 
 app.get('/admin/dashboard', authMiddleware, async (c) => {
   const db = c.env.DB;
+  const settings = await getSettings(db);
   const [notices, departments, popups, inquiries, downloads, faqs] = await Promise.all([
     db.prepare('SELECT COUNT(*) as cnt FROM notices').first<{ cnt: number }>(),
     db.prepare('SELECT COUNT(*) as cnt FROM departments').first<{ cnt: number }>(),
@@ -270,13 +271,15 @@ app.get('/admin/dashboard', authMiddleware, async (c) => {
     faqs: faqs?.cnt || 0,
   });
 
-  return c.html(adminDashboardPage(content, 'dashboard'));
+  return c.html(adminDashboardPage(content, 'dashboard', settings.logo_url || ''));
 });
 
 // Admin CRUD pages
 const adminPages = ['site-settings', 'departments', 'popups', 'notices', 'progress', 'downloads', 'faqs', 'inquiries', 'about'];
 for (const page of adminPages) {
   app.get(`/admin/${page}`, authMiddleware, async (c) => {
+    const db = c.env.DB;
+    const settings = await getSettings(db);
     const jsFile = page === 'about' ? 'admin-about' : `admin-${page}`;
     const content = `
       <h1 class="text-2xl font-bold text-gray-800 mb-6">${getAdminPageTitle(page)}</h1>
@@ -285,7 +288,7 @@ for (const page of adminPages) {
       </div>
       <script src="/static/js/${jsFile}.js"></script>
     `;
-    return c.html(adminDashboardPage(content, page));
+    return c.html(adminDashboardPage(content, page, settings.logo_url || ''));
   });
 }
 
