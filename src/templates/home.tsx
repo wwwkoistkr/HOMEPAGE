@@ -1,10 +1,10 @@
-// KOIST - Home Page Template (v5.3 - Dynamic Background Images & Editable Text)
+// KOIST - Home Page Template (v7.0 - Ultra Premium 4K/8K HiDPI Design)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem } from '../types';
 
 // Helper: generate background style with image overlay or gradient fallback
 function bgStyle(imageUrl: string | undefined, fallbackGradient: string, opacity: string = '0.85'): string {
   if (imageUrl && imageUrl.trim() !== '') {
-    return `background-image: linear-gradient(rgba(15,23,42,${opacity}), rgba(15,23,42,${opacity})), url('${imageUrl}'); background-size:cover; background-position:center;`;
+    return `background-image: linear-gradient(rgba(10,15,30,${opacity}), rgba(10,15,30,${opacity})), url('${imageUrl}'); background-size:cover; background-position:center;`;
   }
   return `background: ${fallbackGradient};`;
 }
@@ -21,7 +21,6 @@ export function homePage(opts: {
   const popups = opts.popups;
   const notices = opts.notices.slice(0, 5);
   const progress = opts.progressItems.slice(0, 5);
-
   const heroOpacity = s.hero_overlay_opacity || '0.85';
 
   return `
@@ -29,18 +28,18 @@ export function homePage(opts: {
   ${popups.length > 0 ? `
   <div id="popupContainer">
     ${popups.map((p, i) => `
-    <div class="popup-item fixed z-[100] bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden" 
-         style="top:clamp(60px, ${p.position_top * 0.06}vw + 30px, ${p.position_top}px); left:clamp(8px, ${p.position_left * 0.06}vw + 4px, ${p.position_left}px); width:min(${p.width}px, 90vw); max-height:85vh;"
+    <div class="popup-item fixed z-[100] bg-white rounded-xl overflow-hidden" 
+         style="top:clamp(60px, ${p.position_top * 0.06}vw + 30px, ${p.position_top}px); left:clamp(8px, ${p.position_left * 0.06}vw + 4px, ${p.position_left}px); width:min(${p.width}px, 90vw); max-height:85vh; box-shadow: 0 24px 64px rgba(0,0,0,0.18), 0 8px 24px rgba(0,0,0,0.10); border: 1px solid rgba(226,232,240,0.50);"
          data-popup-id="${p.id}" id="popup-${p.id}">
-      <div class="bg-slate-50 flex justify-between items-center border-b" style="padding:var(--space-sm) var(--space-md)">
+      <div class="flex justify-between items-center border-b border-slate-100" style="padding:var(--space-sm) var(--space-md); background: rgba(248,250,252,0.90);">
         <span class="font-semibold text-gray-800 f-text-sm">${p.title}</span>
-        <button onclick="closePopup(${p.id})" class="text-gray-400 hover:text-gray-600 p-1"><i class="fas fa-times f-text-xs"></i></button>
+        <button onclick="closePopup(${p.id})" class="text-gray-400 hover:text-gray-600 p-1 rounded-md hover:bg-gray-100 transition-colors"><i class="fas fa-times f-text-xs"></i></button>
       </div>
       <div class="overflow-y-auto" style="max-height:min(${p.height}px, 70vh);">
         ${p.popup_type === 'image' && p.image_url ? `<img src="${p.image_url}" alt="${p.title}" class="w-full h-auto">` : `<div style="padding:var(--space-md)">${p.content || ''}</div>`}
       </div>
-      <div class="bg-gray-50 border-t text-right" style="padding:var(--space-sm) var(--space-md)">
-        <button onclick="closePopup(${p.id})" class="text-gray-500 hover:text-gray-700 rounded hover:bg-gray-100 transition-colors f-text-xs" style="padding:var(--space-xs) var(--space-sm)">닫기</button>
+      <div class="border-t border-slate-100 text-right" style="padding:var(--space-sm) var(--space-md); background: rgba(248,250,252,0.60);">
+        <button onclick="closePopup(${p.id})" class="text-gray-500 hover:text-gray-700 rounded-md hover:bg-gray-100 transition-colors f-text-xs font-medium" style="padding:var(--space-xs) var(--space-sm)">닫기</button>
       </div>
     </div>
     `).join('')}
@@ -54,77 +53,115 @@ export function homePage(opts: {
   </script>
   ` : ''}
 
-  <!-- ═══════════ Hero ═══════════ -->
-  <section class="relative overflow-hidden" style="${bgStyle(s.hero_bg_url, 'linear-gradient(135deg, #0F172A 0%, #162544 50%, #0F172A 100%)', heroOpacity)}">
-    <!-- BG decorative layers (shown when no background image) -->
+  <!-- ═══════════════════════════════════════════════════════
+       HERO SECTION (Premium Immersive)
+       ═══════════════════════════════════════════════════════ -->
+  <section class="relative overflow-hidden" style="${bgStyle(s.hero_bg_url, 'var(--grad-hero)', heroOpacity)}">
+    <!-- Animated background layers -->
     ${!s.hero_bg_url ? `
-    <div class="absolute inset-0">
-      <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-950/30 to-transparent"></div>
-      <div class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-[#0B1120] to-transparent"></div>
-      <div class="absolute top-16 left-[8%] text-blue-500/[0.06]" style="font-size:clamp(2rem,4vw,4rem)"><i class="fas fa-shield-halved"></i></div>
-      <div class="absolute top-1/3 right-[10%] text-blue-500/[0.05]" style="font-size:clamp(1.8rem,3.5vw,3.5rem)"><i class="fas fa-lock"></i></div>
-      <div class="absolute bottom-20 left-[20%] text-blue-500/[0.05]" style="font-size:clamp(1.5rem,2.5vw,2.5rem)"><i class="fas fa-key"></i></div>
+    <div class="absolute inset-0 pointer-events-none">
+      <!-- Gradient orbs -->
+      <div class="absolute animate-float-slow" style="top:10%; left:5%; width:clamp(200px,25vw,450px); height:clamp(200px,25vw,450px); background: radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%); border-radius:50%; filter:blur(40px);"></div>
+      <div class="absolute animate-float-medium" style="top:30%; right:8%; width:clamp(150px,20vw,350px); height:clamp(150px,20vw,350px); background: radial-gradient(circle, rgba(6,182,212,0.05) 0%, transparent 70%); border-radius:50%; filter:blur(40px);"></div>
+      <div class="absolute" style="bottom:5%; left:30%; width:clamp(180px,22vw,400px); height:clamp(180px,22vw,400px); background: radial-gradient(circle, rgba(99,102,241,0.04) 0%, transparent 70%); border-radius:50%; filter:blur(40px);"></div>
+      <!-- Grid pattern -->
+      <div class="absolute inset-0 opacity-[0.02]" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 60px 60px;"></div>
+      <!-- Floating icons -->
+      <div class="absolute animate-float-slow opacity-[0.04] text-blue-400" style="top:15%; left:8%; font-size:clamp(2rem,3.5vw,3.5rem)"><i class="fas fa-shield-halved"></i></div>
+      <div class="absolute animate-float-medium opacity-[0.03] text-cyan-400" style="top:40%; right:12%; font-size:clamp(1.5rem,3vw,3rem)"><i class="fas fa-lock"></i></div>
+      <div class="absolute animate-pulse-glow opacity-[0.04] text-blue-300" style="bottom:20%; left:20%; font-size:clamp(1.2rem,2.2vw,2.2rem)"><i class="fas fa-key"></i></div>
     </div>
     ` : ''}
 
-    <div class="relative fluid-container" style="padding-top:var(--space-2xl); padding-bottom:var(--space-2xl)">
-      <div class="grid grid-cols-1 lg:grid-cols-5 items-center" style="gap:clamp(1.5rem, 3vw, 4rem)">
+    <!-- Bottom gradient fade -->
+    <div class="absolute bottom-0 left-0 right-0 h-24 pointer-events-none" style="background: linear-gradient(to top, rgba(240,244,248,0.03), transparent);"></div>
 
-        <!-- Left -->
-        <div class="lg:col-span-3" data-aos="fade-right">
-          <div class="inline-flex items-center bg-blue-500/10 border border-blue-500/20 rounded-full f-text-xs" style="gap:var(--space-xs); padding:var(--space-xs) var(--space-sm)">
-            <span class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></span>
+    <div class="relative fluid-container" style="padding-top:clamp(3rem,5vw,5.5rem); padding-bottom:clamp(3rem,5vw,5.5rem)">
+      <div class="grid grid-cols-1 lg:grid-cols-5 items-center" style="gap:clamp(2rem, 4vw, 5rem)">
+
+        <!-- Left: Hero Text -->
+        <div class="lg:col-span-3" data-aos="fade-right" data-aos-duration="800">
+          <!-- Badge -->
+          <div class="inline-flex items-center rounded-full f-text-xs" style="gap:var(--space-xs); padding:6px 14px; background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.15); backdrop-filter: blur(8px);">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-50"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-400"></span>
+            </span>
             <span class="text-blue-300 font-medium">${s.hero_badge_text || '국가 공인 정보보안 시험·평가 전문기관'}</span>
           </div>
-          <h1 class="text-white font-black leading-snug f-text-hero" style="margin-top:var(--space-md); margin-bottom:var(--space-md)">
-            ${s.site_slogan || '최상의 시험·인증 서비스로<br><span class="text-blue-400">정보보안 기술</span>을 완성'}
+
+          <!-- Headline -->
+          <h1 class="text-white font-black f-text-hero" style="margin-top:var(--space-md); margin-bottom:var(--space-md)">
+            ${s.site_slogan || '최상의 시험·인증 서비스로<br><span style="background: linear-gradient(135deg, #60A5FA, #22D3EE); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">정보보안 기술</span>을 완성'}
           </h1>
-          <p class="text-slate-400 leading-relaxed max-w-lg f-text-base" style="margin-bottom:var(--space-lg)">
+
+          <!-- Sub-headline -->
+          <p class="text-slate-400/90 leading-relaxed max-w-lg f-text-base" style="margin-bottom:var(--space-lg)">
             ${s.site_sub_slogan || '정보보안 기술은 IT제품으로 구현되고 시험·인증 서비스를 통해 완성됩니다.'}
           </p>
+
+          <!-- CTA Buttons -->
           <div class="flex flex-wrap" style="gap:var(--space-sm)">
-            <a href="/support/inquiry" class="inline-flex items-center bg-accent hover:bg-accent-dark text-white rounded-lg font-semibold transition-all shadow-lg shadow-accent/20 f-text-sm" style="gap:var(--space-xs); padding:var(--space-sm) var(--space-lg)">
+            <a href="/support/inquiry" class="btn-glow ripple-btn f-text-sm" style="padding:var(--space-sm) clamp(1.2rem,2vw,1.8rem);">
               <i class="fas fa-paper-plane f-text-xs"></i> ${s.hero_btn_primary || '온라인 상담'}
             </a>
-            <a href="#services" class="inline-flex items-center bg-white/10 hover:bg-white/15 text-white border border-white/20 rounded-lg font-semibold transition-all f-text-sm" style="gap:var(--space-xs); padding:var(--space-sm) var(--space-lg)">
+            <a href="#services" class="btn-ghost ripple-btn f-text-sm" style="padding:var(--space-sm) clamp(1.2rem,2vw,1.8rem);">
               <i class="fas fa-th-large f-text-xs"></i> ${s.hero_btn_secondary || '사업분야 보기'}
             </a>
           </div>
         </div>
 
-        <!-- Right: Contact card -->
-        <div class="lg:col-span-2" data-aos="fade-left" data-aos-delay="150">
-          <div class="relative bg-white rounded-2xl shadow-2xl shadow-black/20" style="padding:var(--space-lg)">
-            <div class="absolute top-0 left-6 right-6 h-[3px] bg-gradient-to-r from-accent to-blue-400 rounded-b-full"></div>
-            <div class="absolute -top-2 -right-2 w-4 h-4 bg-green-400 rounded-full border-2 border-white"></div>
-            <div class="absolute -top-2 -right-2 w-4 h-4 bg-green-400 rounded-full animate-ping opacity-60"></div>
+        <!-- Right: Contact Card (Glassmorphism) -->
+        <div class="lg:col-span-2" data-aos="fade-left" data-aos-delay="200" data-aos-duration="800">
+          <div class="relative rounded-2xl overflow-hidden" style="box-shadow: 0 24px 64px rgba(0,0,0,0.25), 0 8px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.08); background: rgba(255,255,255,0.97); backdrop-filter: blur(12px);">
+            <!-- Top gradient bar -->
+            <div style="height:3px; background: linear-gradient(90deg, #2563EB, #06B6D4, #3B82F6);"></div>
 
-            <p class="text-slate-500 font-semibold tracking-wider uppercase f-text-xs" style="margin-bottom:var(--space-xs)">
-              <i class="fas fa-headset mr-1 text-accent"></i>상담문의
-            </p>
-            <a href="tel:${s.phone || '02-586-1230'}" class="block text-primary font-black hover:text-accent transition-colors tracking-tight f-text-3xl" style="margin-bottom:var(--space-md)">
-              ${s.phone_display || s.phone || '02-586-1230'}
-            </a>
+            <div style="padding: clamp(1.25rem,2vw,1.75rem);">
+              <!-- Online indicator -->
+              <div class="absolute top-5 right-5">
+                <span class="relative flex h-3 w-3">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-50"></span>
+                  <span class="relative inline-flex rounded-full h-3 w-3 bg-green-400 border-2 border-white"></span>
+                </span>
+              </div>
 
-            <div class="text-slate-600 f-text-sm" style="display:flex; flex-direction:column; gap:var(--space-sm)">
-              <div class="flex items-center" style="gap:var(--space-sm)">
-                <div class="shrink-0 bg-blue-50 rounded flex items-center justify-center" style="width:clamp(24px,2vw,28px); height:clamp(24px,2vw,28px)"><i class="fas fa-envelope text-accent f-text-xs"></i></div>
-                <a href="mailto:${s.email || 'koist@koist.kr'}" class="hover:text-accent transition-colors">${s.email || 'koist@koist.kr'}</a>
-              </div>
-              <div class="flex items-center" style="gap:var(--space-sm)">
-                <div class="shrink-0 bg-blue-50 rounded flex items-center justify-center" style="width:clamp(24px,2vw,28px); height:clamp(24px,2vw,28px)"><i class="fas fa-fax text-accent f-text-xs"></i></div>
-                <span>FAX ${s.fax || '02-586-1238'}</span>
-              </div>
-              <div class="flex items-start" style="gap:var(--space-sm)">
-                <div class="shrink-0 bg-blue-50 rounded flex items-center justify-center mt-0.5" style="width:clamp(24px,2vw,28px); height:clamp(24px,2vw,28px)"><i class="fas fa-location-dot text-accent f-text-xs"></i></div>
-                <span class="leading-snug f-text-xs">${s.address || '서울특별시 서초구 효령로 336 윤일빌딩 4층'}</span>
-              </div>
-            </div>
+              <p class="text-slate-500 font-semibold tracking-wider uppercase f-text-xs" style="margin-bottom:var(--space-xs)">
+                <i class="fas fa-headset mr-1 text-accent"></i>상담문의
+              </p>
+              <a href="tel:${s.phone || '02-586-1230'}" class="block font-black hover:text-accent transition-colors tracking-tight f-text-3xl" style="margin-bottom:var(--space-md); background: linear-gradient(135deg, #0A0F1E, #1E293B); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
+                ${s.phone_display || s.phone || '02-586-1230'}
+              </a>
 
-            <div class="border-t" style="margin-top:var(--space-md); padding-top:var(--space-md)">
-              <div class="flex items-center bg-green-50 border border-green-200/60 rounded-lg" style="gap:var(--space-xs); padding:var(--space-sm) var(--space-md)">
-                <i class="fas fa-bolt text-yellow-500 f-text-xs"></i>
-                <span class="text-green-700 font-bold f-text-sm">${s.hero_quick_badge || 'CC평가 신청 즉시 착수 가능'}</span>
+              <div class="text-slate-600 f-text-sm" style="display:flex; flex-direction:column; gap:10px">
+                <div class="flex items-center" style="gap:10px">
+                  <div class="shrink-0 rounded-md flex items-center justify-center" style="width:28px; height:28px; background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(6,182,212,0.05));">
+                    <i class="fas fa-envelope text-accent" style="font-size:11px"></i>
+                  </div>
+                  <a href="mailto:${s.email || 'koist@koist.kr'}" class="hover:text-accent transition-colors">${s.email || 'koist@koist.kr'}</a>
+                </div>
+                <div class="flex items-center" style="gap:10px">
+                  <div class="shrink-0 rounded-md flex items-center justify-center" style="width:28px; height:28px; background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(6,182,212,0.05));">
+                    <i class="fas fa-fax text-accent" style="font-size:11px"></i>
+                  </div>
+                  <span>FAX ${s.fax || '02-586-1238'}</span>
+                </div>
+                <div class="flex items-start" style="gap:10px">
+                  <div class="shrink-0 rounded-md flex items-center justify-center mt-0.5" style="width:28px; height:28px; background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(6,182,212,0.05));">
+                    <i class="fas fa-location-dot text-accent" style="font-size:11px"></i>
+                  </div>
+                  <span class="leading-snug f-text-xs text-slate-500">${s.address || '서울특별시 서초구 효령로 336 윤일빌딩 4층'}</span>
+                </div>
+              </div>
+
+              <!-- Quick badge -->
+              <div style="margin-top:var(--space-md); padding-top:var(--space-md); border-top: 1px solid rgba(226,232,240,0.50);">
+                <div class="flex items-center rounded-lg" style="gap:var(--space-xs); padding:10px 14px; background: linear-gradient(135deg, rgba(16,185,129,0.05), rgba(6,182,212,0.04)); border: 1px solid rgba(16,185,129,0.12);">
+                  <div class="shrink-0 flex items-center justify-center" style="width:24px; height:24px; background: linear-gradient(135deg, rgba(234,179,8,0.15), rgba(251,191,36,0.10)); border-radius: 6px;">
+                    <i class="fas fa-bolt text-yellow-500" style="font-size:10px"></i>
+                  </div>
+                  <span class="text-emerald-700 font-bold f-text-sm">${s.hero_quick_badge || 'CC평가 신청 즉시 착수 가능'}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -133,88 +170,110 @@ export function homePage(opts: {
     </div>
   </section>
 
-  <!-- ═══════════ Services ═══════════ -->
-  <section id="services" class="f-section-y relative overflow-hidden" style="${s.services_bg_url ? bgStyle(s.services_bg_url, '', '0.95').replace('rgba(15,23,42,', 'rgba(255,255,255,') : 'background: #FFFFFF;'}">
+  <!-- ═══════════════════════════════════════════════════════
+       SERVICES SECTION (Bento Grid)
+       ═══════════════════════════════════════════════════════ -->
+  <section id="services" class="f-section-y relative overflow-hidden" style="background: #FFFFFF;">
+    <!-- Subtle background pattern -->
+    <div class="absolute inset-0 opacity-[0.015]" style="background-image: radial-gradient(circle at 1px 1px, rgba(15,23,42,0.15) 1px, transparent 0); background-size: 32px 32px;"></div>
+
     <div class="relative fluid-container">
-      <div class="text-center f-mb" data-aos="fade-up">
-        <p class="text-accent font-semibold tracking-widest uppercase f-text-xs" style="margin-bottom:var(--space-xs)">Our Services</p>
+      <!-- Section Header -->
+      <div class="text-center" style="margin-bottom: clamp(1.5rem,3vw,2.5rem)" data-aos="fade-up">
+        <div class="inline-flex items-center rounded-full f-text-xs font-semibold" style="gap:6px; padding:5px 14px; margin-bottom:var(--space-sm); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB;">
+          <i class="fas fa-cubes" style="font-size:9px"></i>Our Services
+        </div>
         <h2 class="font-bold text-primary f-text-2xl" style="margin-bottom:var(--space-xs)">${s.services_title || '핵심 사업분야'}</h2>
-        <p class="text-slate-500 f-text-sm">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
+        <p class="text-slate-500 f-text-sm max-w-md mx-auto">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
       </div>
 
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5" style="gap:clamp(0.5rem, 1vw, 1.25rem)">
+      <!-- Bento Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5" style="gap:clamp(0.5rem, 1.2vw, 1rem)">
         ${deps.map((dept, i) => `
-        <a href="/services/${dept.slug}" class="card-hover group block bg-white border border-slate-200 rounded-xl hover:border-slate-300 relative overflow-hidden" style="padding:clamp(0.75rem, 1.5vw, 1.25rem)" data-aos="fade-up" data-aos-delay="${i * 50}">
-          <div class="absolute top-0 left-0 right-0 h-[3px] opacity-0 group-hover:opacity-100 transition-opacity" style="background:${dept.color}"></div>
-          <div class="rounded-lg flex items-center justify-center" style="width:clamp(32px,3vw,44px); height:clamp(32px,3vw,44px); background:${dept.color}12; margin-bottom:var(--space-sm)">
+        <a href="/services/${dept.slug}" class="card-service group block relative" style="--card-accent:${dept.color}; padding:clamp(0.85rem, 1.6vw, 1.3rem);" data-aos="fade-up" data-aos-delay="${i * 60}">
+          <!-- Icon -->
+          <div class="rounded-xl flex items-center justify-center transition-transform group-hover:scale-110" style="width:clamp(36px,3.2vw,48px); height:clamp(36px,3.2vw,48px); background: linear-gradient(135deg, ${dept.color}0C, ${dept.color}06); margin-bottom:var(--space-sm);">
             <i class="fas ${dept.icon}" style="color:${dept.color}; font-size:var(--text-lg)"></i>
           </div>
-          <h3 class="font-bold text-primary group-hover:text-accent transition-colors f-text-sm" style="margin-bottom:var(--space-xs)">${dept.name}</h3>
+          <!-- Text -->
+          <h3 class="font-bold text-primary group-hover:text-accent transition-colors f-text-sm" style="margin-bottom:4px">${dept.name}</h3>
           <p class="text-slate-500 leading-relaxed line-clamp-2 f-text-xs">${dept.description || ''}</p>
+          <!-- Arrow -->
+          <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all transform translate-x-1 group-hover:translate-x-0">
+            <i class="fas fa-arrow-right text-accent/40" style="font-size:10px"></i>
+          </div>
         </a>
         `).join('')}
       </div>
     </div>
   </section>
 
-  <!-- ═══════════ Notices + Progress ═══════════ -->
-  <section class="f-section-y relative overflow-hidden" style="${s.notice_progress_bg_url ? bgStyle(s.notice_progress_bg_url, '', '0.03').replace('rgba(15,23,42,', 'rgba(248,250,252,') : 'background: #F8FAFC;'}">
-    <div class="relative fluid-container">
-      <div class="grid grid-cols-1 lg:grid-cols-2" style="gap:clamp(1rem, 2vw, 2rem)">
+  <!-- Section divider -->
+  <div class="section-divider"></div>
 
-        <!-- Notices -->
-        <div data-aos="fade-right" class="bg-white rounded-xl shadow-sm border border-slate-100" style="padding:clamp(1rem, 2vw, 2rem)">
+  <!-- ═══════════════════════════════════════════════════════
+       NOTICES + PROGRESS SECTION (Premium Panels)
+       ═══════════════════════════════════════════════════════ -->
+  <section class="f-section-y relative overflow-hidden" style="background: var(--grad-surface);">
+    <div class="relative fluid-container">
+      <div class="grid grid-cols-1 lg:grid-cols-2" style="gap:clamp(1rem, 2vw, 1.5rem)">
+
+        <!-- ── Notices Panel ── -->
+        <div data-aos="fade-right" data-aos-duration="700" class="bg-white rounded-xl border border-slate-200/50" style="padding:clamp(1.25rem, 2.2vw, 1.75rem); box-shadow: var(--shadow-sm);">
           <div class="flex justify-between items-center" style="margin-bottom:var(--space-md)">
             <h3 class="font-bold text-primary flex items-center f-text-lg" style="gap:var(--space-sm)">
-              <div class="bg-blue-50 rounded-lg flex items-center justify-center" style="width:clamp(26px,2.5vw,32px); height:clamp(26px,2.5vw,32px)"><i class="fas fa-bullhorn text-accent f-text-sm"></i></div>
+              <div class="rounded-lg flex items-center justify-center" style="width:clamp(28px,2.5vw,34px); height:clamp(28px,2.5vw,34px); background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(96,165,250,0.05));">
+                <i class="fas fa-bullhorn text-accent f-text-sm"></i>
+              </div>
               공지사항
             </h3>
-            <a href="/support/notice" class="text-accent font-semibold hover:underline f-text-xs">더보기 <i class="fas fa-chevron-right" style="font-size:10px"></i></a>
+            <a href="/support/notice" class="text-accent font-semibold hover:underline f-text-xs inline-flex items-center" style="gap:4px">더보기 <i class="fas fa-chevron-right" style="font-size:9px"></i></a>
           </div>
-          <div class="divide-y divide-slate-100">
+          <div class="divide-y divide-slate-100/80">
             ${notices.length > 0 ? notices.map(n => `
-            <a href="/support/notice/${n.id}" class="flex items-center py-2.5 hover:bg-blue-50/40 -mx-2 px-2 rounded transition-colors group" style="gap:var(--space-sm)">
-              ${n.is_pinned ? '<span class="shrink-0 bg-red-500 text-white rounded flex items-center justify-center font-bold" style="width:clamp(16px,1.5vw,20px); height:clamp(16px,1.5vw,20px); font-size:9px">N</span>' : '<span class="shrink-0 w-1.5 h-1.5 bg-slate-300 rounded-full"></span>'}
+            <a href="/support/notice/${n.id}" class="flex items-center py-2.5 hover:bg-blue-50/30 -mx-2 px-2 rounded-lg transition-colors group" style="gap:var(--space-sm)">
+              ${n.is_pinned ? '<span class="shrink-0 bg-red-500 text-white rounded flex items-center justify-center font-bold" style="width:18px; height:18px; font-size:8px; box-shadow: 0 2px 6px rgba(239,68,68,0.25);">N</span>' : '<span class="shrink-0 w-1.5 h-1.5 rounded-full bg-slate-300/80"></span>'}
               <span class="flex-1 text-slate-700 truncate group-hover:text-accent transition-colors f-text-sm">${n.title}</span>
-              <span class="shrink-0 text-slate-400 f-text-xs">${n.created_at ? n.created_at.split('T')[0] : ''}</span>
+              <span class="shrink-0 text-slate-400/70 f-text-xs tabular-nums">${n.created_at ? n.created_at.split('T')[0] : ''}</span>
             </a>
-            `).join('') : '<p class="text-slate-400 text-center f-text-sm" style="padding:var(--space-xl) 0">등록된 공지사항이 없습니다.</p>'}
+            `).join('') : '<p class="text-slate-400 text-center f-text-sm" style="padding:var(--space-xl) 0"><i class="fas fa-inbox text-slate-300 block" style="font-size:1.2rem;margin-bottom:8px"></i>등록된 공지사항이 없습니다.</p>'}
           </div>
         </div>
 
-        <!-- Progress -->
-        <div data-aos="fade-left" class="bg-white rounded-xl shadow-sm border border-slate-100" style="padding:clamp(1rem, 2vw, 2rem)">
+        <!-- ── Progress Panel (Compact) ── -->
+        <div data-aos="fade-left" data-aos-duration="700" class="bg-white rounded-xl border border-slate-200/50" style="padding:clamp(1.25rem, 2.2vw, 1.75rem); box-shadow: var(--shadow-sm);">
           <div class="flex justify-between items-center" style="margin-bottom:var(--space-md)">
             <h3 class="font-bold text-primary flex items-center f-text-lg" style="gap:var(--space-sm)">
-              <div class="bg-emerald-50 rounded-lg flex items-center justify-center" style="width:clamp(26px,2.5vw,32px); height:clamp(26px,2.5vw,32px)"><i class="fas fa-chart-bar text-emerald-500 f-text-sm"></i></div>
+              <div class="rounded-lg flex items-center justify-center" style="width:clamp(28px,2.5vw,34px); height:clamp(28px,2.5vw,34px); background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(6,182,212,0.05));">
+                <i class="fas fa-chart-bar text-emerald-500 f-text-sm"></i>
+              </div>
               평가현황
             </h3>
-            <a href="/support/progress" class="text-accent font-semibold hover:underline f-text-xs">더보기 <i class="fas fa-chevron-right" style="font-size:10px"></i></a>
+            <a href="/support/progress" class="text-accent font-semibold hover:underline f-text-xs inline-flex items-center" style="gap:4px">더보기 <i class="fas fa-chevron-right" style="font-size:9px"></i></a>
           </div>
-          <div class="overflow-x-auto">
-            <table class="w-full">
+          <div class="overflow-x-auto -mx-1 px-1">
+            <table class="w-full" style="min-width:340px;">
               <thead>
                 <tr class="text-left text-slate-500 border-b border-slate-100">
-                  <th class="font-medium f-text-xs" style="padding-bottom:var(--space-sm)">제품명</th>
-                  <th class="font-medium f-text-xs hidden sm:table-cell" style="padding-bottom:var(--space-sm)">보증등급</th>
-                  <th class="font-medium f-text-xs" style="padding-bottom:var(--space-sm); white-space:nowrap">상태</th>
+                  <th class="font-semibold f-text-xs" style="padding:0 6px 8px 0">제품명</th>
+                  <th class="font-semibold f-text-xs hidden sm:table-cell" style="padding:0 6px 8px; width:70px; text-align:center;">보증등급</th>
+                  <th class="font-semibold f-text-xs" style="padding:0 0 8px 6px; text-align:right; width:80px;">상태</th>
                 </tr>
               </thead>
               <tbody>
                 ${progress.length > 0 ? progress.map(p => `
-                <tr class="border-b border-slate-50 hover:bg-slate-50/60 transition-colors">
-                  <td class="text-slate-700 font-medium f-text-xs" style="padding:var(--space-sm) var(--space-xs) var(--space-sm) 0">${p.product_name}</td>
-                  <td class="text-slate-500 hidden sm:table-cell f-text-xs" style="padding:var(--space-sm) var(--space-xs)">
-                    <span class="inline-block bg-slate-100 text-slate-600 rounded font-mono f-text-xs" style="padding:1px var(--space-xs)">${p.assurance_level || '-'}</span>
+                <tr class="border-b border-slate-50/80 hover:bg-slate-50/40 transition-colors">
+                  <td class="text-slate-700 font-medium f-text-xs" style="padding:8px 6px 8px 0; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.product_name}</td>
+                  <td class="hidden sm:table-cell text-center" style="padding:8px 6px">
+                    <span class="inline-block bg-slate-100/80 text-slate-600 rounded font-mono f-text-xs" style="padding:1px 8px">${p.assurance_level || '-'}</span>
                   </td>
-                  <td style="padding:var(--space-sm) 0 var(--space-sm) var(--space-xs)">
-                    <span class="inline-flex items-center gap-1 rounded-full font-medium f-text-xs ${p.status === '평가완료' ? 'bg-green-50 text-green-600' : p.status === '평가진행' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'}" style="padding:2px var(--space-sm); white-space:nowrap">
-                      <span class="w-1.5 h-1.5 rounded-full ${p.status === '평가완료' ? 'bg-green-500' : p.status === '평가진행' ? 'bg-blue-500' : 'bg-amber-500'}"></span>
-                      ${p.status}
+                  <td style="padding:8px 0 8px 6px; text-align:right;">
+                    <span class="badge-status ${p.status === '평가완료' ? 'badge-complete' : p.status === '평가진행' ? 'badge-progress' : 'badge-received'}">
+                      <span class="badge-dot"></span>${p.status}
                     </span>
                   </td>
                 </tr>
-                `).join('') : '<tr><td colspan="3" class="text-center text-slate-400 f-text-sm" style="padding:var(--space-xl) 0">등록된 현황이 없습니다.</td></tr>'}
+                `).join('') : '<tr><td colspan="3" class="text-center text-slate-400 f-text-sm" style="padding:var(--space-xl) 0"><i class="fas fa-chart-line text-slate-300 block" style="font-size:1.2rem;margin-bottom:8px"></i>등록된 현황이 없습니다.</td></tr>'}
               </tbody>
             </table>
           </div>
@@ -223,21 +282,32 @@ export function homePage(opts: {
     </div>
   </section>
 
-  <!-- ═══════════ CTA ═══════════ -->
-  <section class="relative overflow-hidden f-section-y" style="${bgStyle(s.cta_bg_url, 'linear-gradient(135deg, #0F172A 0%, #1E3A5F 50%, #1E293B 100%)', '0.88')}">
+  <!-- ═══════════════════════════════════════════════════════
+       CTA SECTION (Immersive Premium)
+       ═══════════════════════════════════════════════════════ -->
+  <section class="relative overflow-hidden" style="${bgStyle(s.cta_bg_url, 'linear-gradient(135deg, #0A0F1E 0%, #111D35 35%, #0C1629 70%, #0A0F1E 100%)', '0.90')}; padding: clamp(3rem,5vw,5rem) 0;">
+    <!-- Background orbs -->
     ${!s.cta_bg_url ? `
-    <div class="absolute top-0 left-1/4 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"></div>
-    <div class="absolute bottom-0 right-1/4 w-56 h-56 bg-indigo-500/10 rounded-full blur-3xl"></div>
+    <div class="absolute inset-0 pointer-events-none">
+      <div class="absolute animate-float-slow" style="top:15%; left:15%; width:250px; height:250px; background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%); border-radius:50%; filter:blur(50px);"></div>
+      <div class="absolute animate-float-medium" style="bottom:15%; right:15%; width:200px; height:200px; background: radial-gradient(circle, rgba(6,182,212,0.06) 0%, transparent 70%); border-radius:50%; filter:blur(50px);"></div>
+    </div>
     ` : ''}
-    <div class="relative fluid-container text-center" data-aos="fade-up">
-      <p class="text-blue-300 font-semibold tracking-widest uppercase f-text-xs" style="margin-bottom:var(--space-sm)"><i class="fas fa-headset mr-1"></i>${s.cta_subtitle || '전문 상담 안내'}</p>
+
+    <div class="relative fluid-container text-center" data-aos="fade-up" data-aos-duration="700">
+      <!-- Label -->
+      <div class="inline-flex items-center rounded-full f-text-xs font-semibold" style="gap:6px; padding:5px 14px; margin-bottom:var(--space-sm); background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.15); color: #93C5FD;">
+        <i class="fas fa-headset" style="font-size:9px"></i>${s.cta_subtitle || '전문 상담 안내'}
+      </div>
+
       <h2 class="text-white font-bold f-text-2xl" style="margin-bottom:var(--space-sm)">${s.cta_title || '정보보안 시험·인증이 필요하신가요?'}</h2>
-      <p class="text-blue-200/70 max-w-xl mx-auto f-text-base" style="margin-bottom:var(--space-lg)">${s.cta_description || '전문 상담원이 빠르고 정확하게 안내해 드립니다'}</p>
+      <p class="text-blue-200/60 max-w-xl mx-auto f-text-base" style="margin-bottom:clamp(1.5rem,2.5vw,2.5rem)">${s.cta_description || '전문 상담원이 빠르고 정확하게 안내해 드립니다'}</p>
+
       <div class="flex flex-wrap justify-center" style="gap:var(--space-sm)">
-        <a href="tel:${s.phone || '02-586-1230'}" class="inline-flex items-center bg-white text-primary rounded-lg font-bold hover:shadow-xl transition-all f-text-sm" style="gap:var(--space-xs); padding:var(--space-sm) var(--space-lg)">
+        <a href="tel:${s.phone || '02-586-1230'}" class="inline-flex items-center bg-white text-primary rounded-lg font-bold transition-all f-text-sm ripple-btn" style="gap:var(--space-xs); padding:var(--space-sm) clamp(1.2rem,2vw,1.8rem); box-shadow: 0 4px 16px rgba(255,255,255,0.12), 0 1px 4px rgba(255,255,255,0.08);">
           <i class="fas fa-phone f-text-xs"></i> ${s.phone || '02-586-1230'}
         </a>
-        <a href="/support/inquiry" class="inline-flex items-center bg-accent hover:bg-accent-dark text-white rounded-lg font-bold transition-all shadow-lg shadow-accent/20 f-text-sm" style="gap:var(--space-xs); padding:var(--space-sm) var(--space-lg)">
+        <a href="/support/inquiry" class="btn-glow f-text-sm ripple-btn" style="padding:var(--space-sm) clamp(1.2rem,2vw,1.8rem);">
           <i class="fas fa-envelope f-text-xs"></i> 온라인 상담
         </a>
       </div>
@@ -245,7 +315,7 @@ export function homePage(opts: {
   </section>
 
   <!-- Mobile Fixed Phone -->
-  <a href="tel:${s.phone || '02-586-1230'}" class="sm:hidden fixed bottom-5 right-5 z-50 bg-accent text-white rounded-full shadow-lg shadow-accent/30 flex items-center justify-center hover:scale-110 transition-transform" style="width:clamp(44px,5vw,52px); height:clamp(44px,5vw,52px); font-size:var(--text-lg)">
+  <a href="tel:${s.phone || '02-586-1230'}" class="sm:hidden fixed bottom-5 right-5 z-50 text-white rounded-full flex items-center justify-center transition-all active:scale-95" style="width:clamp(46px,5.5vw,54px); height:clamp(46px,5.5vw,54px); font-size:var(--text-lg); background: linear-gradient(135deg, #2563EB, #06B6D4); box-shadow: 0 4px 20px rgba(37,99,235,0.35), 0 2px 8px rgba(37,99,235,0.20);">
     <i class="fas fa-phone"></i>
   </a>
   `;

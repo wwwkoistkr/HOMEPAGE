@@ -1,1 +1,28 @@
-h1 { font-family: Arial, Helvetica, sans-serif; }
+/* KOIST Design System v7.0 - Ultra Premium HiDPI */
+/* Additional styles for high-resolution displays */
+
+/* HiDPI image rendering */
+img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Smooth image scaling */
+img, svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Print styles */
+@media print {
+  #gnb, #scrollProgress, .mobile-menu, .mobile-overlay, footer {
+    display: none !important;
+  }
+  main {
+    padding-top: 0 !important;
+  }
+  .btn-primary, .btn-ghost, .btn-glow {
+    box-shadow: none !important;
+    text-decoration: underline;
+  }
+}
