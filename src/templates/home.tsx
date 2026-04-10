@@ -15,13 +15,29 @@ export function homePage(opts: {
   popups: Popup[];
   notices: Notice[];
   progressItems: ProgressItem[];
+  progressCategoryCounts: {category: string; cnt: number}[];
 }) {
   const s = opts.settings;
   const deps = opts.departments.filter(d => d.is_active);
   const popups = opts.popups;
   const notices = opts.notices.slice(0, 5);
   const progress = opts.progressItems.slice(0, 5);
+  const catCounts = opts.progressCategoryCounts || [];
   const heroOpacity = s.hero_overlay_opacity || '0.85';
+
+  // Category metadata for icons/colors
+  const catMeta: Record<string, {icon: string; color: string}> = {
+    'CC평가':       { icon: 'fa-shield-halved', color: '#3B82F6' },
+    '보안기능확인서':  { icon: 'fa-file-shield', color: '#8B5CF6' },
+    'KCMVP':       { icon: 'fa-lock', color: '#EC4899' },
+    '성능평가':      { icon: 'fa-gauge-high', color: '#F59E0B' },
+    '보안적합성검증':  { icon: 'fa-clipboard-check', color: '#10B981' },
+    '취약점분석평가':  { icon: 'fa-bug', color: '#EF4444' },
+    '정보보호제품평가': { icon: 'fa-box-archive', color: '#06B6D4' },
+    '클라우드보안인증': { icon: 'fa-cloud-arrow-up', color: '#6366F1' },
+    'IoT보안인증':   { icon: 'fa-microchip', color: '#14B8A6' },
+    '기타시험평가':   { icon: 'fa-flask', color: '#78716C' },
+  };
 
   return `
   <!-- Popup System (Mobile-Responsive Modal) -->
@@ -373,7 +389,7 @@ export function homePage(opts: {
           </div>
         </div>
 
-        <!-- ── Progress Panel (Compact) ── -->
+        <!-- ── Progress Panel (Category Summary + Expandable) ── -->
         <div data-aos="fade-left" data-aos-duration="700" class="bg-white rounded-xl border border-slate-200/50" style="padding:clamp(1.25rem, 2.2vw, 1.75rem); box-shadow: var(--shadow-sm);">
           <div class="flex justify-between items-center" style="margin-bottom:var(--space-md)">
             <h3 class="font-bold text-primary flex items-center f-text-lg" style="gap:var(--space-sm)">
@@ -382,31 +398,57 @@ export function homePage(opts: {
               </div>
               평가현황
             </h3>
-            <a href="/support/progress" class="text-accent font-semibold hover:underline f-text-xs inline-flex items-center" style="gap:4px">더보기 <i class="fas fa-chevron-right" style="font-size:9px"></i></a>
+            <a href="/support/progress" class="text-accent font-semibold hover:underline f-text-xs inline-flex items-center" style="gap:4px">전체보기 <i class="fas fa-chevron-right" style="font-size:9px"></i></a>
           </div>
+
+          <!-- Category Summary Cards -->
+          ${catCounts.length > 0 ? `
+          <div class="grid grid-cols-2 sm:grid-cols-3" style="gap:6px; margin-bottom:var(--space-md)">
+            ${catCounts.slice(0, 6).map(cc => {
+              const m = catMeta[cc.category] || { icon: 'fa-circle', color: '#64748B' };
+              return `
+              <a href="/support/progress?category=${encodeURIComponent(cc.category)}" class="group rounded-lg border border-slate-100 hover:border-slate-200 transition-all hover:shadow-sm" style="padding:8px 10px;">
+                <div class="flex items-center" style="gap:6px">
+                  <i class="fas ${m.icon} f-text-xs" style="color:${m.color}"></i>
+                  <span class="text-slate-600 font-medium f-text-xs truncate group-hover:text-accent transition-colors">${cc.category}</span>
+                </div>
+                <div class="font-bold f-text-base" style="color:${m.color}; margin-top:2px">${cc.cnt}<span class="text-slate-400 font-normal f-text-xs ml-1">건</span></div>
+              </a>`;
+            }).join('')}
+          </div>
+          ${catCounts.length > 6 ? `
+          <div class="text-center" style="margin-bottom:var(--space-sm)">
+            <a href="/support/progress" class="text-slate-400 hover:text-accent f-text-xs inline-flex items-center" style="gap:4px">+ ${catCounts.length - 6}개 사업 더보기 <i class="fas fa-angle-right" style="font-size:8px"></i></a>
+          </div>` : ''}
+          ` : ''}
+
+          <!-- Recent Items Table -->
           <div class="overflow-x-auto -mx-1 px-1">
+            <div class="text-slate-400 f-text-xs font-medium" style="margin-bottom:6px">최근 평가 현황</div>
             <table class="w-full" style="min-width:340px;">
               <thead>
                 <tr class="text-left text-slate-500 border-b border-slate-100">
                   <th class="font-semibold f-text-xs" style="padding:0 6px 8px 0">제품명</th>
-                  <th class="font-semibold f-text-xs hidden sm:table-cell" style="padding:0 6px 8px; width:70px; text-align:center;">보증등급</th>
+                  <th class="font-semibold f-text-xs hidden sm:table-cell" style="padding:0 6px 8px; width:80px; text-align:center;">분류</th>
                   <th class="font-semibold f-text-xs" style="padding:0 0 8px 6px; text-align:right; width:80px;">상태</th>
                 </tr>
               </thead>
               <tbody>
-                ${progress.length > 0 ? progress.map(p => `
+                ${progress.length > 0 ? progress.map(p => {
+                  const m = catMeta[p.category] || { icon: 'fa-circle', color: '#64748B' };
+                  return `
                 <tr class="border-b border-slate-50/80 hover:bg-slate-50/40 transition-colors">
                   <td class="text-slate-700 font-medium f-text-xs" style="padding:8px 6px 8px 0; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.product_name}</td>
                   <td class="hidden sm:table-cell text-center" style="padding:8px 6px">
-                    <span class="inline-block bg-slate-100/80 text-slate-600 rounded font-mono f-text-xs" style="padding:1px 8px">${p.assurance_level || '-'}</span>
+                    <span class="inline-flex items-center gap-1 rounded-full f-text-xs" style="padding:1px 8px; background:${m.color}10; color:${m.color}; white-space:nowrap;"><i class="fas ${m.icon}" style="font-size:7px"></i>${p.category.length > 5 ? p.category.substring(0,5) + '..' : p.category}</span>
                   </td>
                   <td style="padding:8px 0 8px 6px; text-align:right;">
                     <span class="badge-status ${p.status === '평가완료' ? 'badge-complete' : p.status === '평가진행' ? 'badge-progress' : 'badge-received'}">
                       <span class="badge-dot"></span>${p.status}
                     </span>
                   </td>
-                </tr>
-                `).join('') : '<tr><td colspan="3" class="text-center text-slate-400 f-text-sm" style="padding:var(--space-xl) 0"><i class="fas fa-chart-line text-slate-300 block" style="font-size:1.2rem;margin-bottom:8px"></i>등록된 현황이 없습니다.</td></tr>'}
+                </tr>`;
+                }).join('') : '<tr><td colspan="3" class="text-center text-slate-400 f-text-sm" style="padding:var(--space-xl) 0"><i class="fas fa-chart-line text-slate-300 block" style="font-size:1.2rem;margin-bottom:8px"></i>등록된 현황이 없습니다.</td></tr>'}
               </tbody>
             </table>
           </div>

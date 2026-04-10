@@ -92,9 +92,10 @@ app.get('/', async (c) => {
   ).bind(now, now).all<Popup>()).results || [];
 
   const notices = (await db.prepare('SELECT * FROM notices ORDER BY is_pinned DESC, created_at DESC LIMIT 5').all<Notice>()).results || [];
-  const progressItems = (await db.prepare('SELECT * FROM progress_items ORDER BY created_at DESC LIMIT 5').all<ProgressItem>()).results || [];
+  const progressItems = (await db.prepare('SELECT * FROM progress_items ORDER BY created_at DESC LIMIT 10').all<ProgressItem>()).results || [];
+  const progressCategoryCounts = (await db.prepare(`SELECT category, COUNT(*) as cnt FROM progress_items GROUP BY category ORDER BY cnt DESC`).all<{category:string;cnt:number}>()).results || [];
 
-  const content = homePage({ settings, departments, popups, notices, progressItems });
+  const content = homePage({ settings, departments, popups, notices, progressItems, progressCategoryCounts });
   return c.html(layout({ settings, departments, content }));
 });
 
@@ -133,9 +134,11 @@ app.get('/services/:slug/:pageSlug', async (c) => {
     const perPage = 15;
     const search = c.req.query('q') || '';
     const statusFilter = c.req.query('status') || '';
+    const categoryFilter = c.req.query('category') || '';
 
     let whereClause = '1=1';
     const binds: string[] = [];
+    if (categoryFilter) { whereClause += ' AND category = ?'; binds.push(categoryFilter); }
     if (search) { whereClause += ' AND product_name LIKE ?'; binds.push(`%${search}%`); }
     if (statusFilter) { whereClause += ' AND status = ?'; binds.push(statusFilter); }
 
@@ -148,8 +151,10 @@ app.get('/services/:slug/:pageSlug', async (c) => {
     const allBinds = [...binds, perPage, offset];
     const items = (await dataStmt.bind(...allBinds).all<ProgressItem>()).results || [];
 
+    const categoryCounts = (await db.prepare(`SELECT category, COUNT(*) as cnt FROM progress_items GROUP BY category ORDER BY category`).all<{category:string;cnt:number}>()).results || [];
+
     // Override the page content with dynamic progress table
-    const dynamicContent = serviceProgressContent(items, page, total, perPage, search, statusFilter);
+    const dynamicContent = serviceProgressContent(items, page, total, perPage, search, statusFilter, categoryFilter, categoryCounts);
     const overriddenPage = currentPage ? { ...currentPage, content: dynamicContent } : { id: 0, dept_id: dept.id, title: '평가현황', slug: 'progress', content: dynamicContent, meta_description: '', sort_order: 0, is_active: 1 } as DepPage;
 
     const content = servicePage(dept, pages, overriddenPage, settings);
@@ -219,9 +224,14 @@ app.get('/support/progress', async (c) => {
   const perPage = 15;
   const search = c.req.query('q') || '';
   const statusFilter = c.req.query('status') || '';
+  const categoryFilter = c.req.query('category') || '';
 
   let whereClause = '1=1';
   const binds: string[] = [];
+  if (categoryFilter) {
+    whereClause += ' AND category = ?';
+    binds.push(categoryFilter);
+  }
   if (search) {
     whereClause += ' AND product_name LIKE ?';
     binds.push(`%${search}%`);
@@ -235,13 +245,87 @@ app.get('/support/progress', async (c) => {
   const totalResult = await (binds.length > 0 ? countStmt.bind(...binds) : countStmt).first<{ cnt: number }>();
   const total = totalResult?.cnt || 0;
 
+  // Get category counts for tabs
+  const categoryCounts = (await db.prepare(`SELECT category, COUNT(*) as cnt FROM progress_items GROUP BY category ORDER BY category`).all<{category:string;cnt:number}>()).results || [];
+
   const offset = (page - 1) * perPage;
   const dataStmt = db.prepare(`SELECT * FROM progress_items WHERE ${whereClause} ORDER BY sort_order ASC LIMIT ? OFFSET ?`);
   const allBinds = [...binds, perPage, offset];
   const items = (await dataStmt.bind(...allBinds).all<ProgressItem>()).results || [];
 
-  const content = progressPage(items, page, total, perPage, search, statusFilter, settings);
-  return c.html(layout({ settings, departments, title: '평가현황', content }));
+  const content = progressPage(items, page, total, perPage, search, statusFilter, categoryFilter, categoryCounts, settings);
+  return c.html(layout({ settings, departments, title: categoryFilter ? `${categoryFilter} 현황` : '평가현황', content }));
+});
+
+// Documents Page (Architecture Diagram + Dev Guide downloads)
+app.get('/support/documents', async (c) => {
+  const db = c.env.DB;
+  const settings = await getSettings(db);
+  const departments = (await db.prepare('SELECT * FROM departments WHERE is_active = 1 ORDER BY sort_order').all<Department>()).results || [];
+
+  const content = `
+  <section class="page-header relative overflow-hidden" style="padding: clamp(2.5rem,4vw,4.5rem) 0; background: linear-gradient(135deg, #0A0F1E 0%, #111D35 50%, #0D1525 100%);">
+    <div class="relative fluid-container">
+      <div class="flex items-center" style="gap:var(--space-sm)">
+        <div class="rounded-lg flex items-center justify-center shrink-0" style="width:clamp(38px,3.2vw,46px); height:clamp(38px,3.2vw,46px); background: linear-gradient(135deg, rgba(139,92,246,0.20), rgba(139,92,246,0.10)); border: 1px solid rgba(139,92,246,0.15);">
+          <i class="fas fa-book" style="color:#A78BFA; font-size:var(--text-lg)"></i>
+        </div>
+        <div>
+          <h1 class="text-white font-bold f-text-xl tracking-tight">시스템 문서</h1>
+          <p class="text-slate-400/80 f-text-xs" style="margin-top:3px">설계서 및 개발지침서 다운로드</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section style="padding:var(--space-xl) 0; background: var(--grad-surface);">
+    <div class="fluid-container" style="max-width:min(900px, 100% - var(--container-pad) * 2)">
+      <div style="display:flex; flex-direction:column; gap:var(--space-md)">
+        <!-- Architecture Diagram -->
+        <div class="bg-white rounded-xl border border-slate-200/60 overflow-hidden" style="box-shadow: var(--shadow-sm);">
+          <div class="flex items-center justify-between" style="padding:clamp(1.25rem, 2vw, 1.75rem)">
+            <div class="flex items-center" style="gap:var(--space-sm)">
+              <div class="rounded-lg flex items-center justify-center shrink-0" style="width:44px; height:44px; background: linear-gradient(135deg, rgba(59,130,246,0.10), rgba(6,182,212,0.08));">
+                <i class="fas fa-sitemap text-blue-500" style="font-size:18px"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-800 f-text-base">시스템 설계서 (Architecture Diagram)</h3>
+                <p class="text-slate-400 f-text-xs" style="margin-top:2px">v8.0 | 시스템 아키텍처, 10개 사업 카테고리, DB 스키마, API 설계</p>
+              </div>
+            </div>
+            <div class="flex shrink-0" style="gap:var(--space-sm)">
+              <a href="/static/docs/architecture-diagram.html" target="_blank" class="btn-primary f-text-xs ripple-btn" style="padding:var(--space-xs) var(--space-md); border-radius:var(--radius-sm);">
+                <i class="fas fa-external-link-alt" style="font-size:10px"></i> 보기
+              </a>
+            </div>
+          </div>
+        </div>
+        <!-- Development Guide -->
+        <div class="bg-white rounded-xl border border-slate-200/60 overflow-hidden" style="box-shadow: var(--shadow-sm);">
+          <div class="flex items-center justify-between" style="padding:clamp(1.25rem, 2vw, 1.75rem)">
+            <div class="flex items-center" style="gap:var(--space-sm)">
+              <div class="rounded-lg flex items-center justify-center shrink-0" style="width:44px; height:44px; background: linear-gradient(135deg, rgba(16,185,129,0.10), rgba(6,182,212,0.08));">
+                <i class="fas fa-code text-emerald-500" style="font-size:18px"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-800 f-text-base">개발지침서 (Development Guide)</h3>
+                <p class="text-slate-400 f-text-xs" style="margin-top:2px">v8.0 | 기술 스택, 디렉터리 구조, API 가이드, 배포 절차, 테스트</p>
+              </div>
+            </div>
+            <div class="flex shrink-0" style="gap:var(--space-sm)">
+              <a href="/static/docs/development-guide.html" target="_blank" class="btn-primary f-text-xs ripple-btn" style="padding:var(--space-xs) var(--space-md); border-radius:var(--radius-sm);">
+                <i class="fas fa-external-link-alt" style="font-size:10px"></i> 보기
+              </a>
+            </div>
+          </div>
+        </div>
+        <p class="text-slate-400 f-text-xs text-center" style="margin-top:var(--space-sm)">
+          <i class="fas fa-info-circle mr-1"></i> 문서를 열고 브라우저의 인쇄 기능(Ctrl+P)으로 PDF로 저장할 수 있습니다.
+        </p>
+      </div>
+    </div>
+  </section>`;
+
+  return c.html(layout({ settings, departments, title: '시스템 문서', content }));
 });
 
 // Downloads Page

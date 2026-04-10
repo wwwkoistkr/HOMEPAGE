@@ -713,6 +713,7 @@ export function layout(opts: {
         <a href="/support/notice"    class="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg f-text-sm transition-colors" onclick="closeMobileMenu()"><i class="fas fa-bullhorn w-5 text-center text-gray-400 f-text-xs"></i>공지사항</a>
         <a href="/support/faq"       class="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg f-text-sm transition-colors" onclick="closeMobileMenu()"><i class="fas fa-circle-question w-5 text-center text-gray-400 f-text-xs"></i>FAQ</a>
         <a href="/support/downloads" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg f-text-sm transition-colors" onclick="closeMobileMenu()"><i class="fas fa-download w-5 text-center text-gray-400 f-text-xs"></i>자료실</a>
+        <a href="/support/documents" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg f-text-sm transition-colors" onclick="closeMobileMenu()"><i class="fas fa-book w-5 text-center text-gray-400 f-text-xs"></i>시스템 문서</a>
         <a href="/support/inquiry"   class="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg f-text-sm transition-colors" onclick="closeMobileMenu()"><i class="fas fa-envelope w-5 text-center text-gray-400 f-text-xs"></i>온라인 상담</a>
       </div>
     </div>
@@ -779,6 +780,7 @@ export function layout(opts: {
             <a href="/support/faq" class="hover:text-white transition-colors text-gray-500">FAQ</a>
             <a href="/support/downloads" class="hover:text-white transition-colors text-gray-500">자료실</a>
             <a href="/support/inquiry" class="hover:text-white transition-colors text-gray-500">온라인 상담</a>
+            <a href="/support/documents" class="hover:text-white transition-colors text-gray-500">시스템 문서</a>
             <a href="/about/greeting" class="hover:text-white transition-colors text-gray-500">KOIST 소개</a>
             <a href="/about/location" class="hover:text-white transition-colors text-gray-500">오시는길</a>
           </div>

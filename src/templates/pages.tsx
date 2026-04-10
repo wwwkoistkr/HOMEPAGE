@@ -340,41 +340,87 @@ export function inquiryPage(settings: SettingsMap) {
 
 
 /* ══════════════════════════════════════════════════════════
-   Progress Page (Full-featured with Compact Table)
+   Category Definitions (10 Business Types)
    ══════════════════════════════════════════════════════════ */
-export function progressPage(items: ProgressItem[], page: number = 1, total: number = 0, perPage: number = 15, search: string = '', statusFilter: string = '', settings: SettingsMap = {}) {
+const CATEGORY_META: Record<string, { icon: string; color: string; col2: string; col3: string; col4: string }> = {
+  'CC평가':       { icon: 'fa-shield-halved', color: '#3B82F6', col2: '보증등급', col3: '인증구분', col4: '신청구분' },
+  '보안기능확인서':  { icon: 'fa-file-shield', color: '#8B5CF6', col2: '확인서등급', col3: '발급구분', col4: '시험유형' },
+  'KCMVP':       { icon: 'fa-lock', color: '#EC4899', col2: '검증등급', col3: '모듈유형', col4: '알고리즘' },
+  '성능평가':      { icon: 'fa-gauge-high', color: '#F59E0B', col2: '성능등급', col3: '평가구분', col4: '평가항목' },
+  '보안적합성검증':  { icon: 'fa-clipboard-check', color: '#10B981', col2: '적합등급', col3: '검증구분', col4: '검증기준' },
+  '취약점분석평가':  { icon: 'fa-bug', color: '#EF4444', col2: '위험등급', col3: '분석유형', col4: '평가범위' },
+  '정보보호제품평가': { icon: 'fa-box-archive', color: '#06B6D4', col2: '평가등급', col3: '제품유형', col4: '평가기준' },
+  '클라우드보안인증': { icon: 'fa-cloud-arrow-up', color: '#6366F1', col2: '인증등급', col3: '서비스유형', col4: '인증기준' },
+  'IoT보안인증':   { icon: 'fa-microchip', color: '#14B8A6', col2: '인증등급', col3: '기기유형', col4: '인증기준' },
+  '기타시험평가':   { icon: 'fa-flask', color: '#78716C', col2: '등급', col3: '유형', col4: '기준' },
+};
+
+function getCatMeta(cat: string) {
+  return CATEGORY_META[cat] || { icon: 'fa-chart-bar', color: '#64748B', col2: '등급', col3: '구분', col4: '유형' };
+}
+
+/* ══════════════════════════════════════════════════════════
+   Progress Page (Full-featured with Category Tabs)
+   ══════════════════════════════════════════════════════════ */
+export function progressPage(items: ProgressItem[], page: number = 1, total: number = 0, perPage: number = 15, search: string = '', statusFilter: string = '', categoryFilter: string = '', categoryCounts: {category:string;cnt:number}[] = [], settings: SettingsMap = {}) {
   const s = settings;
   const totalPages = Math.ceil(total / perPage);
   const startNum = total - (page - 1) * perPage;
+  const meta = getCatMeta(categoryFilter);
+  const grandTotal = categoryCounts.reduce((sum, c) => sum + c.cnt, 0);
 
   function pageUrl(p: number) {
     const params = new URLSearchParams();
     params.set('page', String(p));
+    if (categoryFilter) params.set('category', categoryFilter);
     if (search) params.set('q', search);
     if (statusFilter) params.set('status', statusFilter);
     return '/support/progress?' + params.toString();
   }
 
+  function catUrl(cat: string) {
+    const params = new URLSearchParams();
+    if (cat) params.set('category', cat);
+    return '/support/progress' + (params.toString() ? '?' + params.toString() : '');
+  }
+
   return `
   ${pageHeader({
-    title: 'CC평가 현황',
-    subtitle: '총 ' + total + '건의 평가 현황',
-    icon: 'fa-chart-bar',
-    iconColor: '#34D399',
+    title: categoryFilter ? categoryFilter + ' 현황' : '평가·시험·인증 현황',
+    subtitle: '총 ' + total + '건의 현황' + (categoryFilter ? '' : ' (전체 사업)'),
+    icon: categoryFilter ? meta.icon : 'fa-chart-bar',
+    iconColor: categoryFilter ? meta.color : '#34D399',
     settings: s,
   })}
 
   <section style="padding:var(--space-xl) 0; background: var(--grad-surface);">
     <div class="fluid-container">
 
-      <!-- Search & Filter Bar (Glass) -->
+      <!-- Category Tabs -->
+      <div class="bg-white rounded-xl border border-slate-200/60 overflow-hidden" style="margin-bottom:var(--space-md); box-shadow: var(--shadow-xs);">
+        <div class="flex items-center overflow-x-auto" style="gap:0; -webkit-overflow-scrolling:touch; scrollbar-width:none;">
+          <a href="${catUrl('')}" class="shrink-0 flex items-center transition-all f-text-xs font-medium border-b-2 ${!categoryFilter ? 'text-blue-600 border-blue-500 bg-blue-50/60' : 'text-slate-500 border-transparent hover:text-slate-700 hover:bg-slate-50'}" style="padding:12px 16px; gap:6px; white-space:nowrap;">
+            <i class="fas fa-layer-group" style="font-size:11px"></i> 전체 <span class="text-slate-400 font-normal">${grandTotal}</span>
+          </a>
+          ${categoryCounts.map(cc => {
+            const m = getCatMeta(cc.category);
+            const active = categoryFilter === cc.category;
+            return `<a href="${catUrl(cc.category)}" class="shrink-0 flex items-center transition-all f-text-xs font-medium border-b-2 ${active ? 'border-blue-500 bg-blue-50/60' : 'text-slate-500 border-transparent hover:text-slate-700 hover:bg-slate-50'}" style="padding:12px 16px; gap:6px; white-space:nowrap; ${active ? `color:${m.color};` : ''}">
+              <i class="fas ${m.icon}" style="font-size:11px; ${active ? `color:${m.color}` : ''}"></i> ${cc.category} <span class="text-slate-400 font-normal">${cc.cnt}</span>
+            </a>`;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- Search & Filter Bar -->
       <form method="GET" action="/support/progress" class="bg-white rounded-xl border border-slate-200/60" style="padding:var(--space-md); margin-bottom:var(--space-md); box-shadow: var(--shadow-xs);">
+        ${categoryFilter ? `<input type="hidden" name="category" value="${categoryFilter}">` : ''}
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center" style="gap:var(--space-sm)">
           <select name="status" class="input-premium" style="width:auto; min-width:120px; padding-right:2rem;" onchange="this.form.submit()">
             <option value="">전체 상태</option>
-            <option value="평가진행" ${statusFilter === '평가진행' ? 'selected' : ''}>평가진행</option>
-            <option value="평가접수" ${statusFilter === '평가접수' ? 'selected' : ''}>평가접수</option>
-            <option value="평가완료" ${statusFilter === '평가완료' ? 'selected' : ''}>평가완료</option>
+            <option value="평가진행" ${statusFilter === '평가진행' ? 'selected' : ''}>진행중</option>
+            <option value="평가접수" ${statusFilter === '평가접수' ? 'selected' : ''}>접수</option>
+            <option value="평가완료" ${statusFilter === '평가완료' ? 'selected' : ''}>완료</option>
           </select>
           <div class="flex-1 relative">
             <input type="text" name="q" value="${search}" placeholder="제품명 검색..." class="input-premium" style="padding-right:2.5rem">
@@ -382,16 +428,17 @@ export function progressPage(items: ProgressItem[], page: number = 1, total: num
               <i class="fas fa-search f-text-sm"></i>
             </button>
           </div>
-          ${search || statusFilter ? '<a href="/support/progress" class="shrink-0 text-slate-500 hover:text-red-500 transition-colors f-text-xs flex items-center" style="padding:var(--space-sm)"><i class="fas fa-times mr-1"></i>필터 초기화</a>' : ''}
+          ${search || statusFilter ? `<a href="${catUrl(categoryFilter)}" class="shrink-0 text-slate-500 hover:text-red-500 transition-colors f-text-xs flex items-center" style="padding:var(--space-sm)"><i class="fas fa-times mr-1"></i>필터 초기화</a>` : ''}
         </div>
       </form>
 
-      <!-- Data Table (Compact Premium) -->
+      <!-- Data Table -->
       <div class="bg-white rounded-xl border border-slate-200/60 overflow-hidden" style="box-shadow: var(--shadow-sm);">
         <div class="overflow-x-auto">
           <table class="w-full" style="table-layout:fixed; min-width:640px;">
             <colgroup>
               <col style="width:48px">
+              ${!categoryFilter ? '<col style="width:90px">' : ''}
               <col style="width:auto">
               <col style="width:80px">
               <col style="width:78px" class="hidden sm:table-column">
@@ -401,31 +448,29 @@ export function progressPage(items: ProgressItem[], page: number = 1, total: num
             <thead>
               <tr style="background: linear-gradient(135deg, #0F172A, #1E293B);">
                 <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:10px 8px">번호</th>
+                ${!categoryFilter ? '<th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:10px 6px">사업분류</th>' : ''}
                 <th class="text-left text-slate-300 f-text-xs font-semibold" style="padding:10px 10px">제품명</th>
-                <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:10px 6px">보증등급</th>
-                <th class="text-center text-slate-300 f-text-xs font-semibold hidden sm:table-cell" style="padding:10px 6px">인증구분</th>
-                <th class="text-center text-slate-300 f-text-xs font-semibold hidden md:table-cell" style="padding:10px 6px">신청구분</th>
+                <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:10px 6px">${categoryFilter ? meta.col2 : '등급'}</th>
+                <th class="text-center text-slate-300 f-text-xs font-semibold hidden sm:table-cell" style="padding:10px 6px">${categoryFilter ? meta.col3 : '구분'}</th>
+                <th class="text-center text-slate-300 f-text-xs font-semibold hidden md:table-cell" style="padding:10px 6px">${categoryFilter ? meta.col4 : '유형'}</th>
                 <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:10px 8px">진행상태</th>
               </tr>
             </thead>
             <tbody>
-              ${items.map((p, i) => `
+              ${items.map((p, i) => {
+                const cm = getCatMeta(p.category);
+                return `
               <tr class="border-t border-slate-100/70 hover:bg-blue-50/25 transition-colors" style="border-left:3px solid transparent;">
                 <td class="text-center text-slate-400 f-text-xs" style="padding:9px 8px">${startNum - i}</td>
-                <td style="padding:9px 10px">
-                  <span class="font-medium text-slate-800 f-text-sm truncate block">${p.product_name}</span>
-                </td>
-                <td class="text-center" style="padding:9px 6px">
-                  <span class="inline-block bg-slate-100 text-slate-700 rounded font-mono font-medium f-text-xs" style="padding:2px 8px; white-space:nowrap">${p.assurance_level || '-'}</span>
-                </td>
+                ${!categoryFilter ? `<td class="text-center" style="padding:9px 6px"><span class="inline-flex items-center gap-1 rounded-full f-text-xs font-medium" style="padding:2px 8px; background:${cm.color}10; color:${cm.color}; white-space:nowrap;"><i class="fas ${cm.icon}" style="font-size:8px"></i>${p.category}</span></td>` : ''}
+                <td style="padding:9px 10px"><span class="font-medium text-slate-800 f-text-sm truncate block">${p.product_name}</span></td>
+                <td class="text-center" style="padding:9px 6px"><span class="inline-block bg-slate-100 text-slate-700 rounded font-mono font-medium f-text-xs" style="padding:2px 8px; white-space:nowrap">${p.assurance_level || '-'}</span></td>
                 <td class="text-center text-slate-600 hidden sm:table-cell f-text-xs" style="padding:9px 6px; white-space:nowrap">${p.cert_type || '-'}</td>
                 <td class="text-center text-slate-600 hidden md:table-cell f-text-xs" style="padding:9px 6px; white-space:nowrap">${p.eval_type || '-'}</td>
-                <td class="text-center" style="padding:9px 8px">
-                  ${statusBadge(p.status)}
-                </td>
-              </tr>
-              `).join('')}
-              ${items.length === 0 ? `<tr><td colspan="6" class="text-center text-slate-400 f-text-sm" style="padding:var(--space-2xl) 0">
+                <td class="text-center" style="padding:9px 8px">${statusBadge(p.status)}</td>
+              </tr>`;
+              }).join('')}
+              ${items.length === 0 ? `<tr><td colspan="${categoryFilter ? 6 : 7}" class="text-center text-slate-400 f-text-sm" style="padding:var(--space-2xl) 0">
                 <i class="fas fa-search text-slate-300 block" style="font-size:1.8rem; margin-bottom:var(--space-sm)"></i>
                 ${search ? '검색 결과가 없습니다.' : '등록된 현황이 없습니다.'}
               </td></tr>` : ''}
@@ -459,7 +504,7 @@ export function progressPage(items: ProgressItem[], page: number = 1, total: num
 /* ══════════════════════════════════════════════════════════
    Embedded Progress Table (for service sub-pages)
    ══════════════════════════════════════════════════════════ */
-export function serviceProgressContent(items: ProgressItem[], page: number = 1, total: number = 0, perPage: number = 15, search: string = '', statusFilter: string = '') {
+export function serviceProgressContent(items: ProgressItem[], page: number = 1, total: number = 0, perPage: number = 15, search: string = '', statusFilter: string = '', categoryFilter: string = '', categoryCounts: {category:string;cnt:number}[] = []) {
   const totalPages = Math.ceil(total / perPage);
   const startNum = total - (page - 1) * perPage;
 
@@ -471,22 +516,37 @@ export function serviceProgressContent(items: ProgressItem[], page: number = 1, 
     return '?' + params.toString();
   }
 
+  const meta = getCatMeta(categoryFilter);
+  const grandTotal = categoryCounts.reduce((sum, c) => sum + c.cnt, 0);
+
   return `
     <h2 class="font-bold text-primary f-text-lg flex items-center" style="margin-bottom:var(--space-md); gap: var(--space-sm)">
       <div class="rounded-lg flex items-center justify-center" style="width:28px;height:28px; background: linear-gradient(135deg, rgba(16,185,129,0.10), rgba(6,182,212,0.08));">
-        <i class="fas fa-chart-bar text-emerald-500" style="font-size:12px"></i>
+        <i class="fas ${categoryFilter ? meta.icon : 'fa-chart-bar'} text-emerald-500" style="font-size:12px"></i>
       </div>
-      CC평가 현황 <span class="text-slate-400 font-normal f-text-sm">(총 ${total}건)</span>
+      ${categoryFilter ? categoryFilter + ' 현황' : '평가·시험·인증 현황'} <span class="text-slate-400 font-normal f-text-sm">(총 ${total}건)</span>
     </h2>
+
+    <!-- Category Tabs (inline) -->
+    ${categoryCounts.length > 1 ? `
+    <div class="flex items-center flex-wrap mb-3" style="gap:6px">
+      <a href="?" class="inline-flex items-center gap-1 rounded-full f-text-xs font-medium transition-all ${!categoryFilter ? 'text-white' : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'}" style="padding:4px 12px; ${!categoryFilter ? 'background:linear-gradient(135deg,#2563EB,#3B82F6);' : ''}">전체 ${grandTotal}</a>
+      ${categoryCounts.map(cc => {
+        const m = getCatMeta(cc.category);
+        const active = categoryFilter === cc.category;
+        return `<a href="?category=${encodeURIComponent(cc.category)}" class="inline-flex items-center gap-1 rounded-full f-text-xs font-medium transition-all ${active ? 'text-white' : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'}" style="padding:4px 12px; ${active ? `background:${m.color};` : ''}"><i class="fas ${m.icon}" style="font-size:8px"></i>${cc.category} ${cc.cnt}</a>`;
+      }).join('')}
+    </div>` : ''}
 
     <!-- Search & Filter -->
     <form method="GET" class="rounded-lg border border-slate-200/70" style="padding:var(--space-md); margin-bottom:var(--space-md); background: rgba(248,250,252,0.80);">
+      ${categoryFilter ? `<input type="hidden" name="category" value="${categoryFilter}">` : ''}
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center" style="gap:var(--space-sm)">
         <select name="status" class="input-premium" style="width:auto; min-width:120px;" onchange="this.form.submit()">
           <option value="">전체 상태</option>
-          <option value="평가진행" ${statusFilter === '평가진행' ? 'selected' : ''}>평가진행</option>
-          <option value="평가접수" ${statusFilter === '평가접수' ? 'selected' : ''}>평가접수</option>
-          <option value="평가완료" ${statusFilter === '평가완료' ? 'selected' : ''}>평가완료</option>
+          <option value="평가진행" ${statusFilter === '평가진행' ? 'selected' : ''}>진행중</option>
+          <option value="평가접수" ${statusFilter === '평가접수' ? 'selected' : ''}>접수</option>
+          <option value="평가완료" ${statusFilter === '평가완료' ? 'selected' : ''}>완료</option>
         </select>
         <div class="flex-1 relative">
           <input type="text" name="q" value="${search}" placeholder="제품명 검색..." class="input-premium" style="padding-right:2.5rem">
@@ -494,7 +554,7 @@ export function serviceProgressContent(items: ProgressItem[], page: number = 1, 
             <i class="fas fa-search f-text-sm"></i>
           </button>
         </div>
-        ${search || statusFilter ? '<a href="?" class="shrink-0 text-slate-500 hover:text-red-500 transition-colors f-text-xs flex items-center" style="padding:var(--space-sm)"><i class="fas fa-times mr-1"></i>초기화</a>' : ''}
+        ${search || statusFilter ? `<a href="?${categoryFilter ? 'category=' + encodeURIComponent(categoryFilter) : ''}" class="shrink-0 text-slate-500 hover:text-red-500 transition-colors f-text-xs flex items-center" style="padding:var(--space-sm)"><i class="fas fa-times mr-1"></i>초기화</a>` : ''}
       </div>
     </form>
 
@@ -514,9 +574,9 @@ export function serviceProgressContent(items: ProgressItem[], page: number = 1, 
             <tr style="background: linear-gradient(135deg, #0F172A, #1E293B);">
               <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:10px 8px">번호</th>
               <th class="text-left text-slate-300 f-text-xs font-semibold" style="padding:10px 10px">제품명</th>
-              <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:10px 6px">보증등급</th>
-              <th class="text-center text-slate-300 f-text-xs font-semibold hidden sm:table-cell" style="padding:10px 6px">인증구분</th>
-              <th class="text-center text-slate-300 f-text-xs font-semibold hidden md:table-cell" style="padding:10px 6px">신청구분</th>
+              <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:10px 6px">${categoryFilter ? meta.col2 : '등급'}</th>
+              <th class="text-center text-slate-300 f-text-xs font-semibold hidden sm:table-cell" style="padding:10px 6px">${categoryFilter ? meta.col3 : '구분'}</th>
+              <th class="text-center text-slate-300 f-text-xs font-semibold hidden md:table-cell" style="padding:10px 6px">${categoryFilter ? meta.col4 : '유형'}</th>
               <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:10px 8px">진행상태</th>
             </tr>
           </thead>

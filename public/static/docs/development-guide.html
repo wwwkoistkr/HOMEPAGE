@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KOIST 평가현황 시스템 개발지침서 v8.0</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Fira+Code:wght@400;500&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Noto Sans KR',sans-serif; }
+  body { background:#f0f4f8; color:#1e293b; line-height:1.8; }
+  .page { max-width:1000px; margin:0 auto; padding:40px 24px; }
+  h1 { font-size:28px; font-weight:900; color:#0f172a; margin-bottom:8px; }
+  h2 { font-size:20px; font-weight:700; color:#1e40af; margin:36px 0 16px; padding-bottom:8px; border-bottom:2px solid #dbeafe; }
+  h3 { font-size:16px; font-weight:700; color:#334155; margin:20px 0 10px; }
+  h4 { font-size:14px; font-weight:600; color:#475569; margin:16px 0 8px; }
+  p { margin-bottom:12px; color:#475569; }
+  ul,ol { margin:8px 0 16px 24px; color:#475569; }
+  li { margin-bottom:6px; }
+  .badge { display:inline-block; padding:2px 10px; border-radius:9999px; font-size:11px; font-weight:600; }
+  .card { background:#fff; border-radius:12px; padding:24px; margin-bottom:16px; border:1px solid #e2e8f0; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
+  code { background:#f1f5f9; padding:2px 6px; border-radius:4px; font-size:12px; color:#7c3aed; font-family:'Fira Code',monospace; }
+  pre { background:#0f172a; color:#e2e8f0; padding:16px 20px; border-radius:10px; overflow-x:auto; margin:12px 0; font-family:'Fira Code',monospace; font-size:13px; line-height:1.6; }
+  pre code { background:transparent; color:inherit; padding:0; }
+  .note { background:#eff6ff; border-left:4px solid #3b82f6; padding:12px 16px; border-radius:0 8px 8px 0; margin:12px 0; font-size:13px; }
+  .warn { background:#fef3c7; border-left:4px solid #f59e0b; padding:12px 16px; border-radius:0 8px 8px 0; margin:12px 0; font-size:13px; }
+  table { width:100%; border-collapse:collapse; margin:12px 0; font-size:13px; }
+  th,td { padding:8px 12px; text-align:left; border-bottom:1px solid #e2e8f0; }
+  th { background:#f8fafc; font-weight:600; color:#475569; font-size:12px; }
+  .toc { background:#fff; border-radius:12px; padding:20px 24px; margin-bottom:32px; border:1px solid #e2e8f0; }
+  .toc a { color:#2563eb; text-decoration:none; }
+  .toc a:hover { text-decoration:underline; }
+  .print-btn { position:fixed; bottom:24px; right:24px; background:#2563eb; color:#fff; border:none; padding:12px 24px; border-radius:12px; font-size:14px; font-weight:600; cursor:pointer; box-shadow:0 4px 12px rgba(37,99,235,0.3); z-index:100; }
+  .print-btn:hover { background:#1d4ed8; }
+  @media print { .print-btn { display:none; } body { background:#fff; } }
+</style>
+</head>
+<body>
+<button class="print-btn" onclick="window.print()">PDF 저장 / 인쇄</button>
+
+<div class="page">
+  <div style="text-align:center; margin-bottom:40px;">
+    <span class="badge" style="background:#dbeafe; color:#1e40af; margin-bottom:12px;">v8.0 | 2026-04-10</span>
+    <h1>KOIST 평가현황 시스템 개발지침서</h1>
+    <p style="color:#64748b;">10개 사업 평가현황 관리 시스템 - 개발 및 운영 가이드</p>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <h3 style="margin-top:0;">목차</h3>
+    <ol>
+      <li><a href="#sec1">기술 스택 및 환경 설정</a></li>
+      <li><a href="#sec2">프로젝트 디렉터리 구조</a></li>
+      <li><a href="#sec3">10개 사업 카테고리 정의</a></li>
+      <li><a href="#sec4">데이터베이스 마이그레이션</a></li>
+      <li><a href="#sec5">백엔드 API 개발 가이드</a></li>
+      <li><a href="#sec6">프론트엔드 개발 가이드</a></li>
+      <li><a href="#sec7">관리자 페이지 개발 가이드</a></li>
+      <li><a href="#sec8">배포 절차</a></li>
+      <li><a href="#sec9">테스트 체크리스트</a></li>
+      <li><a href="#sec10">운영 및 유지보수</a></li>
+    </ol>
+  </div>
+
+  <!-- 1. 기술 스택 -->
+  <h2 id="sec1">1. 기술 스택 및 환경 설정</h2>
+  <div class="card">
+    <table>
+      <tr><th>구분</th><th>기술</th><th>용도</th></tr>
+      <tr><td>런타임</td><td>Cloudflare Workers</td><td>엣지 서버리스 실행 환경</td></tr>
+      <tr><td>프레임워크</td><td>Hono v4+</td><td>경량 웹 프레임워크</td></tr>
+      <tr><td>빌드</td><td>Vite + @hono/vite-cloudflare-pages</td><td>SSR 빌드</td></tr>
+      <tr><td>데이터베이스</td><td>Cloudflare D1 (SQLite)</td><td>분산 관계형 DB</td></tr>
+      <tr><td>파일 저장</td><td>Cloudflare R2</td><td>이미지/파일 스토리지</td></tr>
+      <tr><td>CSS</td><td>Tailwind CSS (CDN)</td><td>유틸리티 CSS</td></tr>
+      <tr><td>아이콘</td><td>FontAwesome 6.5</td><td>아이콘 라이브러리</td></tr>
+      <tr><td>배포</td><td>Wrangler CLI</td><td>Cloudflare 배포 도구</td></tr>
+    </table>
+  </div>
+
+  <h3>환경 설정</h3>
+  <pre><code># 의존성 설치
+npm install
+
+# 로컬 개발 서버
+npm run build && npm run dev:sandbox
+
+# 프로덕션 배포
+npm run deploy</code></pre>
+
+  <!-- 2. 디렉터리 구조 -->
+  <h2 id="sec2">2. 프로젝트 디렉터리 구조</h2>
+  <pre><code>webapp/
+├── src/
+│   ├── index.tsx          # 메인 라우터 (Hono 앱)
+│   ├── types.ts           # TypeScript 타입 정의
+│   ├── routes/
+│   │   ├── api.ts         # 공개 API 라우트
+│   │   └── admin.ts       # 관리자 API (CRUD)
+│   ├── templates/
+│   │   ├── home.tsx       # 홈 페이지 (카테고리 요약)
+│   │   ├── pages.tsx      # 평가현황/공지/FAQ/문의 페이지
+│   │   ├── layout.tsx     # 공통 레이아웃 (GNB, 푸터)
+│   │   └── admin/
+│   │       └── index.tsx  # 관리자 대시보드 레이아웃
+│   ├── middleware/
+│   │   └── auth.ts        # JWT 인증 미들웨어
+│   └── utils/
+│       ├── db.ts          # DB 유틸리티 (getSettings)
+│       └── crypto.ts      # 암호화 유틸리티
+├── public/
+│   └── static/
+│       ├── js/
+│       │   └── admin-progress.js  # 관리자 평가현황 CRUD JS
+│       └── docs/
+│           ├── architecture-diagram.html
+│           └── development-guide.html
+├── migrations/
+│   ├── 0001_initial_schema.sql
+│   ├── 0002_about_pages.sql
+│   ├── 0003_progress_schema_upgrade.sql
+│   └── 0004_images_and_bg_settings.sql
+├── seed.sql               # 기본 시드 데이터
+├── seed-progress-v2.sql   # 10개 사업 평가현황 시드
+├── wrangler.jsonc         # Cloudflare 설정
+├── vite.config.ts         # Vite 빌드 설정
+└── package.json</code></pre>
+
+  <!-- 3. 카테고리 정의 -->
+  <h2 id="sec3">3. 10개 사업 카테고리 정의</h2>
+  <div class="note">
+    <strong>중요:</strong> 카테고리 이름은 DB, 프론트엔드, 관리자 JS 모두에서 동일하게 사용되어야 합니다.
+    카테고리를 추가/변경할 경우, 세 곳 모두 수정해야 합니다:
+    <code>pages.tsx (CATEGORY_META)</code>, <code>home.tsx (catMeta)</code>, <code>admin-progress.js (CATEGORIES)</code>
+  </div>
+
+  <div class="card">
+    <table>
+      <tr><th>번호</th><th>카테고리명</th><th>아이콘</th><th>색상</th><th>동적 필드</th></tr>
+      <tr><td>1</td><td>CC평가</td><td>fa-shield-halved</td><td>#3B82F6</td><td>보증등급, 인증구분, 신청구분</td></tr>
+      <tr><td>2</td><td>보안기능확인서</td><td>fa-file-shield</td><td>#8B5CF6</td><td>확인서등급, 발급구분, 시험유형</td></tr>
+      <tr><td>3</td><td>KCMVP</td><td>fa-lock</td><td>#EC4899</td><td>검증등급, 모듈유형, 알고리즘</td></tr>
+      <tr><td>4</td><td>성능평가</td><td>fa-gauge-high</td><td>#F59E0B</td><td>성능등급, 평가구분, 평가항목</td></tr>
+      <tr><td>5</td><td>보안적합성검증</td><td>fa-clipboard-check</td><td>#10B981</td><td>적합등급, 검증구분, 검증기준</td></tr>
+      <tr><td>6</td><td>취약점분석평가</td><td>fa-bug</td><td>#EF4444</td><td>위험등급, 분석유형, 평가범위</td></tr>
+      <tr><td>7</td><td>정보보호제품평가</td><td>fa-box-archive</td><td>#06B6D4</td><td>평가등급, 제품유형, 평가기준</td></tr>
+      <tr><td>8</td><td>클라우드보안인증</td><td>fa-cloud-arrow-up</td><td>#6366F1</td><td>인증등급, 서비스유형, 인증기준</td></tr>
+      <tr><td>9</td><td>IoT보안인증</td><td>fa-microchip</td><td>#14B8A6</td><td>인증등급, 기기유형, 인증기준</td></tr>
+      <tr><td>10</td><td>기타시험평가</td><td>fa-flask</td><td>#78716C</td><td>등급, 유형, 기준</td></tr>
+    </table>
+  </div>
+
+  <!-- 4. DB 마이그레이션 -->
+  <h2 id="sec4">4. 데이터베이스 마이그레이션</h2>
+  <h3>마이그레이션 적용 순서</h3>
+  <pre><code># 로컬 개발
+npx wrangler d1 migrations apply koist-website-db --local
+npx wrangler d1 execute koist-website-db --local --file=./seed-progress-v2.sql
+
+# 프로덕션
+npx wrangler d1 migrations apply koist-website-db --remote
+npx wrangler d1 execute koist-website-db --remote --file=./seed-progress-v2.sql</code></pre>
+
+  <div class="warn">
+    <strong>주의:</strong> <code>seed-progress-v2.sql</code>은 기존 progress_items를 모두 삭제(DELETE)하고 재삽입합니다.
+    프로덕션에서 실행 전 반드시 데이터 백업을 확인하세요.
+  </div>
+
+  <!-- 5. 백엔드 API -->
+  <h2 id="sec5">5. 백엔드 API 개발 가이드</h2>
+  <h3>새 카테고리 추가 시</h3>
+  <ol>
+    <li><code>pages.tsx</code>의 <code>CATEGORY_META</code>에 카테고리 추가</li>
+    <li><code>home.tsx</code>의 <code>catMeta</code>에 동일 항목 추가</li>
+    <li><code>admin-progress.js</code>의 <code>CATEGORIES</code>에 동적 폼 필드 추가</li>
+    <li>시드 데이터 SQL에 해당 카테고리 데이터 추가</li>
+  </ol>
+
+  <h3>API 응답 형식</h3>
+  <pre><code>// 성공
+{ "success": true, "data": [...] }
+
+// 에러
+{ "error": "에러 메시지" }</code></pre>
+
+  <!-- 6. 프론트엔드 -->
+  <h2 id="sec6">6. 프론트엔드 개발 가이드</h2>
+  <h3>평가현황 페이지 구조</h3>
+  <ol>
+    <li><strong>카테고리 탭 바</strong>: 전체 + 10개 사업, 각 사업별 건수 표시</li>
+    <li><strong>검색/필터 바</strong>: 제품명 검색 + 상태(접수/진행/완료) 필터</li>
+    <li><strong>데이터 테이블</strong>: 카테고리별 동적 컬럼 헤더 변경</li>
+    <li><strong>페이지네이션</strong>: 15건 단위, 첫/이전/숫자/다음/끝 내비게이션</li>
+  </ol>
+
+  <h3>홈페이지 평가현황 위젯</h3>
+  <p>카테고리별 요약 카드 (건수) + 최근 5건 테이블로 구성. 각 카드 클릭 시 해당 카테고리 상세로 이동.</p>
+
+  <!-- 7. 관리자 -->
+  <h2 id="sec7">7. 관리자 페이지 개발 가이드</h2>
+  <h3>admin-progress.js 구조</h3>
+  <ol>
+    <li><strong>카테고리 요약 카드</strong>: 전체 + 10개 사업별 건수 (클릭으로 필터링)</li>
+    <li><strong>동적 폼</strong>: 사업 분류 선택 시 등급/구분/유형 옵션이 자동 변경</li>
+    <li><strong>CRUD 테이블</strong>: 인라인 수정/삭제, 카테고리별 필터링</li>
+  </ol>
+
+  <div class="note">
+    <strong>동적 폼 동작:</strong> <code>onCatChange()</code> 함수에서 선택된 카테고리의 <code>col2Opts</code>, <code>col3Opts</code>, <code>col4Opts</code>를 읽어 셀렉트박스를 동적으로 교체합니다.
+  </div>
+
+  <!-- 8. 배포 -->
+  <h2 id="sec8">8. 배포 절차</h2>
+  <pre><code># 1. 빌드
+npm run build
+
+# 2. (최초 또는 스키마 변경 시) 마이그레이션
+npx wrangler d1 migrations apply koist-website-db --remote
+
+# 3. (최초 또는 데이터 변경 시) 시드 데이터
+npx wrangler d1 execute koist-website-db --remote --file=./seed-progress-v2.sql
+
+# 4. 배포
+npx wrangler pages deploy dist --project-name koist-website
+
+# 5. 확인
+curl https://koist-website.pages.dev/support/progress</code></pre>
+
+  <!-- 9. 테스트 -->
+  <h2 id="sec9">9. 테스트 체크리스트</h2>
+  <div class="card">
+    <table>
+      <tr><th>구분</th><th>항목</th><th>확인</th></tr>
+      <tr><td>홈</td><td>카테고리 요약 카드 표시 (최대 6개)</td><td>&#9744;</td></tr>
+      <tr><td>홈</td><td>최근 평가현황 테이블 (5건)</td><td>&#9744;</td></tr>
+      <tr><td>평가현황</td><td>10개 카테고리 탭 전환</td><td>&#9744;</td></tr>
+      <tr><td>평가현황</td><td>카테고리별 독립 데이터 표시</td><td>&#9744;</td></tr>
+      <tr><td>평가현황</td><td>카테고리별 동적 컬럼 헤더</td><td>&#9744;</td></tr>
+      <tr><td>평가현황</td><td>검색/상태 필터 동작</td><td>&#9744;</td></tr>
+      <tr><td>평가현황</td><td>페이지네이션 동작</td><td>&#9744;</td></tr>
+      <tr><td>관리자</td><td>카테고리별 건수 카드 표시</td><td>&#9744;</td></tr>
+      <tr><td>관리자</td><td>카테고리 필터링</td><td>&#9744;</td></tr>
+      <tr><td>관리자</td><td>신규 추가 (동적 폼)</td><td>&#9744;</td></tr>
+      <tr><td>관리자</td><td>수정 (기존 데이터 로드)</td><td>&#9744;</td></tr>
+      <tr><td>관리자</td><td>삭제 (확인 다이얼로그)</td><td>&#9744;</td></tr>
+      <tr><td>관리자</td><td>카테고리 변경 시 폼 필드 동적 갱신</td><td>&#9744;</td></tr>
+      <tr><td>문서</td><td>설계서 다운로드/인쇄</td><td>&#9744;</td></tr>
+      <tr><td>문서</td><td>개발지침서 다운로드/인쇄</td><td>&#9744;</td></tr>
+      <tr><td>모바일</td><td>팝업 반응형 동작</td><td>&#9744;</td></tr>
+      <tr><td>모바일</td><td>평가현황 테이블 가로 스크롤</td><td>&#9744;</td></tr>
+    </table>
+  </div>
+
+  <!-- 10. 운영 -->
+  <h2 id="sec10">10. 운영 및 유지보수</h2>
+  <h3>일상 운영</h3>
+  <ul>
+    <li>관리자 로그인: <code>/admin</code> (기본 계정: admin / admin1234)</li>
+    <li>평가현황 관리: <code>/admin/progress</code> 에서 사업별 입력/수정/삭제</li>
+    <li>사이트 설정: <code>/admin/site-settings</code> 에서 전화번호, 슬로건 등 변경</li>
+  </ul>
+
+  <h3>문제 해결</h3>
+  <ul>
+    <li><strong>500 에러</strong>: DB 마이그레이션 미적용 확인 (<code>no such table</code> 오류)</li>
+    <li><strong>빈 데이터</strong>: 시드 데이터 적용 여부 확인</li>
+    <li><strong>로그인 실패</strong>: 기본 admin 계정 생성 → <code>/api/init-db</code> 호출</li>
+  </ul>
+
+  <div style="text-align:center; margin-top:48px; color:#94a3b8; font-size:12px;">
+    <p>KOIST 평가현황 시스템 개발지침서 v8.0 | 한국정보보안기술원</p>
+  </div>
+</div>
+</body>
+</html>
