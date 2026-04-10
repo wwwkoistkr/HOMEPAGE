@@ -13,7 +13,7 @@ INSERT OR IGNORE INTO site_settings (key, value, category, description) VALUES
 ('email', 'koist@koist.kr', 'contact', '대표 이메일'),
 ('address', '서울특별시 서초구 효령로 336 윤일빌딩 4층 한국정보보안기술원', 'contact', '주소'),
 ('contact_person', '담당자', 'contact', '담당자명'),
-('logo_url', '/static/images/logo.png', 'theme', '로고 이미지 경로'),
+('logo_url', '/static/images/logo-horizontal.png', 'theme', '로고 이미지 경로'),
 ('main_bg_url', '', 'theme', '메인 배경 이미지'),
 ('primary_color', '#1E3A5F', 'theme', '주요 색상'),
 ('accent_color', '#3B82F6', 'theme', '강조 색상'),
@@ -25,7 +25,7 @@ INSERT OR IGNORE INTO site_settings (key, value, category, description) VALUES
 
 -- 팝업 (현재 사이트 기준 2개)
 INSERT OR IGNORE INTO popups (id, title, content, image_url, popup_type, width, height, position_top, position_left, is_active, sort_order) VALUES
-(1, 'CC평가 대기기간 안내', '<div style="text-align:center;padding:15px;"><h3 style="font-size:16px;font-weight:bold;margin-bottom:10px;">[CC평가 대기기간]</h3><p style="font-size:13px;margin-bottom:5px;">현 시점 기준 "평가신청접수증 발급(또는 계약)" 후 대기기간 : <span style="color:#EF4444;font-weight:bold;">0</span>개월</p><p style="font-size:12px;color:#666;margin-bottom:8px;">※ 국내용 / EAL2 기준, 대기기간은 평가진행 상황에 따라 변동될 수 있음</p><p style="color:#EF4444;font-weight:bold;font-size:14px;">신청 즉시 착수 가능</p></div>', NULL, 'html', 420, 200, 180, 30, 1, 1),
+(1, 'CC평가 대기기간 안내', '', '/static/images/popup-cc-evaluation.png', 'image', 470, 150, 180, 30, 1, 1),
 (2, 'KCMVP 민간시험 기관 지정', '', '/static/images/kcmvp-certificate.jpg', 'image', 600, 500, 80, 480, 1, 2);
 
 -- 사업분야
