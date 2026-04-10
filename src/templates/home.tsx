@@ -24,32 +24,165 @@ export function homePage(opts: {
   const heroOpacity = s.hero_overlay_opacity || '0.85';
 
   return `
-  <!-- Popups -->
+  <!-- Popup System (Mobile-Responsive Modal) -->
   ${popups.length > 0 ? `
-  <div id="popupContainer">
+  <div id="popupOverlay" class="fixed inset-0 z-[9998] transition-opacity duration-300" style="background:rgba(0,0,0,0.5); backdrop-filter:blur(4px);" onclick="closeAllPopups()"></div>
+  <div id="popupContainer" class="fixed z-[9999] popup-responsive-container">
+    <!-- Popup Navigation (multiple popups) -->
+    ${popups.length > 1 ? `
+    <div id="popupNav" class="absolute -top-10 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
+      <button onclick="prevPopup()" class="w-7 h-7 rounded-full bg-white/90 text-gray-600 hover:bg-white shadow flex items-center justify-center text-xs"><i class="fas fa-chevron-left"></i></button>
+      <span id="popupCounter" class="text-white text-xs font-medium bg-black/40 px-2.5 py-1 rounded-full">1 / ${popups.length}</span>
+      <button onclick="nextPopup()" class="w-7 h-7 rounded-full bg-white/90 text-gray-600 hover:bg-white shadow flex items-center justify-center text-xs"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    ` : ''}
     ${popups.map((p, i) => `
-    <div class="popup-item fixed z-[100] bg-white rounded-xl overflow-hidden" 
-         style="top:clamp(60px, ${p.position_top * 0.06}vw + 30px, ${p.position_top}px); left:clamp(8px, ${p.position_left * 0.06}vw + 4px, ${p.position_left}px); width:min(${p.width}px, 90vw); max-height:85vh; box-shadow: 0 24px 64px rgba(0,0,0,0.18), 0 8px 24px rgba(0,0,0,0.10); border: 1px solid rgba(226,232,240,0.50);"
-         data-popup-id="${p.id}" id="popup-${p.id}">
-      <div class="flex justify-between items-center border-b border-slate-100" style="padding:var(--space-sm) var(--space-md); background: rgba(248,250,252,0.90);">
-        <span class="font-semibold text-gray-800 f-text-sm">${p.title}</span>
-        <button onclick="closePopup(${p.id})" class="text-gray-400 hover:text-gray-600 p-1 rounded-md hover:bg-gray-100 transition-colors"><i class="fas fa-times f-text-xs"></i></button>
+    <div class="popup-slide bg-white rounded-2xl overflow-hidden shadow-2xl ${i === 0 ? '' : 'hidden'}"
+         data-popup-index="${i}" data-popup-id="${p.id}" id="popup-${p.id}"
+         style="width:100%; max-height:80vh; border:1px solid rgba(226,232,240,0.5); animation: popupSlideIn 0.3s ease-out;">
+      <!-- Header -->
+      <div class="flex justify-between items-center border-b border-slate-100" style="padding:12px 16px; background:linear-gradient(135deg, rgba(248,250,252,0.95), rgba(241,245,249,0.95));">
+        <span class="font-semibold text-gray-800" style="font-size:14px; line-height:1.3;">${p.title}</span>
+        <button onclick="closeAllPopups()" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors" aria-label="닫기">
+          <i class="fas fa-times" style="font-size:14px;"></i>
+        </button>
       </div>
-      <div class="overflow-y-auto" style="max-height:min(${p.height}px, 70vh);">
-        ${p.popup_type === 'image' && p.image_url ? `<img src="${p.image_url}" alt="${p.title}" class="w-full h-auto">` : `<div style="padding:var(--space-md)">${p.content || ''}</div>`}
+      <!-- Content -->
+      <div class="overflow-y-auto" style="max-height:calc(80vh - 110px); -webkit-overflow-scrolling:touch;">
+        ${p.popup_type === 'image' && p.image_url 
+          ? `<img src="${p.image_url}" alt="${p.title}" class="w-full h-auto" loading="lazy">` 
+          : `<div style="padding:16px; font-size:14px; line-height:1.7; color:#374151;">${p.content || ''}</div>`}
       </div>
-      <div class="border-t border-slate-100 text-right" style="padding:var(--space-sm) var(--space-md); background: rgba(248,250,252,0.60);">
-        <button onclick="closePopup(${p.id})" class="text-gray-500 hover:text-gray-700 rounded-md hover:bg-gray-100 transition-colors f-text-xs font-medium" style="padding:var(--space-xs) var(--space-sm)">닫기</button>
+      <!-- Footer -->
+      <div class="flex justify-between items-center border-t border-slate-100" style="padding:10px 16px; background:rgba(248,250,252,0.7);">
+        <label class="flex items-center gap-2 cursor-pointer select-none">
+          <input type="checkbox" id="noshow-${p.id}" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 accent-blue-600">
+          <span class="text-gray-500" style="font-size:12px;">오늘 하루 안 보기</span>
+        </label>
+        <button onclick="closeAllPopups()" class="text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100 transition-colors font-medium" style="padding:6px 14px; font-size:13px;">닫기</button>
       </div>
     </div>
     `).join('')}
   </div>
+
+  <style>
+    /* Responsive Popup Positioning */
+    .popup-responsive-container {
+      /* Desktop: Positioned, draggable-style */
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(420px, 92vw);
+      max-width: 500px;
+    }
+    @media (min-width: 768px) {
+      .popup-responsive-container {
+        width: min(440px, 80vw);
+        max-width: 520px;
+      }
+    }
+    @media (min-width: 1280px) {
+      .popup-responsive-container {
+        width: 460px;
+        max-width: 520px;
+      }
+    }
+    @keyframes popupSlideIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes popupFadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; transform: scale(0.95); }
+    }
+  </style>
+
   <script>
-    (function() {
-      if (sessionStorage.getItem('koist_popups_shown')) { document.getElementById('popupContainer')?.remove(); return; }
-      sessionStorage.setItem('koist_popups_shown', Date.now().toString());
-    })();
-    function closePopup(id) { var el = document.getElementById('popup-' + id); if (el) el.style.display = 'none'; }
+  (function() {
+    // Check "don't show today" cookies
+    var today = new Date().toISOString().slice(0, 10);
+    var hiddenIds = JSON.parse(localStorage.getItem('koist_popup_hidden') || '{}');
+    var popupIds = [${popups.map(p => p.id).join(',')}];
+    var allHidden = popupIds.every(function(id) { return hiddenIds[id] === today; });
+    
+    if (allHidden) {
+      var overlay = document.getElementById('popupOverlay');
+      var container = document.getElementById('popupContainer');
+      if (overlay) overlay.remove();
+      if (container) container.remove();
+      return;
+    }
+    
+    // Remove individually hidden popups
+    popupIds.forEach(function(id) {
+      if (hiddenIds[id] === today) {
+        var el = document.getElementById('popup-' + id);
+        if (el) el.remove();
+      }
+    });
+  })();
+  
+  var currentPopupIndex = 0;
+  var totalPopups = ${popups.length};
+  
+  function showPopupAtIndex(idx) {
+    var slides = document.querySelectorAll('.popup-slide');
+    slides.forEach(function(s, i) {
+      if (i === idx) { s.classList.remove('hidden'); s.style.animation = 'popupSlideIn 0.25s ease-out'; }
+      else { s.classList.add('hidden'); }
+    });
+    var counter = document.getElementById('popupCounter');
+    if (counter) counter.textContent = (idx + 1) + ' / ' + totalPopups;
+    currentPopupIndex = idx;
+  }
+  
+  function nextPopup() { showPopupAtIndex((currentPopupIndex + 1) % totalPopups); }
+  function prevPopup() { showPopupAtIndex((currentPopupIndex - 1 + totalPopups) % totalPopups); }
+  
+  function closeAllPopups() {
+    // Save "don't show today" preferences
+    var today = new Date().toISOString().slice(0, 10);
+    var hiddenIds = JSON.parse(localStorage.getItem('koist_popup_hidden') || '{}');
+    var checkboxes = document.querySelectorAll('[id^="noshow-"]');
+    checkboxes.forEach(function(cb) {
+      if (cb.checked) {
+        var id = cb.id.replace('noshow-', '');
+        hiddenIds[id] = today;
+      }
+    });
+    localStorage.setItem('koist_popup_hidden', JSON.stringify(hiddenIds));
+    
+    // Animate out
+    var overlay = document.getElementById('popupOverlay');
+    var container = document.getElementById('popupContainer');
+    if (overlay) { overlay.style.opacity = '0'; }
+    if (container) { container.style.animation = 'popupFadeOut 0.2s ease-in forwards'; }
+    setTimeout(function() {
+      if (overlay) overlay.remove();
+      if (container) container.remove();
+    }, 250);
+  }
+  
+  // Swipe gesture support for mobile
+  (function() {
+    var container = document.getElementById('popupContainer');
+    if (!container || totalPopups <= 1) return;
+    var startX = 0, startY = 0, diffX = 0;
+    container.addEventListener('touchstart', function(e) {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    }, { passive: true });
+    container.addEventListener('touchend', function(e) {
+      diffX = e.changedTouches[0].clientX - startX;
+      var diffY = Math.abs(e.changedTouches[0].clientY - startY);
+      if (Math.abs(diffX) > 50 && diffY < 100) {
+        if (diffX < 0) nextPopup();
+        else prevPopup();
+      }
+    }, { passive: true });
+  })();
+
+  // ESC key closes popup
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeAllPopups(); });
   </script>
   ` : ''}
 

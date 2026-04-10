@@ -543,9 +543,17 @@ export function layout(opts: {
     }
 
     /* ═══════════════════════════════════════════════
-       POPUP
+       POPUP (Mobile-Responsive Modal System)
        ═══════════════════════════════════════════════ */
     .popup-overlay { backdrop-filter: blur(6px); }
+    #popupOverlay { -webkit-tap-highlight-color: transparent; }
+    .popup-slide { will-change: transform, opacity; }
+    .popup-slide img { display: block; max-width: 100%; height: auto; }
+    /* Prevent body scroll when popup is open */
+    body:has(#popupOverlay) { overflow: hidden; }
+    @supports not (selector(:has(*))) {
+      .popup-body-lock { overflow: hidden !important; }
+    }
 
     /* ═══════════════════════════════════════════════
        SELECTION
