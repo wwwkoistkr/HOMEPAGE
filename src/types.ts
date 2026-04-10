@@ -72,9 +72,14 @@ export type ProgressItem = {
   product_name: string;
   company: string;
   status: string;
+  assurance_level: string;
+  cert_type: string;
+  eval_type: string;
   start_date: string;
   end_date: string;
   note: string;
+  sort_order: number;
+  created_at: string;
 };
 
 export type Download = {

@@ -186,19 +186,21 @@ export function homePage(opts: {
             <table class="w-full">
               <thead>
                 <tr class="text-left text-slate-500 border-b border-slate-100">
-                  <th class="font-medium f-text-xs" style="padding-bottom:var(--space-sm)">구분</th>
                   <th class="font-medium f-text-xs" style="padding-bottom:var(--space-sm)">제품명</th>
+                  <th class="font-medium f-text-xs hidden sm:table-cell" style="padding-bottom:var(--space-sm)">보증등급</th>
                   <th class="font-medium f-text-xs" style="padding-bottom:var(--space-sm)">상태</th>
                 </tr>
               </thead>
               <tbody>
                 ${progress.length > 0 ? progress.map(p => `
                 <tr class="border-b border-slate-50 hover:bg-slate-50/60 transition-colors">
-                  <td class="text-slate-500 f-text-xs" style="padding:var(--space-sm) var(--space-xs) var(--space-sm) 0">${p.category}</td>
-                  <td class="text-slate-700 font-medium f-text-xs" style="padding:var(--space-sm) var(--space-xs)">${p.product_name}</td>
+                  <td class="text-slate-700 font-medium f-text-xs" style="padding:var(--space-sm) var(--space-xs) var(--space-sm) 0">${p.product_name}</td>
+                  <td class="text-slate-500 hidden sm:table-cell f-text-xs" style="padding:var(--space-sm) var(--space-xs)">
+                    <span class="inline-block bg-slate-100 text-slate-600 rounded font-mono f-text-xs" style="padding:1px var(--space-xs)">${p.assurance_level || '-'}</span>
+                  </td>
                   <td style="padding:var(--space-sm) 0 var(--space-sm) var(--space-xs)">
-                    <span class="inline-flex items-center gap-1 rounded-full font-medium f-text-xs ${p.status === '완료' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}" style="padding:2px var(--space-sm)">
-                      <span class="w-1.5 h-1.5 rounded-full ${p.status === '완료' ? 'bg-green-500' : 'bg-amber-500'}"></span>
+                    <span class="inline-flex items-center gap-1 rounded-full font-medium f-text-xs ${p.status === '평가완료' ? 'bg-green-50 text-green-600' : p.status === '평가진행' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'}" style="padding:2px var(--space-sm)">
+                      <span class="w-1.5 h-1.5 rounded-full ${p.status === '평가완료' ? 'bg-green-500' : p.status === '평가진행' ? 'bg-blue-500' : 'bg-amber-500'}"></span>
                       ${p.status}
                     </span>
                   </td>

@@ -176,19 +176,19 @@ admin.delete('/notices/:id', async (c) => {
 
 // ---- Progress CRUD ----
 admin.get('/progress', async (c) => {
-  const result = await c.env.DB.prepare('SELECT * FROM progress_items ORDER BY created_at DESC').all();
+  const result = await c.env.DB.prepare('SELECT * FROM progress_items ORDER BY sort_order ASC').all();
   return c.json({ success: true, data: result.results });
 });
 
 admin.post('/progress', async (c) => {
-  const { category, product_name, company, status, start_date, end_date, note } = await c.req.json();
-  await c.env.DB.prepare('INSERT INTO progress_items (category, product_name, company, status, start_date, end_date, note) VALUES (?,?,?,?,?,?,?)').bind(category, product_name, company||'', status||'진행중', start_date||null, end_date||null, note||'').run();
+  const { category, product_name, company, status, assurance_level, cert_type, eval_type, start_date, end_date, note } = await c.req.json();
+  await c.env.DB.prepare('INSERT INTO progress_items (category, product_name, company, status, assurance_level, cert_type, eval_type, start_date, end_date, note) VALUES (?,?,?,?,?,?,?,?,?,?)').bind(category, product_name, company||'', status||'평가접수', assurance_level||'', cert_type||'최초평가', eval_type||'국내평가', start_date||null, end_date||null, note||'').run();
   return c.json({ success: true });
 });
 
 admin.put('/progress/:id', async (c) => {
   const body = await c.req.json();
-  const fields = ['category', 'product_name', 'company', 'status', 'start_date', 'end_date', 'note'];
+  const fields = ['category', 'product_name', 'company', 'status', 'assurance_level', 'cert_type', 'eval_type', 'start_date', 'end_date', 'note'];
   const updates: string[] = [];
   const values: any[] = [];
   for (const f of fields) { if (body[f] !== undefined) { updates.push(`${f} = ?`); values.push(body[f]); } }

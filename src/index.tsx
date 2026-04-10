@@ -180,14 +180,38 @@ app.get('/support/inquiry', async (c) => {
   return c.html(layout({ settings, departments, title: '온라인 상담문의', content }));
 });
 
-// Progress Page
+// Progress Page (with pagination, search, filter)
 app.get('/support/progress', async (c) => {
   const db = c.env.DB;
   const settings = await getSettings(db);
   const departments = (await db.prepare('SELECT * FROM departments WHERE is_active = 1 ORDER BY sort_order').all<Department>()).results || [];
-  const items = (await db.prepare('SELECT * FROM progress_items ORDER BY created_at DESC').all<ProgressItem>()).results || [];
 
-  const content = progressPage(items);
+  const page = parseInt(c.req.query('page') || '1') || 1;
+  const perPage = 15;
+  const search = c.req.query('q') || '';
+  const statusFilter = c.req.query('status') || '';
+
+  let whereClause = '1=1';
+  const binds: string[] = [];
+  if (search) {
+    whereClause += ' AND product_name LIKE ?';
+    binds.push(`%${search}%`);
+  }
+  if (statusFilter) {
+    whereClause += ' AND status = ?';
+    binds.push(statusFilter);
+  }
+
+  const countStmt = db.prepare(`SELECT COUNT(*) as cnt FROM progress_items WHERE ${whereClause}`);
+  const totalResult = await (binds.length > 0 ? countStmt.bind(...binds) : countStmt).first<{ cnt: number }>();
+  const total = totalResult?.cnt || 0;
+
+  const offset = (page - 1) * perPage;
+  const dataStmt = db.prepare(`SELECT * FROM progress_items WHERE ${whereClause} ORDER BY sort_order ASC LIMIT ? OFFSET ?`);
+  const allBinds = [...binds, perPage, offset];
+  const items = (await dataStmt.bind(...allBinds).all<ProgressItem>()).results || [];
+
+  const content = progressPage(items, page, total, perPage, search, statusFilter);
   return c.html(layout({ settings, departments, title: '평가현황', content }));
 });
 
