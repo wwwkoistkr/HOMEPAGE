@@ -205,13 +205,10 @@ export function layout(opts: {
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
         <!-- Company Info -->
         <div>
-          <div class="flex items-center gap-2 mb-4">
-            ${s.logo_url && s.logo_url.trim() !== '' && s.logo_url !== '/static/images/logo.png' ? `
-            <img src="${s.logo_url}" alt="${siteName}" class="h-8 w-auto object-contain brightness-0 invert">
-            ` : `
-            <i class="fas fa-shield-halved text-accent text-xl"></i>
-            <span class="font-bold text-white text-lg">KOIST</span>
-            `}
+          <div class="mb-4">
+            <div class="inline-block bg-white rounded-lg px-4 py-2.5">
+              <img src="/static/images/logo-horizontal.png" alt="${siteName}" class="h-9 w-auto object-contain">
+            </div>
           </div>
           <p class="text-sm leading-relaxed text-gray-400">${s.site_slogan || '최상의 시험·인증 서비스로 정보보안 기술을 완성'}</p>
         </div>
