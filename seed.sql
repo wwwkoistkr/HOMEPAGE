@@ -24,9 +24,9 @@ INSERT OR IGNORE INTO site_settings (key, value, category, description) VALUES
 ('naver_verification', '0049ce4d83d2123396c82ba450ba8e754bad26f3', 'seo', '네이버 사이트 인증 코드');
 
 -- 팝업 (현재 사이트 기준 2개)
-INSERT OR IGNORE INTO popups (id, title, content, popup_type, width, height, position_top, position_left, is_active, sort_order) VALUES
-(1, 'CC평가 대기기간 안내', '<div style="text-align:center;padding:15px;"><h3 style="font-size:16px;font-weight:bold;margin-bottom:10px;">[CC평가 대기기간]</h3><p style="font-size:13px;margin-bottom:5px;">현 시점 기준 "평가신청접수증 발급(또는 계약)" 후 대기기간 : <span style="color:#EF4444;font-weight:bold;">0</span>개월</p><p style="font-size:12px;color:#666;margin-bottom:8px;">※ 국내용 / EAL2 기준, 대기기간은 평가진행 상황에 따라 변동될 수 있음</p><p style="color:#EF4444;font-weight:bold;font-size:14px;">신청 즉시 착수 가능</p></div>', 'html', 420, 200, 180, 30, 1, 1),
-(2, 'KCMVP 민간시험 기관 지정', '<div style="text-align:center;padding:20px;"><h3 style="font-size:16px;font-weight:bold;margin-bottom:10px;">국가정보원 지정</h3><h2 style="font-size:18px;font-weight:bold;margin-bottom:15px;">암호모듈 검증시험(KCMVP) 민간시험 기관</h2><div style="margin:15px auto;"><img src="https://www.genspark.ai/api/files/s/nkk4nnX3" alt="암호모듈 시험기관 지정서" style="max-width:100%;height:auto;border:1px solid #e5e7eb;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);"></div><p style="font-size:14px;color:#3B82F6;font-weight:bold;">KOIST는 국가정보원으로부터 지정받은 암호모듈 검증시험 민간시험 기관입니다.</p></div>', 'html', 580, 620, 80, 480, 1, 2);
+INSERT OR IGNORE INTO popups (id, title, content, image_url, popup_type, width, height, position_top, position_left, is_active, sort_order) VALUES
+(1, 'CC평가 대기기간 안내', '<div style="text-align:center;padding:15px;"><h3 style="font-size:16px;font-weight:bold;margin-bottom:10px;">[CC평가 대기기간]</h3><p style="font-size:13px;margin-bottom:5px;">현 시점 기준 "평가신청접수증 발급(또는 계약)" 후 대기기간 : <span style="color:#EF4444;font-weight:bold;">0</span>개월</p><p style="font-size:12px;color:#666;margin-bottom:8px;">※ 국내용 / EAL2 기준, 대기기간은 평가진행 상황에 따라 변동될 수 있음</p><p style="color:#EF4444;font-weight:bold;font-size:14px;">신청 즉시 착수 가능</p></div>', NULL, 'html', 420, 200, 180, 30, 1, 1),
+(2, 'KCMVP 민간시험 기관 지정', '', '/static/images/kcmvp-certificate.jpg', 'image', 600, 500, 80, 480, 1, 2);
 
 -- 사업분야
 INSERT OR IGNORE INTO departments (id, name, slug, description, icon, color, sort_order, is_active) VALUES
