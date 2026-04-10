@@ -395,6 +395,111 @@ export function progressPage(items: ProgressItem[], page: number = 1, total: num
   </section>`;
 }
 
+/* ────────────── Embedded Progress Table (for service sub-pages) ────────────── */
+export function serviceProgressContent(items: ProgressItem[], page: number = 1, total: number = 0, perPage: number = 15, search: string = '', statusFilter: string = '') {
+  const totalPages = Math.ceil(total / perPage);
+  const startNum = total - (page - 1) * perPage;
+
+  function pageUrl(p: number) {
+    const params = new URLSearchParams();
+    params.set('page', String(p));
+    if (search) params.set('q', search);
+    if (statusFilter) params.set('status', statusFilter);
+    return '?' + params.toString();
+  }
+
+  function statusBadge(status: string) {
+    if (status === '평가완료') return 'bg-green-50 text-green-700 border-green-200';
+    if (status === '평가진행') return 'bg-blue-50 text-blue-700 border-blue-200';
+    if (status === '평가접수') return 'bg-amber-50 text-amber-700 border-amber-200';
+    return 'bg-slate-50 text-slate-600 border-slate-200';
+  }
+
+  return `
+    <h2 class="font-bold text-primary f-text-lg" style="margin-bottom:var(--space-md)">CC평가 현황 <span class="text-slate-400 font-normal f-text-sm">(총 ${total}건)</span></h2>
+
+    <!-- Search & Filter -->
+    <form method="GET" class="bg-slate-50 rounded-lg border border-slate-200" style="padding:var(--space-md); margin-bottom:var(--space-md)">
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center" style="gap:var(--space-sm)">
+        <select name="status" class="border border-slate-200 rounded-lg bg-white f-text-sm" style="padding:var(--space-sm) var(--space-md)" onchange="this.form.submit()">
+          <option value="">전체 상태</option>
+          <option value="평가진행" ${statusFilter === '평가진행' ? 'selected' : ''}>평가진행</option>
+          <option value="평가접수" ${statusFilter === '평가접수' ? 'selected' : ''}>평가접수</option>
+          <option value="평가완료" ${statusFilter === '평가완료' ? 'selected' : ''}>평가완료</option>
+        </select>
+        <div class="flex-1 relative">
+          <input type="text" name="q" value="${search}" placeholder="제품명 검색..." class="w-full border border-slate-200 rounded-lg bg-white f-text-sm" style="padding:var(--space-sm) var(--space-md); padding-right:2.5rem">
+          <button type="submit" class="absolute right-0 top-0 bottom-0 text-slate-400 hover:text-accent transition-colors" style="padding:0 var(--space-md)">
+            <i class="fas fa-search f-text-sm"></i>
+          </button>
+        </div>
+        ${search || statusFilter ? '<a href="?" class="shrink-0 text-slate-500 hover:text-red-500 transition-colors f-text-xs" style="padding:var(--space-sm)"><i class="fas fa-times mr-1"></i>초기화</a>' : ''}
+      </div>
+    </form>
+
+    <!-- Table -->
+    <div class="rounded-lg border border-slate-200 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-primary text-slate-300 f-text-xs">
+              <th class="text-center font-medium" style="padding:var(--space-sm) var(--space-md); width:50px">번호</th>
+              <th class="text-left font-medium" style="padding:var(--space-sm) var(--space-md)">제품명</th>
+              <th class="text-center font-medium" style="padding:var(--space-sm) var(--space-md); width:80px">보증등급</th>
+              <th class="text-center font-medium hidden sm:table-cell" style="padding:var(--space-sm) var(--space-md); width:80px">인증구분</th>
+              <th class="text-center font-medium hidden md:table-cell" style="padding:var(--space-sm) var(--space-md); width:80px">신청구분</th>
+              <th class="text-center font-medium" style="padding:var(--space-sm) var(--space-md); width:90px">진행상태</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${items.map((p, i) => `
+            <tr class="border-t border-slate-100 hover:bg-blue-50/30 transition-colors">
+              <td class="text-center text-slate-400 f-text-xs" style="padding:var(--space-sm) var(--space-md)">${startNum - i}</td>
+              <td style="padding:var(--space-sm) var(--space-md)">
+                <span class="font-medium text-slate-800 f-text-sm">${p.product_name}</span>
+              </td>
+              <td class="text-center" style="padding:var(--space-sm) var(--space-md)">
+                <span class="inline-block bg-slate-100 text-slate-700 rounded font-mono font-medium f-text-xs" style="padding:2px var(--space-sm)">${p.assurance_level || '-'}</span>
+              </td>
+              <td class="text-center text-slate-600 hidden sm:table-cell f-text-xs" style="padding:var(--space-sm) var(--space-md)">${p.cert_type || '-'}</td>
+              <td class="text-center text-slate-600 hidden md:table-cell f-text-xs" style="padding:var(--space-sm) var(--space-md)">${p.eval_type || '-'}</td>
+              <td class="text-center" style="padding:var(--space-sm) var(--space-md)">
+                <span class="inline-flex items-center gap-1 rounded-full border font-medium f-text-xs ${statusBadge(p.status)}" style="padding:2px var(--space-sm)">
+                  <span class="w-1.5 h-1.5 rounded-full ${p.status === '평가완료' ? 'bg-green-500' : p.status === '평가진행' ? 'bg-blue-500' : 'bg-amber-500'}"></span>
+                  ${p.status}
+                </span>
+              </td>
+            </tr>
+            `).join('')}
+            ${items.length === 0 ? `<tr><td colspan="6" class="text-center text-slate-400 f-text-sm" style="padding:var(--space-2xl) 0">
+              <i class="fas fa-search text-slate-300" style="font-size:2rem; margin-bottom:var(--space-sm); display:block"></i>
+              ${search ? '검색 결과가 없습니다.' : '등록된 현황이 없습니다.'}
+            </td></tr>` : ''}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    ${totalPages > 1 ? `
+    <div class="flex flex-col sm:flex-row justify-between items-center" style="margin-top:var(--space-lg); gap:var(--space-md)">
+      <p class="text-slate-500 f-text-xs">${total}건 중 ${(page - 1) * perPage + 1}~${Math.min(page * perPage, total)}건 표시 (${page}/${totalPages} 페이지)</p>
+      <div class="flex items-center" style="gap:var(--space-xs)">
+        ${page > 1 ? `<a href="${pageUrl(1)}" class="flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 f-text-xs" style="width:clamp(28px,2.5vw,32px); height:clamp(28px,2.5vw,32px)" title="처음"><i class="fas fa-angles-left"></i></a>
+        <a href="${pageUrl(page - 1)}" class="flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 f-text-xs" style="width:clamp(28px,2.5vw,32px); height:clamp(28px,2.5vw,32px)" title="이전"><i class="fas fa-chevron-left"></i></a>` : ''}
+        ${Array.from({ length: totalPages }, (_, i) => i + 1)
+          .filter(p => p === 1 || p === totalPages || (p >= page - 2 && p <= page + 2))
+          .map((p, idx, arr) => {
+            let dots = idx > 0 && p - arr[idx - 1] > 1 ? '<span class="text-slate-400 f-text-xs" style="padding:0 var(--space-xs)">…</span>' : '';
+            return dots + `<a href="${pageUrl(p)}" class="flex items-center justify-center rounded-lg font-medium f-text-xs ${p === page ? 'bg-accent text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'}" style="width:clamp(28px,2.5vw,32px); height:clamp(28px,2.5vw,32px)">${p}</a>`;
+          }).join('')}
+        ${page < totalPages ? `<a href="${pageUrl(page + 1)}" class="flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 f-text-xs" style="width:clamp(28px,2.5vw,32px); height:clamp(28px,2.5vw,32px)" title="다음"><i class="fas fa-chevron-right"></i></a>
+        <a href="${pageUrl(totalPages)}" class="flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 f-text-xs" style="width:clamp(28px,2.5vw,32px); height:clamp(28px,2.5vw,32px)" title="맨끝"><i class="fas fa-angles-right"></i></a>` : ''}
+      </div>
+    </div>` : ''}
+  `;
+}
+
 /* ────────────── Downloads ────────────── */
 export function downloadsPage(downloads: { id: number; title: string; description: string; file_name: string; category: string; download_count: number; created_at: string }[]) {
   return `

@@ -12,7 +12,7 @@ import adminApi from './routes/admin';
 import { layout } from './templates/layout';
 import { homePage } from './templates/home';
 import { adminLoginPage, changePasswordPage, adminDashboardPage, adminDashboardContent } from './templates/admin/index';
-import { servicePage, noticeListPage, noticeDetailPage, faqPage, inquiryPage, progressPage, downloadsPage } from './templates/pages';
+import { servicePage, noticeListPage, noticeDetailPage, faqPage, inquiryPage, progressPage, serviceProgressContent, downloadsPage } from './templates/pages';
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -126,6 +126,35 @@ app.get('/services/:slug/:pageSlug', async (c) => {
 
   const pages = (await db.prepare('SELECT * FROM dep_pages WHERE dept_id = ? AND is_active = 1 ORDER BY sort_order').bind(dept.id).all<DepPage>()).results || [];
   const currentPage = pages.find(p => p.slug === pageSlug) || null;
+
+  // Special handling: if pageSlug is 'progress', render dynamic progress data
+  if (pageSlug === 'progress') {
+    const page = parseInt(c.req.query('page') || '1') || 1;
+    const perPage = 15;
+    const search = c.req.query('q') || '';
+    const statusFilter = c.req.query('status') || '';
+
+    let whereClause = '1=1';
+    const binds: string[] = [];
+    if (search) { whereClause += ' AND product_name LIKE ?'; binds.push(`%${search}%`); }
+    if (statusFilter) { whereClause += ' AND status = ?'; binds.push(statusFilter); }
+
+    const countStmt = db.prepare(`SELECT COUNT(*) as cnt FROM progress_items WHERE ${whereClause}`);
+    const totalResult = await (binds.length > 0 ? countStmt.bind(...binds) : countStmt).first<{ cnt: number }>();
+    const total = totalResult?.cnt || 0;
+
+    const offset = (page - 1) * perPage;
+    const dataStmt = db.prepare(`SELECT * FROM progress_items WHERE ${whereClause} ORDER BY sort_order ASC LIMIT ? OFFSET ?`);
+    const allBinds = [...binds, perPage, offset];
+    const items = (await dataStmt.bind(...allBinds).all<ProgressItem>()).results || [];
+
+    // Override the page content with dynamic progress table
+    const dynamicContent = serviceProgressContent(items, page, total, perPage, search, statusFilter);
+    const overriddenPage = currentPage ? { ...currentPage, content: dynamicContent } : { id: 0, dept_id: dept.id, title: '평가현황', slug: 'progress', content: dynamicContent, meta_description: '', sort_order: 0, is_active: 1 } as DepPage;
+
+    const content = servicePage(dept, pages, overriddenPage, settings);
+    return c.html(layout({ settings, departments, title: `평가현황 - ${dept.name}`, content }));
+  }
 
   const content = servicePage(dept, pages, currentPage, settings);
   return c.html(layout({ settings, departments, title: currentPage ? `${currentPage.title} - ${dept.name}` : dept.name, content }));
