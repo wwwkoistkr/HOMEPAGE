@@ -1,4 +1,4 @@
-// KOIST - Home Page Template (v4 - Premium Polished)
+// KOIST - Home Page Template (v5 - Full Fluid Responsive)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem } from '../types';
 
 export function homePage(opts: {
@@ -20,17 +20,17 @@ export function homePage(opts: {
   <div id="popupContainer">
     ${popups.map((p, i) => `
     <div class="popup-item fixed z-[100] bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden" 
-         style="top:${p.position_top}px;left:${p.position_left}px;width:min(${p.width}px, 90vw);max-height:90vh;"
+         style="top:clamp(60px, ${p.position_top * 0.06}vw + 30px, ${p.position_top}px); left:clamp(8px, ${p.position_left * 0.06}vw + 4px, ${p.position_left}px); width:min(${p.width}px, 90vw); max-height:85vh;"
          data-popup-id="${p.id}" id="popup-${p.id}">
-      <div class="bg-slate-50 px-4 py-2.5 flex justify-between items-center border-b">
-        <span class="text-sm font-semibold text-gray-800">${p.title}</span>
-        <button onclick="closePopup(${p.id})" class="text-gray-400 hover:text-gray-600 p-1"><i class="fas fa-times text-xs"></i></button>
+      <div class="bg-slate-50 flex justify-between items-center border-b" style="padding:var(--space-sm) var(--space-md)">
+        <span class="font-semibold text-gray-800 f-text-sm">${p.title}</span>
+        <button onclick="closePopup(${p.id})" class="text-gray-400 hover:text-gray-600 p-1"><i class="fas fa-times f-text-xs"></i></button>
       </div>
-      <div class="overflow-y-auto" style="max-height:${p.height}px;">
-        ${p.popup_type === 'image' && p.image_url ? `<img src="${p.image_url}" alt="${p.title}" class="w-full h-auto">` : `<div class="p-4">${p.content || ''}</div>`}
+      <div class="overflow-y-auto" style="max-height:min(${p.height}px, 70vh);">
+        ${p.popup_type === 'image' && p.image_url ? `<img src="${p.image_url}" alt="${p.title}" class="w-full h-auto">` : `<div style="padding:var(--space-md)">${p.content || ''}</div>`}
       </div>
-      <div class="px-4 py-2 bg-gray-50 border-t text-right">
-        <button onclick="closePopup(${p.id})" class="text-xs text-gray-500 hover:text-gray-700 px-3 py-1.5 rounded hover:bg-gray-100 transition-colors">닫기</button>
+      <div class="bg-gray-50 border-t text-right" style="padding:var(--space-sm) var(--space-md)">
+        <button onclick="closePopup(${p.id})" class="text-gray-500 hover:text-gray-700 rounded hover:bg-gray-100 transition-colors f-text-xs" style="padding:var(--space-xs) var(--space-sm)">닫기</button>
       </div>
     </div>
     `).join('')}
@@ -51,71 +51,71 @@ export function homePage(opts: {
       <div class="absolute inset-0 bg-gradient-to-br from-[#0F172A] via-[#162544] to-[#0F172A]"></div>
       <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-950/30 to-transparent"></div>
       <div class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-[#0B1120] to-transparent"></div>
-      <!-- Decorative dots -->
-      <div class="absolute top-16 left-[8%] text-blue-500/[0.06] text-6xl"><i class="fas fa-shield-halved"></i></div>
-      <div class="absolute top-1/3 right-[10%] text-blue-500/[0.05] text-5xl"><i class="fas fa-lock"></i></div>
-      <div class="absolute bottom-20 left-[20%] text-blue-500/[0.05] text-4xl"><i class="fas fa-key"></i></div>
+      <!-- Decorative -->
+      <div class="absolute top-16 left-[8%] text-blue-500/[0.06]" style="font-size:clamp(2rem,4vw,4rem)"><i class="fas fa-shield-halved"></i></div>
+      <div class="absolute top-1/3 right-[10%] text-blue-500/[0.05]" style="font-size:clamp(1.8rem,3.5vw,3.5rem)"><i class="fas fa-lock"></i></div>
+      <div class="absolute bottom-20 left-[20%] text-blue-500/[0.05]" style="font-size:clamp(1.5rem,2.5vw,2.5rem)"><i class="fas fa-key"></i></div>
     </div>
 
-    <div class="relative max-w-[1320px] mx-auto px-4 lg:px-6 py-16 lg:py-24">
-      <div class="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16 items-center">
+    <div class="relative fluid-container" style="padding-top:var(--space-2xl); padding-bottom:var(--space-2xl)">
+      <div class="grid grid-cols-1 lg:grid-cols-5 items-center" style="gap:clamp(1.5rem, 3vw, 4rem)">
 
         <!-- Left — 3 cols -->
         <div class="lg:col-span-3" data-aos="fade-right">
-          <div class="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 px-3.5 py-1.5 rounded-full mb-5">
+          <div class="inline-flex items-center bg-blue-500/10 border border-blue-500/20 rounded-full f-text-xs" style="gap:var(--space-xs); padding:var(--space-xs) var(--space-sm)">
             <span class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></span>
-            <span class="text-blue-300 font-medium text-xs">국가 공인 정보보안 시험·평가 전문기관</span>
+            <span class="text-blue-300 font-medium">국가 공인 정보보안 시험·평가 전문기관</span>
           </div>
-          <h1 class="text-white font-black text-2xl lg:text-[2.5rem] leading-snug mb-5">
+          <h1 class="text-white font-black leading-snug f-text-hero" style="margin-top:var(--space-md); margin-bottom:var(--space-md)">
             ${s.site_slogan || '최상의 시험·인증 서비스로<br><span class="text-blue-400">정보보안 기술</span>을 완성'}
           </h1>
-          <p class="text-slate-400 text-sm lg:text-base leading-relaxed mb-8 max-w-lg">
+          <p class="text-slate-400 leading-relaxed max-w-lg f-text-base" style="margin-bottom:var(--space-lg)">
             ${s.site_sub_slogan || '정보보안 기술은 IT제품으로 구현되고 시험·인증 서비스를 통해 완성됩니다.'}
           </p>
-          <div class="flex flex-wrap gap-3">
-            <a href="/support/inquiry" class="inline-flex items-center gap-2 bg-accent hover:bg-accent-dark text-white px-6 py-3 rounded-lg font-semibold transition-all shadow-lg shadow-accent/20 text-sm">
-              <i class="fas fa-paper-plane text-xs"></i> 온라인 상담
+          <div class="flex flex-wrap" style="gap:var(--space-sm)">
+            <a href="/support/inquiry" class="inline-flex items-center bg-accent hover:bg-accent-dark text-white rounded-lg font-semibold transition-all shadow-lg shadow-accent/20 f-text-sm" style="gap:var(--space-xs); padding:var(--space-sm) var(--space-lg)">
+              <i class="fas fa-paper-plane f-text-xs"></i> 온라인 상담
             </a>
-            <a href="#services" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 text-white border border-white/20 px-6 py-3 rounded-lg font-semibold transition-all text-sm">
-              <i class="fas fa-th-large text-xs"></i> 사업분야 보기
+            <a href="#services" class="inline-flex items-center bg-white/10 hover:bg-white/15 text-white border border-white/20 rounded-lg font-semibold transition-all f-text-sm" style="gap:var(--space-xs); padding:var(--space-sm) var(--space-lg)">
+              <i class="fas fa-th-large f-text-xs"></i> 사업분야 보기
             </a>
           </div>
         </div>
 
         <!-- Right — 2 cols: Contact card -->
         <div class="lg:col-span-2" data-aos="fade-left" data-aos-delay="150">
-          <div class="relative bg-white rounded-2xl shadow-2xl shadow-black/20 p-6 lg:p-7">
+          <div class="relative bg-white rounded-2xl shadow-2xl shadow-black/20" style="padding:var(--space-lg)">
             <div class="absolute top-0 left-6 right-6 h-[3px] bg-gradient-to-r from-accent to-blue-400 rounded-b-full"></div>
             <!-- Online badge -->
             <div class="absolute -top-2 -right-2 w-4 h-4 bg-green-400 rounded-full border-2 border-white"></div>
             <div class="absolute -top-2 -right-2 w-4 h-4 bg-green-400 rounded-full animate-ping opacity-60"></div>
 
-            <p class="text-slate-500 text-xs font-semibold mb-1 tracking-wider uppercase">
+            <p class="text-slate-500 font-semibold tracking-wider uppercase f-text-xs" style="margin-bottom:var(--space-xs)">
               <i class="fas fa-headset mr-1 text-accent"></i>상담문의
             </p>
-            <a href="tel:${s.phone || '02-586-1230'}" class="block text-primary font-black text-2xl lg:text-3xl mb-4 hover:text-accent transition-colors tracking-tight">
+            <a href="tel:${s.phone || '02-586-1230'}" class="block text-primary font-black hover:text-accent transition-colors tracking-tight f-text-3xl" style="margin-bottom:var(--space-md)">
               ${s.phone_display || s.phone || '02-586-1230'}
             </a>
 
-            <div class="space-y-2.5 text-slate-600 text-sm">
-              <div class="flex items-center gap-2.5">
-                <div class="w-7 h-7 bg-blue-50 rounded flex items-center justify-center shrink-0"><i class="fas fa-envelope text-accent text-xs"></i></div>
+            <div class="text-slate-600 f-text-sm" style="display:flex; flex-direction:column; gap:var(--space-sm)">
+              <div class="flex items-center" style="gap:var(--space-sm)">
+                <div class="shrink-0 bg-blue-50 rounded flex items-center justify-center" style="width:clamp(24px,2vw,28px); height:clamp(24px,2vw,28px)"><i class="fas fa-envelope text-accent f-text-xs"></i></div>
                 <a href="mailto:${s.email || 'koist@koist.kr'}" class="hover:text-accent transition-colors">${s.email || 'koist@koist.kr'}</a>
               </div>
-              <div class="flex items-center gap-2.5">
-                <div class="w-7 h-7 bg-blue-50 rounded flex items-center justify-center shrink-0"><i class="fas fa-fax text-accent text-xs"></i></div>
+              <div class="flex items-center" style="gap:var(--space-sm)">
+                <div class="shrink-0 bg-blue-50 rounded flex items-center justify-center" style="width:clamp(24px,2vw,28px); height:clamp(24px,2vw,28px)"><i class="fas fa-fax text-accent f-text-xs"></i></div>
                 <span>FAX ${s.fax || '02-586-1238'}</span>
               </div>
-              <div class="flex items-start gap-2.5">
-                <div class="w-7 h-7 bg-blue-50 rounded flex items-center justify-center shrink-0 mt-0.5"><i class="fas fa-location-dot text-accent text-xs"></i></div>
-                <span class="leading-snug text-xs">${s.address || '서울특별시 서초구 효령로 336 윤일빌딩 4층'}</span>
+              <div class="flex items-start" style="gap:var(--space-sm)">
+                <div class="shrink-0 bg-blue-50 rounded flex items-center justify-center mt-0.5" style="width:clamp(24px,2vw,28px); height:clamp(24px,2vw,28px)"><i class="fas fa-location-dot text-accent f-text-xs"></i></div>
+                <span class="leading-snug f-text-xs">${s.address || '서울특별시 서초구 효령로 336 윤일빌딩 4층'}</span>
               </div>
             </div>
 
-            <div class="mt-5 pt-4 border-t">
-              <div class="flex items-center gap-2 bg-green-50 border border-green-200/60 px-3 py-2 rounded-lg">
-                <i class="fas fa-bolt text-yellow-500 text-xs"></i>
-                <span class="text-green-700 font-bold text-sm">CC평가 신청 즉시 착수 가능</span>
+            <div class="border-t" style="margin-top:var(--space-md); padding-top:var(--space-md)">
+              <div class="flex items-center bg-green-50 border border-green-200/60 rounded-lg" style="gap:var(--space-xs); padding:var(--space-sm) var(--space-md)">
+                <i class="fas fa-bolt text-yellow-500 f-text-xs"></i>
+                <span class="text-green-700 font-bold f-text-sm">CC평가 신청 즉시 착수 가능</span>
               </div>
             </div>
           </div>
@@ -125,23 +125,23 @@ export function homePage(opts: {
   </section>
 
   <!-- ═══════════ Services ═══════════ -->
-  <section id="services" class="py-14 lg:py-20 bg-white">
-    <div class="max-w-[1320px] mx-auto px-4 lg:px-6">
-      <div class="text-center mb-10 lg:mb-14" data-aos="fade-up">
-        <p class="text-accent font-semibold text-xs tracking-widest uppercase mb-2">Our Services</p>
-        <h2 class="text-2xl lg:text-3xl font-bold text-primary mb-3">핵심 사업분야</h2>
-        <p class="text-slate-500 text-sm lg:text-base">KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요</p>
+  <section id="services" class="bg-white f-section-y">
+    <div class="fluid-container">
+      <div class="text-center f-mb" data-aos="fade-up">
+        <p class="text-accent font-semibold tracking-widest uppercase f-text-xs" style="margin-bottom:var(--space-xs)">Our Services</p>
+        <h2 class="font-bold text-primary f-text-2xl" style="margin-bottom:var(--space-xs)">핵심 사업분야</h2>
+        <p class="text-slate-500 f-text-sm">KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요</p>
       </div>
 
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-5">
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5" style="gap:clamp(0.5rem, 1vw, 1.25rem)">
         ${deps.map((dept, i) => `
-        <a href="/services/${dept.slug}" class="card-hover group block bg-white border border-slate-200 rounded-xl p-5 hover:border-slate-300 relative overflow-hidden" data-aos="fade-up" data-aos-delay="${i * 50}">
+        <a href="/services/${dept.slug}" class="card-hover group block bg-white border border-slate-200 rounded-xl hover:border-slate-300 relative overflow-hidden" style="padding:clamp(0.75rem, 1.5vw, 1.25rem)" data-aos="fade-up" data-aos-delay="${i * 50}">
           <div class="absolute top-0 left-0 right-0 h-[3px] opacity-0 group-hover:opacity-100 transition-opacity" style="background:${dept.color}"></div>
-          <div class="w-11 h-11 rounded-lg flex items-center justify-center mb-3" style="background:${dept.color}12">
-            <i class="fas ${dept.icon} text-lg" style="color:${dept.color}"></i>
+          <div class="rounded-lg flex items-center justify-center" style="width:clamp(32px,3vw,44px); height:clamp(32px,3vw,44px); background:${dept.color}12; margin-bottom:var(--space-sm)">
+            <i class="fas ${dept.icon}" style="color:${dept.color}; font-size:var(--text-lg)"></i>
           </div>
-          <h3 class="font-bold text-primary text-sm mb-1.5 group-hover:text-accent transition-colors">${dept.name}</h3>
-          <p class="text-slate-500 text-xs leading-relaxed line-clamp-2">${dept.description || ''}</p>
+          <h3 class="font-bold text-primary group-hover:text-accent transition-colors f-text-sm" style="margin-bottom:var(--space-xs)">${dept.name}</h3>
+          <p class="text-slate-500 leading-relaxed line-clamp-2 f-text-xs">${dept.description || ''}</p>
         </a>
         `).join('')}
       </div>
@@ -149,61 +149,61 @@ export function homePage(opts: {
   </section>
 
   <!-- ═══════════ Notices + Progress ═══════════ -->
-  <section class="py-14 lg:py-20 bg-[#F8FAFC]">
-    <div class="max-w-[1320px] mx-auto px-4 lg:px-6">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+  <section class="bg-[#F8FAFC] f-section-y">
+    <div class="fluid-container">
+      <div class="grid grid-cols-1 lg:grid-cols-2" style="gap:clamp(1rem, 2vw, 2rem)">
 
         <!-- Notices -->
-        <div data-aos="fade-right" class="bg-white rounded-xl p-6 lg:p-8 shadow-sm border border-slate-100">
-          <div class="flex justify-between items-center mb-5">
-            <h3 class="text-lg font-bold text-primary flex items-center gap-2">
-              <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center"><i class="fas fa-bullhorn text-accent text-sm"></i></div>
+        <div data-aos="fade-right" class="bg-white rounded-xl shadow-sm border border-slate-100" style="padding:clamp(1rem, 2vw, 2rem)">
+          <div class="flex justify-between items-center" style="margin-bottom:var(--space-md)">
+            <h3 class="font-bold text-primary flex items-center f-text-lg" style="gap:var(--space-sm)">
+              <div class="bg-blue-50 rounded-lg flex items-center justify-center" style="width:clamp(26px,2.5vw,32px); height:clamp(26px,2.5vw,32px)"><i class="fas fa-bullhorn text-accent f-text-sm"></i></div>
               공지사항
             </h3>
-            <a href="/support/notice" class="text-accent text-xs font-semibold hover:underline">더보기 <i class="fas fa-chevron-right text-[10px]"></i></a>
+            <a href="/support/notice" class="text-accent font-semibold hover:underline f-text-xs">더보기 <i class="fas fa-chevron-right" style="font-size:10px"></i></a>
           </div>
           <div class="divide-y divide-slate-100">
             ${notices.length > 0 ? notices.map(n => `
-            <a href="/support/notice/${n.id}" class="flex items-center gap-3 py-3 hover:bg-blue-50/40 -mx-2 px-2 rounded transition-colors group">
-              ${n.is_pinned ? '<span class="shrink-0 w-5 h-5 bg-red-500 text-white text-[10px] rounded flex items-center justify-center font-bold">N</span>' : '<span class="shrink-0 w-1.5 h-1.5 bg-slate-300 rounded-full"></span>'}
-              <span class="flex-1 text-sm text-slate-700 truncate group-hover:text-accent transition-colors">${n.title}</span>
-              <span class="shrink-0 text-xs text-slate-400">${n.created_at ? n.created_at.split('T')[0] : ''}</span>
+            <a href="/support/notice/${n.id}" class="flex items-center py-2.5 hover:bg-blue-50/40 -mx-2 px-2 rounded transition-colors group" style="gap:var(--space-sm)">
+              ${n.is_pinned ? '<span class="shrink-0 bg-red-500 text-white rounded flex items-center justify-center font-bold" style="width:clamp(16px,1.5vw,20px); height:clamp(16px,1.5vw,20px); font-size:9px">N</span>' : '<span class="shrink-0 w-1.5 h-1.5 bg-slate-300 rounded-full"></span>'}
+              <span class="flex-1 text-slate-700 truncate group-hover:text-accent transition-colors f-text-sm">${n.title}</span>
+              <span class="shrink-0 text-slate-400 f-text-xs">${n.created_at ? n.created_at.split('T')[0] : ''}</span>
             </a>
-            `).join('') : '<p class="text-slate-400 text-sm py-6 text-center">등록된 공지사항이 없습니다.</p>'}
+            `).join('') : '<p class="text-slate-400 text-center f-text-sm" style="padding:var(--space-xl) 0">등록된 공지사항이 없습니다.</p>'}
           </div>
         </div>
 
         <!-- Progress -->
-        <div data-aos="fade-left" class="bg-white rounded-xl p-6 lg:p-8 shadow-sm border border-slate-100">
-          <div class="flex justify-between items-center mb-5">
-            <h3 class="text-lg font-bold text-primary flex items-center gap-2">
-              <div class="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center"><i class="fas fa-chart-bar text-emerald-500 text-sm"></i></div>
+        <div data-aos="fade-left" class="bg-white rounded-xl shadow-sm border border-slate-100" style="padding:clamp(1rem, 2vw, 2rem)">
+          <div class="flex justify-between items-center" style="margin-bottom:var(--space-md)">
+            <h3 class="font-bold text-primary flex items-center f-text-lg" style="gap:var(--space-sm)">
+              <div class="bg-emerald-50 rounded-lg flex items-center justify-center" style="width:clamp(26px,2.5vw,32px); height:clamp(26px,2.5vw,32px)"><i class="fas fa-chart-bar text-emerald-500 f-text-sm"></i></div>
               평가현황
             </h3>
-            <a href="/support/progress" class="text-accent text-xs font-semibold hover:underline">더보기 <i class="fas fa-chevron-right text-[10px]"></i></a>
+            <a href="/support/progress" class="text-accent font-semibold hover:underline f-text-xs">더보기 <i class="fas fa-chevron-right" style="font-size:10px"></i></a>
           </div>
           <div class="overflow-x-auto">
-            <table class="w-full text-sm">
+            <table class="w-full">
               <thead>
                 <tr class="text-left text-slate-500 border-b border-slate-100">
-                  <th class="pb-2.5 font-medium text-xs">구분</th>
-                  <th class="pb-2.5 font-medium text-xs">제품명</th>
-                  <th class="pb-2.5 font-medium text-xs">상태</th>
+                  <th class="font-medium f-text-xs" style="padding-bottom:var(--space-sm)">구분</th>
+                  <th class="font-medium f-text-xs" style="padding-bottom:var(--space-sm)">제품명</th>
+                  <th class="font-medium f-text-xs" style="padding-bottom:var(--space-sm)">상태</th>
                 </tr>
               </thead>
               <tbody>
                 ${progress.length > 0 ? progress.map(p => `
                 <tr class="border-b border-slate-50 hover:bg-slate-50/60 transition-colors">
-                  <td class="py-2.5 text-xs text-slate-500">${p.category}</td>
-                  <td class="py-2.5 text-slate-700 font-medium text-xs">${p.product_name}</td>
-                  <td class="py-2.5">
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium ${p.status === '완료' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}">
+                  <td class="text-slate-500 f-text-xs" style="padding:var(--space-sm) var(--space-xs) var(--space-sm) 0">${p.category}</td>
+                  <td class="text-slate-700 font-medium f-text-xs" style="padding:var(--space-sm) var(--space-xs)">${p.product_name}</td>
+                  <td style="padding:var(--space-sm) 0 var(--space-sm) var(--space-xs)">
+                    <span class="inline-flex items-center gap-1 rounded-full font-medium f-text-xs ${p.status === '완료' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}" style="padding:2px var(--space-sm)">
                       <span class="w-1.5 h-1.5 rounded-full ${p.status === '완료' ? 'bg-green-500' : 'bg-amber-500'}"></span>
                       ${p.status}
                     </span>
                   </td>
                 </tr>
-                `).join('') : '<tr><td colspan="3" class="text-center py-6 text-slate-400 text-sm">등록된 현황이 없습니다.</td></tr>'}
+                `).join('') : '<tr><td colspan="3" class="text-center text-slate-400 f-text-sm" style="padding:var(--space-xl) 0">등록된 현황이 없습니다.</td></tr>'}
               </tbody>
             </table>
           </div>
@@ -213,26 +213,26 @@ export function homePage(opts: {
   </section>
 
   <!-- ═══════════ CTA ═══════════ -->
-  <section class="py-14 lg:py-20 bg-gradient-to-br from-[#0F172A] via-[#1E3A5F] to-[#1E293B] relative overflow-hidden">
+  <section class="bg-gradient-to-br from-[#0F172A] via-[#1E3A5F] to-[#1E293B] relative overflow-hidden f-section-y">
     <div class="absolute top-0 left-1/4 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"></div>
     <div class="absolute bottom-0 right-1/4 w-56 h-56 bg-indigo-500/10 rounded-full blur-3xl"></div>
-    <div class="relative max-w-[1320px] mx-auto px-4 lg:px-6 text-center" data-aos="fade-up">
-      <p class="text-blue-300 text-xs font-semibold tracking-widest uppercase mb-3"><i class="fas fa-headset mr-1"></i>전문 상담 안내</p>
-      <h2 class="text-white font-bold text-xl lg:text-3xl mb-3">정보보안 시험·인증이 필요하신가요?</h2>
-      <p class="text-blue-200/70 text-sm lg:text-base mb-8 max-w-xl mx-auto">전문 상담원이 빠르고 정확하게 안내해 드립니다</p>
-      <div class="flex flex-wrap justify-center gap-3">
-        <a href="tel:${s.phone || '02-586-1230'}" class="inline-flex items-center gap-2 bg-white text-primary px-7 py-3 rounded-lg font-bold text-sm hover:shadow-xl transition-all">
-          <i class="fas fa-phone text-xs"></i> ${s.phone || '02-586-1230'}
+    <div class="relative fluid-container text-center" data-aos="fade-up">
+      <p class="text-blue-300 font-semibold tracking-widest uppercase f-text-xs" style="margin-bottom:var(--space-sm)"><i class="fas fa-headset mr-1"></i>전문 상담 안내</p>
+      <h2 class="text-white font-bold f-text-2xl" style="margin-bottom:var(--space-sm)">정보보안 시험·인증이 필요하신가요?</h2>
+      <p class="text-blue-200/70 max-w-xl mx-auto f-text-base" style="margin-bottom:var(--space-lg)">전문 상담원이 빠르고 정확하게 안내해 드립니다</p>
+      <div class="flex flex-wrap justify-center" style="gap:var(--space-sm)">
+        <a href="tel:${s.phone || '02-586-1230'}" class="inline-flex items-center bg-white text-primary rounded-lg font-bold hover:shadow-xl transition-all f-text-sm" style="gap:var(--space-xs); padding:var(--space-sm) var(--space-lg)">
+          <i class="fas fa-phone f-text-xs"></i> ${s.phone || '02-586-1230'}
         </a>
-        <a href="/support/inquiry" class="inline-flex items-center gap-2 bg-accent hover:bg-accent-dark text-white px-7 py-3 rounded-lg font-bold text-sm transition-all shadow-lg shadow-accent/20">
-          <i class="fas fa-envelope text-xs"></i> 온라인 상담
+        <a href="/support/inquiry" class="inline-flex items-center bg-accent hover:bg-accent-dark text-white rounded-lg font-bold transition-all shadow-lg shadow-accent/20 f-text-sm" style="gap:var(--space-xs); padding:var(--space-sm) var(--space-lg)">
+          <i class="fas fa-envelope f-text-xs"></i> 온라인 상담
         </a>
       </div>
     </div>
   </section>
 
   <!-- Mobile Fixed Phone -->
-  <a href="tel:${s.phone || '02-586-1230'}" class="sm:hidden fixed bottom-5 right-5 z-50 w-12 h-12 bg-accent text-white rounded-full shadow-lg shadow-accent/30 flex items-center justify-center text-lg hover:scale-110 transition-transform">
+  <a href="tel:${s.phone || '02-586-1230'}" class="sm:hidden fixed bottom-5 right-5 z-50 bg-accent text-white rounded-full shadow-lg shadow-accent/30 flex items-center justify-center hover:scale-110 transition-transform" style="width:clamp(44px,5vw,52px); height:clamp(44px,5vw,52px); font-size:var(--text-lg)">
     <i class="fas fa-phone"></i>
   </a>
   `;
