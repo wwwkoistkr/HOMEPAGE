@@ -1,5 +1,13 @@
-// KOIST - Home Page Template (v5 - Full Fluid Responsive)
+// KOIST - Home Page Template (v5.3 - Dynamic Background Images & Editable Text)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem } from '../types';
+
+// Helper: generate background style with image overlay or gradient fallback
+function bgStyle(imageUrl: string | undefined, fallbackGradient: string, opacity: string = '0.85'): string {
+  if (imageUrl && imageUrl.trim() !== '') {
+    return `background-image: linear-gradient(rgba(15,23,42,${opacity}), rgba(15,23,42,${opacity})), url('${imageUrl}'); background-size:cover; background-position:center;`;
+  }
+  return `background: ${fallbackGradient};`;
+}
 
 export function homePage(opts: {
   settings: SettingsMap;
@@ -14,8 +22,10 @@ export function homePage(opts: {
   const notices = opts.notices.slice(0, 5);
   const progress = opts.progressItems.slice(0, 5);
 
+  const heroOpacity = s.hero_overlay_opacity || '0.85';
+
   return `
-  <!-- ═══════════ Popups ═══════════ -->
+  <!-- Popups -->
   ${popups.length > 0 ? `
   <div id="popupContainer">
     ${popups.map((p, i) => `
@@ -45,26 +55,26 @@ export function homePage(opts: {
   ` : ''}
 
   <!-- ═══════════ Hero ═══════════ -->
-  <section class="relative bg-[#0F172A] overflow-hidden">
-    <!-- BG layers -->
+  <section class="relative overflow-hidden" style="${bgStyle(s.hero_bg_url, 'linear-gradient(135deg, #0F172A 0%, #162544 50%, #0F172A 100%)', heroOpacity)}">
+    <!-- BG decorative layers (shown when no background image) -->
+    ${!s.hero_bg_url ? `
     <div class="absolute inset-0">
-      <div class="absolute inset-0 bg-gradient-to-br from-[#0F172A] via-[#162544] to-[#0F172A]"></div>
       <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-blue-950/30 to-transparent"></div>
       <div class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-[#0B1120] to-transparent"></div>
-      <!-- Decorative -->
       <div class="absolute top-16 left-[8%] text-blue-500/[0.06]" style="font-size:clamp(2rem,4vw,4rem)"><i class="fas fa-shield-halved"></i></div>
       <div class="absolute top-1/3 right-[10%] text-blue-500/[0.05]" style="font-size:clamp(1.8rem,3.5vw,3.5rem)"><i class="fas fa-lock"></i></div>
       <div class="absolute bottom-20 left-[20%] text-blue-500/[0.05]" style="font-size:clamp(1.5rem,2.5vw,2.5rem)"><i class="fas fa-key"></i></div>
     </div>
+    ` : ''}
 
     <div class="relative fluid-container" style="padding-top:var(--space-2xl); padding-bottom:var(--space-2xl)">
       <div class="grid grid-cols-1 lg:grid-cols-5 items-center" style="gap:clamp(1.5rem, 3vw, 4rem)">
 
-        <!-- Left — 3 cols -->
+        <!-- Left -->
         <div class="lg:col-span-3" data-aos="fade-right">
           <div class="inline-flex items-center bg-blue-500/10 border border-blue-500/20 rounded-full f-text-xs" style="gap:var(--space-xs); padding:var(--space-xs) var(--space-sm)">
             <span class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></span>
-            <span class="text-blue-300 font-medium">국가 공인 정보보안 시험·평가 전문기관</span>
+            <span class="text-blue-300 font-medium">${s.hero_badge_text || '국가 공인 정보보안 시험·평가 전문기관'}</span>
           </div>
           <h1 class="text-white font-black leading-snug f-text-hero" style="margin-top:var(--space-md); margin-bottom:var(--space-md)">
             ${s.site_slogan || '최상의 시험·인증 서비스로<br><span class="text-blue-400">정보보안 기술</span>을 완성'}
@@ -74,19 +84,18 @@ export function homePage(opts: {
           </p>
           <div class="flex flex-wrap" style="gap:var(--space-sm)">
             <a href="/support/inquiry" class="inline-flex items-center bg-accent hover:bg-accent-dark text-white rounded-lg font-semibold transition-all shadow-lg shadow-accent/20 f-text-sm" style="gap:var(--space-xs); padding:var(--space-sm) var(--space-lg)">
-              <i class="fas fa-paper-plane f-text-xs"></i> 온라인 상담
+              <i class="fas fa-paper-plane f-text-xs"></i> ${s.hero_btn_primary || '온라인 상담'}
             </a>
             <a href="#services" class="inline-flex items-center bg-white/10 hover:bg-white/15 text-white border border-white/20 rounded-lg font-semibold transition-all f-text-sm" style="gap:var(--space-xs); padding:var(--space-sm) var(--space-lg)">
-              <i class="fas fa-th-large f-text-xs"></i> 사업분야 보기
+              <i class="fas fa-th-large f-text-xs"></i> ${s.hero_btn_secondary || '사업분야 보기'}
             </a>
           </div>
         </div>
 
-        <!-- Right — 2 cols: Contact card -->
+        <!-- Right: Contact card -->
         <div class="lg:col-span-2" data-aos="fade-left" data-aos-delay="150">
           <div class="relative bg-white rounded-2xl shadow-2xl shadow-black/20" style="padding:var(--space-lg)">
             <div class="absolute top-0 left-6 right-6 h-[3px] bg-gradient-to-r from-accent to-blue-400 rounded-b-full"></div>
-            <!-- Online badge -->
             <div class="absolute -top-2 -right-2 w-4 h-4 bg-green-400 rounded-full border-2 border-white"></div>
             <div class="absolute -top-2 -right-2 w-4 h-4 bg-green-400 rounded-full animate-ping opacity-60"></div>
 
@@ -115,7 +124,7 @@ export function homePage(opts: {
             <div class="border-t" style="margin-top:var(--space-md); padding-top:var(--space-md)">
               <div class="flex items-center bg-green-50 border border-green-200/60 rounded-lg" style="gap:var(--space-xs); padding:var(--space-sm) var(--space-md)">
                 <i class="fas fa-bolt text-yellow-500 f-text-xs"></i>
-                <span class="text-green-700 font-bold f-text-sm">CC평가 신청 즉시 착수 가능</span>
+                <span class="text-green-700 font-bold f-text-sm">${s.hero_quick_badge || 'CC평가 신청 즉시 착수 가능'}</span>
               </div>
             </div>
           </div>
@@ -125,12 +134,12 @@ export function homePage(opts: {
   </section>
 
   <!-- ═══════════ Services ═══════════ -->
-  <section id="services" class="bg-white f-section-y">
-    <div class="fluid-container">
+  <section id="services" class="f-section-y relative overflow-hidden" style="${s.services_bg_url ? bgStyle(s.services_bg_url, '', '0.95').replace('rgba(15,23,42,', 'rgba(255,255,255,') : 'background: #FFFFFF;'}">
+    <div class="relative fluid-container">
       <div class="text-center f-mb" data-aos="fade-up">
         <p class="text-accent font-semibold tracking-widest uppercase f-text-xs" style="margin-bottom:var(--space-xs)">Our Services</p>
-        <h2 class="font-bold text-primary f-text-2xl" style="margin-bottom:var(--space-xs)">핵심 사업분야</h2>
-        <p class="text-slate-500 f-text-sm">KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요</p>
+        <h2 class="font-bold text-primary f-text-2xl" style="margin-bottom:var(--space-xs)">${s.services_title || '핵심 사업분야'}</h2>
+        <p class="text-slate-500 f-text-sm">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
       </div>
 
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5" style="gap:clamp(0.5rem, 1vw, 1.25rem)">
@@ -149,8 +158,8 @@ export function homePage(opts: {
   </section>
 
   <!-- ═══════════ Notices + Progress ═══════════ -->
-  <section class="bg-[#F8FAFC] f-section-y">
-    <div class="fluid-container">
+  <section class="f-section-y relative overflow-hidden" style="${s.notice_progress_bg_url ? bgStyle(s.notice_progress_bg_url, '', '0.03').replace('rgba(15,23,42,', 'rgba(248,250,252,') : 'background: #F8FAFC;'}">
+    <div class="relative fluid-container">
       <div class="grid grid-cols-1 lg:grid-cols-2" style="gap:clamp(1rem, 2vw, 2rem)">
 
         <!-- Notices -->
@@ -188,7 +197,7 @@ export function homePage(opts: {
                 <tr class="text-left text-slate-500 border-b border-slate-100">
                   <th class="font-medium f-text-xs" style="padding-bottom:var(--space-sm)">제품명</th>
                   <th class="font-medium f-text-xs hidden sm:table-cell" style="padding-bottom:var(--space-sm)">보증등급</th>
-                  <th class="font-medium f-text-xs" style="padding-bottom:var(--space-sm)">상태</th>
+                  <th class="font-medium f-text-xs" style="padding-bottom:var(--space-sm); white-space:nowrap">상태</th>
                 </tr>
               </thead>
               <tbody>
@@ -199,7 +208,7 @@ export function homePage(opts: {
                     <span class="inline-block bg-slate-100 text-slate-600 rounded font-mono f-text-xs" style="padding:1px var(--space-xs)">${p.assurance_level || '-'}</span>
                   </td>
                   <td style="padding:var(--space-sm) 0 var(--space-sm) var(--space-xs)">
-                    <span class="inline-flex items-center gap-1 rounded-full font-medium f-text-xs ${p.status === '평가완료' ? 'bg-green-50 text-green-600' : p.status === '평가진행' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'}" style="padding:2px var(--space-sm)">
+                    <span class="inline-flex items-center gap-1 rounded-full font-medium f-text-xs ${p.status === '평가완료' ? 'bg-green-50 text-green-600' : p.status === '평가진행' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'}" style="padding:2px var(--space-sm); white-space:nowrap">
                       <span class="w-1.5 h-1.5 rounded-full ${p.status === '평가완료' ? 'bg-green-500' : p.status === '평가진행' ? 'bg-blue-500' : 'bg-amber-500'}"></span>
                       ${p.status}
                     </span>
@@ -215,13 +224,15 @@ export function homePage(opts: {
   </section>
 
   <!-- ═══════════ CTA ═══════════ -->
-  <section class="bg-gradient-to-br from-[#0F172A] via-[#1E3A5F] to-[#1E293B] relative overflow-hidden f-section-y">
+  <section class="relative overflow-hidden f-section-y" style="${bgStyle(s.cta_bg_url, 'linear-gradient(135deg, #0F172A 0%, #1E3A5F 50%, #1E293B 100%)', '0.88')}">
+    ${!s.cta_bg_url ? `
     <div class="absolute top-0 left-1/4 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"></div>
     <div class="absolute bottom-0 right-1/4 w-56 h-56 bg-indigo-500/10 rounded-full blur-3xl"></div>
+    ` : ''}
     <div class="relative fluid-container text-center" data-aos="fade-up">
-      <p class="text-blue-300 font-semibold tracking-widest uppercase f-text-xs" style="margin-bottom:var(--space-sm)"><i class="fas fa-headset mr-1"></i>전문 상담 안내</p>
-      <h2 class="text-white font-bold f-text-2xl" style="margin-bottom:var(--space-sm)">정보보안 시험·인증이 필요하신가요?</h2>
-      <p class="text-blue-200/70 max-w-xl mx-auto f-text-base" style="margin-bottom:var(--space-lg)">전문 상담원이 빠르고 정확하게 안내해 드립니다</p>
+      <p class="text-blue-300 font-semibold tracking-widest uppercase f-text-xs" style="margin-bottom:var(--space-sm)"><i class="fas fa-headset mr-1"></i>${s.cta_subtitle || '전문 상담 안내'}</p>
+      <h2 class="text-white font-bold f-text-2xl" style="margin-bottom:var(--space-sm)">${s.cta_title || '정보보안 시험·인증이 필요하신가요?'}</h2>
+      <p class="text-blue-200/70 max-w-xl mx-auto f-text-base" style="margin-bottom:var(--space-lg)">${s.cta_description || '전문 상담원이 빠르고 정확하게 안내해 드립니다'}</p>
       <div class="flex flex-wrap justify-center" style="gap:var(--space-sm)">
         <a href="tel:${s.phone || '02-586-1230'}" class="inline-flex items-center bg-white text-primary rounded-lg font-bold hover:shadow-xl transition-all f-text-sm" style="gap:var(--space-xs); padding:var(--space-sm) var(--space-lg)">
           <i class="fas fa-phone f-text-xs"></i> ${s.phone || '02-586-1230'}

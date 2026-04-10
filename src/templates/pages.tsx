@@ -4,9 +4,14 @@ import type { SettingsMap, Department, DepPage, Notice, FAQ, ProgressItem } from
 /* ────────────── Service Detail Page ────────────── */
 export function servicePage(dept: Department, pages: DepPage[], currentPage: DepPage | null, settings: SettingsMap) {
   const s = settings;
+  // Background: dept-specific > page_header default > gradient fallback
+  const headerBg = dept.header_bg_url || s.page_header_bg_url || s.dept_bg_default || '';
+  const headerStyle = headerBg 
+    ? `padding:var(--space-xl) 0; background-image: linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.85)), url('${headerBg}'); background-size:cover; background-position:center;`
+    : 'padding:var(--space-xl) 0;';
   return `
   <!-- Page Header -->
-  <section class="bg-gradient-to-br from-[#0F172A] to-[#1E293B] relative overflow-hidden" style="padding:var(--space-xl) 0">
+  <section class="${headerBg ? '' : 'bg-gradient-to-br from-[#0F172A] to-[#1E293B] '}relative overflow-hidden" style="${headerStyle}">
     <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\\"20\\" height=\\"20\\" xmlns=\\"http://www.w3.org/2000/svg\\"%3E%3Ccircle cx=\\"1\\" cy=\\"1\\" r=\\"1\\" fill=\\"rgba(255,255,255,0.03)\\"%2F%3E%3C/svg%3E')]"></div>
     <div class="relative fluid-container">
       <nav class="flex items-center text-slate-400 f-text-xs" style="gap:var(--space-sm); margin-bottom:var(--space-sm)">
@@ -82,10 +87,11 @@ export function servicePage(dept: Department, pages: DepPage[], currentPage: Dep
 }
 
 /* ────────────── Notice List ────────────── */
-export function noticeListPage(notices: Notice[], page: number, total: number, perPage: number) {
+export function noticeListPage(notices: Notice[], page: number, total: number, perPage: number, settings: SettingsMap = {}) {
+  const s = settings;
   const totalPages = Math.ceil(total / perPage);
   return `
-  <section class="bg-gradient-to-br from-[#0F172A] to-[#1E293B] relative overflow-hidden" style="padding:var(--space-xl) 0">
+  <section class="relative overflow-hidden" style="padding:var(--space-xl) 0; ${s.page_header_bg_url ? `background-image: linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.85)), url('${s.page_header_bg_url}'); background-size:cover; background-position:center;` : 'background: linear-gradient(135deg, #0F172A, #1E293B);'}">
     <div class="relative fluid-container">
       <h1 class="text-white font-bold flex items-center f-text-xl" style="gap:var(--space-sm)">
         <i class="fas fa-bullhorn text-blue-400"></i>공지사항
@@ -126,9 +132,10 @@ export function noticeListPage(notices: Notice[], page: number, total: number, p
 }
 
 /* ────────────── Notice Detail ────────────── */
-export function noticeDetailPage(notice: Notice) {
+export function noticeDetailPage(notice: Notice, settings: SettingsMap = {}) {
+  const s = settings;
   return `
-  <section class="bg-gradient-to-br from-[#0F172A] to-[#1E293B] relative overflow-hidden" style="padding:var(--space-xl) 0">
+  <section class="relative overflow-hidden" style="padding:var(--space-xl) 0; ${s.page_header_bg_url ? `background-image: linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.85)), url('${s.page_header_bg_url}'); background-size:cover; background-position:center;` : 'background: linear-gradient(135deg, #0F172A, #1E293B);'}">
     <div class="relative fluid-container">
       <nav class="flex items-center text-slate-400 f-text-xs" style="gap:var(--space-sm); margin-bottom:var(--space-sm)">
         <a href="/" class="hover:text-white">홈</a><i class="fas fa-chevron-right text-[8px] text-slate-600"></i>
@@ -152,9 +159,10 @@ export function noticeDetailPage(notice: Notice) {
 }
 
 /* ────────────── FAQ ────────────── */
-export function faqPage(faqs: FAQ[]) {
+export function faqPage(faqs: FAQ[], settings: SettingsMap = {}) {
+  const s = settings;
   return `
-  <section class="bg-gradient-to-br from-[#0F172A] to-[#1E293B] relative overflow-hidden" style="padding:var(--space-xl) 0">
+  <section class="relative overflow-hidden" style="padding:var(--space-xl) 0; ${s.page_header_bg_url ? `background-image: linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.85)), url('${s.page_header_bg_url}'); background-size:cover; background-position:center;` : 'background: linear-gradient(135deg, #0F172A, #1E293B);'}">
     <div class="relative fluid-container">
       <h1 class="text-white font-bold flex items-center f-text-xl" style="gap:var(--space-sm)">
         <i class="fas fa-circle-question text-teal-400"></i>자주 묻는 질문
@@ -192,9 +200,9 @@ export function faqPage(faqs: FAQ[]) {
 
 /* ────────────── Inquiry ────────────── */
 export function inquiryPage(settings: SettingsMap) {
-  const s = settings;
+  const s = settings || {};
   return `
-  <section class="bg-gradient-to-br from-[#0F172A] to-[#1E293B] relative overflow-hidden" style="padding:var(--space-xl) 0">
+  <section class="relative overflow-hidden" style="padding:var(--space-xl) 0; ${s.page_header_bg_url ? `background-image: linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.85)), url('${s.page_header_bg_url}'); background-size:cover; background-position:center;` : 'background: linear-gradient(135deg, #0F172A, #1E293B);'}">
     <div class="relative fluid-container">
       <h1 class="text-white font-bold flex items-center f-text-xl" style="gap:var(--space-sm)">
         <i class="fas fa-envelope text-amber-400"></i>온라인 상담문의
@@ -274,7 +282,8 @@ export function inquiryPage(settings: SettingsMap) {
 }
 
 /* ────────────── Progress (Full-featured with Pagination & Search) ────────────── */
-export function progressPage(items: ProgressItem[], page: number = 1, total: number = 0, perPage: number = 15, search: string = '', statusFilter: string = '') {
+export function progressPage(items: ProgressItem[], page: number = 1, total: number = 0, perPage: number = 15, search: string = '', statusFilter: string = '', settings: SettingsMap = {}) {
+  const s = settings;
   const totalPages = Math.ceil(total / perPage);
   const startNum = total - (page - 1) * perPage;
 
@@ -297,7 +306,7 @@ export function progressPage(items: ProgressItem[], page: number = 1, total: num
 
   return `
   <!-- Page Header -->
-  <section class="bg-gradient-to-br from-[#0F172A] to-[#1E293B] relative overflow-hidden" style="padding:var(--space-xl) 0">
+  <section class="relative overflow-hidden" style="padding:var(--space-xl) 0; ${s.page_header_bg_url ? `background-image: linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.85)), url('${s.page_header_bg_url}'); background-size:cover; background-position:center;` : 'background: linear-gradient(135deg, #0F172A, #1E293B);'}">
     <div class="relative fluid-container">
       <h1 class="text-white font-bold flex items-center f-text-xl" style="gap:var(--space-sm)">
         <i class="fas fa-chart-bar text-emerald-400"></i>CC평가 현황
@@ -342,7 +351,7 @@ export function progressPage(items: ProgressItem[], page: number = 1, total: num
                 <th class="text-center font-medium" style="padding:var(--space-sm) var(--space-md); width:80px">보증등급</th>
                 <th class="text-center font-medium hidden sm:table-cell" style="padding:var(--space-sm) var(--space-md); width:80px">인증구분</th>
                 <th class="text-center font-medium hidden md:table-cell" style="padding:var(--space-sm) var(--space-md); width:80px">신청구분</th>
-                <th class="text-center font-medium" style="padding:var(--space-sm) var(--space-md); width:90px">진행상태</th>
+                <th class="text-center font-medium" style="padding:var(--space-sm) var(--space-md); width:100px; white-space:nowrap">진행상태</th>
               </tr>
             </thead>
             <tbody>
@@ -353,12 +362,12 @@ export function progressPage(items: ProgressItem[], page: number = 1, total: num
                   <span class="font-medium text-slate-800 f-text-sm">${p.product_name}</span>
                 </td>
                 <td class="text-center" style="padding:var(--space-sm) var(--space-md)">
-                  <span class="inline-block bg-slate-100 text-slate-700 rounded font-mono font-medium f-text-xs" style="padding:2px var(--space-sm)">${p.assurance_level || '-'}</span>
+                  <span class="inline-block bg-slate-100 text-slate-700 rounded font-mono font-medium f-text-xs" style="padding:2px var(--space-sm); white-space:nowrap">${p.assurance_level || '-'}</span>
                 </td>
-                <td class="text-center text-slate-600 hidden sm:table-cell f-text-xs" style="padding:var(--space-sm) var(--space-md)">${p.cert_type || '-'}</td>
-                <td class="text-center text-slate-600 hidden md:table-cell f-text-xs" style="padding:var(--space-sm) var(--space-md)">${p.eval_type || '-'}</td>
+                <td class="text-center text-slate-600 hidden sm:table-cell f-text-xs" style="padding:var(--space-sm) var(--space-md); white-space:nowrap">${p.cert_type || '-'}</td>
+                <td class="text-center text-slate-600 hidden md:table-cell f-text-xs" style="padding:var(--space-sm) var(--space-md); white-space:nowrap">${p.eval_type || '-'}</td>
                 <td class="text-center" style="padding:var(--space-sm) var(--space-md)">
-                  <span class="inline-flex items-center gap-1 rounded-full border font-medium f-text-xs ${statusBadge(p.status)}" style="padding:2px var(--space-sm)">
+                  <span class="inline-flex items-center gap-1 rounded-full border font-medium f-text-xs ${statusBadge(p.status)}" style="padding:2px var(--space-sm); white-space:nowrap">
                     <span class="w-1.5 h-1.5 rounded-full ${p.status === '평가완료' ? 'bg-green-500' : p.status === '평가진행' ? 'bg-blue-500' : 'bg-amber-500'}"></span>
                     ${p.status}
                   </span>
@@ -448,7 +457,7 @@ export function serviceProgressContent(items: ProgressItem[], page: number = 1, 
               <th class="text-center font-medium" style="padding:var(--space-sm) var(--space-md); width:80px">보증등급</th>
               <th class="text-center font-medium hidden sm:table-cell" style="padding:var(--space-sm) var(--space-md); width:80px">인증구분</th>
               <th class="text-center font-medium hidden md:table-cell" style="padding:var(--space-sm) var(--space-md); width:80px">신청구분</th>
-              <th class="text-center font-medium" style="padding:var(--space-sm) var(--space-md); width:90px">진행상태</th>
+              <th class="text-center font-medium" style="padding:var(--space-sm) var(--space-md); width:100px; white-space:nowrap">진행상태</th>
             </tr>
           </thead>
           <tbody>
@@ -464,7 +473,7 @@ export function serviceProgressContent(items: ProgressItem[], page: number = 1, 
               <td class="text-center text-slate-600 hidden sm:table-cell f-text-xs" style="padding:var(--space-sm) var(--space-md)">${p.cert_type || '-'}</td>
               <td class="text-center text-slate-600 hidden md:table-cell f-text-xs" style="padding:var(--space-sm) var(--space-md)">${p.eval_type || '-'}</td>
               <td class="text-center" style="padding:var(--space-sm) var(--space-md)">
-                <span class="inline-flex items-center gap-1 rounded-full border font-medium f-text-xs ${statusBadge(p.status)}" style="padding:2px var(--space-sm)">
+                <span class="inline-flex items-center gap-1 rounded-full border font-medium f-text-xs ${statusBadge(p.status)}" style="padding:2px var(--space-sm); white-space:nowrap">
                   <span class="w-1.5 h-1.5 rounded-full ${p.status === '평가완료' ? 'bg-green-500' : p.status === '평가진행' ? 'bg-blue-500' : 'bg-amber-500'}"></span>
                   ${p.status}
                 </span>
@@ -501,9 +510,10 @@ export function serviceProgressContent(items: ProgressItem[], page: number = 1, 
 }
 
 /* ────────────── Downloads ────────────── */
-export function downloadsPage(downloads: { id: number; title: string; description: string; file_name: string; category: string; download_count: number; created_at: string }[]) {
+export function downloadsPage(downloads: { id: number; title: string; description: string; file_name: string; category: string; download_count: number; created_at: string }[], settings: SettingsMap = {}) {
+  const s = settings;
   return `
-  <section class="bg-gradient-to-br from-[#0F172A] to-[#1E293B] relative overflow-hidden" style="padding:var(--space-xl) 0">
+  <section class="relative overflow-hidden" style="padding:var(--space-xl) 0; ${s.page_header_bg_url ? `background-image: linear-gradient(rgba(15,23,42,0.85), rgba(15,23,42,0.85)), url('${s.page_header_bg_url}'); background-size:cover; background-position:center;` : 'background: linear-gradient(135deg, #0F172A, #1E293B);'}">
     <div class="relative fluid-container">
       <h1 class="text-white font-bold flex items-center f-text-xl" style="gap:var(--space-sm)">
         <i class="fas fa-download text-purple-400"></i>자료실

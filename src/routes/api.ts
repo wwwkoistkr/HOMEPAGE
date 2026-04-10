@@ -117,4 +117,24 @@ api.post('/inquiries', async (c) => {
   }
 });
 
+// GET /api/images/:key+ - Serve images from R2 (public, cached)
+api.get('/images/*', async (c) => {
+  const key = c.req.path.replace('/api/images/', '');
+  if (!key) return c.json({ error: 'Image key required' }, 400);
+
+  try {
+    const object = await c.env.R2.get(key);
+    if (!object) return c.json({ error: 'Image not found' }, 404);
+
+    const headers = new Headers();
+    headers.set('Content-Type', object.httpMetadata?.contentType || 'image/jpeg');
+    headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+    headers.set('ETag', object.etag || '');
+
+    return new Response(object.body, { headers });
+  } catch {
+    return c.json({ error: 'Failed to retrieve image' }, 500);
+  }
+});
+
 export default api;

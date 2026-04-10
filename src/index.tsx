@@ -170,7 +170,7 @@ app.get('/support/notice', async (c) => {
   const total = (await db.prepare('SELECT COUNT(*) as cnt FROM notices').first<{ cnt: number }>())?.cnt || 0;
   const notices = (await db.prepare('SELECT * FROM notices ORDER BY is_pinned DESC, created_at DESC LIMIT ? OFFSET ?').bind(perPage, (page - 1) * perPage).all<Notice>()).results || [];
 
-  const content = noticeListPage(notices, page, total, perPage);
+  const content = noticeListPage(notices, page, total, perPage, settings);
   return c.html(layout({ settings, departments, title: '공지사항', content }));
 });
 
@@ -184,7 +184,7 @@ app.get('/support/notice/:id', async (c) => {
   const notice = await db.prepare('SELECT * FROM notices WHERE id = ?').bind(id).first<Notice>();
   if (!notice) return c.redirect('/support/notice');
 
-  const content = noticeDetailPage(notice);
+  const content = noticeDetailPage(notice, settings);
   return c.html(layout({ settings, departments, title: notice.title, content }));
 });
 
@@ -195,7 +195,7 @@ app.get('/support/faq', async (c) => {
   const departments = (await db.prepare('SELECT * FROM departments WHERE is_active = 1 ORDER BY sort_order').all<Department>()).results || [];
   const faqs = (await db.prepare('SELECT * FROM faqs WHERE is_active = 1 ORDER BY sort_order').all<FAQ>()).results || [];
 
-  const content = faqPage(faqs);
+  const content = faqPage(faqs, settings);
   return c.html(layout({ settings, departments, title: 'FAQ', content }));
 });
 
@@ -240,7 +240,7 @@ app.get('/support/progress', async (c) => {
   const allBinds = [...binds, perPage, offset];
   const items = (await dataStmt.bind(...allBinds).all<ProgressItem>()).results || [];
 
-  const content = progressPage(items, page, total, perPage, search, statusFilter);
+  const content = progressPage(items, page, total, perPage, search, statusFilter, settings);
   return c.html(layout({ settings, departments, title: '평가현황', content }));
 });
 
@@ -251,7 +251,7 @@ app.get('/support/downloads', async (c) => {
   const departments = (await db.prepare('SELECT * FROM departments WHERE is_active = 1 ORDER BY sort_order').all<Department>()).results || [];
   const items = (await db.prepare('SELECT * FROM downloads ORDER BY created_at DESC').all()).results || [];
 
-  const content = downloadsPage(items as any[]);
+  const content = downloadsPage(items as any[], settings);
   return c.html(layout({ settings, departments, title: '자료실', content }));
 });
 
@@ -328,7 +328,7 @@ app.get('/admin/dashboard', authMiddleware, async (c) => {
 });
 
 // Admin CRUD pages
-const adminPages = ['site-settings', 'departments', 'popups', 'notices', 'progress', 'downloads', 'faqs', 'inquiries', 'about'];
+const adminPages = ['site-settings', 'departments', 'popups', 'notices', 'progress', 'downloads', 'faqs', 'inquiries', 'images', 'about'];
 for (const page of adminPages) {
   app.get(`/admin/${page}`, authMiddleware, async (c) => {
     const db = c.env.DB;
@@ -352,6 +352,7 @@ function getAdminPageTitle(page: string): string {
     popups: '<i class="fas fa-window-restore text-purple-500 mr-2"></i>팝업 관리',
     notices: '<i class="fas fa-bullhorn text-green-500 mr-2"></i>공지사항 관리',
     progress: '<i class="fas fa-chart-bar text-yellow-500 mr-2"></i>평가현황 관리',
+    images: '<i class="fas fa-images text-pink-500 mr-2"></i>이미지 관리',
     downloads: '<i class="fas fa-download text-teal-500 mr-2"></i>자료실 관리',
     faqs: '<i class="fas fa-circle-question text-yellow-500 mr-2"></i>FAQ 관리',
     inquiries: '<i class="fas fa-envelope text-orange-500 mr-2"></i>상담문의 관리',

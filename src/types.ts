@@ -2,6 +2,7 @@
 
 export type Bindings = {
   DB: D1Database;
+  R2: R2Bucket;
   JWT_SECRET?: string;
 };
 
@@ -41,6 +42,7 @@ export type Department = {
   description: string;
   icon: string;
   color: string;
+  header_bg_url: string;
   sort_order: number;
   is_active: number;
 };
@@ -136,5 +138,19 @@ export interface AboutPage {
   created_at: string;
   updated_at: string;
 }
+
+export type ImageRecord = {
+  id: number;
+  file_name: string;
+  original_name: string;
+  r2_key: string;
+  mime_type: string;
+  file_size: number;
+  width: number;
+  height: number;
+  category: string;
+  alt_text: string;
+  created_at: string;
+};
 
 export type SettingsMap = Record<string, string>;

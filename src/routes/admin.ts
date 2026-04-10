@@ -1,6 +1,6 @@
 // KOIST - Admin API Routes
 import { Hono } from 'hono';
-import type { Bindings, Variables } from '../types';
+import type { Bindings, Variables, ImageRecord } from '../types';
 import { hashPassword, verifyPassword, generateSalt, createJWT } from '../utils/crypto';
 import { getJwtSecret } from '../middleware/auth';
 
@@ -103,7 +103,7 @@ admin.post('/departments', async (c) => {
 admin.put('/departments/:id', async (c) => {
   const id = c.req.param('id');
   const body = await c.req.json();
-  const fields = ['name', 'slug', 'description', 'icon', 'color', 'sort_order', 'is_active'];
+  const fields = ['name', 'slug', 'description', 'icon', 'color', 'sort_order', 'is_active', 'header_bg_url'];
   const updates: string[] = [];
   const values: any[] = [];
   for (const f of fields) { if (body[f] !== undefined) { updates.push(`${f} = ?`); values.push(body[f]); } }
@@ -305,6 +305,91 @@ admin.put('/about-pages/:id', async (c) => {
 
 admin.delete('/about-pages/:id', async (c) => {
   await c.env.DB.prepare('DELETE FROM about_pages WHERE id = ?').bind(c.req.param('id')).run();
+  return c.json({ success: true });
+});
+
+// ---- Images Management (R2) ----
+admin.get('/images', async (c) => {
+  const category = c.req.query('category') || '';
+  let sql = 'SELECT * FROM images ORDER BY created_at DESC';
+  const binds: string[] = [];
+  if (category) {
+    sql = 'SELECT * FROM images WHERE category = ? ORDER BY created_at DESC';
+    binds.push(category);
+  }
+  const stmt = c.env.DB.prepare(sql);
+  const result = await (binds.length > 0 ? stmt.bind(...binds) : stmt).all<ImageRecord>();
+  return c.json({ success: true, data: result.results || [] });
+});
+
+admin.post('/images', async (c) => {
+  try {
+    const contentType = c.req.header('content-type') || '';
+    
+    if (contentType.includes('multipart/form-data')) {
+      // Handle file upload via multipart form data
+      const formData = await c.req.formData();
+      const file = formData.get('file') as File | null;
+      const category = (formData.get('category') as string) || 'general';
+      const altText = (formData.get('alt_text') as string) || '';
+
+      if (!file) return c.json({ error: '파일을 선택해주세요.' }, 400);
+
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+      if (!allowedTypes.includes(file.type)) {
+        return c.json({ error: '지원하지 않는 파일 형식입니다. (JPG, PNG, GIF, WebP, SVG만 가능)' }, 400);
+      }
+
+      // Max 5MB
+      if (file.size > 5 * 1024 * 1024) {
+        return c.json({ error: '파일 크기는 5MB 이하만 가능합니다.' }, 400);
+      }
+
+      const timestamp = Date.now();
+      const ext = file.name.split('.').pop() || 'jpg';
+      const safeName = `${category}/${timestamp}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+      
+      // Upload to R2
+      const arrayBuffer = await file.arrayBuffer();
+      await c.env.R2.put(safeName, arrayBuffer, {
+        httpMetadata: { contentType: file.type },
+      });
+
+      // Save metadata to D1
+      await c.env.DB.prepare(
+        'INSERT INTO images (file_name, original_name, r2_key, mime_type, file_size, category, alt_text) VALUES (?,?,?,?,?,?,?)'
+      ).bind(safeName, file.name, safeName, file.type, file.size, category, altText).run();
+
+      const image = await c.env.DB.prepare('SELECT * FROM images WHERE r2_key = ?').bind(safeName).first<ImageRecord>();
+
+      return c.json({ 
+        success: true, 
+        data: image,
+        url: `/api/images/${safeName}` 
+      });
+    } else {
+      return c.json({ error: 'Content-Type must be multipart/form-data' }, 400);
+    }
+  } catch (err: any) {
+    return c.json({ error: '업로드 실패: ' + (err.message || '알 수 없는 오류') }, 500);
+  }
+});
+
+admin.delete('/images/:id', async (c) => {
+  const id = c.req.param('id');
+  const image = await c.env.DB.prepare('SELECT * FROM images WHERE id = ?').bind(id).first<ImageRecord>();
+  if (!image) return c.json({ error: '이미지를 찾을 수 없습니다.' }, 404);
+
+  // Delete from R2
+  try {
+    await c.env.R2.delete(image.r2_key);
+  } catch {
+    // R2 delete failure is non-critical
+  }
+
+  // Delete from D1
+  await c.env.DB.prepare('DELETE FROM images WHERE id = ?').bind(id).run();
   return c.json({ success: true });
 });
 

@@ -166,7 +166,7 @@ export function layout(opts: {
 <body class="bg-[#F1F5F9] text-slate-700">
 
   <!-- ═══════════ GNB ═══════════ -->
-  <header id="gnb" class="fixed top-0 left-0 right-0 z-50 bg-[#0F172A] shadow-lg shadow-black/10">
+  <header id="gnb" class="fixed top-0 left-0 right-0 z-50 shadow-lg shadow-black/10" style="${s.gnb_bg_url ? `background-image: linear-gradient(rgba(15,23,42,0.92), rgba(15,23,42,0.92)), url('${s.gnb_bg_url}'); background-size:cover; background-position:center;` : 'background: #0F172A;'}">
     <div class="fluid-container">
       <div class="flex items-center justify-between" style="height:var(--gnb-h)">
 
@@ -248,7 +248,7 @@ export function layout(opts: {
   </main>
 
   <!-- ═══════════ Footer ═══════════ -->
-  <footer class="bg-[#0F172A] text-gray-400 mt-auto">
+  <footer class="text-gray-400 mt-auto" style="${s.footer_bg_url ? `background-image: linear-gradient(rgba(15,23,42,0.93), rgba(15,23,42,0.93)), url('${s.footer_bg_url}'); background-size:cover; background-position:center;` : 'background: #0F172A;'}">
     <div class="h-0.5 bg-gradient-to-r from-accent via-blue-400 to-accent/60"></div>
 
     <div class="fluid-container f-section-y">

@@ -43,6 +43,8 @@
       +'<input id="dOrder" type="number" value="'+(dept?.sort_order||0)+'" placeholder="순서" class="px-3 py-2 border rounded-lg text-sm">'
       +'</div>'
       +'<textarea id="dDesc" rows="2" placeholder="설명" class="w-full px-3 py-2 border rounded-lg text-sm mb-3">'+(dept?.description||'')+'</textarea>'
+      +'<div class="mb-3"><label class="block text-xs font-medium text-gray-500 mb-1"><i class="fas fa-image mr-1"></i>헤더 배경 이미지 URL (비워두면 기본 그라데이션 사용)</label>'
+      +'<input id="dHeaderBg" value="'+(dept?.header_bg_url||'')+'" placeholder="/api/images/background/... 또는 외부 URL" class="w-full px-3 py-2 border rounded-lg text-sm"></div>'
       +'<div class="flex gap-2">'
       +'<button onclick="saveDept('+(dept?.id||'null')+')" class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm">저장</button>'
       +'<button onclick="document.getElementById(\'deptFormArea\').classList.add(\'hidden\')" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm">취소</button>'
@@ -71,7 +73,8 @@
       description: document.getElementById('dDesc').value,
       icon: document.getElementById('dIcon').value,
       color: document.getElementById('dColor').value,
-      sort_order: parseInt(document.getElementById('dOrder').value)||0
+      sort_order: parseInt(document.getElementById('dOrder').value)||0,
+      header_bg_url: document.getElementById('dHeaderBg').value
     };
     if(id) await apiCall('/api/admin/departments/'+id, 'PUT', body);
     else await apiCall('/api/admin/departments', 'POST', body);
