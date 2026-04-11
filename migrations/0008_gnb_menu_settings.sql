@@ -3,7 +3,7 @@
 
 -- GNB font scale (default 2x)
 INSERT OR IGNORE INTO site_settings (key, value, category, description)
-VALUES ('gnb_font_scale', '2', 'content', 'GNB 사업분야 메뉴 글자 크기 배율 (기본 2배)');
+VALUES ('gnb_font_scale', '1.4', 'content', 'GNB 사업분야 메뉴 글자 크기 배율 (기본 1.4배)');
 
 -- GNB gap scale (default 0.5 = 50% of original)
 INSERT OR IGNORE INTO site_settings (key, value, category, description)

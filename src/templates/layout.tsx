@@ -321,7 +321,7 @@ export function layout(opts: {
     /* GNB Link — v23 8K Ultra-Sharp (2x font, 50% tighter gap) */
     .gnb-link {
       padding: var(--gnb-link-pad-y, 0.5rem) var(--gnb-link-pad-x, clamp(0.15rem, 0.28vw, 0.35rem));
-      font-size: var(--gnb-link-font, clamp(1.40rem, 1.20rem + 0.60vw, 1.70rem));
+      font-size: var(--gnb-link-font, clamp(0.98rem, 0.84rem + 0.42vw, 1.19rem));
       font-weight: var(--gnb-link-weight, 600);
       color: var(--gnb-link-color, rgba(220,228,240,0.92));
       white-space: nowrap;
@@ -802,7 +802,7 @@ export function layout(opts: {
 
         <!-- Desktop GNB (v23 - 2x Font, 50% Gap, 8K Ultra-Sharp, Admin-Editable) -->
         ${(() => {
-          const gnbFontScale = parseFloat(s.gnb_font_scale || '2') || 2;
+          const gnbFontScale = parseFloat(s.gnb_font_scale || '1.4') || 1.4;
           const gnbGapScale = parseFloat(s.gnb_gap_scale || '0.5') || 0.5;
           const baseFontMin = 0.70;
           const baseFontVw = 0.30;
