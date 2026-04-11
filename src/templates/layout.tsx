@@ -1,4 +1,4 @@
-// KOIST - Main Layout Template (v13.0 - 3x Enlarged Cards + EAL Interactive + Dashboard Integration)
+// KOIST - Main Layout Template (v23.0 - 2x GNB Fonts, 50% Gap, 8K Ultra-Sharp, Admin-Editable)
 import type { SettingsMap, Department } from '../types';
 
 export function layout(opts: {
@@ -105,7 +105,7 @@ export function layout(opts: {
       --container-max: min(100% - var(--container-pad) * 2, 1320px);
 
       /* ── GNB ── */
-      --gnb-h: clamp(58px, 52px + 1vw, 72px);
+      --gnb-h: clamp(68px, 60px + 1.5vw, 88px);
 
       /* ── Premium Shadow Scale (4-level) ── */
       --shadow-xs:  0 1px 2px rgba(10,15,30,0.03);
@@ -318,27 +318,37 @@ export function layout(opts: {
                   inset 0 -1px 0 rgba(255,255,255,0.02);
     }
 
-    /* GNB Link */
+    /* GNB Link — v23 8K Ultra-Sharp (2x font, 50% tighter gap) */
     .gnb-link {
-      padding: 0.5rem clamp(0.3rem, 0.55vw, 0.7rem);
-      font-size: clamp(0.70rem, 0.60rem + 0.30vw, 0.85rem);
-      font-weight: 500;
-      color: rgba(203,213,225,0.85);
+      padding: var(--gnb-link-pad-y, 0.5rem) var(--gnb-link-pad-x, clamp(0.15rem, 0.28vw, 0.35rem));
+      font-size: var(--gnb-link-font, clamp(1.40rem, 1.20rem + 0.60vw, 1.70rem));
+      font-weight: var(--gnb-link-weight, 600);
+      color: var(--gnb-link-color, rgba(220,228,240,0.92));
       white-space: nowrap;
-      transition: color 0.25s ease;
-      letter-spacing: -0.01em;
+      transition: color 0.25s ease, text-shadow 0.25s ease;
+      letter-spacing: -0.02em;
       position: relative;
+      text-rendering: geometricPrecision;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
     .gnb-link::after {
       content: '';
       position: absolute;
-      bottom: -2px; left: 50%; width: 0; height: 2px;
+      bottom: -3px; left: 50%; width: 0; height: 2.5px;
       background: linear-gradient(90deg, #3B82F6, #06B6D4);
       transition: width 0.35s var(--ease-out), left 0.35s var(--ease-out);
-      border-radius: 1px;
+      border-radius: 1.5px;
     }
-    .gnb-link:hover { color: #FFFFFF; }
-    .gnb-link:hover::after { width: 75%; left: 12.5%; }
+    .gnb-link:hover { color: var(--gnb-link-hover, #FFFFFF); text-shadow: 0 0 12px rgba(59,130,246,0.25); }
+    .gnb-link:hover::after { width: 80%; left: 10%; }
+    /* 8K+ GNB scaling */
+    @media (min-width: 3840px) {
+      .gnb-link { font-size: var(--gnb-link-font, clamp(1.8rem, 1.5rem + 0.5vw, 2.4rem)); }
+    }
+    @media (min-width: 7680px) {
+      .gnb-link { font-size: var(--gnb-link-font, clamp(2.4rem, 2rem + 0.6vw, 3.2rem)); }
+    }
 
     /* GNB Dropdown */
     .gnb-item .gnb-dropdown {
@@ -790,16 +800,46 @@ export function layout(opts: {
           </div>
         </div>
 
-        <!-- Desktop GNB -->
-        <nav class="hidden lg:flex items-center" style="gap: var(--space-2xs); margin-left: clamp(8px, 1.5vw, 20px);">
-          ${deps.filter(d => d.is_active).map(dept => `
-          <div class="gnb-item relative">
-            <a href="/services/${dept.slug}" class="gnb-link">${dept.name}</a>
-            <div class="gnb-dropdown absolute top-full left-1/2 -translate-x-1/2 pt-2 min-w-[170px]" id="gnb-drop-${dept.slug}"></div>
-          </div>
-          `).join('')}
-          <a href="/support/notice" class="gnb-link">고객지원</a>
-        </nav>
+        <!-- Desktop GNB (v23 - 2x Font, 50% Gap, 8K Ultra-Sharp, Admin-Editable) -->
+        ${(() => {
+          const gnbFontScale = parseFloat(s.gnb_font_scale || '2') || 2;
+          const gnbGapScale = parseFloat(s.gnb_gap_scale || '0.5') || 0.5;
+          const baseFontMin = 0.70;
+          const baseFontVw = 0.30;
+          const baseFontMax = 0.85;
+          const fMin = (baseFontMin * gnbFontScale).toFixed(2);
+          const fVwCoeff = (baseFontVw * gnbFontScale).toFixed(2);
+          const fMax = (baseFontMax * gnbFontScale).toFixed(2);
+          const baseVwBase = 0.60;
+          const fVwBase = (baseVwBase * gnbFontScale).toFixed(2);
+          const padXMin = (0.30 * gnbGapScale).toFixed(2);
+          const padXVw = (0.55 * gnbGapScale).toFixed(2);
+          const padXMax = (0.70 * gnbGapScale).toFixed(2);
+          const gapMin = (0.15 * gnbGapScale).toFixed(2);
+          const gapVw = (0.10 * gnbGapScale).toFixed(2);
+          const gapMax = (0.25 * gnbGapScale).toFixed(2);
+          const gnbFontWeight = s.gnb_font_weight || '600';
+          const gnbTextColor = s.gnb_text_color || 'rgba(220,228,240,0.92)';
+          const gnbHoverColor = s.gnb_hover_color || '#FFFFFF';
+          const navItems = deps.filter(d => d.is_active).map(dept =>
+            '<div class="gnb-item relative">' +
+            '<a href="/services/' + dept.slug + '" class="gnb-link">' + dept.name + '</a>' +
+            '<div class="gnb-dropdown absolute top-full left-1/2 -translate-x-1/2 pt-2 min-w-[170px]" id="gnb-drop-' + dept.slug + '"></div>' +
+            '</div>'
+          ).join('');
+          return '<style>:root{' +
+            '--gnb-link-font:clamp(' + fMin + 'rem,' + fVwBase + 'rem + ' + fVwCoeff + 'vw,' + fMax + 'rem);' +
+            '--gnb-link-pad-x:clamp(' + padXMin + 'rem,' + padXVw + 'vw,' + padXMax + 'rem);' +
+            '--gnb-nav-gap:clamp(' + gapMin + 'rem,' + gapVw + 'vw,' + gapMax + 'rem);' +
+            '--gnb-link-weight:' + gnbFontWeight + ';' +
+            '--gnb-link-color:' + gnbTextColor + ';' +
+            '--gnb-link-hover:' + gnbHoverColor + ';' +
+            '}</style>' +
+            '<nav class="hidden lg:flex items-center" style="gap:var(--gnb-nav-gap);margin-left:clamp(4px,0.8vw,10px);-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision;">' +
+            navItems +
+            '<a href="/support/notice" class="gnb-link">고객지원</a>' +
+            '</nav>';
+        })()}
 
         <!-- Right Actions -->
         <div class="flex items-center" style="gap:var(--space-sm)">

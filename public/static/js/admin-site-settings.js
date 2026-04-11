@@ -329,6 +329,48 @@
             <p class="text-xs text-gray-400"><i class="fas fa-info-circle mr-1"></i>데스크탑 기준 열 수 (모바일은 자동 조정)</p>
           </div>
         </div>`;
+      // GNB Menu Layout Controls
+      } else if (s.key === 'gnb_font_scale') {
+        html += `
+        <div class="p-4 bg-sky-50/40 border border-sky-100 rounded-xl">
+          <label class="block text-sm font-bold text-sky-700 mb-2"><i class="fas fa-text-height mr-1"></i> ${s.description || 'GNB 메뉴 글자 크기 배율'}</label>
+          <div class="flex items-center gap-3">
+            <input type="range" min="0.5" max="4" step="0.1" data-key="${s.key}" value="${s.value || '2'}" id="input_${s.key}"
+              class="flex-1" oninput="document.getElementById('val_${s.key}').textContent=this.value+'배'">
+            <span id="val_${s.key}" class="text-sm font-bold text-sky-600 w-12 text-center">${s.value || '2'}배</span>
+          </div>
+          <p class="text-xs text-gray-400 mt-1"><i class="fas fa-info-circle mr-1"></i>1 = 기본(~12px), 2 = 2배(~24px). 상단 내비게이션 바의 사업분야 메뉴 글자 크기</p>
+        </div>`;
+      } else if (s.key === 'gnb_gap_scale') {
+        html += `
+        <div class="p-4 bg-sky-50/40 border border-sky-100 rounded-xl">
+          <label class="block text-sm font-bold text-sky-700 mb-2"><i class="fas fa-arrows-alt-h mr-1"></i> ${s.description || 'GNB 메뉴 간격 비율'}</label>
+          <div class="flex items-center gap-3">
+            <input type="range" min="0.1" max="2" step="0.1" data-key="${s.key}" value="${s.value || '0.5'}" id="input_${s.key}"
+              class="flex-1" oninput="document.getElementById('val_${s.key}').textContent=(this.value*100).toFixed(0)+'%'">
+            <span id="val_${s.key}" class="text-sm font-bold text-sky-600 w-12 text-center">${Math.round((parseFloat(s.value) || 0.5) * 100)}%</span>
+          </div>
+          <p class="text-xs text-gray-400 mt-1"><i class="fas fa-info-circle mr-1"></i>1.0 = 기본 간격, 0.5 = 50% 축소. 메뉴 항목 사이 여백</p>
+        </div>`;
+      } else if (s.key === 'gnb_font_weight') {
+        html += `
+        <div class="p-4 bg-sky-50/40 border border-sky-100 rounded-xl">
+          <label class="block text-sm font-bold text-sky-700 mb-2"><i class="fas fa-bold mr-1"></i> ${s.description || 'GNB 글자 두께'}</label>
+          <select data-key="${s.key}" id="input_${s.key}" class="px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/30">
+            ${[{v:'300',l:'Light'},{v:'400',l:'Regular'},{v:'500',l:'Medium'},{v:'600',l:'SemiBold'},{v:'700',l:'Bold'},{v:'800',l:'ExtraBold'},{v:'900',l:'Black'}].map(w => 
+              '<option value="'+w.v+'" '+((s.value||'600')==w.v?'selected':'')+'>'+w.v+' ('+w.l+')</option>'
+            ).join('')}
+          </select>
+        </div>`;
+      } else if (s.key === 'gnb_text_color' || s.key === 'gnb_hover_color') {
+        const label = s.key === 'gnb_text_color' ? 'GNB 기본 글자 색상' : 'GNB hover 글자 색상';
+        html += `
+        <div class="flex flex-col md:flex-row md:items-center gap-2">
+          <label class="md:w-48 text-sm font-medium text-gray-600 shrink-0"><i class="fas fa-palette mr-1 text-sky-500"></i>${s.description || label}</label>
+          <input type="text" data-key="${s.key}" value="${(s.value || '').replace(/"/g, '&quot;')}" id="input_${s.key}"
+            class="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500"
+            placeholder="rgba(220,228,240,0.92) 또는 #FFFFFF">
+        </div>`;
       } else if (s.key === 'logo_url') {
         // Logo URL with special UI
         html += `
