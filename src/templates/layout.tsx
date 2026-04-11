@@ -320,13 +320,13 @@ export function layout(opts: {
 
     /* GNB Link */
     .gnb-link {
-      padding: 0.5rem clamp(0.4rem, 0.7vw, 0.8rem);
-      font-size: clamp(0.73rem, 0.62rem + 0.34vw, 0.88rem);
+      padding: 0.5rem clamp(0.3rem, 0.55vw, 0.7rem);
+      font-size: clamp(0.70rem, 0.60rem + 0.30vw, 0.85rem);
       font-weight: 500;
       color: rgba(203,213,225,0.85);
       white-space: nowrap;
       transition: color 0.25s ease;
-      letter-spacing: -0.005em;
+      letter-spacing: -0.01em;
       position: relative;
     }
     .gnb-link::after {
@@ -765,10 +765,10 @@ export function layout(opts: {
       <div class="flex items-center justify-between" style="height:var(--gnb-h)">
 
         <!-- Logo + KOLAS Mark -->
-        <div class="flex items-center" style="gap: clamp(8px, 1.2vw, 16px)">
+        <div class="flex items-center shrink-0" style="gap: clamp(8px, 1.2vw, 16px); max-width: clamp(220px, 18vw, 300px);">
           <a href="/" class="flex items-center shrink-0 group" style="gap: var(--space-sm)">
             ${s.logo_url && s.logo_url.trim() !== '' && s.logo_url !== '/static/images/logo.png' ? `
-            <img src="${s.logo_url}" alt="${siteName}" style="height:clamp(30px, 26px + 0.8vw, 40px)" class="w-auto object-contain transition-transform group-hover:scale-[1.02]">
+            <img src="${s.logo_url}" alt="${siteName}" style="height:clamp(28px, 24px + 0.6vw, 36px); max-width:clamp(140px, 14vw, 200px);" class="w-auto object-contain transition-transform group-hover:scale-[1.02]">
             ` : `
             <div class="flex items-center" style="gap: var(--space-sm)">
               <div class="relative">
@@ -791,7 +791,7 @@ export function layout(opts: {
         </div>
 
         <!-- Desktop GNB -->
-        <nav class="hidden lg:flex items-center" style="gap: var(--space-2xs)">
+        <nav class="hidden lg:flex items-center" style="gap: var(--space-2xs); margin-left: clamp(8px, 1.5vw, 20px);">
           ${deps.filter(d => d.is_active).map(dept => `
           <div class="gnb-item relative">
             <a href="/services/${dept.slug}" class="gnb-link">${dept.name}</a>

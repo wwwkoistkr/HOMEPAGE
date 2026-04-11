@@ -260,88 +260,10 @@ export function homePage(opts: {
     </div>
   </section>
 
-  <!-- Core Values section removed per user request (첫번째 첨부파일 제거) -->
-
-  <!-- ════════════════════════════════════════════════════════
-       SERVICES SECTION (v15 - Premium Bento Grid)
-       ════════════════════════════════════════════════════════ -->
-  <section id="services" class="f-section-y relative overflow-hidden" style="background: #FFFFFF;">
-    <div class="absolute inset-0 opacity-[0.012]" style="background-image: radial-gradient(circle at 1px 1px, rgba(15,23,42,0.15) 1px, transparent 0); background-size: 32px 32px;"></div>
-
-    <div class="relative fluid-container">
-      <div class="text-center" style="margin-bottom: clamp(1.5rem,3vw,2.5rem)" data-aos="fade-up">
-        <div class="inline-flex items-center rounded-full f-text-xs font-semibold" style="gap:6px; padding:5px 14px; margin-bottom:var(--space-sm); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB;">
-          <i class="fas fa-cubes" style="font-size:9px"></i>KOIST 사업분야
-        </div>
-        <h2 class="font-bold text-primary f-text-2xl" style="margin-bottom:var(--space-xs)">${s.services_title || '핵심 사업분야'}</h2>
-        <p class="text-slate-500 f-text-sm max-w-md mx-auto">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
-      </div>
-
-      <!-- Bento Grid (3x Enlarged Tags) -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" style="gap:clamp(1rem, 2vw, 1.5rem)">
-        ${deps.map((dept, i) => `
-        <a href="/services/${dept.slug}" class="card-service-xl group block relative" style="--card-accent:${dept.color}; padding:clamp(2rem, 3.5vw, 3rem);" data-aos="fade-up" data-aos-delay="${Math.min(i * 40, 300)}">
-          <div class="rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg mx-auto" style="width:clamp(80px,8vw,110px); height:clamp(80px,8vw,110px); background: linear-gradient(135deg, ${dept.color}15, ${dept.color}08); margin-bottom:clamp(1rem,1.5vw,1.25rem);">
-            <i class="fas ${dept.icon}" style="color:${dept.color}; font-size:clamp(2.2rem,3.5vw,3rem)"></i>
-          </div>
-          <h3 class="font-bold text-primary group-hover:text-accent transition-colors text-center" style="font-size:clamp(1.3rem,2vw,1.65rem); margin-bottom:6px; line-height:1.35;">${dept.name}</h3>
-          <p class="text-slate-500 leading-snug text-center line-clamp-2" style="font-size:clamp(0.85rem,1.1vw,1rem);">${dept.description || ''}</p>
-          <div class="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-1 group-hover:translate-x-0">
-            <i class="fas fa-arrow-right text-accent/50" style="font-size:16px"></i>
-          </div>
-        </a>
-        `).join('')}
-      </div>
-    </div>
-  </section>
-
-  <!-- ════════════════════════════════════════════════════════
-       FEATURED SERVICES (v15 - Premium Image Cards)
-       ════════════════════════════════════════════════════════ -->
-  <section class="f-section-y relative overflow-hidden" style="background: linear-gradient(180deg, #F0F4F8 0%, #FFFFFF 100%);">
-    <div class="relative fluid-container">
-      <div class="text-center" style="margin-bottom: clamp(2rem,3.5vw,3rem)" data-aos="fade-up">
-        <div class="inline-flex items-center rounded-full f-text-xs font-semibold" style="gap:6px; padding:5px 14px; margin-bottom:var(--space-sm); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB;">
-          <i class="fas fa-briefcase" style="font-size:9px"></i>주요 사업 소개
-        </div>
-        <h2 class="font-bold text-primary f-text-2xl" style="margin-bottom:var(--space-xs)">KOIST 핵심 사업분야</h2>
-        <p class="text-slate-500 f-text-sm max-w-lg mx-auto">정보보안 시험·인증의 모든 분야를 전문적으로 수행합니다</p>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5" style="gap:clamp(0.75rem, 1.5vw, 1.25rem)">
-        ${[
-          { title: 'CC평가', slug: 'cc-evaluation', img: '/static/images/services/cc-evaluation.jpg', desc: '보안기능의 안정성과 신뢰성을 보증하는 국제공통평가기준(CC) 인증 서비스' },
-          { title: '보안기능 시험', slug: 'security-function-test', img: '/static/images/services/security-test.jpg', desc: '공공기관 도입을 위한 객관적인 제품 검증 시험 서비스' },
-          { title: '성능평가', slug: 'performance-evaluation', img: '/static/images/services/performance.jpg', desc: '기준에 따른 정보보호제품의 성능을 객관적으로 검증하는 평가 서비스' },
-          { title: '시험성적서', slug: 'test-report', img: '/static/images/services/test-report.jpg', desc: '객관적인 신뢰성 확보 및 소프트웨어 품질 검증 시험 서비스' },
-          { title: '정보보안진단', slug: 'security-diagnosis', img: '/static/images/services/security-diagnosis.jpg', desc: '보안진단 시스템을 통한 등급 부여 및 종합 보안 진단 서비스' },
-        ].map((item, i) => `
-        <div class="featured-service-card group rounded-xl overflow-hidden bg-white border border-slate-200/50" style="box-shadow: var(--shadow-sm);" data-aos="fade-up" data-aos-delay="${i * 80}">
-          <div class="relative overflow-hidden" style="height:clamp(120px,10vw,160px)">
-            <img src="${item.img}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
-            <div class="absolute inset-0" style="background: linear-gradient(180deg, transparent 30%, rgba(10,15,30,0.75) 100%);"></div>
-            <div class="absolute bottom-0 left-0 right-0" style="padding:10px 14px;">
-              <h3 class="text-white font-bold f-text-sm">${item.title}</h3>
-            </div>
-          </div>
-          <div style="padding:clamp(0.75rem,1.2vw,1rem)">
-            <p class="text-slate-600 f-text-xs leading-relaxed">${item.desc}</p>
-            <a href="/services/${item.slug}" class="inline-flex items-center text-accent font-semibold f-text-xs mt-2 group-hover:gap-2 transition-all" style="gap:4px">
-              자세히 <i class="fas fa-arrow-right transition-transform duration-300 group-hover:translate-x-1" style="font-size:8px"></i>
-            </a>
-          </div>
-        </div>
-        `).join('')}
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
-
   <!-- ════════════════════════════════════════════════════════════════
-       EVALUATION PERIOD COMPARISON (v15 - Premium Centered Card)
+       EVALUATION PERIOD COMPARISON — moved to top (user request: 첫번째 첨부파일을 상단 가운데로)
        ════════════════════════════════════════════════════════════════ -->
-  <section class="relative overflow-hidden" style="padding:clamp(2.5rem,4vw,3.5rem) 0; background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);">
+  <section class="relative overflow-hidden" style="padding:clamp(2rem,3.5vw,3rem) 0; background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);">
     <div class="relative fluid-container">
       <div class="mx-auto" style="max-width:min(920px, 100%)">
         <div class="rounded-2xl overflow-hidden" style="box-shadow: 0 4px 24px rgba(10,15,30,0.08), 0 1px 4px rgba(10,15,30,0.04); border: 1px solid rgba(226,232,240,0.70);" data-aos="fade-up" data-aos-duration="700">
@@ -426,10 +348,84 @@ export function homePage(opts: {
     </div>
   </section>
 
+  <!-- ════════════════════════════════════════════════════════
+       SERVICES SECTION (v16 - Premium Bento Grid, 3x Enlarged)
+       ════════════════════════════════════════════════════════ -->
+  <section id="services" class="f-section-y relative overflow-hidden" style="background: #FFFFFF;">
+    <div class="absolute inset-0 opacity-[0.012]" style="background-image: radial-gradient(circle at 1px 1px, rgba(15,23,42,0.15) 1px, transparent 0); background-size: 32px 32px;"></div>
+
+    <div class="relative fluid-container">
+      <div class="text-center" style="margin-bottom: clamp(1.5rem,3vw,2.5rem)" data-aos="fade-up">
+        <div class="inline-flex items-center rounded-full f-text-xs font-semibold" style="gap:6px; padding:5px 14px; margin-bottom:var(--space-sm); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB;">
+          <i class="fas fa-cubes" style="font-size:9px"></i>KOIST 사업분야
+        </div>
+        <h2 class="font-bold text-primary f-text-2xl" style="margin-bottom:var(--space-xs)">${s.services_title || '핵심 사업분야'}</h2>
+        <p class="text-slate-500 f-text-sm max-w-md mx-auto">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
+      </div>
+
+      <!-- Bento Grid (3x Enlarged Tags) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" style="gap:clamp(1rem, 2vw, 1.5rem)">
+        ${deps.map((dept, i) => `
+        <a href="/services/${dept.slug}" class="card-service-xl group block relative" style="--card-accent:${dept.color}; padding:clamp(2rem, 3.5vw, 3rem);" data-aos="fade-up" data-aos-delay="${Math.min(i * 40, 300)}">
+          <div class="rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg mx-auto" style="width:clamp(80px,8vw,110px); height:clamp(80px,8vw,110px); background: linear-gradient(135deg, ${dept.color}15, ${dept.color}08); margin-bottom:clamp(1rem,1.5vw,1.25rem);">
+            <i class="fas ${dept.icon}" style="color:${dept.color}; font-size:clamp(2.2rem,3.5vw,3rem)"></i>
+          </div>
+          <h3 class="font-bold text-primary group-hover:text-accent transition-colors text-center" style="font-size:clamp(1.3rem,2vw,1.65rem); margin-bottom:6px; line-height:1.35;">${dept.name}</h3>
+          <p class="text-slate-500 leading-snug text-center line-clamp-2" style="font-size:clamp(0.85rem,1.1vw,1rem);">${dept.description || ''}</p>
+          <div class="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-1 group-hover:translate-x-0">
+            <i class="fas fa-arrow-right text-accent/50" style="font-size:16px"></i>
+          </div>
+        </a>
+        `).join('')}
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════
+       FEATURED SERVICES (v16 - Premium Image Cards)
+       ════════════════════════════════════════════════════════ -->
+  <section class="f-section-y relative overflow-hidden" style="background: linear-gradient(180deg, #F0F4F8 0%, #FFFFFF 100%);">
+    <div class="relative fluid-container">
+      <div class="text-center" style="margin-bottom: clamp(2rem,3.5vw,3rem)" data-aos="fade-up">
+        <div class="inline-flex items-center rounded-full f-text-xs font-semibold" style="gap:6px; padding:5px 14px; margin-bottom:var(--space-sm); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB;">
+          <i class="fas fa-briefcase" style="font-size:9px"></i>주요 사업 소개
+        </div>
+        <h2 class="font-bold text-primary f-text-2xl" style="margin-bottom:var(--space-xs)">KOIST 핵심 사업분야</h2>
+        <p class="text-slate-500 f-text-sm max-w-lg mx-auto">정보보안 시험·인증의 모든 분야를 전문적으로 수행합니다</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5" style="gap:clamp(0.75rem, 1.5vw, 1.25rem)">
+        ${[
+          { title: 'CC평가', slug: 'cc-evaluation', img: '/static/images/services/cc-evaluation.jpg', desc: '보안기능의 안정성과 신뢰성을 보증하는 국제공통평가기준(CC) 인증 서비스' },
+          { title: '보안기능 시험', slug: 'security-function-test', img: '/static/images/services/security-test.jpg', desc: '공공기관 도입을 위한 객관적인 제품 검증 시험 서비스' },
+          { title: '성능평가', slug: 'performance-evaluation', img: '/static/images/services/performance.jpg', desc: '기준에 따른 정보보호제품의 성능을 객관적으로 검증하는 평가 서비스' },
+          { title: '시험성적서', slug: 'test-report', img: '/static/images/services/test-report.jpg', desc: '객관적인 신뢰성 확보 및 소프트웨어 품질 검증 시험 서비스' },
+          { title: '정보보안진단', slug: 'security-diagnosis', img: '/static/images/services/security-diagnosis.jpg', desc: '보안진단 시스템을 통한 등급 부여 및 종합 보안 진단 서비스' },
+        ].map((item, i) => `
+        <div class="featured-service-card group rounded-xl overflow-hidden bg-white border border-slate-200/50" style="box-shadow: var(--shadow-sm);" data-aos="fade-up" data-aos-delay="${i * 80}">
+          <div class="relative overflow-hidden" style="height:clamp(120px,10vw,160px)">
+            <img src="${item.img}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
+            <div class="absolute inset-0" style="background: linear-gradient(180deg, transparent 30%, rgba(10,15,30,0.75) 100%);"></div>
+            <div class="absolute bottom-0 left-0 right-0" style="padding:10px 14px;">
+              <h3 class="text-white font-bold f-text-sm">${item.title}</h3>
+            </div>
+          </div>
+          <div style="padding:clamp(0.75rem,1.2vw,1rem)">
+            <p class="text-slate-600 f-text-xs leading-relaxed">${item.desc}</p>
+            <a href="/services/${item.slug}" class="inline-flex items-center text-accent font-semibold f-text-xs mt-2 group-hover:gap-2 transition-all" style="gap:4px">
+              자세히 <i class="fas fa-arrow-right transition-transform duration-300 group-hover:translate-x-1" style="font-size:8px"></i>
+            </a>
+          </div>
+        </div>
+        `).join('')}
+      </div>
+    </div>
+  </section>
+
   <div class="section-divider"></div>
 
   <!-- ════════════════════════════════════════════════════════
-       NOTICES + PROGRESS (v15 - Premium Dual Panels)
+       NOTICES + PROGRESS (v16 - Premium Dual Panels)
        ════════════════════════════════════════════════════════ -->
   <section class="f-section-y relative overflow-hidden" style="background: var(--grad-surface);">
     <div class="relative fluid-container">
