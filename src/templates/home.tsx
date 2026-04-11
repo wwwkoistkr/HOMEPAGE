@@ -47,42 +47,77 @@ export function homePage(opts: {
        ════════════════════════════════════════════════ -->
   ${popups.length > 0 ? `
   <div id="popupOverlay" class="fixed inset-0 z-[9998] transition-opacity duration-300" style="background:rgba(0,0,0,0.5); backdrop-filter:blur(4px);" onclick="closeAllPopups()"></div>
-  <div id="popupContainer" class="fixed z-[9999] popup-responsive-container">
-    ${popups.length > 1 ? `
-    <div id="popupNav" class="absolute -top-10 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
-      <button onclick="prevPopup()" class="w-7 h-7 rounded-full bg-white/90 text-gray-600 hover:bg-white shadow flex items-center justify-center text-xs"><i class="fas fa-chevron-left"></i></button>
-      <span id="popupCounter" class="text-white text-xs font-medium bg-black/40 px-2.5 py-1 rounded-full">1 / ${popups.length}</span>
-      <button onclick="nextPopup()" class="w-7 h-7 rounded-full bg-white/90 text-gray-600 hover:bg-white shadow flex items-center justify-center text-xs"><i class="fas fa-chevron-right"></i></button>
+  <div id="popupContainer" class="fixed z-[9999] popup-multi-container">
+    <!-- Close All Button -->
+    <div class="popup-close-all-bar">
+      <button onclick="closeAllPopups()" class="inline-flex items-center gap-2 bg-white/95 text-gray-700 font-semibold rounded-full shadow-lg hover:bg-white transition-all" style="padding:8px 20px; font-size:13px;">
+        <i class="fas fa-times" style="font-size:12px"></i> 모두 닫기
+      </button>
     </div>
-    ` : ''}
-    ${popups.map((p, i) => `
-    <div class="popup-slide bg-white rounded-2xl overflow-hidden shadow-2xl ${i === 0 ? '' : 'hidden'}"
-         data-popup-index="${i}" data-popup-id="${p.id}" id="popup-${p.id}"
-         style="width:100%; max-height:80vh; border:1px solid rgba(226,232,240,0.5); animation: popupSlideIn 0.3s ease-out;">
-      <div class="flex justify-between items-center border-b border-slate-100" style="padding:12px 16px; background:linear-gradient(135deg, rgba(248,250,252,0.95), rgba(241,245,249,0.95));">
-        <span class="font-semibold text-gray-800" style="font-size:14px; line-height:1.3;">${p.title}</span>
-        <button onclick="closeAllPopups()" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors" aria-label="닫기">
-          <i class="fas fa-times" style="font-size:14px;"></i>
-        </button>
+    <!-- Popup Cards (side by side on desktop, stacked on mobile) -->
+    <div class="popup-grid">
+      ${popups.map((p, i) => `
+      <div class="popup-card bg-white rounded-2xl overflow-hidden shadow-2xl"
+           data-popup-id="${p.id}" id="popup-${p.id}"
+           style="border:1px solid rgba(226,232,240,0.5); animation: popupSlideIn ${0.3 + i * 0.1}s ease-out;">
+        <div class="flex justify-between items-center border-b border-slate-100" style="padding:12px 16px; background:linear-gradient(135deg, rgba(248,250,252,0.95), rgba(241,245,249,0.95));">
+          <span class="font-semibold text-gray-800" style="font-size:14px; line-height:1.3;">${p.title}</span>
+          <button onclick="closeSinglePopup(${p.id})" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors" aria-label="닫기">
+            <i class="fas fa-times" style="font-size:14px;"></i>
+          </button>
+        </div>
+        <div class="overflow-y-auto" style="max-height:calc(75vh - 120px); -webkit-overflow-scrolling:touch;">
+          ${p.popup_type === 'image' && p.image_url 
+            ? `<img src="${p.image_url}" alt="${p.title}" class="w-full h-auto" loading="lazy">` 
+            : `<div style="padding:16px; font-size:14px; line-height:1.7; color:#374151;">${p.content || ''}</div>`}
+        </div>
+        <div class="flex justify-between items-center border-t border-slate-100" style="padding:10px 16px; background:rgba(248,250,252,0.7);">
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" id="noshow-${p.id}" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 accent-blue-600">
+            <span class="text-gray-500" style="font-size:12px;">오늘 하루 안 보기</span>
+          </label>
+          <button onclick="closeSinglePopup(${p.id})" class="text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100 transition-colors font-medium" style="padding:6px 14px; font-size:13px;">닫기</button>
+        </div>
       </div>
-      <div class="overflow-y-auto" style="max-height:calc(80vh - 110px); -webkit-overflow-scrolling:touch;">
-        ${p.popup_type === 'image' && p.image_url 
-          ? `<img src="${p.image_url}" alt="${p.title}" class="w-full h-auto" loading="lazy">` 
-          : `<div style="padding:16px; font-size:14px; line-height:1.7; color:#374151;">${p.content || ''}</div>`}
-      </div>
-      <div class="flex justify-between items-center border-t border-slate-100" style="padding:10px 16px; background:rgba(248,250,252,0.7);">
-        <label class="flex items-center gap-2 cursor-pointer select-none">
-          <input type="checkbox" id="noshow-${p.id}" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 accent-blue-600">
-          <span class="text-gray-500" style="font-size:12px;">오늘 하루 안 보기</span>
-        </label>
-        <button onclick="closeAllPopups()" class="text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100 transition-colors font-medium" style="padding:6px 14px; font-size:13px;">닫기</button>
-      </div>
+      `).join('')}
     </div>
-    `).join('')}
   </div>
   <style>
-    .popup-responsive-container { top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(420px, 92vw); max-width: 500px; }
-    @media (min-width: 768px) { .popup-responsive-container { width: min(440px, 80vw); max-width: 520px; } }
+    .popup-multi-container {
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: min(92vw, 920px);
+      max-height: 90vh;
+    }
+    .popup-close-all-bar {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .popup-grid {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .popup-card {
+      flex: 1;
+      min-width: 0;
+      max-height: 80vh;
+    }
+    /* Mobile: stack vertically with scroll */
+    @media (max-width: 767px) {
+      .popup-multi-container {
+        width: min(92vw, 420px);
+      }
+      .popup-grid {
+        flex-direction: column;
+        max-height: 75vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .popup-card {
+        flex: none;
+        width: 100%;
+      }
+    }
     @keyframes popupSlideIn { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
     @keyframes popupFadeOut { from { opacity: 1; } to { opacity: 0; transform: scale(0.95); } }
   </style>
@@ -94,13 +129,39 @@ export function homePage(opts: {
     var allHidden = popupIds.every(function(id) { return hiddenIds[id] === today; });
     if (allHidden) { var ov = document.getElementById('popupOverlay'); var ct = document.getElementById('popupContainer'); if (ov) ov.remove(); if (ct) ct.remove(); return; }
     popupIds.forEach(function(id) { if (hiddenIds[id] === today) { var el = document.getElementById('popup-' + id); if (el) el.remove(); } });
+    // Check if all cards were removed
+    setTimeout(function() {
+      var ct = document.getElementById('popupContainer');
+      if (ct && ct.querySelectorAll('.popup-card').length === 0) {
+        var ov = document.getElementById('popupOverlay');
+        if (ov) ov.remove(); if (ct) ct.remove();
+      }
+    }, 0);
   })();
-  var currentPopupIndex = 0, totalPopups = ${popups.length};
-  function showPopupAtIndex(idx) { document.querySelectorAll('.popup-slide').forEach(function(s, i) { if (i === idx) { s.classList.remove('hidden'); s.style.animation = 'popupSlideIn 0.25s ease-out'; } else { s.classList.add('hidden'); } }); var c = document.getElementById('popupCounter'); if (c) c.textContent = (idx + 1) + ' / ' + totalPopups; currentPopupIndex = idx; }
-  function nextPopup() { showPopupAtIndex((currentPopupIndex + 1) % totalPopups); }
-  function prevPopup() { showPopupAtIndex((currentPopupIndex - 1 + totalPopups) % totalPopups); }
-  function closeAllPopups() { var today = new Date().toISOString().slice(0, 10); var hids = JSON.parse(localStorage.getItem('koist_popup_hidden') || '{}'); document.querySelectorAll('[id^="noshow-"]').forEach(function(cb) { if (cb.checked) hids[cb.id.replace('noshow-', '')] = today; }); localStorage.setItem('koist_popup_hidden', JSON.stringify(hids)); var ov = document.getElementById('popupOverlay'); var ct = document.getElementById('popupContainer'); if (ov) ov.style.opacity = '0'; if (ct) ct.style.animation = 'popupFadeOut 0.2s ease-in forwards'; setTimeout(function() { if (ov) ov.remove(); if (ct) ct.remove(); }, 250); }
-  (function() { var ct = document.getElementById('popupContainer'); if (!ct || totalPopups <= 1) return; var sx=0,sy=0; ct.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true}); ct.addEventListener('touchend',function(e){var dx=e.changedTouches[0].clientX-sx,dy=Math.abs(e.changedTouches[0].clientY-sy);if(Math.abs(dx)>50&&dy<100){if(dx<0)nextPopup();else prevPopup();}},{passive:true}); })();
+  function closeSinglePopup(id) {
+    var today = new Date().toISOString().slice(0, 10);
+    var hids = JSON.parse(localStorage.getItem('koist_popup_hidden') || '{}');
+    var cb = document.getElementById('noshow-' + id);
+    if (cb && cb.checked) hids[id] = today;
+    localStorage.setItem('koist_popup_hidden', JSON.stringify(hids));
+    var el = document.getElementById('popup-' + id);
+    if (el) { el.style.animation = 'popupFadeOut 0.2s ease-in forwards'; setTimeout(function() { el.remove(); checkRemainingPopups(); }, 250); }
+  }
+  function checkRemainingPopups() {
+    var ct = document.getElementById('popupContainer');
+    if (!ct || ct.querySelectorAll('.popup-card').length === 0) { closeAllPopups(); }
+  }
+  function closeAllPopups() {
+    var today = new Date().toISOString().slice(0, 10);
+    var hids = JSON.parse(localStorage.getItem('koist_popup_hidden') || '{}');
+    document.querySelectorAll('[id^="noshow-"]').forEach(function(cb) { if (cb.checked) hids[cb.id.replace('noshow-', '')] = today; });
+    localStorage.setItem('koist_popup_hidden', JSON.stringify(hids));
+    var ov = document.getElementById('popupOverlay');
+    var ct = document.getElementById('popupContainer');
+    if (ov) ov.style.opacity = '0';
+    if (ct) ct.style.animation = 'popupFadeOut 0.2s ease-in forwards';
+    setTimeout(function() { if (ov) ov.remove(); if (ct) ct.remove(); }, 250);
+  }
   document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeAllPopups(); });
   </script>
   ` : ''}
@@ -199,63 +260,7 @@ export function homePage(opts: {
     </div>
   </section>
 
-  <!-- ════════════════════════════════════════════════════════
-       CORE VALUES (v15 - Premium Glass Panels)
-       ════════════════════════════════════════════════════════ -->
-  <section id="coreValues" class="relative overflow-hidden" style="background: #0A0F1E;">
-    <div class="absolute inset-0" style="background: linear-gradient(135deg, rgba(10,15,30,0.92), rgba(15,25,50,0.88)); z-index:1;"></div>
-    <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0); background-size: 40px 40px; z-index:1;"></div>
-
-    <div class="relative fluid-container" style="z-index:2; padding-top:clamp(2.5rem,4vw,4rem); padding-bottom:clamp(2.5rem,4vw,4rem);">
-      <div class="text-center" style="margin-bottom:clamp(2rem,3.5vw,3.5rem)" data-aos="fade-up" data-aos-duration="800">
-        <span class="inline-block text-blue-400 font-bold tracking-widest uppercase f-text-sm" style="font-family:'Inter','Noto Sans KR',sans-serif; letter-spacing:0.15em;">KOIST Core Values</span>
-        <h2 class="text-white font-black f-text-2xl" style="margin-top:var(--space-sm); margin-bottom:var(--space-sm); line-height:1.35;">
-          최상의 시험 &middot; 인증 서비스로<br>정보보안 기술을 완성
-        </h2>
-        <p class="text-slate-400/80 f-text-base max-w-lg mx-auto leading-relaxed">
-          정보보안 기술은 IT제품으로 구현되고<br class="hidden sm:inline"> 시험 &middot; 인증 서비스를 통해 완성됩니다.
-        </p>
-      </div>
-
-      <!-- 4 Core Value Panels -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4" style="gap:0; border-radius:16px; overflow:hidden;">
-        ${[
-          { key: 'Expert', icon: 'fa-user-tie', color: 'blue', title: '시험&middot;인증 분야<br>최고의 전문 인력 구성', desc: '국제 전문자격 및 KISA 전문자격 인력으로 최고의 서비스를 제공합니다.' },
-          { key: 'One-Stop', icon: 'fa-arrows-spin', color: 'emerald', title: '컨설팅에서 평가까지<br>일괄서비스 제공', desc: 'KOIST만의 원스톱 맞춤형 컨설팅으로 신속한 시험 서비스를 제공합니다.' },
-          { key: 'Quality', icon: 'fa-award', color: 'yellow', title: '시험결과에 대한<br>최상의 품질 보장', desc: '정보보호제품에 대한 전문성을 바탕으로 고품질 서비스를 제공합니다.' },
-          { key: 'Reliability', icon: 'fa-building-columns', color: 'purple', title: '시험결과의 신뢰성<br>(공인시험기관)', desc: 'KOLAS 공인 시험기관으로서 검증지표 기반의 객관적인 시험 서비스를 제공합니다.' },
-        ].map((v, i) => {
-          const colorMap: Record<string, string[]> = {
-            blue: ['rgba(59,130,246,0.15)', 'rgba(6,182,212,0.10)', 'rgba(59,130,246,0.20)', '#60A5FA', '#3B82F6'],
-            emerald: ['rgba(16,185,129,0.15)', 'rgba(6,182,212,0.10)', 'rgba(16,185,129,0.20)', '#34D399', '#10B981'],
-            yellow: ['rgba(234,179,8,0.15)', 'rgba(251,191,36,0.10)', 'rgba(234,179,8,0.20)', '#FBBF24', '#F59E0B'],
-            purple: ['rgba(139,92,246,0.15)', 'rgba(167,139,250,0.10)', 'rgba(139,92,246,0.20)', '#A78BFA', '#8B5CF6'],
-          };
-          const c = colorMap[v.color];
-          return `
-        <div class="core-value-card group relative" style="${i < 3 ? 'border-right:1px solid rgba(255,255,255,0.06);' : ''}" data-aos="fade-in" data-aos-duration="800" data-aos-delay="${i * 120}">
-          <div class="relative z-10 flex flex-col items-center text-center text-white" style="padding:clamp(2rem,3vw,3rem) clamp(1rem,2vw,2rem);">
-            <div class="rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 duration-500" style="width:clamp(52px,4.5vw,68px); height:clamp(52px,4.5vw,68px); background: linear-gradient(135deg, ${c[0]}, ${c[1]}); margin-bottom:var(--space-md); border: 1px solid ${c[2]};">
-              <i class="fas ${v.icon}" style="color:${c[3]}; font-size:clamp(1.2rem,1.8vw,1.6rem)"></i>
-            </div>
-            <span class="font-bold tracking-widest uppercase f-text-xs" style="color:${c[3]}; font-family:'Inter',sans-serif; letter-spacing:0.15em; margin-bottom:var(--space-sm);">${v.key}</span>
-            <h3 class="text-white font-bold f-text-base" style="margin-bottom:var(--space-sm); line-height:1.5;">${v.title}</h3>
-            <p class="text-slate-400/70 f-text-xs leading-relaxed core-value-desc">${v.desc}</p>
-          </div>
-          <div class="core-value-overlay"></div>
-        </div>`;
-        }).join('')}
-      </div>
-
-      <!-- KOLAS badge -->
-      <div class="flex justify-center" style="margin-top:clamp(1.5rem,2.5vw,2.5rem)" data-aos="fade-up" data-aos-delay="500">
-        <div class="inline-flex items-center rounded-full" style="gap:8px; padding:8px 20px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
-          <i class="fas fa-certificate text-yellow-400" style="font-size:clamp(0.85rem,1.2vw,1.1rem)"></i>
-          <span class="text-slate-300 f-text-xs font-medium">KOLAS 국제공인시험기관 인정 (KTL-F-588)</span>
-        </div>
-      </div>
-    </div>
-  </section>
+  <!-- Core Values section removed per user request (첫번째 첨부파일 제거) -->
 
   <!-- ════════════════════════════════════════════════════════
        SERVICES SECTION (v15 - Premium Bento Grid)
@@ -272,17 +277,17 @@ export function homePage(opts: {
         <p class="text-slate-500 f-text-sm max-w-md mx-auto">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
       </div>
 
-      <!-- Bento Grid -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4" style="gap:clamp(0.6rem, 1.2vw, 1rem)">
+      <!-- Bento Grid (3x Enlarged Tags) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" style="gap:clamp(1rem, 2vw, 1.5rem)">
         ${deps.map((dept, i) => `
-        <a href="/services/${dept.slug}" class="card-service-xl group block relative" style="--card-accent:${dept.color}; padding:clamp(1.2rem, 2vw, 1.8rem);" data-aos="fade-up" data-aos-delay="${Math.min(i * 40, 300)}">
-          <div class="rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg mx-auto" style="width:clamp(56px,5.5vw,76px); height:clamp(56px,5.5vw,76px); background: linear-gradient(135deg, ${dept.color}12, ${dept.color}06); margin-bottom:clamp(0.5rem,0.8vw,0.75rem);">
-            <i class="fas ${dept.icon}" style="color:${dept.color}; font-size:clamp(1.3rem,2.2vw,1.9rem)"></i>
+        <a href="/services/${dept.slug}" class="card-service-xl group block relative" style="--card-accent:${dept.color}; padding:clamp(2rem, 3.5vw, 3rem);" data-aos="fade-up" data-aos-delay="${Math.min(i * 40, 300)}">
+          <div class="rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg mx-auto" style="width:clamp(80px,8vw,110px); height:clamp(80px,8vw,110px); background: linear-gradient(135deg, ${dept.color}15, ${dept.color}08); margin-bottom:clamp(1rem,1.5vw,1.25rem);">
+            <i class="fas ${dept.icon}" style="color:${dept.color}; font-size:clamp(2.2rem,3.5vw,3rem)"></i>
           </div>
-          <h3 class="font-bold text-primary group-hover:text-accent transition-colors text-center" style="font-size:clamp(0.95rem,1.25vw,1.2rem); margin-bottom:3px; line-height:1.35;">${dept.name}</h3>
-          <p class="text-slate-500 leading-snug text-center line-clamp-1" style="font-size:clamp(0.72rem,0.85vw,0.88rem);">${dept.description || ''}</p>
-          <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-1 group-hover:translate-x-0">
-            <i class="fas fa-arrow-right text-accent/50" style="font-size:12px"></i>
+          <h3 class="font-bold text-primary group-hover:text-accent transition-colors text-center" style="font-size:clamp(1.3rem,2vw,1.65rem); margin-bottom:6px; line-height:1.35;">${dept.name}</h3>
+          <p class="text-slate-500 leading-snug text-center line-clamp-2" style="font-size:clamp(0.85rem,1.1vw,1rem);">${dept.description || ''}</p>
+          <div class="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-1 group-hover:translate-x-0">
+            <i class="fas fa-arrow-right text-accent/50" style="font-size:16px"></i>
           </div>
         </a>
         `).join('')}

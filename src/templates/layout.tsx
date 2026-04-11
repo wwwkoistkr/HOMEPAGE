@@ -547,8 +547,8 @@ export function layout(opts: {
        ═══════════════════════════════════════════════ */
     .popup-overlay { backdrop-filter: blur(6px); }
     #popupOverlay { -webkit-tap-highlight-color: transparent; }
-    .popup-slide { will-change: transform, opacity; }
-    .popup-slide img { display: block; max-width: 100%; height: auto; }
+    .popup-card { will-change: transform, opacity; }
+    .popup-card img { display: block; max-width: 100%; height: auto; }
     /* Prevent body scroll when popup is open */
     body:has(#popupOverlay) { overflow: hidden; }
     @supports not (selector(:has(*))) {
