@@ -1,4 +1,4 @@
-// KOIST - Home Page Template (v11.0 - Full Original Content Restored + Featured Services + KOLAS)
+// KOIST - Home Page Template (v13.0 - 3x Enlarged Cards + EAL Interactive Bar Graph + Integrated Dashboard)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem } from '../types';
 
 // Helper: generate background style with image overlay or gradient fallback
@@ -394,17 +394,17 @@ export function homePage(opts: {
         <p class="text-slate-500 f-text-sm max-w-md mx-auto">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
       </div>
 
-      <!-- Bento Grid -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5" style="gap:clamp(0.5rem, 1.2vw, 1rem)">
+      <!-- Bento Grid (v13 - 3배 확대: 2열(모바일) / 3열(태블릿) / 4열(데스크톱), 아이콘·글씨·패딩 대폭 확대) -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4" style="gap:clamp(0.6rem, 1.2vw, 1rem)">
         ${deps.map((dept, i) => `
-        <a href="/services/${dept.slug}" class="card-service group block relative" style="--card-accent:${dept.color}; padding:clamp(0.85rem, 1.6vw, 1.3rem);" data-aos="fade-up" data-aos-delay="${i * 60}">
-          <div class="rounded-xl flex items-center justify-center transition-transform group-hover:scale-110" style="width:clamp(36px,3.2vw,48px); height:clamp(36px,3.2vw,48px); background: linear-gradient(135deg, ${dept.color}0C, ${dept.color}06); margin-bottom:var(--space-sm);">
-            <i class="fas ${dept.icon}" style="color:${dept.color}; font-size:var(--text-lg)"></i>
+        <a href="/services/${dept.slug}" class="card-service-xl group block relative" style="--card-accent:${dept.color}; padding:clamp(1.2rem, 2vw, 1.8rem);" data-aos="fade-up" data-aos-delay="${Math.min(i * 40, 300)}">
+          <div class="rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 mx-auto" style="width:clamp(56px,5.5vw,76px); height:clamp(56px,5.5vw,76px); background: linear-gradient(135deg, ${dept.color}15, ${dept.color}08); margin-bottom:clamp(0.5rem,0.8vw,0.75rem);">
+            <i class="fas ${dept.icon}" style="color:${dept.color}; font-size:clamp(1.3rem,2.2vw,1.9rem)"></i>
           </div>
-          <h3 class="font-bold text-primary group-hover:text-accent transition-colors f-text-sm" style="margin-bottom:4px">${dept.name}</h3>
-          <p class="text-slate-500 leading-relaxed line-clamp-2 f-text-xs">${dept.description || ''}</p>
+          <h3 class="font-bold text-primary group-hover:text-accent transition-colors text-center" style="font-size:clamp(0.95rem,1.25vw,1.2rem); margin-bottom:3px; line-height:1.35;">${dept.name}</h3>
+          <p class="text-slate-500 leading-snug text-center line-clamp-1" style="font-size:clamp(0.72rem,0.85vw,0.88rem);">${dept.description || ''}</p>
           <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all transform translate-x-1 group-hover:translate-x-0">
-            <i class="fas fa-arrow-right text-accent/40" style="font-size:10px"></i>
+            <i class="fas fa-arrow-right text-accent/50" style="font-size:12px"></i>
           </div>
         </a>
         `).join('')}
@@ -576,44 +576,81 @@ export function homePage(opts: {
           </div>
         </div>
 
-        <!-- Right: Stats + Mini Dashboard -->
+        <!-- Right: EAL별 인터랙티브 바 그래프 (v13 Enhanced) -->
         <div data-aos="fade-left" data-aos-duration="800" data-aos-delay="200">
           <div class="rounded-2xl border border-slate-200/50 overflow-hidden" style="box-shadow: var(--shadow-premium);">
-            <!-- Dashboard Header -->
+            <!-- Header -->
             <div style="padding:clamp(1rem,1.8vw,1.5rem) clamp(1.25rem,2vw,1.75rem); background: linear-gradient(135deg, #0A0F1E, #111D35);">
               <div class="flex items-center" style="gap:10px">
                 <div class="rounded-lg flex items-center justify-center" style="width:32px; height:32px; background: rgba(59,130,246,0.15);">
-                  <i class="fas fa-chart-pie text-blue-400" style="font-size:13px"></i>
+                  <i class="fas fa-layer-group text-blue-400" style="font-size:13px"></i>
                 </div>
                 <div>
-                  <p class="text-white font-bold f-text-sm">KOIST 평가현황 대시보드</p>
-                  <p class="text-slate-400 f-text-xs">총 ${totalEvals}건의 시험&middot;평가 수행</p>
+                  <p class="text-white font-bold f-text-sm">EAL 등급별 평가기간 비교</p>
+                  <p class="text-slate-400 f-text-xs">CC평가 보증등급별 기간 단축 효과</p>
                 </div>
               </div>
             </div>
 
-            <!-- Stats Grid -->
             <div style="padding:clamp(1rem,1.8vw,1.5rem) clamp(1.25rem,2vw,1.75rem); background:#fff;">
-              <div class="grid grid-cols-2" style="gap:clamp(0.6rem,1vw,0.8rem);">
-                ${catCounts.slice(0, 4).map(cc => {
-                  const m = catMeta[cc.category] || { icon: 'fa-circle', color: '#64748B' };
-                  return `
-                <a href="/support/progress?category=${encodeURIComponent(cc.category)}" class="group rounded-xl border border-slate-100 hover:border-slate-200 transition-all hover:shadow-sm" style="padding:clamp(0.7rem,1.2vw,1rem);">
-                  <div class="flex items-center" style="gap:6px; margin-bottom:6px">
-                    <i class="fas ${m.icon}" style="color:${m.color}; font-size:clamp(0.65rem,0.9vw,0.85rem)"></i>
-                    <span class="text-slate-500 f-text-xs truncate">${cc.category}</span>
-                  </div>
-                  <div class="font-black f-text-xl" style="color:${m.color}">${cc.cnt}<span class="text-slate-400 font-normal f-text-xs ml-0.5">건</span></div>
-                </a>`;
-                }).join('')}
+              <!-- EAL Tabs -->
+              <div class="eal-tabs flex rounded-lg overflow-hidden" style="margin-bottom:clamp(1rem,1.8vw,1.5rem); border:1px solid rgba(226,232,240,0.60);">
+                <button class="eal-tab active flex-1 text-center font-bold f-text-sm transition-all" style="padding:8px 0;" data-eal="EAL2" onclick="switchEAL('EAL2')">EAL2</button>
+                <button class="eal-tab flex-1 text-center font-bold f-text-sm transition-all" style="padding:8px 0; border-left:1px solid rgba(226,232,240,0.60);" data-eal="EAL3" onclick="switchEAL('EAL3')">EAL3</button>
+                <button class="eal-tab flex-1 text-center font-bold f-text-sm transition-all" style="padding:8px 0; border-left:1px solid rgba(226,232,240,0.60);" data-eal="EAL4" onclick="switchEAL('EAL4')">EAL4</button>
               </div>
 
-              ${catCounts.length > 4 ? `
-              <div class="text-center" style="margin-top:var(--space-sm)">
-                <a href="/support/progress" class="inline-flex items-center text-accent font-semibold hover:underline f-text-xs" style="gap:4px">
-                  전체 ${catCounts.length}개 사업분야 보기 <i class="fas fa-arrow-right" style="font-size:9px"></i>
-                </a>
-              </div>` : ''}
+              <!-- EAL Bar Panels -->
+              <div id="ealPanel" style="display:flex; flex-direction:column; gap:clamp(0.8rem,1.2vw,1rem);">
+                <!-- General bar -->
+                <div>
+                  <div class="flex justify-between items-center" style="margin-bottom:6px">
+                    <span class="text-slate-500 font-semibold f-text-xs">일반 프로세스</span>
+                    <span id="ealGeneralTotal" class="text-slate-400 font-bold f-text-xs">약 14개월</span>
+                  </div>
+                  <div class="relative rounded-lg overflow-hidden" style="height:clamp(28px,2.8vw,38px); background: #F1F5F9;">
+                    <div id="ealGeneralBar" class="eal-bar absolute left-0 top-0 h-full rounded-lg flex items-center" style="width:100%; background: linear-gradient(90deg, #F59E0B 0%, #F59E0B 57%, #94A3B8 57%, #94A3B8 100%);">
+                      <span id="ealGeneralPrep" class="absolute text-white font-bold" style="left:6px; font-size:clamp(0.6rem,0.8vw,0.72rem); text-shadow:0 1px 2px rgba(0,0,0,0.3);">준비 8개월</span>
+                      <span id="ealGeneralEval" class="absolute text-white font-bold" style="right:6px; font-size:clamp(0.6rem,0.8vw,0.72rem); text-shadow:0 1px 2px rgba(0,0,0,0.3);">평가 6개월</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- KOIST bar -->
+                <div>
+                  <div class="flex justify-between items-center" style="margin-bottom:6px">
+                    <span class="text-accent font-bold f-text-xs"><i class="fas fa-bolt text-yellow-500 mr-1" style="font-size:8px"></i>KOIST 프로세스</span>
+                    <span id="ealKoistTotal" class="text-accent font-bold f-text-xs">약 8개월</span>
+                  </div>
+                  <div class="relative rounded-lg overflow-hidden" style="height:clamp(28px,2.8vw,38px); background: #F1F5F9;">
+                    <div id="ealKoistBar" class="eal-bar absolute left-0 top-0 h-full rounded-lg flex items-center" style="width:57%; background: linear-gradient(90deg, #F59E0B 0%, #F59E0B 50%, #3B82F6 50%, #3B82F6 100%);">
+                      <span id="ealKoistPrep" class="absolute text-white font-bold" style="left:6px; font-size:clamp(0.6rem,0.8vw,0.72rem); text-shadow:0 1px 2px rgba(0,0,0,0.3);">준비 4개월</span>
+                      <span id="ealKoistEval" class="absolute text-white font-bold" style="right:6px; font-size:clamp(0.6rem,0.8vw,0.72rem); text-shadow:0 1px 2px rgba(0,0,0,0.3);">평가 4개월</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Result card -->
+                <div class="flex items-center rounded-lg" style="gap:clamp(0.6rem,1vw,1rem); padding:clamp(0.6rem,1vw,0.9rem); background: linear-gradient(135deg, rgba(59,130,246,0.04), rgba(6,182,212,0.03)); border: 1px solid rgba(59,130,246,0.12);">
+                  <div id="ealReductionBadge" class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(40px,3.5vw,52px); height:clamp(40px,3.5vw,52px); background: linear-gradient(135deg, #2563EB, #06B6D4); box-shadow: 0 4px 12px rgba(37,99,235,0.25);">
+                    <span class="text-white font-black" style="font-size:clamp(0.85rem,1.2vw,1.1rem);">43%</span>
+                  </div>
+                  <div>
+                    <p id="ealReductionText" class="text-primary font-bold f-text-sm">평가기간 약 43% 단축</p>
+                    <p id="ealSavingText" class="text-slate-500 f-text-xs">약 6개월 절감 · 원스톱 서비스</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- KOIST 실적 summary -->
+              <div class="flex items-center justify-between rounded-lg" style="margin-top:clamp(0.8rem,1.2vw,1rem); padding:8px 12px; background: rgba(248,250,252,0.8); border: 1px solid rgba(226,232,240,0.40);">
+                <span class="text-slate-500 f-text-xs">KOIST CC평가 총 실적</span>
+                <div class="flex items-center" style="gap:10px">
+                  <span class="f-text-xs" style="color:#3B82F6"><strong>EAL2</strong> 68건</span>
+                  <span class="f-text-xs" style="color:#8B5CF6"><strong>EAL3</strong> 25건</span>
+                  <span class="f-text-xs" style="color:#EF4444"><strong>EAL4</strong> 47건</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -652,26 +689,49 @@ export function homePage(opts: {
           </div>
         </div>
 
-        <!-- Progress Panel -->
+        <!-- Progress Panel + Dashboard Combined (v13 통합) -->
         <div data-aos="fade-left" data-aos-duration="700" class="bg-white rounded-xl border border-slate-200/50" style="padding:clamp(1.25rem, 2.2vw, 1.75rem); box-shadow: var(--shadow-sm);">
           <div class="flex justify-between items-center" style="margin-bottom:var(--space-md)">
             <h3 class="font-bold text-primary flex items-center f-text-lg" style="gap:var(--space-sm)">
               <div class="rounded-lg flex items-center justify-center" style="width:clamp(28px,2.5vw,34px); height:clamp(28px,2.5vw,34px); background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(6,182,212,0.05));">
                 <i class="fas fa-chart-bar text-emerald-500 f-text-sm"></i>
               </div>
-              최근 평가현황
+              평가현황
             </h3>
             <a href="/support/progress" class="text-accent font-semibold hover:underline f-text-xs inline-flex items-center" style="gap:4px">전체보기 <i class="fas fa-chevron-right" style="font-size:9px"></i></a>
           </div>
 
-          <!-- Category Tags -->
+          <!-- Dashboard Mini Cards (기존 우측 대시보드 통합) -->
           ${catCounts.length > 0 ? `
+          <div class="grid grid-cols-2 sm:grid-cols-4" style="gap:clamp(0.4rem,0.7vw,0.6rem); margin-bottom:var(--space-md)">
+            ${catCounts.slice(0, 4).map(cc => {
+              const m = catMeta[cc.category] || { icon: 'fa-circle', color: '#64748B' };
+              return `
+            <a href="/support/progress?category=${encodeURIComponent(cc.category)}" class="group rounded-lg border border-slate-100 hover:border-slate-200 transition-all hover:shadow-sm text-center" style="padding:clamp(0.5rem,0.8vw,0.7rem);">
+              <div class="flex items-center justify-center" style="gap:4px; margin-bottom:4px">
+                <i class="fas ${m.icon}" style="color:${m.color}; font-size:clamp(0.6rem,0.75vw,0.75rem)"></i>
+                <span class="text-slate-500 f-text-xs truncate">${cc.category}</span>
+              </div>
+              <div class="font-black f-text-lg" style="color:${m.color}; line-height:1.2;">${cc.cnt}<span class="text-slate-400 font-normal f-text-xs ml-0.5">건</span></div>
+            </a>`;
+            }).join('')}
+          </div>
+
+          <!-- Additional Category Tags -->
+          ${catCounts.length > 4 ? `
           <div class="flex flex-wrap" style="gap:4px; margin-bottom:var(--space-md)">
-            ${catCounts.slice(0, 6).map(cc => {
+            ${catCounts.slice(4).map(cc => {
               const m = catMeta[cc.category] || { icon: 'fa-circle', color: '#64748B' };
               return `<a href="/support/progress?category=${encodeURIComponent(cc.category)}" class="inline-flex items-center rounded-full hover:shadow-sm transition-all f-text-xs" style="gap:4px; padding:3px 10px; background:${m.color}08; color:${m.color}; border:1px solid ${m.color}15;"><i class="fas ${m.icon}" style="font-size:7px"></i>${cc.category} <strong>${cc.cnt}</strong></a>`;
             }).join('')}
           </div>` : ''}
+          ` : ''}
+
+          <!-- Total Count -->
+          <div class="flex items-center justify-between rounded-lg" style="margin-bottom:var(--space-md); padding:6px 12px; background: linear-gradient(135deg, rgba(59,130,246,0.03), rgba(6,182,212,0.02)); border: 1px solid rgba(59,130,246,0.08);">
+            <span class="text-slate-500 f-text-xs"><i class="fas fa-chart-pie text-blue-400 mr-1" style="font-size:9px"></i>총 시험·평가 실적</span>
+            <span class="text-accent font-black f-text-sm">${totalEvals}건</span>
+          </div>
 
           <!-- Recent Items Table -->
           <div class="overflow-x-auto -mx-1 px-1">
@@ -742,27 +802,98 @@ export function homePage(opts: {
     <i class="fas fa-phone"></i>
   </a>
 
-  <!-- Bar Chart Animation Script -->
+  <!-- Bar Chart Animation + EAL Interactive Script -->
   <script>
   (function(){
     // Animate bar widths on scroll into view
     var observed = false;
     var bars = document.querySelectorAll('.bar-animate');
-    if (!bars.length) return;
-    var observer = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting && !observed) {
-          observed = true;
-          bars.forEach(function(bar) {
-            var w = bar.style.width;
-            bar.style.width = '0%';
-            bar.style.transition = 'width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-            setTimeout(function() { bar.style.width = w; }, 200);
-          });
-        }
+    if (bars.length) {
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting && !observed) {
+            observed = true;
+            bars.forEach(function(bar) {
+              var w = bar.style.width;
+              bar.style.width = '0%';
+              bar.style.transition = 'width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+              setTimeout(function() { bar.style.width = w; }, 200);
+            });
+          }
+        });
+      }, { threshold: 0.3 });
+      observer.observe(bars[0].closest('.bar-chart-container') || bars[0]);
+    }
+
+    // EAL Interactive Bar Graph Data (CC Common Criteria)
+    // Sources: NIAP/NIST, UT Austin, CCLab 2024, KOIST DB
+    var ealData = {
+      EAL2: {
+        general: { prep: 8, eval: 6, total: 14 },
+        koist:   { prep: 4, eval: 4, total: 8 },
+        reduction: 43, saving: 6, maxBar: 14
+      },
+      EAL3: {
+        general: { prep: 10, eval: 8, total: 18 },
+        koist:   { prep: 6, eval: 5, total: 11 },
+        reduction: 39, saving: 7, maxBar: 18
+      },
+      EAL4: {
+        general: { prep: 14, eval: 12, total: 26 },
+        koist:   { prep: 8, eval: 7, total: 15 },
+        reduction: 42, saving: 11, maxBar: 26
+      }
+    };
+
+    window.switchEAL = function(level) {
+      var d = ealData[level];
+      if (!d) return;
+
+      // Update tabs
+      document.querySelectorAll('.eal-tab').forEach(function(t) {
+        t.classList.toggle('active', t.getAttribute('data-eal') === level);
       });
-    }, { threshold: 0.3 });
-    observer.observe(bars[0].closest('.bar-chart-container') || bars[0]);
+
+      // General bar
+      var gPrepPct = Math.round((d.general.prep / d.maxBar) * 100);
+      var gEvalPct = 100 - gPrepPct;
+      var gBar = document.getElementById('ealGeneralBar');
+      if (gBar) {
+        gBar.style.transition = 'width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        gBar.style.width = '100%';
+        gBar.style.background = 'linear-gradient(90deg, #F59E0B 0%, #F59E0B ' + gPrepPct + '%, #94A3B8 ' + gPrepPct + '%, #94A3B8 100%)';
+      }
+      var gTotal = document.getElementById('ealGeneralTotal');
+      if (gTotal) gTotal.textContent = '\uc57d ' + d.general.total + '\uac1c\uc6d4';
+      var gPrep = document.getElementById('ealGeneralPrep');
+      if (gPrep) gPrep.textContent = '\uc900\ube44 ' + d.general.prep + '\uac1c\uc6d4';
+      var gEval = document.getElementById('ealGeneralEval');
+      if (gEval) gEval.textContent = '\ud3c9\uac00 ' + d.general.eval + '\uac1c\uc6d4';
+
+      // KOIST bar
+      var kWidthPct = Math.round((d.koist.total / d.maxBar) * 100);
+      var kPrepPct = Math.round((d.koist.prep / d.koist.total) * 100);
+      var kBar = document.getElementById('ealKoistBar');
+      if (kBar) {
+        kBar.style.transition = 'width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        kBar.style.width = kWidthPct + '%';
+        kBar.style.background = 'linear-gradient(90deg, #F59E0B 0%, #F59E0B ' + kPrepPct + '%, #3B82F6 ' + kPrepPct + '%, #3B82F6 100%)';
+      }
+      var kTotal = document.getElementById('ealKoistTotal');
+      if (kTotal) kTotal.textContent = '\uc57d ' + d.koist.total + '\uac1c\uc6d4';
+      var kPrep = document.getElementById('ealKoistPrep');
+      if (kPrep) kPrep.textContent = '\uc900\ube44 ' + d.koist.prep + '\uac1c\uc6d4';
+      var kEval = document.getElementById('ealKoistEval');
+      if (kEval) kEval.textContent = '\ud3c9\uac00 ' + d.koist.eval + '\uac1c\uc6d4';
+
+      // Reduction badge
+      var badge = document.getElementById('ealReductionBadge');
+      if (badge) badge.querySelector('span').textContent = d.reduction + '%';
+      var redText = document.getElementById('ealReductionText');
+      if (redText) redText.textContent = '\ud3c9\uac00\uae30\uac04 \uc57d ' + d.reduction + '% \ub2e8\ucd95';
+      var savText = document.getElementById('ealSavingText');
+      if (savText) savText.textContent = '\uc57d ' + d.saving + '\uac1c\uc6d4 \uc808\uac10 \u00b7 \uc6d0\uc2a4\ud1b1 \uc11c\ube44\uc2a4';
+    };
   })();
   </script>
   `;

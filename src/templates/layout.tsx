@@ -1,4 +1,4 @@
-// KOIST - Main Layout Template (v11.0 - KOLAS Header + Featured Services CSS + Full Restoration)
+// KOIST - Main Layout Template (v13.0 - 3x Enlarged Cards + EAL Interactive + Dashboard Integration)
 import type { SettingsMap, Department } from '../types';
 
 export function layout(opts: {
@@ -651,6 +651,61 @@ export function layout(opts: {
     }
     .featured-service-card:hover a i {
       transform: translateX(4px) !important;
+    }
+
+    /* ═══════════════════════════════════════════════
+       SERVICE CARD XL (v13 - 3배 확대)
+       ═══════════════════════════════════════════════ */
+    .card-service-xl {
+      background: #FFFFFF;
+      border: 1px solid rgba(226,232,240,0.50);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xs);
+      transition: all 0.4s var(--ease-out);
+      position: relative;
+      overflow: hidden;
+    }
+    .card-service-xl::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--card-accent, #3B82F6);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .card-service-xl:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      border-color: rgba(226,232,240,0.80);
+    }
+    .card-service-xl:hover::after {
+      opacity: 1;
+    }
+
+    /* ═══════════════════════════════════════════════
+       EAL INTERACTIVE TABS (v13)
+       ═══════════════════════════════════════════════ */
+    .eal-tab {
+      background: rgba(248,250,252,0.80);
+      color: #94A3B8;
+      cursor: pointer;
+      border: none;
+      padding: 8px 0;
+      font-size: var(--text-sm);
+    }
+    .eal-tab.active {
+      background: linear-gradient(135deg, #2563EB, #06B6D4);
+      color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.25);
+    }
+    .eal-tab:hover:not(.active) {
+      background: rgba(241,245,249,1);
+      color: #64748B;
+    }
+    .eal-bar {
+      transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  background 0.5s ease;
     }
 
     /* ═══════════════════════════════════════════════
