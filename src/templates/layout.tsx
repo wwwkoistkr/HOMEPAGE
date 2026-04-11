@@ -1,4 +1,4 @@
-// KOIST - Main Layout Template (v7.0 - Ultra Premium 4K/8K HiDPI Design)
+// KOIST - Main Layout Template (v11.0 - KOLAS Header + Featured Services CSS + Full Restoration)
 import type { SettingsMap, Department } from '../types';
 
 export function layout(opts: {
@@ -73,7 +73,7 @@ export function layout(opts: {
 
   <style>
     /* ═══════════════════════════════════════════════════════════════════
-       KOIST PREMIUM DESIGN SYSTEM v7.0
+       KOIST PREMIUM DESIGN SYSTEM v10.0
        ─ Ultra HiDPI / Retina / 4K / 5K / 8K optimized
        ─ Advanced Glassmorphism + Depth Layering
        ─ CrowdStrike / Cloudflare / Palo Alto grade visuals
@@ -587,6 +587,73 @@ export function layout(opts: {
     .badge-received .badge-dot { background: #F59E0B; box-shadow: 0 0 6px rgba(245,158,11,0.40); }
 
     /* ═══════════════════════════════════════════════
+       CORE VALUES SECTION (원본 koist.kr #inc01 스타일)
+       ═══════════════════════════════════════════════ */
+    .core-value-card {
+      position: relative;
+      overflow: hidden;
+      background: rgba(255,255,255,0.02);
+      transition: all 0.5s var(--ease-out);
+    }
+    .core-value-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.03);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .core-value-card:hover::before { opacity: 1; }
+    .core-value-card:hover { background: rgba(255,255,255,0.05); }
+    .core-value-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.15) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .core-value-desc {
+      opacity: 0.7;
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.5s var(--ease-out);
+    }
+    .core-value-card:hover .core-value-desc {
+      opacity: 1;
+      max-height: 100px;
+    }
+    @media (max-width: 1024px) {
+      .core-value-desc { opacity: 1; max-height: 100px; }
+    }
+    @media (max-width: 640px) {
+      .core-value-card { border-right: none !important; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    }
+
+    /* ═══════════════════════════════════════════════
+       BAR CHART COMPONENT (평가기간 비교)
+       ═══════════════════════════════════════════════ */
+    .bar-animate {
+      transform-origin: left center;
+    }
+    .bar-chart-container {
+      position: relative;
+    }
+
+    /* ═══════════════════════════════════════════════
+       FEATURED SERVICE CARDS (원본 koist.kr #inc03 스타일)
+       ═══════════════════════════════════════════════ */
+    .featured-service-card {
+      transition: all 0.4s var(--ease-out);
+    }
+    .featured-service-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 40px rgba(15,23,42,0.10), 0 4px 12px rgba(15,23,42,0.04) !important;
+    }
+    .featured-service-card:hover a i {
+      transform: translateX(4px) !important;
+    }
+
+    /* ═══════════════════════════════════════════════
        FOCUS RING (Accessibility)
        ═══════════════════════════════════════════════ */
     a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
@@ -630,25 +697,31 @@ export function layout(opts: {
     <div class="fluid-container">
       <div class="flex items-center justify-between" style="height:var(--gnb-h)">
 
-        <!-- Logo -->
-        <a href="/" class="flex items-center shrink-0 group" style="gap: var(--space-sm)">
-          ${s.logo_url && s.logo_url.trim() !== '' && s.logo_url !== '/static/images/logo.png' ? `
-          <img src="${s.logo_url}" alt="${siteName}" style="height:clamp(30px, 26px + 0.8vw, 40px)" class="w-auto object-contain transition-transform group-hover:scale-[1.02]">
-          ` : `
-          <div class="flex items-center" style="gap: var(--space-sm)">
-            <div class="relative">
-              <div class="absolute inset-0 rounded-lg blur-md transition-all group-hover:blur-lg" style="background: linear-gradient(135deg, rgba(59,130,246,0.25), rgba(6,182,212,0.20));"></div>
-              <div class="relative rounded-lg flex items-center justify-center" style="width:clamp(30px,2.6vw,38px); height:clamp(30px,2.6vw,38px); background: linear-gradient(135deg, #2563EB, #06B6D4);">
-                <i class="fas fa-shield-halved text-white" style="font-size:clamp(13px,1.3vw,17px)"></i>
+        <!-- Logo + KOLAS Mark -->
+        <div class="flex items-center" style="gap: clamp(8px, 1.2vw, 16px)">
+          <a href="/" class="flex items-center shrink-0 group" style="gap: var(--space-sm)">
+            ${s.logo_url && s.logo_url.trim() !== '' && s.logo_url !== '/static/images/logo.png' ? `
+            <img src="${s.logo_url}" alt="${siteName}" style="height:clamp(30px, 26px + 0.8vw, 40px)" class="w-auto object-contain transition-transform group-hover:scale-[1.02]">
+            ` : `
+            <div class="flex items-center" style="gap: var(--space-sm)">
+              <div class="relative">
+                <div class="absolute inset-0 rounded-lg blur-md transition-all group-hover:blur-lg" style="background: linear-gradient(135deg, rgba(59,130,246,0.25), rgba(6,182,212,0.20));"></div>
+                <div class="relative rounded-lg flex items-center justify-center" style="width:clamp(30px,2.6vw,38px); height:clamp(30px,2.6vw,38px); background: linear-gradient(135deg, #2563EB, #06B6D4);">
+                  <i class="fas fa-shield-halved text-white" style="font-size:clamp(13px,1.3vw,17px)"></i>
+                </div>
+              </div>
+              <div>
+                <div class="font-bold text-white leading-tight f-text-sm tracking-tight">한국정보보안기술원</div>
+                <div class="tracking-[0.18em] font-medium" style="font-size:clamp(0.55rem, 0.5rem + 0.15vw, 0.65rem); background: linear-gradient(90deg, #94A3B8, #64748B); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">KOIST</div>
               </div>
             </div>
-            <div>
-              <div class="font-bold text-white leading-tight f-text-sm tracking-tight">한국정보보안기술원</div>
-              <div class="tracking-[0.18em] font-medium" style="font-size:clamp(0.55rem, 0.5rem + 0.15vw, 0.65rem); background: linear-gradient(90deg, #94A3B8, #64748B); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">KOIST</div>
-            </div>
+            `}
+          </a>
+          <!-- KOLAS 국제공인시험기관 마크 (원본 koist.kr 복원) -->
+          <div class="hidden md:flex items-center" style="padding-left: clamp(6px, 1vw, 12px); border-left: 1px solid rgba(255,255,255,0.08);">
+            <img src="/static/images/kolas.png" alt="KOLAS 국제공인시험기관" style="height:clamp(24px, 22px + 0.5vw, 34px);" class="w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" title="KOLAS 국제공인시험기관 인정 (KTL-F-588)">
           </div>
-          `}
-        </a>
+        </div>
 
         <!-- Desktop GNB -->
         <nav class="hidden lg:flex items-center" style="gap: var(--space-2xs)">
