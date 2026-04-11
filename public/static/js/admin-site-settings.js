@@ -21,7 +21,7 @@
     theme: { label: '디자인', icon: 'fa-palette', color: 'purple' },
     background: { label: '배경 이미지', icon: 'fa-image', color: 'pink' },
     content: { label: '홈페이지 텍스트', icon: 'fa-font', color: 'orange' },
-    evaluation: { label: '평가기간 바 그래프', icon: 'fa-chart-bar', color: 'cyan' },
+    evaluation: { label: '평가기간 데이터 관리 (준비도별)', icon: 'fa-chart-bar', color: 'cyan', custom: true },
     seo: { label: 'SEO', icon: 'fa-search', color: 'teal' },
   };
 
@@ -79,6 +79,134 @@
         ${meta.label}
       </h3>
       <div class="space-y-4">`;
+
+    // Custom evaluation UI
+    if (cat === 'evaluation' && meta.custom) {
+      const evalMap = {};
+      items.forEach(s => { evalMap[s.key] = s.value; });
+
+      const ealLevels = [
+        { key: 'overall', label: '전체평균', color: '#6366F1' },
+        { key: 'eal2', label: 'EAL2', color: '#3B82F6' },
+        { key: 'eal3', label: 'EAL3', color: '#8B5CF6' },
+        { key: 'eal4', label: 'EAL4', color: '#EF4444' }
+      ];
+      const readinessLevels = [
+        { key: 'high', label: '상 (충분)', icon: 'fa-arrow-up', color: '#3B82F6' },
+        { key: 'mid', label: '중 (보통)', icon: 'fa-minus', color: '#10B981' },
+        { key: 'low', label: '하 (부족)', icon: 'fa-arrow-down', color: '#F59E0B' }
+      ];
+
+      html += `
+      <div class="bg-cyan-50/50 border border-cyan-100 rounded-xl p-4 mb-4">
+        <div class="flex items-start gap-2 text-sm text-cyan-700">
+          <i class="fas fa-info-circle mt-0.5"></i>
+          <div>
+            <p class="font-medium mb-1">평가기간 데이터 관리</p>
+            <p class="text-xs text-cyan-600">각 EAL 레벨별로 일반 프로세스(준비/평가)와 KOIST 프로세스(준비도 상/중/하별 준비/평가) 기간을 설정합니다.</p>
+            <p class="text-xs text-cyan-600 mt-1">이 값들은 홈페이지의 "평가기간 비교" 카드에 실시간 반영됩니다.</p>
+          </div>
+        </div>
+      </div>`;
+
+      ealLevels.forEach(eal => {
+        const gPrep = evalMap['eval_' + eal.key + '_general_prep'] || '';
+        const gEval = evalMap['eval_' + eal.key + '_general_eval'] || '';
+
+        html += `
+      <div class="border rounded-xl overflow-hidden mb-4" style="border-color: ${eal.color}30;">
+        <div class="flex items-center gap-2 px-4 py-3" style="background: ${eal.color}08;">
+          <span class="inline-block w-3 h-3 rounded-full" style="background: ${eal.color};"></span>
+          <span class="font-bold text-gray-800">${eal.label}</span>
+        </div>
+        <div class="p-4 space-y-4">
+          <!-- General Process -->
+          <div>
+            <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 block">
+              <i class="fas fa-building text-gray-400 mr-1"></i>일반 평가 프로세스
+            </label>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="text-xs text-gray-500 mb-1 block">준비기간 (개월)</label>
+                <input type="number" data-key="eval_${eal.key}_general_prep" value="${gPrep}" min="0" max="60"
+                  class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30" id="input_eval_${eal.key}_general_prep">
+              </div>
+              <div>
+                <label class="text-xs text-gray-500 mb-1 block">평가기간 (개월)</label>
+                <input type="number" data-key="eval_${eal.key}_general_eval" value="${gEval}" min="0" max="60"
+                  class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30" id="input_eval_${eal.key}_general_eval">
+              </div>
+            </div>
+          </div>
+          <!-- KOIST Process by Readiness -->
+          <div>
+            <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 block">
+              <i class="fas fa-bolt text-yellow-500 mr-1"></i>KOIST 평가 프로세스 (준비도별)
+            </label>
+            <div class="space-y-2">`;
+
+        readinessLevels.forEach(rl => {
+          const kPrep = evalMap['eval_' + eal.key + '_koist_prep_' + rl.key] || '';
+          const kEval = evalMap['eval_' + eal.key + '_koist_eval_' + rl.key] || '';
+          html += `
+              <div class="flex items-center gap-3 p-2 rounded-lg" style="background: ${rl.color}08; border: 1px solid ${rl.color}15;">
+                <div class="shrink-0 flex items-center gap-1 w-24">
+                  <i class="fas ${rl.icon}" style="color:${rl.color}; font-size:10px"></i>
+                  <span class="text-xs font-bold" style="color:${rl.color}">${rl.label}</span>
+                </div>
+                <div class="flex-1 grid grid-cols-2 gap-2">
+                  <div class="flex items-center gap-1">
+                    <span class="text-xs text-gray-400 shrink-0 w-6">준비</span>
+                    <input type="number" data-key="eval_${eal.key}_koist_prep_${rl.key}" value="${kPrep}" min="0" max="60"
+                      class="w-full px-2 py-1.5 border rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500/30" id="input_eval_${eal.key}_koist_prep_${rl.key}">
+                    <span class="text-xs text-gray-400">월</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <span class="text-xs text-gray-400 shrink-0 w-6">평가</span>
+                    <input type="number" data-key="eval_${eal.key}_koist_eval_${rl.key}" value="${kEval}" min="0" max="60"
+                      class="w-full px-2 py-1.5 border rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500/30" id="input_eval_${eal.key}_koist_eval_${rl.key}">
+                    <span class="text-xs text-gray-400">월</span>
+                  </div>
+                </div>
+              </div>`;
+        });
+
+        html += `
+            </div>
+          </div>
+        </div>
+      </div>`;
+      });
+
+      // Also render legacy keys that might exist (eval_*_koist_prep, eval_*_koist_eval without _high/_mid/_low)
+      // These are kept for backward compatibility but shown as read-only
+      const legacyKeys = items.filter(s => 
+        (s.key.endsWith('_koist_prep') || s.key.endsWith('_koist_eval')) && 
+        !s.key.includes('_high') && !s.key.includes('_mid') && !s.key.includes('_low') &&
+        !s.key.endsWith('_general_prep') && !s.key.endsWith('_general_eval')
+      );
+      if (legacyKeys.length > 0) {
+        html += `
+      <details class="mt-4">
+        <summary class="text-xs text-gray-400 cursor-pointer hover:text-gray-600">기존 호환 데이터 (${legacyKeys.length}개) - 자동 참조용</summary>
+        <div class="mt-2 space-y-2 pl-4 border-l-2 border-gray-100">`;
+        legacyKeys.forEach(s => {
+          html += `
+          <div class="flex items-center gap-2">
+            <label class="text-xs text-gray-400 w-48 shrink-0">${s.description || s.key}</label>
+            <input type="number" data-key="${s.key}" value="${s.value}" min="0" max="60"
+              class="w-24 px-2 py-1 border rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500/30" id="input_${s.key}">
+            <span class="text-xs text-gray-400">개월</span>
+          </div>`;
+        });
+        html += `
+        </div>
+      </details>`;
+      }
+
+      html += '</div></div>';
+      continue;
+    }
 
     items.forEach(s => {
       const isImageUrl = s.key.includes('bg_url') || s.key === 'logo_url';

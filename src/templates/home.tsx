@@ -261,11 +261,11 @@ export function homePage(opts: {
   </section>
 
   <!-- ════════════════════════════════════════════════════════════════
-       EVALUATION PERIOD COMPARISON — moved to top (user request: 첫번째 첨부파일을 상단 가운데로)
+       EVALUATION PERIOD COMPARISON — v18 with Readiness Slider
        ════════════════════════════════════════════════════════════════ -->
   <section class="relative overflow-hidden" style="padding:clamp(2rem,3.5vw,3rem) 0; background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);">
     <div class="relative fluid-container">
-      <div class="mx-auto" style="max-width:min(920px, 100%)">
+      <div class="mx-auto" style="max-width:min(960px, 100%)">
         <div class="rounded-2xl overflow-hidden" style="box-shadow: 0 4px 24px rgba(10,15,30,0.08), 0 1px 4px rgba(10,15,30,0.04); border: 1px solid rgba(226,232,240,0.70);" data-aos="fade-up" data-aos-duration="700">
 
           <!-- Card Header -->
@@ -276,7 +276,7 @@ export function homePage(opts: {
               </div>
               <div>
                 <p class="text-white font-bold f-text-sm">KOIST와 함께라면 평가기간을 <span class="text-cyan-300">대폭 단축</span>합니다</p>
-                <p class="text-slate-400 f-text-xs" style="margin-top:2px">원스톱 컨설팅 서비스로 준비기간 단축 및 평가 효율성 극대화</p>
+                <p class="text-slate-400 f-text-xs" style="margin-top:2px">준비도에 따라 맞춤형 평가 기간을 확인하세요</p>
               </div>
             </div>
             <div class="hidden sm:flex items-center rounded-full" style="gap:6px; padding:6px 16px; margin-top:0; background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.25);">
@@ -287,11 +287,36 @@ export function homePage(opts: {
 
           <div style="padding:clamp(1.1rem,1.8vw,1.5rem) clamp(1.25rem,2.2vw,1.75rem); background:#fff;">
             <!-- Tab bar: 전체 | EAL2 | EAL3 | EAL4 -->
-            <div class="eal-tabs flex rounded-xl overflow-hidden" style="margin-bottom:clamp(1rem,1.5vw,1.2rem); border:1px solid rgba(226,232,240,0.70); background: rgba(248,250,252,0.80);">
+            <div class="eal-tabs flex rounded-xl overflow-hidden" style="margin-bottom:clamp(0.8rem,1.2vw,1rem); border:1px solid rgba(226,232,240,0.70); background: rgba(248,250,252,0.80);">
               <button class="eal-tab active flex-1 text-center font-bold f-text-xs transition-all" style="padding:8px 0;" data-eal="overall" onclick="switchEAL('overall')">전체평균</button>
               <button class="eal-tab flex-1 text-center font-bold f-text-xs transition-all" style="padding:8px 0; border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL2" onclick="switchEAL('EAL2')">EAL2</button>
               <button class="eal-tab flex-1 text-center font-bold f-text-xs transition-all" style="padding:8px 0; border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL3" onclick="switchEAL('EAL3')">EAL3</button>
               <button class="eal-tab flex-1 text-center font-bold f-text-xs transition-all" style="padding:8px 0; border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL4" onclick="switchEAL('EAL4')">EAL4</button>
+            </div>
+
+            <!-- Readiness Slider -->
+            <div class="rounded-xl" style="padding:clamp(0.7rem,1.1vw,1rem) clamp(0.8rem,1.3vw,1.1rem); margin-bottom:clamp(0.8rem,1.2vw,1rem); background: linear-gradient(135deg, rgba(16,185,129,0.04), rgba(59,130,246,0.03)); border: 1px solid rgba(16,185,129,0.12);">
+              <div class="flex flex-col sm:flex-row sm:items-center" style="gap:clamp(0.5rem,0.8vw,0.7rem)">
+                <div class="flex items-center shrink-0" style="gap:6px">
+                  <i class="fas fa-sliders text-emerald-500" style="font-size:11px"></i>
+                  <span class="font-bold f-text-xs text-slate-700">준비도 설정</span>
+                </div>
+                <div class="flex-1 flex items-center" style="gap:clamp(0.5rem,1vw,1rem)">
+                  <span class="text-slate-400 f-text-xs shrink-0" style="min-width:16px">하</span>
+                  <div class="flex-1 relative" style="height:36px;">
+                    <input type="range" id="readinessSlider" min="0" max="2" step="1" value="1" 
+                      class="readiness-range" 
+                      style="width:100%; position:absolute; top:50%; transform:translateY(-50%); cursor:pointer; -webkit-appearance:none; appearance:none; height:8px; border-radius:4px; background: linear-gradient(90deg, #F59E0B 0%, #10B981 50%, #3B82F6 100%); outline:none;"
+                      oninput="onReadinessChange(this.value)">
+                  </div>
+                  <span class="text-slate-400 f-text-xs shrink-0" style="min-width:16px">상</span>
+                  <div id="readinessLabel" class="shrink-0 flex items-center rounded-full font-bold f-text-xs transition-all" style="gap:4px; padding:4px 12px; background: rgba(16,185,129,0.10); border: 1px solid rgba(16,185,129,0.20); color: #10B981;">
+                    <i class="fas fa-circle" style="font-size:6px"></i>
+                    <span id="readinessLabelText">중</span>
+                  </div>
+                </div>
+              </div>
+              <p id="readinessDesc" class="text-slate-400 f-text-xs" style="margin-top:5px; padding-left:24px;">일반적인 수준의 준비 상태에서의 예상 기간입니다</p>
             </div>
 
             <!-- Bar Chart Area -->
@@ -347,6 +372,11 @@ export function homePage(opts: {
       </div>
     </div>
   </section>
+  <style>
+    .readiness-range::-webkit-slider-thumb { -webkit-appearance:none; width:24px; height:24px; border-radius:50%; background: white; border:3px solid #10B981; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor:pointer; transition: border-color 0.2s; }
+    .readiness-range::-moz-range-thumb { width:24px; height:24px; border-radius:50%; background: white; border:3px solid #10B981; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor:pointer; }
+    .readiness-range::-webkit-slider-thumb:hover { border-color: #059669; transform: scale(1.1); }
+  </style>
 
   <!-- ════════════════════════════════════════════════════════
        SERVICES SECTION (v16 - Premium Bento Grid, 3x Enlarged)
@@ -565,7 +595,7 @@ export function homePage(opts: {
   </a>
 
   <!-- ════════════════════════════════════════════════════════
-       EAL Interactive Script (v15)
+       EAL Interactive Script (v18 - with Readiness Slider)
        ════════════════════════════════════════════════════════ -->
   <script>
   (function(){
@@ -589,38 +619,78 @@ export function homePage(opts: {
       observer.observe(bars[0].closest('.bar-chart-container') || bars[0]);
     }
 
-    // EAL Data (admin-configurable)
+    // Readiness levels: 0=low, 1=mid, 2=high
+    var readinessKeys = ['low', 'mid', 'high'];
+    var readinessLabels = { low: '하', mid: '중', high: '상' };
+    var readinessColors = { low: '#F59E0B', mid: '#10B981', high: '#3B82F6' };
+    var readinessDescs = {
+      low: '준비가 부족한 상태 - 추가 준비 기간이 필요합니다',
+      mid: '일반적인 수준의 준비 상태에서의 예상 기간입니다',
+      high: '철저히 준비된 상태 - 최단 기간으로 진행 가능합니다'
+    };
+
+    // EAL Data with readiness levels (admin-configurable)
     var ealData = {
       overall: {
-        general: { prep: ${s.eval_overall_general_prep || '12'}, eval: ${s.eval_overall_general_eval || '12'}, total: ${s.eval_overall_general_prep && s.eval_overall_general_eval ? (parseInt(s.eval_overall_general_prep) + parseInt(s.eval_overall_general_eval)) : '24'} },
-        koist:   { prep: ${s.eval_overall_koist_prep || '6'}, eval: ${s.eval_overall_koist_eval || '9'}, total: ${s.eval_overall_koist_prep && s.eval_overall_koist_eval ? (parseInt(s.eval_overall_koist_prep) + parseInt(s.eval_overall_koist_eval)) : '15'} },
-        maxBar: ${s.eval_overall_general_prep && s.eval_overall_general_eval ? (parseInt(s.eval_overall_general_prep) + parseInt(s.eval_overall_general_eval)) : '24'}
+        general: { prep: ${s.eval_overall_general_prep || '12'}, eval: ${s.eval_overall_general_eval || '12'} },
+        koist: {
+          high: { prep: ${s.eval_overall_koist_prep_high || '4'}, eval: ${s.eval_overall_koist_eval_high || '7'} },
+          mid:  { prep: ${s.eval_overall_koist_prep_mid || s.eval_overall_koist_prep || '6'}, eval: ${s.eval_overall_koist_eval_mid || s.eval_overall_koist_eval || '9'} },
+          low:  { prep: ${s.eval_overall_koist_prep_low || '9'}, eval: ${s.eval_overall_koist_eval_low || '11'} }
+        }
       },
       EAL2: {
-        general: { prep: ${s.eval_eal2_general_prep || '8'}, eval: ${s.eval_eal2_general_eval || '6'}, total: ${s.eval_eal2_general_prep && s.eval_eal2_general_eval ? (parseInt(s.eval_eal2_general_prep) + parseInt(s.eval_eal2_general_eval)) : '14'} },
-        koist:   { prep: ${s.eval_eal2_koist_prep || '4'}, eval: ${s.eval_eal2_koist_eval || '4'}, total: ${s.eval_eal2_koist_prep && s.eval_eal2_koist_eval ? (parseInt(s.eval_eal2_koist_prep) + parseInt(s.eval_eal2_koist_eval)) : '8'} },
-        maxBar: ${s.eval_eal2_general_prep && s.eval_eal2_general_eval ? (parseInt(s.eval_eal2_general_prep) + parseInt(s.eval_eal2_general_eval)) : '14'}
+        general: { prep: ${s.eval_eal2_general_prep || '8'}, eval: ${s.eval_eal2_general_eval || '6'} },
+        koist: {
+          high: { prep: ${s.eval_eal2_koist_prep_high || '2'}, eval: ${s.eval_eal2_koist_eval_high || '3'} },
+          mid:  { prep: ${s.eval_eal2_koist_prep_mid || s.eval_eal2_koist_prep || '4'}, eval: ${s.eval_eal2_koist_eval_mid || s.eval_eal2_koist_eval || '4'} },
+          low:  { prep: ${s.eval_eal2_koist_prep_low || '6'}, eval: ${s.eval_eal2_koist_eval_low || '5'} }
+        }
       },
       EAL3: {
-        general: { prep: ${s.eval_eal3_general_prep || '10'}, eval: ${s.eval_eal3_general_eval || '8'}, total: ${s.eval_eal3_general_prep && s.eval_eal3_general_eval ? (parseInt(s.eval_eal3_general_prep) + parseInt(s.eval_eal3_general_eval)) : '18'} },
-        koist:   { prep: ${s.eval_eal3_koist_prep || '6'}, eval: ${s.eval_eal3_koist_eval || '5'}, total: ${s.eval_eal3_koist_prep && s.eval_eal3_koist_eval ? (parseInt(s.eval_eal3_koist_prep) + parseInt(s.eval_eal3_koist_eval)) : '11'} },
-        maxBar: ${s.eval_eal3_general_prep && s.eval_eal3_general_eval ? (parseInt(s.eval_eal3_general_prep) + parseInt(s.eval_eal3_general_eval)) : '18'}
+        general: { prep: ${s.eval_eal3_general_prep || '10'}, eval: ${s.eval_eal3_general_eval || '8'} },
+        koist: {
+          high: { prep: ${s.eval_eal3_koist_prep_high || '4'}, eval: ${s.eval_eal3_koist_eval_high || '4'} },
+          mid:  { prep: ${s.eval_eal3_koist_prep_mid || s.eval_eal3_koist_prep || '6'}, eval: ${s.eval_eal3_koist_eval_mid || s.eval_eal3_koist_eval || '5'} },
+          low:  { prep: ${s.eval_eal3_koist_prep_low || '8'}, eval: ${s.eval_eal3_koist_eval_low || '7'} }
+        }
       },
       EAL4: {
-        general: { prep: ${s.eval_eal4_general_prep || '14'}, eval: ${s.eval_eal4_general_eval || '12'}, total: ${s.eval_eal4_general_prep && s.eval_eal4_general_eval ? (parseInt(s.eval_eal4_general_prep) + parseInt(s.eval_eal4_general_eval)) : '26'} },
-        koist:   { prep: ${s.eval_eal4_koist_prep || '8'}, eval: ${s.eval_eal4_koist_eval || '7'}, total: ${s.eval_eal4_koist_prep && s.eval_eal4_koist_eval ? (parseInt(s.eval_eal4_koist_prep) + parseInt(s.eval_eal4_koist_eval)) : '15'} },
-        maxBar: ${s.eval_eal4_general_prep && s.eval_eal4_general_eval ? (parseInt(s.eval_eal4_general_prep) + parseInt(s.eval_eal4_general_eval)) : '26'}
+        general: { prep: ${s.eval_eal4_general_prep || '14'}, eval: ${s.eval_eal4_general_eval || '12'} },
+        koist: {
+          high: { prep: ${s.eval_eal4_koist_prep_high || '5'}, eval: ${s.eval_eal4_koist_eval_high || '5'} },
+          mid:  { prep: ${s.eval_eal4_koist_prep_mid || s.eval_eal4_koist_prep || '8'}, eval: ${s.eval_eal4_koist_eval_mid || s.eval_eal4_koist_eval || '7'} },
+          low:  { prep: ${s.eval_eal4_koist_prep_low || '11'}, eval: ${s.eval_eal4_koist_eval_low || '10'} }
+        }
       }
     };
 
-    for (var key in ealData) { var d = ealData[key]; d.reduction = Math.round((1 - d.koist.total / d.general.total) * 100); d.saving = d.general.total - d.koist.total; }
+    var currentEAL = 'overall';
+    var currentReadiness = 1; // 0=low, 1=mid, 2=high
 
-    window.switchEAL = function(level) {
+    function getKoistData(level, readinessIdx) {
+      var rKey = readinessKeys[readinessIdx];
       var d = ealData[level];
+      if (!d) return null;
+      var k = d.koist[rKey];
+      var g = d.general;
+      var gTotal = g.prep + g.eval;
+      var kTotal = k.prep + k.eval;
+      return {
+        general: { prep: g.prep, eval: g.eval, total: gTotal },
+        koist: { prep: k.prep, eval: k.eval, total: kTotal },
+        maxBar: gTotal,
+        reduction: Math.round((1 - kTotal / gTotal) * 100),
+        saving: gTotal - kTotal
+      };
+    }
+
+    function updateChart() {
+      var d = getKoistData(currentEAL, currentReadiness);
       if (!d) return;
 
       // Update tabs
-      document.querySelectorAll('.eal-tab').forEach(function(t) { t.classList.toggle('active', t.getAttribute('data-eal') === level); });
+      document.querySelectorAll('.eal-tab').forEach(function(t) { t.classList.toggle('active', t.getAttribute('data-eal') === currentEAL); });
 
       // General bar
       var gPrepPct = Math.round((d.general.prep / d.maxBar) * 100);
@@ -639,7 +709,7 @@ export function homePage(opts: {
 
       // KOIST bar
       var kWidthPct = Math.round((d.koist.total / d.maxBar) * 100);
-      var kPrepPct = Math.round((d.koist.prep / d.koist.total) * 100);
+      var kPrepPct = d.koist.total > 0 ? Math.round((d.koist.prep / d.koist.total) * 100) : 50;
       var kBar = document.getElementById('ealKoistBar');
       if (kBar) {
         kBar.style.transition = 'width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
@@ -662,7 +732,36 @@ export function homePage(opts: {
       if (redText) redText.textContent = '평가기간 약 ' + d.reduction + '% 단축';
       var savText = document.getElementById('ealSavingText');
       if (savText) savText.textContent = '약 ' + d.saving + '개월 절감 \\u00b7 원스톱 서비스';
+    }
+
+    function updateReadinessUI(val) {
+      var rKey = readinessKeys[val];
+      var label = document.getElementById('readinessLabel');
+      var labelText = document.getElementById('readinessLabelText');
+      var desc = document.getElementById('readinessDesc');
+      if (labelText) labelText.textContent = readinessLabels[rKey];
+      if (desc) desc.textContent = readinessDescs[rKey];
+      if (label) {
+        var color = readinessColors[rKey];
+        label.style.background = color + '18';
+        label.style.borderColor = color + '40';
+        label.style.color = color;
+      }
+    }
+
+    window.switchEAL = function(level) {
+      currentEAL = level;
+      updateChart();
     };
+
+    window.onReadinessChange = function(val) {
+      currentReadiness = parseInt(val);
+      updateReadinessUI(currentReadiness);
+      updateChart();
+    };
+
+    // Initialize
+    updateReadinessUI(1);
   })();
   </script>
   `;

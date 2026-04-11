@@ -23,6 +23,48 @@ INSERT OR IGNORE INTO site_settings (key, value, category, description) VALUES
 ('google_conversion_id', 'AW-11333861621/5mtFCJ_K1uAYEPWBtJwq', 'seo', 'Google 전환 추적 ID'),
 ('naver_verification', '0049ce4d83d2123396c82ba450ba8e754bad26f3', 'seo', '네이버 사이트 인증 코드');
 
+-- 평가기간 데이터 (일반 프로세스)
+INSERT OR IGNORE INTO site_settings (key, value, category, description) VALUES
+('eval_overall_general_prep', '12', 'evaluation', '전체평균 일반 준비기간(개월)'),
+('eval_overall_general_eval', '12', 'evaluation', '전체평균 일반 평가기간(개월)'),
+('eval_eal2_general_prep', '8', 'evaluation', 'EAL2 일반 준비기간(개월)'),
+('eval_eal2_general_eval', '6', 'evaluation', 'EAL2 일반 평가기간(개월)'),
+('eval_eal3_general_prep', '10', 'evaluation', 'EAL3 일반 준비기간(개월)'),
+('eval_eal3_general_eval', '8', 'evaluation', 'EAL3 일반 평가기간(개월)'),
+('eval_eal4_general_prep', '14', 'evaluation', 'EAL4 일반 준비기간(개월)'),
+('eval_eal4_general_eval', '12', 'evaluation', 'EAL4 일반 평가기간(개월)');
+
+-- 평가기간 데이터 (KOIST 프로세스 - 준비도별)
+INSERT OR IGNORE INTO site_settings (key, value, category, description) VALUES
+-- 전체평균
+('eval_overall_koist_prep_high', '4', 'evaluation', '전체평균 KOIST 준비기간 - 준비도 상(개월)'),
+('eval_overall_koist_eval_high', '7', 'evaluation', '전체평균 KOIST 평가기간 - 준비도 상(개월)'),
+('eval_overall_koist_prep_mid', '6', 'evaluation', '전체평균 KOIST 준비기간 - 준비도 중(개월)'),
+('eval_overall_koist_eval_mid', '9', 'evaluation', '전체평균 KOIST 평가기간 - 준비도 중(개월)'),
+('eval_overall_koist_prep_low', '9', 'evaluation', '전체평균 KOIST 준비기간 - 준비도 하(개월)'),
+('eval_overall_koist_eval_low', '11', 'evaluation', '전체평균 KOIST 평가기간 - 준비도 하(개월)'),
+-- EAL2
+('eval_eal2_koist_prep_high', '2', 'evaluation', 'EAL2 KOIST 준비기간 - 준비도 상(개월)'),
+('eval_eal2_koist_eval_high', '3', 'evaluation', 'EAL2 KOIST 평가기간 - 준비도 상(개월)'),
+('eval_eal2_koist_prep_mid', '4', 'evaluation', 'EAL2 KOIST 준비기간 - 준비도 중(개월)'),
+('eval_eal2_koist_eval_mid', '4', 'evaluation', 'EAL2 KOIST 평가기간 - 준비도 중(개월)'),
+('eval_eal2_koist_prep_low', '6', 'evaluation', 'EAL2 KOIST 준비기간 - 준비도 하(개월)'),
+('eval_eal2_koist_eval_low', '5', 'evaluation', 'EAL2 KOIST 평가기간 - 준비도 하(개월)'),
+-- EAL3
+('eval_eal3_koist_prep_high', '4', 'evaluation', 'EAL3 KOIST 준비기간 - 준비도 상(개월)'),
+('eval_eal3_koist_eval_high', '4', 'evaluation', 'EAL3 KOIST 평가기간 - 준비도 상(개월)'),
+('eval_eal3_koist_prep_mid', '6', 'evaluation', 'EAL3 KOIST 준비기간 - 준비도 중(개월)'),
+('eval_eal3_koist_eval_mid', '5', 'evaluation', 'EAL3 KOIST 준비기간 - 준비도 중(개월)'),
+('eval_eal3_koist_prep_low', '8', 'evaluation', 'EAL3 KOIST 준비기간 - 준비도 하(개월)'),
+('eval_eal3_koist_eval_low', '7', 'evaluation', 'EAL3 KOIST 평가기간 - 준비도 하(개월)'),
+-- EAL4
+('eval_eal4_koist_prep_high', '5', 'evaluation', 'EAL4 KOIST 준비기간 - 준비도 상(개월)'),
+('eval_eal4_koist_eval_high', '5', 'evaluation', 'EAL4 KOIST 평가기간 - 준비도 상(개월)'),
+('eval_eal4_koist_prep_mid', '8', 'evaluation', 'EAL4 KOIST 준비기간 - 준비도 중(개월)'),
+('eval_eal4_koist_eval_mid', '7', 'evaluation', 'EAL4 KOIST 평가기간 - 준비도 중(개월)'),
+('eval_eal4_koist_prep_low', '11', 'evaluation', 'EAL4 KOIST 준비기간 - 준비도 하(개월)'),
+('eval_eal4_koist_eval_low', '10', 'evaluation', 'EAL4 KOIST 평가기간 - 준비도 하(개월)');
+
 -- 팝업 (현재 사이트 기준 2개)
 INSERT OR IGNORE INTO popups (id, title, content, image_url, popup_type, width, height, position_top, position_left, is_active, sort_order) VALUES
 (1, 'CC평가 대기기간 안내', '', '/static/images/popup-cc-evaluation.png', 'image', 470, 150, 180, 30, 1, 1),
