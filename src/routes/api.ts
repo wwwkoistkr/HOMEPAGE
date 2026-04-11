@@ -117,6 +117,13 @@ api.post('/inquiries', async (c) => {
   }
 });
 
+// GET /api/sim-cert-types - AI 시뮬레이터 인증유형 데이터
+api.get('/sim-cert-types', async (c) => {
+  const db = c.env.DB;
+  const result = await db.prepare('SELECT * FROM sim_cert_types WHERE is_active = 1 ORDER BY sort_order').all();
+  return c.json({ success: true, data: result.results });
+});
+
 // GET /api/images/:key+ - Serve images from R2 (public, cached)
 api.get('/images/*', async (c) => {
   const key = c.req.path.replace('/api/images/', '');

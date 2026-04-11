@@ -309,6 +309,41 @@ admin.delete('/about-pages/:id', async (c) => {
 });
 
 // ---- Images Management (R2) ----
+
+// ---- Sim Cert Types CRUD (AI 시뮬레이터) ----
+admin.get('/sim-cert-types', async (c) => {
+  const result = await c.env.DB.prepare('SELECT * FROM sim_cert_types ORDER BY sort_order').all();
+  return c.json({ success: true, data: result.results });
+});
+
+admin.post('/sim-cert-types', async (c) => {
+  const { name, slug, icon, color, traditional_min_weeks, traditional_max_weeks, koist_min_weeks, koist_max_weeks, description, sort_order } = await c.req.json();
+  await c.env.DB.prepare(
+    'INSERT INTO sim_cert_types (name, slug, icon, color, traditional_min_weeks, traditional_max_weeks, koist_min_weeks, koist_max_weeks, description, sort_order) VALUES (?,?,?,?,?,?,?,?,?,?)'
+  ).bind(name, slug, icon || 'fa-shield-halved', color || '#3B82F6', traditional_min_weeks || 12, traditional_max_weeks || 28, koist_min_weeks || 7, koist_max_weeks || 20, description || '', sort_order || 0).run();
+  return c.json({ success: true });
+});
+
+admin.put('/sim-cert-types/:id', async (c) => {
+  const id = c.req.param('id');
+  const body = await c.req.json();
+  const fields = ['name', 'slug', 'icon', 'color', 'traditional_min_weeks', 'traditional_max_weeks', 'koist_min_weeks', 'koist_max_weeks', 'description', 'sort_order', 'is_active'];
+  const updates: string[] = [];
+  const values: any[] = [];
+  for (const f of fields) { if (body[f] !== undefined) { updates.push(`${f} = ?`); values.push(body[f]); } }
+  if (updates.length === 0) return c.json({ error: 'No fields' }, 400);
+  updates.push('updated_at = CURRENT_TIMESTAMP');
+  values.push(id);
+  await c.env.DB.prepare(`UPDATE sim_cert_types SET ${updates.join(', ')} WHERE id = ?`).bind(...values).run();
+  return c.json({ success: true });
+});
+
+admin.delete('/sim-cert-types/:id', async (c) => {
+  await c.env.DB.prepare('DELETE FROM sim_cert_types WHERE id = ?').bind(c.req.param('id')).run();
+  return c.json({ success: true });
+});
+
+// ---- Images Management (R2) (continued) ----
 admin.get('/images', async (c) => {
   const category = c.req.query('category') || '';
   let sql = 'SELECT * FROM images ORDER BY created_at DESC';

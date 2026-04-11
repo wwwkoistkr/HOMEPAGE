@@ -199,6 +199,7 @@ export function adminDashboardPage(content: string, activeMenu = 'dashboard', lo
     { id: 'inquiries', icon: 'fa-envelope', label: '상담문의', href: '/admin/inquiries' },
     { id: 'images', icon: 'fa-images', label: '이미지 관리', href: '/admin/images' },
     { id: 'about', icon: 'fa-info-circle', label: '소개 페이지', href: '/admin/about' },
+    { id: 'sim-cert-types', icon: 'fa-robot', label: 'AI 시뮬레이터', href: '/admin/sim-cert-types' },
     { id: 'account', icon: 'fa-user-shield', label: '계정 관리', href: '/admin/change-password' },
   ];
 

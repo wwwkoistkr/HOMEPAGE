@@ -1,7 +1,7 @@
 // KOIST Website - Main Entry Point
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import type { Bindings, Variables, Department, Popup, Notice, ProgressItem, DepPage, FAQ, AboutPage } from './types';
+import type { Bindings, Variables, Department, Popup, Notice, ProgressItem, DepPage, FAQ, AboutPage, SimCertType } from './types';
 import { getSettings } from './utils/db';
 import { hashPassword, generateSalt } from './utils/crypto';
 import { authMiddleware } from './middleware/auth';
@@ -95,7 +95,10 @@ app.get('/', async (c) => {
   const progressItems = (await db.prepare('SELECT * FROM progress_items ORDER BY created_at DESC LIMIT 10').all<ProgressItem>()).results || [];
   const progressCategoryCounts = (await db.prepare(`SELECT category, COUNT(*) as cnt FROM progress_items GROUP BY category ORDER BY cnt DESC`).all<{category:string;cnt:number}>()).results || [];
 
-  const content = homePage({ settings, departments, popups, notices, progressItems, progressCategoryCounts });
+  // AI 시뮬레이터 인증유형 데이터
+  const simCertTypes = (await db.prepare('SELECT * FROM sim_cert_types WHERE is_active = 1 ORDER BY sort_order').all<SimCertType>()).results || [];
+
+  const content = homePage({ settings, departments, popups, notices, progressItems, progressCategoryCounts, simCertTypes });
   return c.html(layout({ settings, departments, content }));
 });
 
@@ -412,12 +415,12 @@ app.get('/admin/dashboard', authMiddleware, async (c) => {
 });
 
 // Admin CRUD pages
-const adminPages = ['site-settings', 'departments', 'popups', 'notices', 'progress', 'downloads', 'faqs', 'inquiries', 'images', 'about'];
+const adminPages = ['site-settings', 'departments', 'popups', 'notices', 'progress', 'downloads', 'faqs', 'inquiries', 'images', 'about', 'sim-cert-types'];
 for (const page of adminPages) {
   app.get(`/admin/${page}`, authMiddleware, async (c) => {
     const db = c.env.DB;
     const settings = await getSettings(db);
-    const jsFile = page === 'about' ? 'admin-about' : `admin-${page}`;
+    const jsFile = page === 'about' ? 'admin-about' : page === 'sim-cert-types' ? 'admin-sim-cert-types' : `admin-${page}`;
     const content = `
       <h1 class="text-2xl font-bold text-gray-800 mb-6">${getAdminPageTitle(page)}</h1>
       <div id="admin-content" class="bg-white rounded-xl border border-gray-100 p-6">
@@ -441,6 +444,7 @@ function getAdminPageTitle(page: string): string {
     faqs: '<i class="fas fa-circle-question text-yellow-500 mr-2"></i>FAQ 관리',
     inquiries: '<i class="fas fa-envelope text-orange-500 mr-2"></i>상담문의 관리',
     about: '<i class="fas fa-info-circle text-indigo-500 mr-2"></i>소개 페이지 관리',
+    'sim-cert-types': '<i class="fas fa-robot text-cyan-500 mr-2"></i>AI 시뮬레이터 인증유형 관리',
   };
   return titles[page] || page;
 }
