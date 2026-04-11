@@ -1,51 +1,65 @@
-// Admin - Progress Management v8.0 (10 Business Categories with Dynamic Forms)
+// Admin - Progress Management v9.0 (원본 koist.kr 기반 카테고리 + 확장)
+// CC평가, 보안기능시험, 암호모듈검증, 성능평가 (원본 4개) + 확장 6개 카테고리
 (async function() {
   const c = document.getElementById('admin-content');
   let progList = [];
   let currentCategory = '';
 
-  // ── 10개 사업 카테고리 정의 ──
+  // ── 10개 사업 카테고리 정의 (원본 koist.kr 반영) ──
+  // 원본 사이트 4개 핵심 카테고리의 컬럼 구조를 정확히 반영
+  // + 6개 확장 카테고리 (관리자 모드에서 자유롭게 추가 가능)
   const CATEGORIES = {
     'CC평가':       { icon: 'fa-shield-halved', color: '#3B82F6', col2: '보증등급', col3: '인증구분', col4: '신청구분',
-                      col2Opts: ['EAL1','EAL1+','EAL2','EAL3','EAL4','EAL5','EAL6','EAL7'],
+                      col2Opts: ['EAL1','EAL1+','EAL2','EAL3','EAL4','EAL5','EAL6','EAL7','EAL 1+'],
                       col3Opts: ['최초평가','재평가'],
-                      col4Opts: ['국내평가','국제평가'] },
-    '보안기능확인서':  { icon: 'fa-file-shield', color: '#8B5CF6', col2: '확인서등급', col3: '발급구분', col4: '시험유형',
-                      col2Opts: ['1등급','2등급','3등급'],
-                      col3Opts: ['신규발급','갱신발급','변경발급'],
-                      col4Opts: ['기능시험','성능시험','호환성시험'] },
-    'KCMVP':       { icon: 'fa-lock', color: '#EC4899', col2: '검증등급', col3: '모듈유형', col4: '알고리즘',
-                      col2Opts: ['VS.1','VS.2','VS.3'],
-                      col3Opts: ['SW모듈','HW모듈','FW모듈'],
-                      col4Opts: ['ARIA','SEED','AES','RSA','ECC','SHA','LEA','ARIA/SEED','AES/RSA','ARIA/RSA','AES/SHA-256','ARIA-256','RSA/ECC','ARIA/AES','QRNG/AES','SEED/HMAC','ARIA/ECC','LEA-128'] },
-    '성능평가':      { icon: 'fa-gauge-high', color: '#F59E0B', col2: '성능등급', col3: '평가구분', col4: '평가항목',
-                      col2Opts: ['A등급','B등급','C등급'],
-                      col3Opts: ['처리량시험','탐지율시험','동시세션시험','정확도시험'],
-                      col4Opts: ['Throughput','Latency','Detection Rate','False Positive','Spam Rate','Sessions/sec','APT Detection','Cloud Perf','Accuracy'] },
+                      col4Opts: ['국내평가','국제평가'],
+                      statusOpts: ['평가접수','평가진행','평가완료'] },
+    '보안기능시험':   { icon: 'fa-file-shield', color: '#8B5CF6', col2: '제품유형', col3: '발급유형', col4: '신청구분',
+                      col2Opts: ['정보보호시스템','네트워크장비'],
+                      col3Opts: ['기본시험','간소화 발급'],
+                      col4Opts: ['최초신청','변경·재승인','갱신신청'],
+                      statusOpts: ['시험접수','시험진행','발급완료'] },
+    '암호모듈검증':   { icon: 'fa-lock', color: '#EC4899', col2: '보안수준', col3: '모듈형태', col4: '-',
+                      col2Opts: ['1','2','3'],
+                      col3Opts: ['소프트웨어','하드웨어','펌웨어'],
+                      col4Opts: ['-'],
+                      statusOpts: ['시험접수','시험진행','발급완료'] },
+    '성능평가':      { icon: 'fa-gauge-high', color: '#F59E0B', col2: '제품유형', col3: '운영체제', col4: '개발사',
+                      col2Opts: ['안티바이러스 제품','안티바이러스제품(Linux)','안티바이러스 제품 (Mobile)','모듈형 안티바이러스 제품','SSL VPN','소스코드 보안약점 분석도구','방화벽','IPS','WAF','DLP'],
+                      col3Opts: ['-','Windows','Linux','Android','iOS','U3000S'],
+                      col4Opts: [],
+                      freeText: { col4: true },
+                      statusOpts: ['평가접수','평가진행','발급완료'] },
     '보안적합성검증':  { icon: 'fa-clipboard-check', color: '#10B981', col2: '적합등급', col3: '검증구분', col4: '검증기준',
                       col2Opts: ['적합','조건부적합','부적합'],
                       col3Opts: ['신규검증','정기검증','수시검증'],
-                      col4Opts: ['전자정부기준','국방기준','행정기관기준','교육기관기준','의료기관기준','금융기관기준','기반시설기준','지자체기준','연구기관기준'] },
+                      col4Opts: ['전자정부기준','국방기준','행정기관기준','교육기관기준','의료기관기준','금융기관기준','기반시설기준','지자체기준','연구기관기준'],
+                      statusOpts: ['평가접수','평가진행','평가완료'] },
     '취약점분석평가':  { icon: 'fa-bug', color: '#EF4444', col2: '위험등급', col3: '분석유형', col4: '평가범위',
                       col2Opts: ['상','중','하'],
                       col3Opts: ['웹취약점','앱취약점','시스템취약점','인프라취약점','모바일취약점','펌웨어취약점','클라우드취약점','AI취약점'],
-                      col4Opts: ['모의침투','소스코드분석','동적분석','네트워크스캔','리버싱분석','설정점검','침투테스트','적대적공격','통합분석'] },
+                      col4Opts: ['모의침투','소스코드분석','동적분석','네트워크스캔','리버싱분석','설정점검','침투테스트','적대적공격','통합분석'],
+                      statusOpts: ['평가접수','평가진행','평가완료'] },
     '정보보호제품평가': { icon: 'fa-box-archive', color: '#06B6D4', col2: '평가등급', col3: '제품유형', col4: '평가기준',
                       col2Opts: ['A등급','B등급','C등급'],
                       col3Opts: ['OS보안','네트워크보안','앱보안','출력보안','모바일보안','데이터보안','인증보안','접근제어','포렌식','보안관제'],
-                      col4Opts: ['TCSEC기준','ITSEC기준','PP기준','국정원기준','MDM기준','백업기준','IAM기준','ZTA기준','디지털포렌식기준','SOAR기준'] },
+                      col4Opts: ['TCSEC기준','ITSEC기준','PP기준','국정원기준','MDM기준','백업기준','IAM기준','ZTA기준','디지털포렌식기준','SOAR기준'],
+                      statusOpts: ['평가접수','평가진행','평가완료'] },
     '클라우드보안인증': { icon: 'fa-cloud-arrow-up', color: '#6366F1', col2: '인증등급', col3: '서비스유형', col4: '인증기준',
                       col2Opts: ['상','중','하'],
                       col3Opts: ['IaaS','PaaS','SaaS','MSP'],
-                      col4Opts: ['CSAP기준','ISO27017','ISO27018','CSA STAR'] },
+                      col4Opts: ['CSAP기준','ISO27017','ISO27018','CSA STAR'],
+                      statusOpts: ['평가접수','평가진행','평가완료'] },
     'IoT보안인증':   { icon: 'fa-microchip', color: '#14B8A6', col2: '인증등급', col3: '기기유형', col4: '인증기준',
                       col2Opts: ['Lite','Standard','High'],
                       col3Opts: ['홈IoT','산업IoT','공장IoT','차량IoT','의료IoT','에너지IoT','보안IoT','도시IoT','드론IoT','헬스IoT'],
-                      col4Opts: ['경량인증','표준인증','고급인증'] },
+                      col4Opts: ['경량인증','표준인증','고급인증'],
+                      statusOpts: ['평가접수','평가진행','평가완료'] },
     '기타시험평가':   { icon: 'fa-flask', color: '#78716C', col2: '등급', col3: '유형', col4: '기준',
                       col2Opts: ['A','B','C'],
                       col3Opts: ['블록체인','AI보안','양자암호','자율주행','디지털트윈','5G보안','메타버스','ZTA'],
-                      col4Opts: ['스마트컨트랙트','모델검증','QKD시험','V2X보안','시뮬레이션','프로토콜시험','플랫폼시험','아키텍처검증'] }
+                      col4Opts: ['스마트컨트랙트','모델검증','QKD시험','V2X보안','시뮬레이션','프로토콜시험','플랫폼시험','아키텍처검증'],
+                      statusOpts: ['평가접수','평가진행','평가완료'] }
   };
 
   const catKeys = Object.keys(CATEGORIES);
@@ -56,10 +70,13 @@
     if (!d) return;
     progList = d.data || [];
 
-    // 카테고리별 건수 집계
+    // 카테고리별 건수 집계 (정의되지 않은 카테고리도 표시)
     var catCounts = {};
     catKeys.forEach(function(k) { catCounts[k] = 0; });
-    progList.forEach(function(p) { if (catCounts[p.category] !== undefined) catCounts[p.category]++; else catCounts[p.category] = (catCounts[p.category]||0)+1; });
+    progList.forEach(function(p) { 
+      if (catCounts[p.category] !== undefined) catCounts[p.category]++; 
+      else catCounts[p.category] = (catCounts[p.category]||0)+1; 
+    });
 
     var filtered = currentCategory ? progList.filter(function(p) { return p.category === currentCategory; }) : progList;
     var meta = currentCategory ? CATEGORIES[currentCategory] : null;
@@ -72,12 +89,22 @@
     h += '<div class="text-xl font-bold text-gray-800">' + progList.length + '</div></button>';
     catKeys.forEach(function(k) {
       var m = CATEGORIES[k];
+      var cnt = catCounts[k] || 0;
       var active = currentCategory === k;
       h += '<button onclick="filterCat(\'' + k + '\')" class="p-3 rounded-lg border text-left transition-all hover:shadow ' + (active ? 'ring-1' : 'border-gray-200 hover:border-gray-300') + '" style="' + (active ? 'border-color:' + m.color + '; background:' + m.color + '08; --tw-ring-color:' + m.color + '40;' : '') + '">';
       h += '<div class="text-xs text-gray-500 mb-1 truncate"><i class="fas ' + m.icon + ' mr-1" style="color:' + m.color + '"></i>' + k + '</div>';
-      h += '<div class="text-xl font-bold" style="color:' + m.color + '">' + (catCounts[k]||0) + '</div></button>';
+      h += '<div class="text-xl font-bold" style="color:' + (cnt > 0 ? m.color : '#ccc') + '">' + cnt + '</div></button>';
     });
     h += '</div>';
+
+    // ── 데이터 소스 안내 ──
+    if (!currentCategory) {
+      h += '<div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-xs text-blue-700">';
+      h += '<i class="fas fa-info-circle mr-1"></i>';
+      h += '<strong>원본 데이터 기준:</strong> CC평가 142건, 보안기능시험 69건, 암호모듈검증 1건, 성능평가 6건이 원본 koist.kr에서 추출되었습니다. ';
+      h += '확장 카테고리(보안적합성검증, 취약점분석평가 등)는 관리자 모드에서 직접 데이터를 추가할 수 있습니다.';
+      h += '</div>';
+    }
 
     // ── 액션 바 ──
     h += '<div class="flex flex-wrap justify-between items-center mb-4 gap-2">';
@@ -100,7 +127,9 @@
     h += '</tr></thead><tbody>';
 
     filtered.forEach(function(p, i) {
-      var statusCls = p.status === '평가완료' ? 'bg-green-50 text-green-600 border-green-200' : p.status === '평가진행' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-yellow-50 text-yellow-600 border-yellow-200';
+      var isComplete = p.status === '평가완료' || p.status === '발급완료';
+      var isProgress = p.status === '평가진행' || p.status === '시험진행';
+      var statusCls = isComplete ? 'bg-green-50 text-green-600 border-green-200' : isProgress ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-yellow-50 text-yellow-600 border-yellow-200';
       var cm = CATEGORIES[p.category] || { icon: 'fa-circle', color: '#999' };
       h += '<tr class="border-t hover:bg-gray-50/50">';
       h += '<td class="py-2 px-3 text-gray-400 text-xs">' + (i + 1) + '</td>';
@@ -119,7 +148,7 @@
     });
 
     if (filtered.length === 0) {
-      h += '<tr><td colspan="' + (currentCategory ? 7 : 8) + '" class="py-8 text-center text-gray-400"><i class="fas fa-inbox text-gray-300 text-2xl block mb-2"></i>등록된 현황이 없습니다.</td></tr>';
+      h += '<tr><td colspan="' + (currentCategory ? 7 : 8) + '" class="py-8 text-center text-gray-400"><i class="fas fa-inbox text-gray-300 text-2xl block mb-2"></i>등록된 현황이 없습니다.<br><span class="text-xs">위의 [추가] 버튼으로 새 항목을 등록할 수 있습니다.</span></td></tr>';
     }
     h += '</tbody></table></div>';
     c.innerHTML = h;
@@ -146,7 +175,6 @@
     h += '<div><label class="block text-xs font-semibold text-gray-600 mb-1">사업 분류 *</label>';
     h += '<select id="prCat" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-400" onchange="onCatChange()">';
     catKeys.forEach(function(k) {
-      var m = CATEGORIES[k];
       h += '<option value="' + k + '"' + (selCat === k ? ' selected' : '') + '>' + k + '</option>';
     });
     h += '</select></div>';
@@ -156,22 +184,23 @@
     h += '<input id="prName" value="' + esc(prog && prog.product_name) + '" placeholder="제품/서비스명" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-400"></div>';
 
     // 업체
-    h += '<div><label class="block text-xs font-semibold text-gray-600 mb-1">업체</label>';
-    h += '<input id="prComp" value="' + esc(prog && prog.company) + '" placeholder="업체명" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-400"></div>';
+    h += '<div><label class="block text-xs font-semibold text-gray-600 mb-1">업체/개발사</label>';
+    h += '<input id="prComp" value="' + esc(prog && prog.company) + '" placeholder="업체명 (선택)" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-400"></div>';
 
     // 동적 필드 (카테고리에 따라 변경)
     h += '<div id="dynFields">' + dynFieldsHtml(selCat, prog) + '</div>';
 
-    // 진행상태
+    // 진행상태 (카테고리별 상태 옵션)
     h += '<div><label class="block text-xs font-semibold text-gray-600 mb-1">진행상태</label>';
     h += '<select id="prStatus" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-400">';
-    h += '<option' + (prog && prog.status === '평가접수' ? ' selected' : '') + '>평가접수</option>';
-    h += '<option' + (prog && prog.status === '평가진행' ? ' selected' : '') + '>평가진행</option>';
-    h += '<option' + (prog && prog.status === '평가완료' ? ' selected' : '') + '>평가완료</option>';
+    var statusOpts = meta.statusOpts || ['평가접수','평가진행','평가완료'];
+    statusOpts.forEach(function(s) {
+      h += '<option' + (prog && prog.status === s ? ' selected' : '') + '>' + s + '</option>';
+    });
     h += '</select></div>';
 
     // 날짜
-    h += '<div><label class="block text-xs font-semibold text-gray-600 mb-1">시작일</label>';
+    h += '<div><label class="block text-xs font-semibold text-gray-600 mb-1">시작일/발급일</label>';
     h += '<input id="prDate" type="date" value="' + (prog ? (prog.start_date || '') : '') + '" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-400"></div>';
     h += '<div><label class="block text-xs font-semibold text-gray-600 mb-1">종료일</label>';
     h += '<input id="prEndDate" type="date" value="' + (prog ? (prog.end_date || '') : '') + '" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-400"></div>';
@@ -191,21 +220,39 @@
   function dynFieldsHtml(cat, prog) {
     var meta = CATEGORIES[cat] || CATEGORIES['CC평가'];
     var h = '';
-    // Col2 - 등급
+    // Col2 - 등급/유형
     h += '<label class="block text-xs font-semibold text-gray-600 mb-1">' + meta.col2 + '</label>';
-    h += '<select id="prLevel" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-400 mb-3">';
-    h += optionsHtml(meta.col2Opts, prog && prog.assurance_level);
-    h += '</select>';
+    if (meta.col2Opts && meta.col2Opts.length > 0) {
+      h += '<select id="prLevel" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-400 mb-3">';
+      h += optionsHtml(meta.col2Opts, prog && prog.assurance_level);
+      h += '</select>';
+    } else {
+      h += '<input id="prLevel" value="' + esc(prog && prog.assurance_level) + '" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-400 mb-3">';
+    }
     // Col3 - 구분
     h += '<label class="block text-xs font-semibold text-gray-600 mb-1">' + meta.col3 + '</label>';
-    h += '<select id="prCert" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-400 mb-3">';
-    h += optionsHtml(meta.col3Opts, prog && prog.cert_type);
-    h += '</select>';
+    if (meta.col3Opts && meta.col3Opts.length > 0) {
+      h += '<select id="prCert" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-400 mb-3">';
+      h += optionsHtml(meta.col3Opts, prog && prog.cert_type);
+      h += '</select>';
+    } else {
+      h += '<input id="prCert" value="' + esc(prog && prog.cert_type) + '" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-400 mb-3">';
+    }
     // Col4 - 유형
-    h += '<label class="block text-xs font-semibold text-gray-600 mb-1">' + meta.col4 + '</label>';
-    h += '<select id="prEval" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-400">';
-    h += optionsHtml(meta.col4Opts, prog && prog.eval_type);
-    h += '</select>';
+    if (meta.col4 !== '-') {
+      h += '<label class="block text-xs font-semibold text-gray-600 mb-1">' + meta.col4 + '</label>';
+      if (meta.freeText && meta.freeText.col4) {
+        h += '<input id="prEval" value="' + esc(prog && prog.eval_type) + '" placeholder="직접 입력" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-400">';
+      } else if (meta.col4Opts && meta.col4Opts.length > 0) {
+        h += '<select id="prEval" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-400">';
+        h += optionsHtml(meta.col4Opts, prog && prog.eval_type);
+        h += '</select>';
+      } else {
+        h += '<input id="prEval" value="' + esc(prog && prog.eval_type) + '" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-300 focus:border-blue-400">';
+      }
+    } else {
+      h += '<input type="hidden" id="prEval" value="-">';
+    }
     return h;
   }
 
@@ -219,6 +266,16 @@
     var cat = document.getElementById('prCat').value;
     var dynEl = document.getElementById('dynFields');
     if (dynEl) dynEl.innerHTML = dynFieldsHtml(cat, null);
+    // 상태 옵션도 카테고리에 맞게 업데이트
+    var meta = CATEGORIES[cat];
+    if (meta && meta.statusOpts) {
+      var statusEl = document.getElementById('prStatus');
+      if (statusEl) {
+        statusEl.innerHTML = meta.statusOpts.map(function(s) {
+          return '<option>' + s + '</option>';
+        }).join('');
+      }
+    }
   };
 
   window.showProgForm = function() {
@@ -247,7 +304,7 @@
       status: document.getElementById('prStatus').value,
       assurance_level: document.getElementById('prLevel').value,
       cert_type: document.getElementById('prCert').value,
-      eval_type: document.getElementById('prEval').value,
+      eval_type: document.getElementById('prEval') ? document.getElementById('prEval').value : '',
       start_date: document.getElementById('prDate').value || null,
       end_date: document.getElementById('prEndDate').value || null,
       note: document.getElementById('prNote').value

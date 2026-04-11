@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KOIST 평가현황 시스템 개발지침서 v8.0</title>
+<title>KOIST 평가현황 시스템 개발지침서 v9.0</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Fira+Code:wght@400;500&display=swap');
   * { margin:0; padding:0; box-sizing:border-box; font-family:'Noto Sans KR',sans-serif; }
@@ -39,9 +39,9 @@
 
 <div class="page">
   <div style="text-align:center; margin-bottom:40px;">
-    <span class="badge" style="background:#dbeafe; color:#1e40af; margin-bottom:12px;">v8.0 | 2026-04-10</span>
+    <span class="badge" style="background:#dbeafe; color:#1e40af; margin-bottom:12px;">v9.0 | 2026-04-11</span>
     <h1>KOIST 평가현황 시스템 개발지침서</h1>
-    <p style="color:#64748b;">10개 사업 평가현황 관리 시스템 - 개발 및 운영 가이드</p>
+    <p style="color:#64748b;">원본 koist.kr 기반 4개 핵심 + 6개 확장 카테고리 통합 관리 시스템</p>
   </div>
 
   <!-- TOC -->
@@ -120,13 +120,23 @@ npm run deploy</code></pre>
 │   ├── 0003_progress_schema_upgrade.sql
 │   └── 0004_images_and_bg_settings.sql
 ├── seed.sql               # 기본 시드 데이터
-├── seed-progress-v2.sql   # 10개 사업 평가현황 시드
+├── seed-progress-v3.sql   # 원본 koist.kr 기반 평가현황 시드 (v3)
+├── seed-progress-v2.sql   # 레거시 시드 데이터
 ├── wrangler.jsonc         # Cloudflare 설정
 ├── vite.config.ts         # Vite 빌드 설정
 └── package.json</code></pre>
 
   <!-- 3. 카테고리 정의 -->
-  <h2 id="sec3">3. 10개 사업 카테고리 정의</h2>
+  <h2 id="sec3">3. 사업 카테고리 정의 (4개 핵심 + 6개 확장)</h2>
+  <div class="warn">
+    <strong>원본 koist.kr 분석 (2026-04-11):</strong> 원본 사이트는 4개 카테고리만 평가현황 페이지를 운영. 각 카테고리는 독립된 컬럼 구조와 상태값을 사용:
+    <ul style="margin:4px 0 0 16px;">
+      <li><strong>CC평가</strong> (142건): 평가접수/평가진행/평가완료</li>
+      <li><strong>보안기능시험</strong> (69건): 시험접수/시험진행/발급완료</li>
+      <li><strong>암호모듈검증</strong> (1건): 시험접수/시험진행/발급완료</li>
+      <li><strong>성능평가</strong> (6건): 평가접수/평가진행/발급완료</li>
+    </ul>
+  </div>
   <div class="note">
     <strong>중요:</strong> 카테고리 이름은 DB, 프론트엔드, 관리자 JS 모두에서 동일하게 사용되어야 합니다.
     카테고리를 추가/변경할 경우, 세 곳 모두 수정해야 합니다:
@@ -136,10 +146,10 @@ npm run deploy</code></pre>
   <div class="card">
     <table>
       <tr><th>번호</th><th>카테고리명</th><th>아이콘</th><th>색상</th><th>동적 필드</th></tr>
-      <tr><td>1</td><td>CC평가</td><td>fa-shield-halved</td><td>#3B82F6</td><td>보증등급, 인증구분, 신청구분</td></tr>
-      <tr><td>2</td><td>보안기능확인서</td><td>fa-file-shield</td><td>#8B5CF6</td><td>확인서등급, 발급구분, 시험유형</td></tr>
-      <tr><td>3</td><td>KCMVP</td><td>fa-lock</td><td>#EC4899</td><td>검증등급, 모듈유형, 알고리즘</td></tr>
-      <tr><td>4</td><td>성능평가</td><td>fa-gauge-high</td><td>#F59E0B</td><td>성능등급, 평가구분, 평가항목</td></tr>
+      <tr><td>1</td><td><strong>CC평가</strong></td><td>fa-shield-halved</td><td>#3B82F6</td><td>보증등급, 인증구분, 신청구분</td></tr>
+      <tr><td>2</td><td><strong>보안기능시험</strong></td><td>fa-file-shield</td><td>#8B5CF6</td><td>제품유형, 발급유형, 신청구분</td></tr>
+      <tr><td>3</td><td><strong>암호모듈검증</strong></td><td>fa-lock</td><td>#EC4899</td><td>보안수준, 모듈형태, -</td></tr>
+      <tr><td>4</td><td><strong>성능평가</strong></td><td>fa-gauge-high</td><td>#F59E0B</td><td>제품유형, 운영체제, 개발사</td></tr>
       <tr><td>5</td><td>보안적합성검증</td><td>fa-clipboard-check</td><td>#10B981</td><td>적합등급, 검증구분, 검증기준</td></tr>
       <tr><td>6</td><td>취약점분석평가</td><td>fa-bug</td><td>#EF4444</td><td>위험등급, 분석유형, 평가범위</td></tr>
       <tr><td>7</td><td>정보보호제품평가</td><td>fa-box-archive</td><td>#06B6D4</td><td>평가등급, 제품유형, 평가기준</td></tr>
@@ -154,14 +164,15 @@ npm run deploy</code></pre>
   <h3>마이그레이션 적용 순서</h3>
   <pre><code># 로컬 개발
 npx wrangler d1 migrations apply koist-website-db --local
-npx wrangler d1 execute koist-website-db --local --file=./seed-progress-v2.sql
+npx wrangler d1 execute koist-website-db --local --file=./seed-progress-v3.sql
 
 # 프로덕션
 npx wrangler d1 migrations apply koist-website-db --remote
-npx wrangler d1 execute koist-website-db --remote --file=./seed-progress-v2.sql</code></pre>
+npx wrangler d1 execute koist-website-db --remote --file=./seed-progress-v3.sql</code></pre>
 
   <div class="warn">
-    <strong>주의:</strong> <code>seed-progress-v2.sql</code>은 기존 progress_items를 모두 삭제(DELETE)하고 재삽입합니다.
+    <strong>주의:</strong> <code>seed-progress-v3.sql</code>은 원본 koist.kr에서 추출한 실제 데이터를 기반으로 합니다.
+    기존 progress_items를 모두 삭제(DELETE)하고 재삽입합니다.
     프로덕션에서 실행 전 반드시 데이터 백업을 확인하세요.
   </div>
 
@@ -217,7 +228,7 @@ npm run build
 npx wrangler d1 migrations apply koist-website-db --remote
 
 # 3. (최초 또는 데이터 변경 시) 시드 데이터
-npx wrangler d1 execute koist-website-db --remote --file=./seed-progress-v2.sql
+npx wrangler d1 execute koist-website-db --remote --file=./seed-progress-v3.sql
 
 # 4. 배포
 npx wrangler pages deploy dist --project-name koist-website
@@ -267,7 +278,7 @@ curl https://koist-website.pages.dev/support/progress</code></pre>
   </ul>
 
   <div style="text-align:center; margin-top:48px; color:#94a3b8; font-size:12px;">
-    <p>KOIST 평가현황 시스템 개발지침서 v8.0 | 한국정보보안기술원</p>
+    <p>KOIST 평가현황 시스템 개발지침서 v9.0 | 한국정보보안기술원</p>
   </div>
 </div>
 </body>

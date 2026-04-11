@@ -25,11 +25,11 @@ export function homePage(opts: {
   const catCounts = opts.progressCategoryCounts || [];
   const heroOpacity = s.hero_overlay_opacity || '0.85';
 
-  // Category metadata for icons/colors
+  // Category metadata for icons/colors (원본 koist.kr 기반)
   const catMeta: Record<string, {icon: string; color: string}> = {
     'CC평가':       { icon: 'fa-shield-halved', color: '#3B82F6' },
-    '보안기능확인서':  { icon: 'fa-file-shield', color: '#8B5CF6' },
-    'KCMVP':       { icon: 'fa-lock', color: '#EC4899' },
+    '보안기능시험':   { icon: 'fa-file-shield', color: '#8B5CF6' },
+    '암호모듈검증':   { icon: 'fa-lock', color: '#EC4899' },
     '성능평가':      { icon: 'fa-gauge-high', color: '#F59E0B' },
     '보안적합성검증':  { icon: 'fa-clipboard-check', color: '#10B981' },
     '취약점분석평가':  { icon: 'fa-bug', color: '#EF4444' },
@@ -443,7 +443,7 @@ export function homePage(opts: {
                     <span class="inline-flex items-center gap-1 rounded-full f-text-xs" style="padding:1px 8px; background:${m.color}10; color:${m.color}; white-space:nowrap;"><i class="fas ${m.icon}" style="font-size:7px"></i>${p.category.length > 5 ? p.category.substring(0,5) + '..' : p.category}</span>
                   </td>
                   <td style="padding:8px 0 8px 6px; text-align:right;">
-                    <span class="badge-status ${p.status === '평가완료' ? 'badge-complete' : p.status === '평가진행' ? 'badge-progress' : 'badge-received'}">
+                    <span class="badge-status ${(p.status === '평가완료' || p.status === '발급완료') ? 'badge-complete' : (p.status === '평가진행' || p.status === '시험진행') ? 'badge-progress' : 'badge-received'}">
                       <span class="badge-dot"></span>${p.status}
                     </span>
                   </td>

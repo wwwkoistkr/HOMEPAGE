@@ -48,7 +48,10 @@ function pageHeader(opts: {
    SHARED: Premium Status Badge
    ══════════════════════════════════════════════════════════ */
 function statusBadge(status: string) {
-  const cls = status === '평가완료' ? 'badge-complete' : status === '평가진행' ? 'badge-progress' : 'badge-received';
+  // 원본 koist.kr 사이트 상태값 반영: 평가완료/발급완료(완료), 평가진행/시험진행(진행), 평가접수/시험접수(접수)
+  const isComplete = status === '평가완료' || status === '발급완료';
+  const isProgress = status === '평가진행' || status === '시험진행';
+  const cls = isComplete ? 'badge-complete' : isProgress ? 'badge-progress' : 'badge-received';
   return `<span class="badge-status ${cls}"><span class="badge-dot"></span>${status}</span>`;
 }
 
@@ -342,11 +345,16 @@ export function inquiryPage(settings: SettingsMap) {
 /* ══════════════════════════════════════════════════════════
    Category Definitions (10 Business Types)
    ══════════════════════════════════════════════════════════ */
+// 원본 koist.kr 실제 카테고리 구조 (4개 핵심 + 6개 확장)
+// CC평가 → /cc_progress: 제품명, 보증등급, 인증구분, 신청구분, 진행상태
+// 보안기능시험 → /test1_progress: 제품명, 제품유형, 발급유형, 신청구분, 진행상태
+// 암호모듈검증 → /test3_progress: 암호모듈, 개발사, 모듈형태, 보안수준, 진행현황
+// 성능평가 → /test2_progress: 제품유형, 제품명, 운영체제, 개발사, 발급일
 const CATEGORY_META: Record<string, { icon: string; color: string; col2: string; col3: string; col4: string }> = {
   'CC평가':       { icon: 'fa-shield-halved', color: '#3B82F6', col2: '보증등급', col3: '인증구분', col4: '신청구분' },
-  '보안기능확인서':  { icon: 'fa-file-shield', color: '#8B5CF6', col2: '확인서등급', col3: '발급구분', col4: '시험유형' },
-  'KCMVP':       { icon: 'fa-lock', color: '#EC4899', col2: '검증등급', col3: '모듈유형', col4: '알고리즘' },
-  '성능평가':      { icon: 'fa-gauge-high', color: '#F59E0B', col2: '성능등급', col3: '평가구분', col4: '평가항목' },
+  '보안기능시험':   { icon: 'fa-file-shield', color: '#8B5CF6', col2: '제품유형', col3: '발급유형', col4: '신청구분' },
+  '암호모듈검증':   { icon: 'fa-lock', color: '#EC4899', col2: '보안수준', col3: '모듈형태', col4: '-' },
+  '성능평가':      { icon: 'fa-gauge-high', color: '#F59E0B', col2: '제품유형', col3: '운영체제', col4: '개발사' },
   '보안적합성검증':  { icon: 'fa-clipboard-check', color: '#10B981', col2: '적합등급', col3: '검증구분', col4: '검증기준' },
   '취약점분석평가':  { icon: 'fa-bug', color: '#EF4444', col2: '위험등급', col3: '분석유형', col4: '평가범위' },
   '정보보호제품평가': { icon: 'fa-box-archive', color: '#06B6D4', col2: '평가등급', col3: '제품유형', col4: '평가기준' },
@@ -416,11 +424,14 @@ export function progressPage(items: ProgressItem[], page: number = 1, total: num
       <form method="GET" action="/support/progress" class="bg-white rounded-xl border border-slate-200/60" style="padding:var(--space-md); margin-bottom:var(--space-md); box-shadow: var(--shadow-xs);">
         ${categoryFilter ? `<input type="hidden" name="category" value="${categoryFilter}">` : ''}
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center" style="gap:var(--space-sm)">
-          <select name="status" class="input-premium" style="width:auto; min-width:120px; padding-right:2rem;" onchange="this.form.submit()">
+          <select name="status" class="input-premium" style="width:auto; min-width:140px; padding-right:2rem;" onchange="this.form.submit()">
             <option value="">전체 상태</option>
-            <option value="평가진행" ${statusFilter === '평가진행' ? 'selected' : ''}>진행중</option>
-            <option value="평가접수" ${statusFilter === '평가접수' ? 'selected' : ''}>접수</option>
-            <option value="평가완료" ${statusFilter === '평가완료' ? 'selected' : ''}>완료</option>
+            <option value="평가완료" ${statusFilter === '평가완료' ? 'selected' : ''}>평가완료</option>
+            <option value="발급완료" ${statusFilter === '발급완료' ? 'selected' : ''}>발급완료</option>
+            <option value="평가진행" ${statusFilter === '평가진행' ? 'selected' : ''}>평가진행</option>
+            <option value="시험진행" ${statusFilter === '시험진행' ? 'selected' : ''}>시험진행</option>
+            <option value="평가접수" ${statusFilter === '평가접수' ? 'selected' : ''}>평가접수</option>
+            <option value="시험접수" ${statusFilter === '시험접수' ? 'selected' : ''}>시험접수</option>
           </select>
           <div class="flex-1 relative">
             <input type="text" name="q" value="${search}" placeholder="제품명 검색..." class="input-premium" style="padding-right:2.5rem">
@@ -542,11 +553,14 @@ export function serviceProgressContent(items: ProgressItem[], page: number = 1, 
     <form method="GET" class="rounded-lg border border-slate-200/70" style="padding:var(--space-md); margin-bottom:var(--space-md); background: rgba(248,250,252,0.80);">
       ${categoryFilter ? `<input type="hidden" name="category" value="${categoryFilter}">` : ''}
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center" style="gap:var(--space-sm)">
-        <select name="status" class="input-premium" style="width:auto; min-width:120px;" onchange="this.form.submit()">
+        <select name="status" class="input-premium" style="width:auto; min-width:140px;" onchange="this.form.submit()">
           <option value="">전체 상태</option>
-          <option value="평가진행" ${statusFilter === '평가진행' ? 'selected' : ''}>진행중</option>
-          <option value="평가접수" ${statusFilter === '평가접수' ? 'selected' : ''}>접수</option>
-          <option value="평가완료" ${statusFilter === '평가완료' ? 'selected' : ''}>완료</option>
+          <option value="평가완료" ${statusFilter === '평가완료' ? 'selected' : ''}>평가완료</option>
+          <option value="발급완료" ${statusFilter === '발급완료' ? 'selected' : ''}>발급완료</option>
+          <option value="평가진행" ${statusFilter === '평가진행' ? 'selected' : ''}>평가진행</option>
+          <option value="시험진행" ${statusFilter === '시험진행' ? 'selected' : ''}>시험진행</option>
+          <option value="평가접수" ${statusFilter === '평가접수' ? 'selected' : ''}>평가접수</option>
+          <option value="시험접수" ${statusFilter === '시험접수' ? 'selected' : ''}>시험접수</option>
         </select>
         <div class="flex-1 relative">
           <input type="text" name="q" value="${search}" placeholder="제품명 검색..." class="input-premium" style="padding-right:2.5rem">
