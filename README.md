@@ -1,4 +1,4 @@
-# KOIST Website v11.0
+# KOIST Website v13.0
 
 **(주)한국정보보안기술원** 공식 웹사이트 - 10개 사업 평가현황 통합 관리 시스템
 
@@ -8,26 +8,31 @@
 - **시스템 문서**: https://koist-website.pages.dev/support/documents
 - **관리자**: https://koist-website.pages.dev/admin (admin / admin1234)
 
-## v11.0 업데이트 내역 (2026-04-11)
+## v13.0 업데이트 내역 (2026-04-11)
 
-### 원본 koist.kr 콘텐츠 완전 복원
-- **히어로 배너**: 원본 메인 문구 복원
-  - "정보보안을 완성하는 기업 / 한국정보보안기술원"
-  - "성실과 신뢰를 바탕으로 최고의 보안서비스를 제공합니다."
-  - 영문 라벨 "Korean Information Security Technology"
-  - 부가 메시지 "최상의 시험·인증 서비스로 정보보안 기술을 완성"
-- **핵심가치 4패널**: Expert / One-Stop / Quality / Reliability (원본 #inc01 복원)
-- **KOLAS 인증 마크**: 헤더에 국제공인시험기관 마크 추가
-- **사업분야 이미지 카드**: 원본 5개 사업분야 (CC평가, 보안기능시험, 성능평가, 시험성적서, 정보보안진단)
-  - 원본 koist.kr 이미지 미러링 및 적용
-- **평가기간 비교 바 차트**: 일반 24개월 vs KOIST 15개월 (37.5% 단축) CSS 애니메이션
+### 1. 10개 카테고리 서비스 카드 3배 확대
+- **그리드**: 5열 -> 4열 (데스크톱), 3열(태블릿), 2열(모바일)
+- **아이콘**: 36-48px -> 56-76px (약 2배)
+- **제목**: f-text-sm(13px) -> clamp(0.95rem~1.2rem) (약 2.5배 체감)
+- **설명**: f-text-xs(11px) -> clamp(0.72rem~0.88rem) (약 2배)
+- **카드 패딩**: 확대 (1.2rem ~ 1.8rem), 텍스트 중앙 정렬
+- **간격 최적화**: gap 축소로 화면 높이 증가 방지
+- 새로운 CSS 클래스 `.card-service-xl` 도입
 
-### 디자인 & UI
-- Premium Glassmorphism Design System v11.0
-- 4K/8K HiDPI 최적화 (fluid typography + spacing)
-- AOS scroll 애니메이션
-- 리플 버튼 효과, 플로팅 파티클
-- 반응형 모바일 팝업 시스템
+### 2. EAL별 인터랙티브 바 그래프
+- **EAL 탭 전환**: EAL2 / EAL3 / EAL4 탭 클릭으로 데이터 전환
+- **데이터 근거** (NIAP/NIST, UT Austin, CCLab 2024, KOIST DB):
+  - EAL2: 일반 14개월 -> KOIST 8개월 (43% 단축)
+  - EAL3: 일반 18개월 -> KOIST 11개월 (39% 단축)
+  - EAL4: 일반 26개월 -> KOIST 15개월 (42% 단축)
+- **CSS 애니메이션**: 바 width transition 0.8s, 탭 active gradient
+- **KOIST 실적**: EAL2=68건, EAL3=25건, EAL4=47건 표시
+- 순수 CSS + Vanilla JS (외부 라이브러리 없음)
+
+### 3. 대시보드 통합
+- 기존 우측 대시보드(카테고리 건수)를 **평가현황 패널에 통합**
+- 상단 4개 카테고리 미니 카드 + 하단 태그 + 총 실적 + 테이블
+- EAL 인터랙티브 그래프가 바 차트 섹션 우측에 배치
 
 ## 주요 기능
 
