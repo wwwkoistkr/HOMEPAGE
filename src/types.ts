@@ -154,3 +154,20 @@ export type ImageRecord = {
 };
 
 export type SettingsMap = Record<string, string>;
+
+export type SimCertType = {
+  id: number;
+  name: string;
+  slug: string;
+  icon: string;
+  color: string;
+  traditional_min_weeks: number;
+  traditional_max_weeks: number;
+  koist_min_weeks: number;
+  koist_max_weeks: number;
+  description: string;
+  sort_order: number;
+  is_active: number;
+  created_at: string;
+  updated_at: string;
+};

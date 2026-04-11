@@ -261,7 +261,7 @@ export function homePage(opts: {
   </section>
 
   <!-- ════════════════════════════════════════════════════════════════
-       EVALUATION PERIOD COMPARISON — v18 with Readiness Slider
+       EVALUATION PERIOD SIMULATOR — v19 사전준비 1~100 슬라이더
        ════════════════════════════════════════════════════════════════ -->
   <section class="relative overflow-hidden" style="padding:clamp(2rem,3.5vw,3rem) 0; background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);">
     <div class="relative fluid-container">
@@ -276,7 +276,7 @@ export function homePage(opts: {
               </div>
               <div>
                 <p class="text-white font-bold f-text-sm">KOIST와 함께라면 평가기간을 <span class="text-cyan-300">대폭 단축</span>합니다</p>
-                <p class="text-slate-400 f-text-xs" style="margin-top:2px">준비도에 따라 맞춤형 평가 기간을 확인하세요</p>
+                <p class="text-slate-400 f-text-xs" style="margin-top:2px">사전준비 수준에 따라 평가기간을 시뮬레이션해보세요</p>
               </div>
             </div>
             <div class="hidden sm:flex items-center rounded-full" style="gap:6px; padding:6px 16px; margin-top:0; background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.25);">
@@ -294,37 +294,47 @@ export function homePage(opts: {
               <button class="eal-tab flex-1 text-center font-bold f-text-xs transition-all" style="padding:8px 0; border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL4" onclick="switchEAL('EAL4')">EAL4</button>
             </div>
 
-            <!-- Readiness Slider -->
+            <!-- 사전준비 슬라이더 (1~100) -->
             <div class="rounded-xl" style="padding:clamp(0.7rem,1.1vw,1rem) clamp(0.8rem,1.3vw,1.1rem); margin-bottom:clamp(0.8rem,1.2vw,1rem); background: linear-gradient(135deg, rgba(16,185,129,0.04), rgba(59,130,246,0.03)); border: 1px solid rgba(16,185,129,0.12);">
               <div class="flex flex-col sm:flex-row sm:items-center" style="gap:clamp(0.5rem,0.8vw,0.7rem)">
                 <div class="flex items-center shrink-0" style="gap:6px">
-                  <i class="fas fa-sliders text-emerald-500" style="font-size:11px"></i>
-                  <span class="font-bold f-text-xs text-slate-700">준비도 설정</span>
+                  <i class="fas fa-clipboard-check text-emerald-500" style="font-size:11px"></i>
+                  <span class="font-bold f-text-xs text-slate-700">사전준비</span>
                 </div>
-                <div class="flex-1 flex items-center" style="gap:clamp(0.5rem,1vw,1rem)">
-                  <span class="text-slate-400 f-text-xs shrink-0" style="min-width:16px">하</span>
-                  <div class="flex-1 relative" style="height:36px;">
-                    <input type="range" id="readinessSlider" min="0" max="2" step="1" value="1" 
-                      class="readiness-range" 
-                      style="width:100%; position:absolute; top:50%; transform:translateY(-50%); cursor:pointer; -webkit-appearance:none; appearance:none; height:8px; border-radius:4px; background: linear-gradient(90deg, #F59E0B 0%, #10B981 50%, #3B82F6 100%); outline:none;"
-                      oninput="onReadinessChange(this.value)">
+                <div class="flex-1 flex items-center" style="gap:clamp(0.4rem,0.8vw,0.8rem)">
+                  <span class="text-slate-400 f-text-xs shrink-0" style="font-size:10px">1</span>
+                  <div class="flex-1 relative" style="height:40px;">
+                    <!-- Track background with gradient -->
+                    <div class="absolute left-0 right-0" style="top:50%; transform:translateY(-50%); height:8px; border-radius:4px; background: linear-gradient(90deg, #EF4444 0%, #F59E0B 25%, #10B981 60%, #3B82F6 100%); opacity:0.25;"></div>
+                    <!-- Active fill -->
+                    <div id="prepFill" class="absolute left-0" style="top:50%; transform:translateY(-50%); height:8px; border-radius:4px; width:50%; background: linear-gradient(90deg, #EF4444 0%, #F59E0B 30%, #10B981 70%, #3B82F6 100%); transition: width 0.15s ease;"></div>
+                    <input type="range" id="prepSlider" min="1" max="100" step="1" value="50" 
+                      class="prep-range" 
+                      style="width:100%; position:absolute; top:50%; transform:translateY(-50%); cursor:pointer; -webkit-appearance:none; appearance:none; height:8px; border-radius:4px; background: transparent; outline:none; z-index:2;"
+                      oninput="onPrepChange(this.value)">
                   </div>
-                  <span class="text-slate-400 f-text-xs shrink-0" style="min-width:16px">상</span>
-                  <div id="readinessLabel" class="shrink-0 flex items-center rounded-full font-bold f-text-xs transition-all" style="gap:4px; padding:4px 12px; background: rgba(16,185,129,0.10); border: 1px solid rgba(16,185,129,0.20); color: #10B981;">
-                    <i class="fas fa-circle" style="font-size:6px"></i>
-                    <span id="readinessLabelText">중</span>
+                  <span class="text-slate-400 f-text-xs shrink-0" style="font-size:10px">100</span>
+                  <div id="prepBadge" class="shrink-0 flex items-center rounded-full font-bold transition-all" style="gap:4px; padding:4px 12px; min-width:64px; justify-content:center; background: rgba(16,185,129,0.10); border: 1px solid rgba(16,185,129,0.20); color: #10B981; font-size:clamp(0.68rem,0.85vw,0.78rem);">
+                    <span id="prepValueText">50</span><span style="font-size:0.7em; opacity:0.7">%</span>
                   </div>
                 </div>
               </div>
-              <p id="readinessDesc" class="text-slate-400 f-text-xs" style="margin-top:5px; padding-left:24px;">일반적인 수준의 준비 상태에서의 예상 기간입니다</p>
+              <p id="prepDesc" class="text-slate-400 f-text-xs" style="margin-top:5px; padding-left:24px;">사전준비 수준이 높을수록 KOIST를 통한 평가기간이 더욱 단축됩니다</p>
+              <!-- 사전준비 레벨 가이드 -->
+              <div class="flex items-center justify-between" style="margin-top:6px; padding:0 24px;">
+                <div class="flex items-center" style="gap:3px"><span class="inline-block w-2 h-2 rounded-full" style="background:#EF4444"></span><span class="text-slate-400" style="font-size:9px">미흡</span></div>
+                <div class="flex items-center" style="gap:3px"><span class="inline-block w-2 h-2 rounded-full" style="background:#F59E0B"></span><span class="text-slate-400" style="font-size:9px">보통</span></div>
+                <div class="flex items-center" style="gap:3px"><span class="inline-block w-2 h-2 rounded-full" style="background:#10B981"></span><span class="text-slate-400" style="font-size:9px">양호</span></div>
+                <div class="flex items-center" style="gap:3px"><span class="inline-block w-2 h-2 rounded-full" style="background:#3B82F6"></span><span class="text-slate-400" style="font-size:9px">우수</span></div>
+              </div>
             </div>
 
             <!-- Bar Chart Area -->
             <div id="ealPanel" class="bar-chart-container" style="display:flex; flex-direction:column; gap:clamp(0.7rem,1vw,0.9rem);">
-              <!-- General bar -->
+              <!-- CCRA (일반) bar -->
               <div>
                 <div class="flex justify-between items-center" style="margin-bottom:5px">
-                  <span class="text-slate-500 font-semibold f-text-xs flex items-center" style="gap:4px"><span class="inline-block w-2 h-2 rounded-full bg-slate-400"></span>일반 평가 프로세스</span>
+                  <span class="text-slate-500 font-semibold f-text-xs flex items-center" style="gap:4px"><span class="inline-block w-2 h-2 rounded-full bg-slate-400"></span>전통 CCRA 평가 프로세스</span>
                   <span id="ealGeneralTotal" class="text-slate-400 font-bold f-text-xs">약 24개월</span>
                 </div>
                 <div class="relative rounded-lg overflow-hidden" style="height:clamp(30px,3vw,38px); background: #F1F5F9;">
@@ -349,21 +359,22 @@ export function homePage(opts: {
                 </div>
               </div>
 
-              <!-- Result Summary -->
+              <!-- 시뮬레이션 결과 Summary -->
               <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-xl" style="gap:clamp(0.5rem,0.8vw,0.8rem); padding:clamp(0.6rem,1vw,0.9rem) clamp(0.8rem,1.2vw,1.1rem); background: linear-gradient(135deg, rgba(59,130,246,0.04), rgba(6,182,212,0.03)); border: 1px solid rgba(59,130,246,0.12);">
                 <div class="flex items-center" style="gap:clamp(0.5rem,0.8vw,0.8rem)">
                   <div id="ealReductionBadge" class="shrink-0 rounded-xl flex items-center justify-center" style="width:clamp(40px,3.2vw,50px); height:clamp(40px,3.2vw,50px); background: linear-gradient(135deg, #2563EB, #06B6D4); box-shadow: 0 4px 14px rgba(37,99,235,0.25);">
                     <span class="text-white font-black" style="font-size:clamp(0.82rem,1.15vw,1.05rem);">37%</span>
                   </div>
                   <div>
-                    <p id="ealReductionText" class="text-primary font-bold f-text-xs">평가기간 약 37.5% 단축</p>
+                    <p id="ealReductionText" class="text-primary font-bold f-text-xs">평가기간 약 37% 단축</p>
                     <p id="ealSavingText" class="text-slate-500" style="font-size:clamp(0.62rem,0.72vw,0.72rem)">약 9개월 절감 &middot; 원스톱 서비스</p>
                   </div>
                 </div>
                 <div class="flex items-center flex-wrap" style="gap:8px">
-                  <span class="f-text-xs font-medium" style="color:#3B82F6"><strong>EAL2</strong> ${catCounts.find(c=>c.category==='CC평가')?.cnt || 68}건</span>
-                  <span class="f-text-xs font-medium" style="color:#8B5CF6"><strong>EAL3</strong> 25건</span>
-                  <span class="f-text-xs font-medium" style="color:#EF4444"><strong>EAL4</strong> 47건</span>
+                  <span id="simKoistPrepResult" class="f-text-xs font-medium" style="color:#F59E0B"><i class="fas fa-file-pen" style="font-size:8px; margin-right:2px;"></i>준비 <strong>6</strong>개월</span>
+                  <span id="simKoistEvalResult" class="f-text-xs font-medium" style="color:#3B82F6"><i class="fas fa-magnifying-glass" style="font-size:8px; margin-right:2px;"></i>평가 <strong>9</strong>개월</span>
+                  <span class="text-slate-300">|</span>
+                  <span class="f-text-xs font-medium" style="color:#64748B"><strong>${totalEvals}</strong>건 평가실적</span>
                 </div>
               </div>
             </div>
@@ -373,9 +384,11 @@ export function homePage(opts: {
     </div>
   </section>
   <style>
-    .readiness-range::-webkit-slider-thumb { -webkit-appearance:none; width:24px; height:24px; border-radius:50%; background: white; border:3px solid #10B981; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor:pointer; transition: border-color 0.2s; }
-    .readiness-range::-moz-range-thumb { width:24px; height:24px; border-radius:50%; background: white; border:3px solid #10B981; box-shadow: 0 2px 8px rgba(0,0,0,0.15); cursor:pointer; }
-    .readiness-range::-webkit-slider-thumb:hover { border-color: #059669; transform: scale(1.1); }
+    .prep-range::-webkit-slider-thumb { -webkit-appearance:none; width:26px; height:26px; border-radius:50%; background: white; border:3px solid #10B981; box-shadow: 0 2px 10px rgba(0,0,0,0.18); cursor:pointer; transition: border-color 0.2s, transform 0.15s; position:relative; z-index:3; }
+    .prep-range::-moz-range-thumb { width:26px; height:26px; border-radius:50%; background: white; border:3px solid #10B981; box-shadow: 0 2px 10px rgba(0,0,0,0.18); cursor:pointer; }
+    .prep-range::-webkit-slider-thumb:hover { transform: scale(1.15); box-shadow: 0 3px 14px rgba(0,0,0,0.22); }
+    .prep-range::-webkit-slider-runnable-track { height:8px; border-radius:4px; background:transparent; }
+    .prep-range::-moz-range-track { height:8px; border-radius:4px; background:transparent; }
   </style>
 
   <!-- ════════════════════════════════════════════════════════
@@ -595,7 +608,7 @@ export function homePage(opts: {
   </a>
 
   <!-- ════════════════════════════════════════════════════════
-       EAL Interactive Script (v18 - with Readiness Slider)
+       EAL Simulator Script (v19 - 사전준비 1~100 슬라이더)
        ════════════════════════════════════════════════════════ -->
   <script>
   (function(){
@@ -619,81 +632,84 @@ export function homePage(opts: {
       observer.observe(bars[0].closest('.bar-chart-container') || bars[0]);
     }
 
-    // Readiness levels: 0=low, 1=mid, 2=high
-    var readinessKeys = ['low', 'mid', 'high'];
-    var readinessLabels = { low: '하', mid: '중', high: '상' };
-    var readinessColors = { low: '#F59E0B', mid: '#10B981', high: '#3B82F6' };
-    var readinessDescs = {
-      low: '준비가 부족한 상태 - 추가 준비 기간이 필요합니다',
-      mid: '일반적인 수준의 준비 상태에서의 예상 기간입니다',
-      high: '철저히 준비된 상태 - 최단 기간으로 진행 가능합니다'
-    };
-
-    // EAL Data with readiness levels (admin-configurable)
+    /* ─── EAL Data (admin-configurable) ─── */
+    /* For each level: general prep/eval (fixed CCRA), koist min/max prep/eval */
+    /* min = best case (사전준비 100), max = worst case (사전준비 1) */
     var ealData = {
       overall: {
         general: { prep: ${s.eval_overall_general_prep || '12'}, eval: ${s.eval_overall_general_eval || '12'} },
         koist: {
-          high: { prep: ${s.eval_overall_koist_prep_high || '4'}, eval: ${s.eval_overall_koist_eval_high || '7'} },
-          mid:  { prep: ${s.eval_overall_koist_prep_mid || s.eval_overall_koist_prep || '6'}, eval: ${s.eval_overall_koist_eval_mid || s.eval_overall_koist_eval || '9'} },
-          low:  { prep: ${s.eval_overall_koist_prep_low || '9'}, eval: ${s.eval_overall_koist_eval_low || '11'} }
+          prepMin: ${s.eval_overall_koist_prep_high || '4'},  prepMax: ${s.eval_overall_koist_prep_low || '9'},
+          evalMin: ${s.eval_overall_koist_eval_high || '7'},  evalMax: ${s.eval_overall_koist_eval_low || '11'}
         }
       },
       EAL2: {
         general: { prep: ${s.eval_eal2_general_prep || '8'}, eval: ${s.eval_eal2_general_eval || '6'} },
         koist: {
-          high: { prep: ${s.eval_eal2_koist_prep_high || '2'}, eval: ${s.eval_eal2_koist_eval_high || '3'} },
-          mid:  { prep: ${s.eval_eal2_koist_prep_mid || s.eval_eal2_koist_prep || '4'}, eval: ${s.eval_eal2_koist_eval_mid || s.eval_eal2_koist_eval || '4'} },
-          low:  { prep: ${s.eval_eal2_koist_prep_low || '6'}, eval: ${s.eval_eal2_koist_eval_low || '5'} }
+          prepMin: ${s.eval_eal2_koist_prep_high || '2'},  prepMax: ${s.eval_eal2_koist_prep_low || '6'},
+          evalMin: ${s.eval_eal2_koist_eval_high || '3'},  evalMax: ${s.eval_eal2_koist_eval_low || '5'}
         }
       },
       EAL3: {
         general: { prep: ${s.eval_eal3_general_prep || '10'}, eval: ${s.eval_eal3_general_eval || '8'} },
         koist: {
-          high: { prep: ${s.eval_eal3_koist_prep_high || '4'}, eval: ${s.eval_eal3_koist_eval_high || '4'} },
-          mid:  { prep: ${s.eval_eal3_koist_prep_mid || s.eval_eal3_koist_prep || '6'}, eval: ${s.eval_eal3_koist_eval_mid || s.eval_eal3_koist_eval || '5'} },
-          low:  { prep: ${s.eval_eal3_koist_prep_low || '8'}, eval: ${s.eval_eal3_koist_eval_low || '7'} }
+          prepMin: ${s.eval_eal3_koist_prep_high || '4'},  prepMax: ${s.eval_eal3_koist_prep_low || '8'},
+          evalMin: ${s.eval_eal3_koist_eval_high || '4'},  evalMax: ${s.eval_eal3_koist_eval_low || '7'}
         }
       },
       EAL4: {
         general: { prep: ${s.eval_eal4_general_prep || '14'}, eval: ${s.eval_eal4_general_eval || '12'} },
         koist: {
-          high: { prep: ${s.eval_eal4_koist_prep_high || '5'}, eval: ${s.eval_eal4_koist_eval_high || '5'} },
-          mid:  { prep: ${s.eval_eal4_koist_prep_mid || s.eval_eal4_koist_prep || '8'}, eval: ${s.eval_eal4_koist_eval_mid || s.eval_eal4_koist_eval || '7'} },
-          low:  { prep: ${s.eval_eal4_koist_prep_low || '11'}, eval: ${s.eval_eal4_koist_eval_low || '10'} }
+          prepMin: ${s.eval_eal4_koist_prep_high || '5'},  prepMax: ${s.eval_eal4_koist_prep_low || '11'},
+          evalMin: ${s.eval_eal4_koist_eval_high || '5'},  evalMax: ${s.eval_eal4_koist_eval_low || '10'}
         }
       }
     };
 
     var currentEAL = 'overall';
-    var currentReadiness = 1; // 0=low, 1=mid, 2=high
+    var currentPrep = 50; // 1~100 slider value
 
-    function getKoistData(level, readinessIdx) {
-      var rKey = readinessKeys[readinessIdx];
+    /* Linear interpolation: prepValue 1→max, 100→min */
+    function lerp(min, max, t) { return min + (max - min) * t; }
+
+    function simulate(level, prepVal) {
       var d = ealData[level];
       if (!d) return null;
-      var k = d.koist[rKey];
+      // t = 0 at prepVal=100 (best), t = 1 at prepVal=1 (worst)
+      var t = 1 - (prepVal - 1) / 99;
+      var kPrep = Math.round(lerp(d.koist.prepMin, d.koist.prepMax, t) * 10) / 10;
+      var kEval = Math.round(lerp(d.koist.evalMin, d.koist.evalMax, t) * 10) / 10;
       var g = d.general;
       var gTotal = g.prep + g.eval;
-      var kTotal = k.prep + k.eval;
+      var kTotal = Math.round((kPrep + kEval) * 10) / 10;
       return {
         general: { prep: g.prep, eval: g.eval, total: gTotal },
-        koist: { prep: k.prep, eval: k.eval, total: kTotal },
+        koist: { prep: kPrep, eval: kEval, total: kTotal },
         maxBar: gTotal,
-        reduction: Math.round((1 - kTotal / gTotal) * 100),
-        saving: gTotal - kTotal
+        reduction: gTotal > 0 ? Math.round((1 - kTotal / gTotal) * 100) : 0,
+        saving: Math.round((gTotal - kTotal) * 10) / 10
       };
     }
 
+    /* Format months: show decimal only if not integer */
+    function fmtM(v) { return v === Math.floor(v) ? v.toString() : v.toFixed(1); }
+
+    function getColor(prepVal) {
+      if (prepVal <= 25) return '#EF4444';
+      if (prepVal <= 50) return '#F59E0B';
+      if (prepVal <= 75) return '#10B981';
+      return '#3B82F6';
+    }
+
     function updateChart() {
-      var d = getKoistData(currentEAL, currentReadiness);
+      var d = simulate(currentEAL, currentPrep);
       if (!d) return;
 
       // Update tabs
       document.querySelectorAll('.eal-tab').forEach(function(t) { t.classList.toggle('active', t.getAttribute('data-eal') === currentEAL); });
 
-      // General bar
-      var gPrepPct = Math.round((d.general.prep / d.maxBar) * 100);
+      // General bar (fixed CCRA)
+      var gPrepPct = d.maxBar > 0 ? Math.round((d.general.prep / d.maxBar) * 100) : 50;
       var gBar = document.getElementById('ealGeneralBar');
       if (gBar) {
         gBar.style.transition = 'width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
@@ -707,21 +723,21 @@ export function homePage(opts: {
       var gEval = document.getElementById('ealGeneralEval');
       if (gEval) gEval.textContent = '평가 ' + d.general.eval + '개월';
 
-      // KOIST bar
-      var kWidthPct = Math.round((d.koist.total / d.maxBar) * 100);
+      // KOIST bar (dynamic)
+      var kWidthPct = d.maxBar > 0 ? Math.round((d.koist.total / d.maxBar) * 100) : 50;
       var kPrepPct = d.koist.total > 0 ? Math.round((d.koist.prep / d.koist.total) * 100) : 50;
       var kBar = document.getElementById('ealKoistBar');
       if (kBar) {
-        kBar.style.transition = 'width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-        kBar.style.width = kWidthPct + '%';
+        kBar.style.transition = 'width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        kBar.style.width = Math.max(kWidthPct, 15) + '%';
         kBar.style.background = 'linear-gradient(90deg, #F59E0B 0%, #F59E0B ' + kPrepPct + '%, #3B82F6 ' + kPrepPct + '%, #3B82F6 100%)';
       }
       var kTotal = document.getElementById('ealKoistTotal');
-      if (kTotal) kTotal.textContent = '약 ' + d.koist.total + '개월';
+      if (kTotal) kTotal.textContent = '약 ' + fmtM(d.koist.total) + '개월';
       var kPrep = document.getElementById('ealKoistPrep');
-      if (kPrep) kPrep.textContent = '준비 ' + d.koist.prep + '개월';
+      if (kPrep) kPrep.textContent = '준비 ' + fmtM(d.koist.prep) + '개월';
       var kEval = document.getElementById('ealKoistEval');
-      if (kEval) kEval.textContent = '평가 ' + d.koist.eval + '개월';
+      if (kEval) kEval.textContent = '평가 ' + fmtM(d.koist.eval) + '개월';
 
       // Reduction badge
       var badge = document.getElementById('ealReductionBadge');
@@ -731,21 +747,49 @@ export function homePage(opts: {
       var redText = document.getElementById('ealReductionText');
       if (redText) redText.textContent = '평가기간 약 ' + d.reduction + '% 단축';
       var savText = document.getElementById('ealSavingText');
-      if (savText) savText.textContent = '약 ' + d.saving + '개월 절감 \\u00b7 원스톱 서비스';
+      if (savText) savText.textContent = '약 ' + fmtM(d.saving) + '개월 절감 \\u00b7 원스톱 서비스';
+
+      // Sim result badges
+      var simPrep = document.getElementById('simKoistPrepResult');
+      if (simPrep) simPrep.innerHTML = '<i class="fas fa-file-pen" style="font-size:8px; margin-right:2px;"></i>준비 <strong>' + fmtM(d.koist.prep) + '</strong>개월';
+      var simEval = document.getElementById('simKoistEvalResult');
+      if (simEval) simEval.innerHTML = '<i class="fas fa-magnifying-glass" style="font-size:8px; margin-right:2px;"></i>평가 <strong>' + fmtM(d.koist.eval) + '</strong>개월';
     }
 
-    function updateReadinessUI(val) {
-      var rKey = readinessKeys[val];
-      var label = document.getElementById('readinessLabel');
-      var labelText = document.getElementById('readinessLabelText');
-      var desc = document.getElementById('readinessDesc');
-      if (labelText) labelText.textContent = readinessLabels[rKey];
-      if (desc) desc.textContent = readinessDescs[rKey];
-      if (label) {
-        var color = readinessColors[rKey];
-        label.style.background = color + '18';
-        label.style.borderColor = color + '40';
-        label.style.color = color;
+    function updatePrepUI(val) {
+      val = parseInt(val);
+      var color = getColor(val);
+      var badge = document.getElementById('prepBadge');
+      var valText = document.getElementById('prepValueText');
+      var fill = document.getElementById('prepFill');
+      if (valText) valText.textContent = val;
+      if (badge) {
+        badge.style.background = color + '18';
+        badge.style.borderColor = color + '40';
+        badge.style.color = color;
+      }
+      if (fill) fill.style.width = ((val - 1) / 99 * 100) + '%';
+      // Thumb color
+      var slider = document.getElementById('prepSlider');
+      if (slider) {
+        slider.style.setProperty('--thumb-color', color);
+        // Dynamic thumb color via CSS
+        var styleEl = document.getElementById('prepThumbStyle');
+        if (!styleEl) {
+          styleEl = document.createElement('style');
+          styleEl.id = 'prepThumbStyle';
+          document.head.appendChild(styleEl);
+        }
+        styleEl.textContent = '.prep-range::-webkit-slider-thumb{border-color:' + color + '!important} .prep-range::-moz-range-thumb{border-color:' + color + '!important}';
+      }
+      // Description update
+      var desc = document.getElementById('prepDesc');
+      if (desc) {
+        if (val <= 15) desc.textContent = '사전준비가 매우 부족합니다 - KOIST의 컨설팅 서비스를 권장합니다';
+        else if (val <= 35) desc.textContent = '사전준비가 부족한 상태 - 추가 준비 기간이 필요합니다';
+        else if (val <= 65) desc.textContent = '보통 수준의 사전준비 상태에서의 예상 기간입니다';
+        else if (val <= 85) desc.textContent = '양호한 사전준비 상태 - 효율적인 진행이 가능합니다';
+        else desc.textContent = '충분한 사전준비 완료 - 최단 기간으로 진행 가능합니다';
       }
     }
 
@@ -754,14 +798,15 @@ export function homePage(opts: {
       updateChart();
     };
 
-    window.onReadinessChange = function(val) {
-      currentReadiness = parseInt(val);
-      updateReadinessUI(currentReadiness);
+    window.onPrepChange = function(val) {
+      currentPrep = parseInt(val);
+      updatePrepUI(currentPrep);
       updateChart();
     };
 
     // Initialize
-    updateReadinessUI(1);
+    updatePrepUI(50);
+    updateChart();
   })();
   </script>
   `;
