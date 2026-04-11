@@ -1,4 +1,4 @@
-// KOIST - Home Page Template (v21.0 - 8K Ultra-Sharp Professional Design)
+// KOIST - Home Page Template (v22.0 - 8K Ultra-Sharp + Compact Hero + Enlarged Tags)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem, SimCertType } from '../types';
 
 // Helper: generate background style with image overlay or gradient fallback
@@ -196,14 +196,12 @@ export function homePage(opts: {
           <span class="text-blue-300 font-semibold tracking-wide" style="font-family:'Inter','Noto Sans KR',sans-serif;">Korean Information Security Technology</span>
         </div>
 
-        <!-- Headline -->
-        <h1 class="text-white font-black" style="margin-top:var(--space-md); margin-bottom:var(--space-sm); font-size:clamp(1.55rem, 1.2rem + 1.2vw, 2.35rem); line-height:1.3;">
-          ${s.site_slogan || '정보보안을 완성하는 기업 <span class="hero-gradient-text">한국정보보안기술원</span>'}
+        <!-- Headline (v22 Compact 2-line, ~50% smaller) -->
+        <h1 class="text-white font-black" style="margin-top:var(--space-sm); margin-bottom:6px; font-size:clamp(0.85rem, 0.7rem + 0.65vw, 1.25rem); line-height:1.4; letter-spacing:-0.01em;">
+          ${s.hero_line1 || '정보보안 시험·인증 전문기관'}
         </h1>
-
-        <!-- Sub-text -->
-        <p class="text-slate-300/80 f-text-sm" style="margin-bottom:clamp(1.25rem,2vw,1.75rem); max-width:550px;">
-          ${s.site_sub_slogan || 'IT제품의 시험·인증을 통해 정보보안이 완성됩니다. 최상의 시험·인증 서비스를 약속합니다.'}
+        <p class="text-slate-300/90 font-semibold" style="margin-bottom:clamp(0.8rem,1.2vw,1rem); font-size:clamp(0.72rem, 0.6rem + 0.5vw, 1rem); line-height:1.45; max-width:480px;">
+          ${s.hero_line2 || 'IT제품 보안성 평가·인증의 원스톱 서비스, <span class="hero-gradient-text">한국정보보안기술원</span>'}
         </p>
 
         <!-- CTA Buttons -->
@@ -530,21 +528,39 @@ export function homePage(opts: {
         <p class="text-slate-500 f-text-sm max-w-md mx-auto">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
       </div>
 
-      <!-- Bento Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" style="gap:clamp(1rem, 2vw, 1.5rem)">
+      <!-- Bento Grid (v22 - Dynamic font scale & gap from admin settings) -->
+      ${(() => {
+        const fontScale = parseFloat(s.services_tag_font_scale || '2') || 2;
+        const gapScale = parseFloat(s.services_tag_gap_scale || '0.7') || 0.7;
+        const baseFontMin = 0.8; // rem base
+        const baseFontVw = 1.4;  // vw base
+        const baseFontMax = 1.1; // rem base
+        const fMin = (baseFontMin * fontScale).toFixed(2);
+        const fVw = (baseFontVw * fontScale).toFixed(1);
+        const fMax = (baseFontMax * fontScale).toFixed(2);
+        const gapMin = (0.7 * gapScale).toFixed(2);
+        const gapVw = (1.4 * gapScale).toFixed(1);
+        const gapMax = (1.2 * gapScale).toFixed(2);
+        const padMin = (0.9 * gapScale).toFixed(2);
+        const padVw = (1.5 * gapScale).toFixed(1);
+        const padMax = (1.3 * gapScale).toFixed(2);
+        const gridCols = parseInt(s.services_grid_cols || '5') || 5;
+        return `
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-${gridCols}" style="gap:clamp(${gapMin}rem, ${gapVw}vw, ${gapMax}rem)">
         ${deps.map((dept, i) => `
-        <a href="/services/${dept.slug}" class="card-service-xl group block relative" style="--card-accent:${dept.color}; padding:clamp(2rem, 3.5vw, 3rem);" data-aos="fade-up" data-aos-delay="${Math.min(i * 40, 300)}">
-          <div class="rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg mx-auto" style="width:clamp(80px,8vw,110px); height:clamp(80px,8vw,110px); background: linear-gradient(135deg, ${dept.color}15, ${dept.color}08); margin-bottom:clamp(1rem,1.5vw,1.25rem);">
-            <i class="fas ${dept.icon}" style="color:${dept.color}; font-size:clamp(2.2rem,3.5vw,3rem)"></i>
+        <a href="/services/${dept.slug}" class="card-service-xl group block relative" style="--card-accent:${dept.color}; padding:clamp(${padMin}rem, ${padVw}vw, ${padMax}rem);" data-aos="fade-up" data-aos-delay="${Math.min(i * 30, 250)}">
+          <div class="rounded-xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg mx-auto" style="width:clamp(48px,5vw,64px); height:clamp(48px,5vw,64px); background: linear-gradient(135deg, ${dept.color}15, ${dept.color}08); margin-bottom:clamp(0.5rem,0.8vw,0.7rem);">
+            <i class="fas ${dept.icon}" style="color:${dept.color}; font-size:clamp(1.3rem,2vw,1.8rem)"></i>
           </div>
-          <h3 class="font-bold text-primary group-hover:text-accent transition-colors text-center" style="font-size:clamp(1.3rem,2vw,1.65rem); margin-bottom:6px; line-height:1.35;">${dept.name}</h3>
-          <p class="text-slate-500 leading-snug text-center line-clamp-2" style="font-size:clamp(0.85rem,1.1vw,1rem);">${dept.description || ''}</p>
-          <div class="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-1 group-hover:translate-x-0">
-            <i class="fas fa-arrow-right text-accent/50" style="font-size:16px"></i>
+          <h3 class="font-bold text-primary group-hover:text-accent transition-colors text-center" style="font-size:clamp(${fMin}rem,${fVw}vw,${fMax}rem); margin-bottom:4px; line-height:1.25; letter-spacing:-0.02em;">${dept.name}</h3>
+          <p class="text-slate-500 leading-snug text-center line-clamp-2" style="font-size:clamp(0.68rem,0.85vw,0.82rem);">${dept.description || ''}</p>
+          <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-1 group-hover:translate-x-0">
+            <i class="fas fa-arrow-right text-accent/50" style="font-size:12px"></i>
           </div>
         </a>
         `).join('')}
-      </div>
+      </div>`;
+      })()}
     </div>
   </section>
 

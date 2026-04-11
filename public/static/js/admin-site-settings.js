@@ -280,7 +280,56 @@
       const isImageUrl = s.key.includes('bg_url') || s.key === 'logo_url';
       const isOpacity = s.key.includes('opacity');
 
-      if (s.key === 'logo_url') {
+      // Hero compact 2-line text fields (HTML allowed)
+      if (s.key === 'hero_line1' || s.key === 'hero_line2') {
+        const lineLabel = s.key === 'hero_line1' ? '히어로 첫번째 줄' : '히어로 두번째 줄';
+        const lineHint = s.key === 'hero_line2' ? '<span class="text-xs text-blue-400 ml-1">(HTML 가능: &lt;span class=&quot;hero-gradient-text&quot;&gt;...&lt;/span&gt;)</span>' : '';
+        html += `
+        <div class="p-4 bg-indigo-50/40 border border-indigo-100 rounded-xl">
+          <label class="block text-sm font-bold text-indigo-700 mb-2"><i class="fas fa-heading mr-1"></i> ${s.description || lineLabel} ${lineHint}</label>
+          <textarea data-key="${s.key}" id="input_${s.key}" rows="2"
+            class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500"
+            placeholder="${lineLabel}">${(s.value || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+          <div class="mt-2 p-2 bg-white rounded-lg border border-indigo-100">
+            <span class="text-xs text-gray-400 mr-1">미리보기:</span>
+            <span class="font-semibold text-gray-800 text-sm" id="preview_${s.key}">${s.value || ''}</span>
+          </div>
+        </div>`;
+      // Services tag layout controls
+      } else if (s.key === 'services_tag_font_scale') {
+        html += `
+        <div class="p-4 bg-orange-50/40 border border-orange-100 rounded-xl">
+          <label class="block text-sm font-bold text-orange-700 mb-2"><i class="fas fa-text-height mr-1"></i> ${s.description || '사업분야 태그 글자 크기 배율'}</label>
+          <div class="flex items-center gap-3">
+            <input type="range" min="0.5" max="4" step="0.1" data-key="${s.key}" value="${s.value || '2'}" id="input_${s.key}"
+              class="flex-1" oninput="document.getElementById('val_${s.key}').textContent=this.value+'배'">
+            <span id="val_${s.key}" class="text-sm font-bold text-orange-600 w-12 text-center">${s.value || '2'}배</span>
+          </div>
+          <p class="text-xs text-gray-400 mt-1"><i class="fas fa-info-circle mr-1"></i>1 = 기본, 2 = 2배 크기, 0.5 = 절반 크기</p>
+        </div>`;
+      } else if (s.key === 'services_tag_gap_scale') {
+        html += `
+        <div class="p-4 bg-orange-50/40 border border-orange-100 rounded-xl">
+          <label class="block text-sm font-bold text-orange-700 mb-2"><i class="fas fa-arrows-alt-h mr-1"></i> ${s.description || '사업분야 태그 간격 비율'}</label>
+          <div class="flex items-center gap-3">
+            <input type="range" min="0.3" max="2" step="0.1" data-key="${s.key}" value="${s.value || '0.7'}" id="input_${s.key}"
+              class="flex-1" oninput="document.getElementById('val_${s.key}').textContent=(this.value*100).toFixed(0)+'%'">
+            <span id="val_${s.key}" class="text-sm font-bold text-orange-600 w-12 text-center">${Math.round((parseFloat(s.value) || 0.7) * 100)}%</span>
+          </div>
+          <p class="text-xs text-gray-400 mt-1"><i class="fas fa-info-circle mr-1"></i>1.0 = 기본 간격, 0.7 = 30% 축소, 0.5 = 50% 축소</p>
+        </div>`;
+      } else if (s.key === 'services_grid_cols') {
+        html += `
+        <div class="p-4 bg-orange-50/40 border border-orange-100 rounded-xl">
+          <label class="block text-sm font-bold text-orange-700 mb-2"><i class="fas fa-th mr-1"></i> ${s.description || '사업분야 그리드 열 수'}</label>
+          <div class="flex items-center gap-3">
+            <select data-key="${s.key}" id="input_${s.key}" class="px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/30">
+              ${[3,4,5,6].map(n => `<option value="${n}" ${(s.value||'5')==n?'selected':''}>${n}열</option>`).join('')}
+            </select>
+            <p class="text-xs text-gray-400"><i class="fas fa-info-circle mr-1"></i>데스크탑 기준 열 수 (모바일은 자동 조정)</p>
+          </div>
+        </div>`;
+      } else if (s.key === 'logo_url') {
         // Logo URL with special UI
         html += `
         <div class="p-4 bg-blue-50/50 border border-blue-100 rounded-xl">
