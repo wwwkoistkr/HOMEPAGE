@@ -73,7 +73,7 @@ export function layout(opts: {
 
   <style>
     /* ═══════════════════════════════════════════════════════════════════
-       KOIST PREMIUM DESIGN SYSTEM v10.0
+       KOIST PREMIUM DESIGN SYSTEM v15.0
        ─ Ultra HiDPI / Retina / 4K / 5K / 8K optimized
        ─ Advanced Glassmorphism + Depth Layering
        ─ CrowdStrike / Cloudflare / Palo Alto grade visuals
@@ -553,6 +553,18 @@ export function layout(opts: {
     body:has(#popupOverlay) { overflow: hidden; }
     @supports not (selector(:has(*))) {
       .popup-body-lock { overflow: hidden !important; }
+    }
+
+    /* ═══════════════════════════════════════════════
+       HERO GRADIENT TEXT
+       ═══════════════════════════════════════════════ */
+    .hero-gradient-text {
+      background: linear-gradient(135deg, #60A5FA 0%, #22D3EE 50%, #A78BFA 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: gradient-shift 4s ease infinite;
     }
 
     /* ═══════════════════════════════════════════════
