@@ -1,7 +1,6 @@
-// KOIST - Home Page Template (v22.0 - 8K Ultra-Sharp + Compact Hero + Enlarged Tags)
+// KOIST - Home Page Template (v26.0 - Unified Hero+Simulator Single-Row, 8K Ultra-Sharp)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem, SimCertType } from '../types';
 
-// Helper: generate background style with image overlay or gradient fallback
 function bgStyle(imageUrl: string | undefined, fallbackGradient: string, opacity: string = '0.85'): string {
   if (imageUrl && imageUrl.trim() !== '') {
     return `background-image: linear-gradient(rgba(10,15,30,${opacity}), rgba(10,15,30,${opacity})), url('${imageUrl}'); background-size:cover; background-position:center;`;
@@ -25,9 +24,7 @@ export function homePage(opts: {
   const progress = opts.progressItems.slice(0, 5);
   const catCounts = opts.progressCategoryCounts || [];
   const heroOpacity = s.hero_overlay_opacity || '0.85';
-  const simCerts = opts.simCertTypes || [];
 
-  // Category metadata for icons/colors
   const catMeta: Record<string, {icon: string; color: string}> = {
     'CC평가':       { icon: 'fa-shield-halved', color: '#3B82F6' },
     '보안기능시험':   { icon: 'fa-file-shield', color: '#8B5CF6' },
@@ -42,6 +39,7 @@ export function homePage(opts: {
   };
 
   const totalEvals = catCounts.reduce((sum, c) => sum + c.cnt, 0);
+  const defaultReduction = s.unified_reduction_default || '35';
 
   return `
   <!-- ════════════════════════════════════════════════
@@ -50,13 +48,11 @@ export function homePage(opts: {
   ${popups.length > 0 ? `
   <div id="popupOverlay" class="fixed inset-0 z-[9998] transition-opacity duration-300" style="background:rgba(0,0,0,0.5); backdrop-filter:blur(4px);" onclick="closeAllPopups()"></div>
   <div id="popupContainer" class="fixed z-[9999] popup-multi-container">
-    <!-- Close All Button -->
     <div class="popup-close-all-bar">
       <button onclick="closeAllPopups()" class="inline-flex items-center gap-2 bg-white/95 text-gray-700 font-semibold rounded-full shadow-lg hover:bg-white transition-all" style="padding:8px 20px; font-size:13px;">
         <i class="fas fa-times" style="font-size:12px"></i> 모두 닫기
       </button>
     </div>
-    <!-- Popup Cards (side by side on desktop, stacked on mobile) -->
     <div class="popup-grid">
       ${popups.map((p, i) => `
       <div class="popup-card bg-white rounded-2xl overflow-hidden shadow-2xl"
@@ -85,40 +81,14 @@ export function homePage(opts: {
     </div>
   </div>
   <style>
-    .popup-multi-container {
-      top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: min(92vw, 920px);
-      max-height: 90vh;
-    }
-    .popup-close-all-bar {
-      text-align: center;
-      margin-bottom: 12px;
-    }
-    .popup-grid {
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-    }
-    .popup-card {
-      flex: 1;
-      min-width: 0;
-      max-height: 80vh;
-    }
-    /* Mobile: stack vertically with scroll */
+    .popup-multi-container { top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(92vw, 920px); max-height: 90vh; }
+    .popup-close-all-bar { text-align: center; margin-bottom: 12px; }
+    .popup-grid { display: flex; gap: 16px; align-items: flex-start; }
+    .popup-card { flex: 1; min-width: 0; max-height: 80vh; }
     @media (max-width: 767px) {
-      .popup-multi-container {
-        width: min(92vw, 420px);
-      }
-      .popup-grid {
-        flex-direction: column;
-        max-height: 75vh;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-      }
-      .popup-card {
-        flex: none;
-        width: 100%;
-      }
+      .popup-multi-container { width: min(92vw, 420px); }
+      .popup-grid { flex-direction: column; max-height: 75vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+      .popup-card { flex: none; width: 100%; }
     }
     @keyframes popupSlideIn { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
     @keyframes popupFadeOut { from { opacity: 1; } to { opacity: 0; transform: scale(0.95); } }
@@ -134,8 +104,7 @@ export function homePage(opts: {
     setTimeout(function() {
       var ct = document.getElementById('popupContainer');
       if (ct && ct.querySelectorAll('.popup-card').length === 0) {
-        var ov = document.getElementById('popupOverlay');
-        if (ov) ov.remove(); if (ct) ct.remove();
+        var ov = document.getElementById('popupOverlay'); if (ov) ov.remove(); if (ct) ct.remove();
       }
     }, 0);
   })();
@@ -157,8 +126,7 @@ export function homePage(opts: {
     var hids = JSON.parse(localStorage.getItem('koist_popup_hidden') || '{}');
     document.querySelectorAll('[id^="noshow-"]').forEach(function(cb) { if (cb.checked) hids[cb.id.replace('noshow-', '')] = today; });
     localStorage.setItem('koist_popup_hidden', JSON.stringify(hids));
-    var ov = document.getElementById('popupOverlay');
-    var ct = document.getElementById('popupContainer');
+    var ov = document.getElementById('popupOverlay'); var ct = document.getElementById('popupContainer');
     if (ov) ov.style.opacity = '0';
     if (ct) ct.style.animation = 'popupFadeOut 0.2s ease-in forwards';
     setTimeout(function() { if (ov) ov.remove(); if (ct) ct.remove(); }, 250);
@@ -167,350 +135,278 @@ export function homePage(opts: {
   </script>
   ` : ''}
 
-  <!-- ════════════════════════════════════════════════════════
-       HERO SECTION (v21 - 8K Ultra-Sharp Premium)
-       ════════════════════════════════════════════════════════ -->
-  <section class="relative overflow-hidden" style="${bgStyle(s.hero_bg_url, 'var(--grad-hero)', heroOpacity)}">
-    <!-- Animated background layers -->
+  <!-- ════════════════════════════════════════════════════════════════════════
+       UNIFIED HERO + SIMULATOR — v26 8K ULTRA-SHARP SINGLE-ROW
+       좌측: 히어로 텍스트 (배지 + 대제목 + 부제 + CTA 버튼)
+       우측: 인터랙티브 시뮬레이터 패널 (헤더 + 탭 + 슬라이더 + 바차트 + 결과)
+       ════════════════════════════════════════════════════════════════════════ -->
+  <section class="unified-hero-section relative overflow-hidden" style="${bgStyle(s.hero_bg_url, 'linear-gradient(135deg, #070B14 0%, #0A1128 20%, #0F1E3D 45%, #162D5A 70%, #1A3A6E 100%)', heroOpacity)}">
+    <!-- 8K Animated background layers -->
     ${!s.hero_bg_url ? `
-    <div class="absolute inset-0 pointer-events-none">
-      <div class="absolute animate-float-slow" style="top:8%; left:3%; width:clamp(250px,30vw,500px); height:clamp(250px,30vw,500px); background: radial-gradient(circle, rgba(59,130,246,0.07) 0%, transparent 70%); border-radius:50%; filter:blur(50px);"></div>
-      <div class="absolute animate-float-medium" style="top:25%; right:5%; width:clamp(180px,22vw,400px); height:clamp(180px,22vw,400px); background: radial-gradient(circle, rgba(6,182,212,0.05) 0%, transparent 70%); border-radius:50%; filter:blur(50px);"></div>
-      <div class="absolute animate-float-slow" style="bottom:10%; left:30%; width:clamp(160px,18vw,320px); height:clamp(160px,18vw,320px); background: radial-gradient(circle, rgba(139,92,246,0.04) 0%, transparent 70%); border-radius:50%; filter:blur(50px);"></div>
-      <div class="absolute inset-0 opacity-[0.025]" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 60px 60px;"></div>
-      <div class="absolute animate-float-slow opacity-[0.04] text-blue-400" style="top:12%; left:8%; font-size:clamp(1.5rem,2.5vw,2.5rem)"><i class="fas fa-shield-halved"></i></div>
-      <div class="absolute animate-float-medium opacity-[0.03] text-cyan-400" style="top:45%; right:12%; font-size:clamp(1.2rem,2vw,2rem)"><i class="fas fa-lock"></i></div>
-      <div class="absolute animate-float-slow opacity-[0.03] text-purple-400" style="bottom:20%; left:15%; font-size:clamp(1rem,1.5vw,1.8rem)"><i class="fas fa-fingerprint"></i></div>
+    <div class="absolute inset-0 pointer-events-none" style="will-change:transform; -webkit-backface-visibility:hidden; transform:translateZ(0);">
+      <div class="absolute unified-orb-1" style="top:-8%; right:-5%; width:clamp(300px,42vw,750px); height:clamp(300px,42vw,750px); background: radial-gradient(circle, rgba(59,130,246,0.10) 0%, rgba(37,99,235,0.04) 40%, transparent 65%); border-radius:50%; filter:blur(60px);"></div>
+      <div class="absolute unified-orb-2" style="bottom:-12%; left:-8%; width:clamp(250px,35vw,600px); height:clamp(250px,35vw,600px); background: radial-gradient(circle, rgba(6,182,212,0.07) 0%, rgba(34,211,238,0.03) 40%, transparent 65%); border-radius:50%; filter:blur(50px);"></div>
+      <div class="absolute unified-orb-3" style="top:50%; left:40%; width:clamp(150px,20vw,350px); height:clamp(150px,20vw,350px); background: radial-gradient(circle, rgba(139,92,246,0.05) 0%, transparent 60%); border-radius:50%; filter:blur(40px);"></div>
+      <div class="absolute inset-0 opacity-[0.02]" style="background-image: linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px); background-size:52px 52px;"></div>
+      <div class="absolute animate-float-slow opacity-[0.05]" style="top:15%; left:8%; width:3px; height:3px; background:#60A5FA; border-radius:50%; box-shadow:0 0 10px rgba(96,165,250,0.5);"></div>
+      <div class="absolute animate-float-medium opacity-[0.04]" style="top:35%; right:15%; width:2px; height:2px; background:#22D3EE; border-radius:50%; box-shadow:0 0 8px rgba(34,211,238,0.4);"></div>
+      <div class="absolute animate-float-slow opacity-[0.035]" style="bottom:20%; left:22%; width:2.5px; height:2.5px; background:#A78BFA; border-radius:50%; box-shadow:0 0 8px rgba(167,139,250,0.35);"></div>
+      <div class="absolute animate-float-medium opacity-[0.04]" style="top:65%; right:35%; width:2px; height:2px; background:#34D399; border-radius:50%; box-shadow:0 0 6px rgba(52,211,153,0.3);"></div>
     </div>
     ` : ''}
 
-    <!-- Hero Content -->
-    <div class="relative fluid-container" style="padding-top:clamp(2.5rem,4vw,4rem); padding-bottom:clamp(2rem,3vw,3rem)">
-      <div class="max-w-3xl" data-aos="fade-up" data-aos-duration="700">
-        <!-- Badge -->
-        <div class="inline-flex items-center rounded-full f-text-xs" style="gap:var(--space-xs); padding:6px 14px; background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.15); backdrop-filter: blur(12px);">
-          <span class="relative flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-50"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-          </span>
-          <span class="text-blue-300 font-semibold tracking-wide" style="font-family:'Inter','Noto Sans KR',sans-serif;">Korean Information Security Technology</span>
-        </div>
+    <div class="relative fluid-container" style="padding-top:clamp(2.5rem,4.5vw,5rem); padding-bottom:clamp(2.5rem,4.5vw,5rem);">
+      <div class="unified-hero-grid">
 
-        <!-- Headline (v22 Compact 2-line, ~50% smaller) -->
-        <h1 class="text-white font-black" style="margin-top:var(--space-sm); margin-bottom:6px; font-size:clamp(0.85rem, 0.7rem + 0.65vw, 1.25rem); line-height:1.4; letter-spacing:-0.01em;">
-          ${s.hero_line1 || '정보보안 시험·인증 전문기관'}
-        </h1>
-        <p class="text-slate-300/90 font-semibold" style="margin-bottom:clamp(0.8rem,1.2vw,1rem); font-size:clamp(0.72rem, 0.6rem + 0.5vw, 1rem); line-height:1.45; max-width:480px;">
-          ${s.hero_line2 || 'IT제품 보안성 평가·인증의 원스톱 서비스, <span class="hero-gradient-text">한국정보보안기술원</span>'}
-        </p>
-
-        <!-- CTA Buttons -->
-        <div class="flex flex-wrap" style="gap:var(--space-sm)">
-          <a href="/support/inquiry" class="btn-glow ripple-btn f-text-xs" style="padding:10px clamp(1.1rem,1.8vw,1.5rem);">
-            <i class="fas fa-paper-plane" style="font-size:10px"></i> ${s.hero_btn_primary || '온라인 상담'}
-          </a>
-          <a href="#services" class="btn-ghost ripple-btn f-text-xs" style="padding:10px clamp(1.1rem,1.8vw,1.5rem);">
-            <i class="fas fa-th-large" style="font-size:10px"></i> ${s.hero_btn_secondary || '사업분야 보기'}
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Contact Bar -->
-    <div class="relative" style="background: rgba(255,255,255,0.04); border-top: 1px solid rgba(255,255,255,0.06); backdrop-filter: blur(12px);">
-      <div class="fluid-container">
-        <div class="flex flex-wrap items-center justify-between" style="padding:clamp(0.65rem,1vw,0.9rem) 0; gap:clamp(0.5rem,1vw,1rem)">
-          <div class="flex items-center flex-wrap" style="gap:clamp(0.8rem,1.5vw,1.5rem)">
-            <a href="tel:${s.phone || '02-586-1230'}" class="flex items-center text-white font-black hover:text-blue-300 transition-colors" style="gap:8px; font-size:clamp(1.05rem,1.3vw,1.35rem); letter-spacing:-0.02em;">
-              <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(28px,2.2vw,34px); height:clamp(28px,2.2vw,34px); background: linear-gradient(135deg, rgba(59,130,246,0.25), rgba(6,182,212,0.20));">
-                <i class="fas fa-phone text-blue-300" style="font-size:clamp(10px,0.9vw,13px)"></i>
-              </div>
-              ${s.phone_display || s.phone || '02-586-1230'}
-            </a>
-            <span class="hidden sm:inline-block" style="width:1px; height:18px; background: rgba(255,255,255,0.12);"></span>
-            <div class="hidden sm:flex items-center" style="gap:6px">
-              <i class="fas fa-bolt text-yellow-400" style="font-size:9px"></i>
-              <span class="text-emerald-300/90 font-semibold f-text-xs">${s.hero_quick_badge || 'CC평가 신청 즉시 착수 가능'}</span>
-            </div>
-          </div>
-          <div class="flex items-center flex-wrap text-slate-400 f-text-xs" style="gap:clamp(0.6rem,1.2vw,1.2rem)">
-            <a href="mailto:${s.email || 'koist@koist.kr'}" class="flex items-center hover:text-white transition-colors" style="gap:5px">
-              <i class="fas fa-envelope text-blue-400/60" style="font-size:10px"></i>
-              <span class="hidden md:inline">${s.email || 'koist@koist.kr'}</span>
-              <span class="md:hidden">이메일</span>
-            </a>
-            <span class="flex items-center" style="gap:5px">
-              <i class="fas fa-fax text-blue-400/60" style="font-size:10px"></i>
-              <span class="hidden md:inline">FAX ${s.fax || '02-586-1238'}</span>
-              <span class="md:hidden">팩스</span>
+        <!-- ═══════ LEFT: Hero Text ═══════ -->
+        <div class="unified-hero-left" data-aos="fade-right" data-aos-duration="700">
+          <!-- Badge -->
+          <div class="inline-flex items-center rounded-full" style="gap:8px; padding:clamp(5px,0.5vw,7px) clamp(12px,1.2vw,18px); margin-bottom:clamp(1rem,1.8vw,1.5rem); background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.18); backdrop-filter: blur(12px);">
+            <span class="relative flex" style="height:clamp(8px,0.6vw,10px); width:clamp(8px,0.6vw,10px);">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-50"></span>
+              <span class="relative inline-flex rounded-full h-full w-full bg-emerald-400"></span>
             </span>
-            <span class="hidden lg:flex items-center" style="gap:5px">
-              <i class="fas fa-location-dot text-blue-400/60" style="font-size:10px"></i>
-              ${(s.address || '서울특별시 서초구 효령로 336').split(' ').slice(0, 4).join(' ')}
-            </span>
+            <span class="text-blue-300 font-semibold tracking-wide" style="font-size:clamp(0.7rem,0.85vw,0.88rem); font-family:'Inter','Noto Sans KR',sans-serif; letter-spacing:0.04em;">${s.hero_badge_text || 'Korean Information Security Technology'}</span>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- ════════════════════════════════════════════════════════════════
-       AI SIMULATOR HERO BANNER — v21 8K ULTRA-SHARP
-       Glass-morphism + Animated Particles + sim_cert_types DB
-       ════════════════════════════════════════════════════════════════ -->
-  <section class="relative overflow-hidden sim-hero-section" style="background: linear-gradient(135deg, #0C1426 0%, #0F1E3D 25%, #162D5A 55%, #1E40AF 85%, #2563EB 100%); padding: 0;">
-    <!-- 8K-grade animated background effects -->
-    <div class="absolute inset-0 pointer-events-none" style="-webkit-backface-visibility:hidden; transform:translateZ(0); will-change:transform;">
-      <!-- Large gradient orbs with animation -->
-      <div class="absolute sim-orb-1" style="top:-12%; right:-8%; width:clamp(350px,50vw,800px); height:clamp(350px,50vw,800px); background: radial-gradient(circle, rgba(59,130,246,0.14) 0%, rgba(37,99,235,0.06) 40%, transparent 65%); border-radius:50%; filter:blur(60px);"></div>
-      <div class="absolute sim-orb-2" style="bottom:-15%; left:-10%; width:clamp(280px,40vw,650px); height:clamp(280px,40vw,650px); background: radial-gradient(circle, rgba(6,182,212,0.10) 0%, rgba(34,211,238,0.04) 40%, transparent 65%); border-radius:50%; filter:blur(50px);"></div>
-      <div class="absolute sim-orb-3" style="top:40%; left:50%; width:clamp(200px,25vw,400px); height:clamp(200px,25vw,400px); background: radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 60%); border-radius:50%; filter:blur(40px);"></div>
-      <!-- Grid pattern -->
-      <div class="absolute inset-0 opacity-[0.03]" style="background-image: linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px); background-size:48px 48px;"></div>
-      <!-- Floating micro-particles -->
-      <div class="absolute animate-float-slow opacity-[0.06]" style="top:15%; left:12%; width:3px; height:3px; background:#60A5FA; border-radius:50%; box-shadow:0 0 8px rgba(96,165,250,0.4);"></div>
-      <div class="absolute animate-float-medium opacity-[0.05]" style="top:30%; right:18%; width:2px; height:2px; background:#22D3EE; border-radius:50%; box-shadow:0 0 6px rgba(34,211,238,0.4);"></div>
-      <div class="absolute animate-float-slow opacity-[0.04]" style="bottom:25%; left:25%; width:2px; height:2px; background:#A78BFA; border-radius:50%; box-shadow:0 0 6px rgba(167,139,250,0.3);"></div>
-      <div class="absolute animate-float-medium opacity-[0.05]" style="top:60%; right:30%; width:3px; height:3px; background:#60A5FA; border-radius:50%; box-shadow:0 0 8px rgba(96,165,250,0.3);"></div>
-    </div>
+          <!-- Headline — 8K Ultra-Sharp -->
+          <h1 class="text-white font-black" style="font-size:clamp(1.5rem, 1.1rem + 2vw, 3rem); line-height:1.2; margin-bottom:clamp(0.6rem,1vw,1rem); letter-spacing:-0.025em; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
+            ${s.hero_line1 || '정보보안 시험·인증 전문기관'}
+          </h1>
 
-    <div class="relative fluid-container" style="padding: clamp(2.5rem,4vw,4rem) 0 clamp(2rem,3vw,3rem);">
-      <div class="grid grid-cols-1 lg:grid-cols-2 items-center" style="gap:clamp(2rem,4vw,4rem);">
-
-        <!-- LEFT: AI Hero Text -->
-        <div data-aos="fade-right" data-aos-duration="700">
-          <div class="inline-flex items-center rounded-full" style="gap:8px; padding:6px 16px; margin-bottom:clamp(0.8rem,1.2vw,1.2rem); background: rgba(59,130,246,0.10); border: 1px solid rgba(59,130,246,0.20); backdrop-filter:blur(8px);">
-            <span class="relative flex h-2.5 w-2.5">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-60"></span>
-              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-400"></span>
-            </span>
-            <span class="text-cyan-300 font-bold tracking-wider" style="font-size:clamp(0.68rem,0.88vw,0.82rem); letter-spacing:0.1em; text-rendering:geometricPrecision;">AI-POWERED SIMULATOR</span>
-          </div>
-          <h2 class="text-white font-black" style="font-size:clamp(1.6rem,1.3rem + 1.6vw,2.8rem); line-height:1.2; margin-bottom:clamp(0.6rem,1vw,1rem); letter-spacing:-0.025em; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
-            AI 인증 소요시간<br><span style="background: linear-gradient(135deg, #60A5FA 0%, #22D3EE 50%, #34D399 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">시뮬레이터</span>
-          </h2>
-          <p class="text-slate-300/85" style="font-size:clamp(0.88rem,1.05vw,1.02rem); line-height:1.7; margin-bottom:clamp(1rem,1.5vw,1.5rem); max-width:480px; text-rendering:optimizeLegibility;">
-            KOIST의 전문 컨설팅과 함께라면 인증 소요시간을 <strong class="text-white">획기적으로 단축</strong>할 수 있습니다. 사전준비 수준에 따른 실시간 기간 시뮬레이션을 확인해보세요.
+          <!-- Subtitle -->
+          <p class="text-slate-300/90 font-medium" style="font-size:clamp(0.88rem, 0.75rem + 0.6vw, 1.15rem); line-height:1.6; margin-bottom:clamp(1.5rem,2.5vw,2.2rem); max-width:520px; text-rendering:optimizeLegibility;">
+            ${s.hero_line2 || 'IT제품 보안성 평가·인증의 원스톱 서비스, <span class="hero-gradient-text">한국정보보안기술원</span>'}
           </p>
 
-          <!-- Feature checklist -->
-          <div style="display:flex; flex-direction:column; gap:clamp(0.4rem,0.6vw,0.6rem); margin-bottom:clamp(1.2rem,2vw,1.8rem);">
-            <div class="flex items-center" style="gap:10px"><div class="shrink-0 rounded-full flex items-center justify-center" style="width:22px; height:22px; background:rgba(34,211,238,0.12); border:1px solid rgba(34,211,238,0.25);"><i class="fas fa-check text-cyan-400" style="font-size:9px"></i></div><span class="text-slate-300" style="font-size:clamp(0.8rem,0.95vw,0.92rem)">전통 CCRA 대비 평균 <strong class="text-white font-bold">35~40%</strong> 기간 단축</span></div>
-            <div class="flex items-center" style="gap:10px"><div class="shrink-0 rounded-full flex items-center justify-center" style="width:22px; height:22px; background:rgba(34,211,238,0.12); border:1px solid rgba(34,211,238,0.25);"><i class="fas fa-check text-cyan-400" style="font-size:9px"></i></div><span class="text-slate-300" style="font-size:clamp(0.8rem,0.95vw,0.92rem)">CC·KCMVP·보안기능확인서 등 <strong class="text-white font-bold">${simCerts.length || 6}개 인증</strong> 지원</span></div>
-            <div class="flex items-center" style="gap:10px"><div class="shrink-0 rounded-full flex items-center justify-center" style="width:22px; height:22px; background:rgba(34,211,238,0.12); border:1px solid rgba(34,211,238,0.25);"><i class="fas fa-check text-cyan-400" style="font-size:9px"></i></div><span class="text-slate-300" style="font-size:clamp(0.8rem,0.95vw,0.92rem)">사전준비 수준별 <strong class="text-white font-bold">맞춤형 기간 산출</strong></span></div>
+          <!-- CTA Buttons -->
+          <div class="flex flex-wrap" style="gap:clamp(0.6rem,1vw,1rem);">
+            <a href="/support/inquiry" class="btn-glow ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:8px; padding:clamp(0.7rem,1vw,0.9rem) clamp(1.4rem,2vw,2rem); font-size:clamp(0.82rem,0.95vw,0.95rem);">
+              <i class="fas fa-paper-plane" style="font-size:clamp(0.65rem,0.75vw,0.78rem)"></i> ${s.hero_btn_primary || '온라인 상담'}
+            </a>
+            <a href="#services" class="btn-ghost ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:8px; padding:clamp(0.7rem,1vw,0.9rem) clamp(1.4rem,2vw,2rem); font-size:clamp(0.82rem,0.95vw,0.95rem);">
+              <i class="fas fa-th-large" style="font-size:clamp(0.65rem,0.75vw,0.78rem)"></i> ${s.hero_btn_secondary || '사업분야 보기'}
+            </a>
           </div>
-
-          <a href="#simCard" class="inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] hover:shadow-2xl active:scale-[0.98]" style="gap:10px; padding:clamp(0.65rem,1vw,0.85rem) clamp(1.4rem,2.2vw,2rem); background:white; color:#1E40AF; font-size:clamp(0.82rem,1vw,0.95rem); box-shadow: 0 4px 24px rgba(255,255,255,0.12), 0 1px 4px rgba(0,0,0,0.06); text-rendering:geometricPrecision;">
-            <i class="fas fa-play-circle" style="font-size:clamp(0.75rem,0.9vw,0.88rem)"></i> 시뮬레이터 사용하기
-          </a>
         </div>
 
-        <!-- RIGHT: Glassmorphism Preview Card (8K-grade rendering) -->
-        <div data-aos="fade-left" data-aos-duration="700" data-aos-delay="150">
-          <div class="rounded-2xl overflow-hidden sim-glass-card" style="background: rgba(255,255,255,0.06); backdrop-filter:blur(24px) saturate(180%); -webkit-backdrop-filter:blur(24px) saturate(180%); border:1px solid rgba(255,255,255,0.10); box-shadow: 0 12px 48px rgba(0,0,0,0.30), 0 4px 16px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.08); -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
-            <!-- Window chrome bar -->
-            <div class="flex items-center justify-between" style="padding:clamp(0.75rem,1.1vw,1rem) clamp(1rem,1.4vw,1.3rem); border-bottom:1px solid rgba(255,255,255,0.06); background:rgba(0,0,0,0.08);">
-              <div class="flex items-center" style="gap:7px">
-                <span class="rounded-full" style="width:10px; height:10px; background:#EF4444; box-shadow: inset 0 -1px 2px rgba(0,0,0,0.2);"></span>
-                <span class="rounded-full" style="width:10px; height:10px; background:#F59E0B; box-shadow: inset 0 -1px 2px rgba(0,0,0,0.2);"></span>
-                <span class="rounded-full" style="width:10px; height:10px; background:#22C55E; box-shadow: inset 0 -1px 2px rgba(0,0,0,0.2);"></span>
-              </div>
-              <span class="text-slate-400/70 font-medium" style="font-size:clamp(0.62rem,0.75vw,0.72rem); letter-spacing:0.02em;">KOIST Simulator v3.0</span>
-            </div>
-            <div style="padding:clamp(1rem,1.5vw,1.4rem);">
-              <div class="flex items-center" style="gap:10px; margin-bottom:clamp(0.7rem,1vw,1rem);">
-                <div class="rounded-lg flex items-center justify-center" style="width:32px; height:32px; background:linear-gradient(135deg, rgba(59,130,246,0.20), rgba(6,182,212,0.15)); border:1px solid rgba(59,130,246,0.25);">
-                  <i class="fas fa-robot text-cyan-400" style="font-size:13px"></i>
+        <!-- ═══════ RIGHT: Interactive Simulator Panel ═══════ -->
+        <div class="unified-hero-right" data-aos="fade-left" data-aos-duration="700" data-aos-delay="150">
+          <div class="unified-sim-panel" id="simCard">
+            <!-- Panel Header — Dark Navy -->
+            <div class="unified-sim-header">
+              <div class="flex items-center" style="gap:clamp(8px,0.8vw,12px);">
+                <div class="rounded-xl flex items-center justify-center shrink-0" style="width:clamp(30px,2.5vw,38px); height:clamp(30px,2.5vw,38px); background: linear-gradient(135deg, rgba(59,130,246,0.20), rgba(6,182,212,0.15)); border: 1px solid rgba(59,130,246,0.20);">
+                  <i class="fas fa-chart-bar text-blue-400" style="font-size:clamp(11px,1vw,15px)"></i>
                 </div>
-                <span class="text-white font-bold" style="font-size:clamp(0.85rem,1.05vw,1rem);">인증별 예상 소요기간</span>
+                <div style="min-width:0;">
+                  <p class="text-white font-bold truncate" style="font-size:clamp(0.78rem,0.95vw,1rem); line-height:1.3; letter-spacing:-0.01em;">${s.unified_panel_title || 'KOIST와 함께라면 평가기간을 <span class="text-cyan-300">대폭 단축</span>합니다'}</p>
+                  <p class="text-slate-400/80 truncate" style="font-size:clamp(0.6rem,0.7vw,0.72rem); margin-top:1px;">${s.unified_panel_subtitle || '사전준비 수준에 따라 실시간으로 기간을 산출합니다'}</p>
+                </div>
               </div>
-              <!-- Cert type comparison rows from DB -->
-              <div style="display:flex; flex-direction:column; gap:clamp(0.45rem,0.65vw,0.6rem);">
-                ${simCerts.slice(0, 5).map((cert, i) => {
-                  const tradAvg = Math.round((cert.traditional_min_weeks + cert.traditional_max_weeks) / 2);
-                  const koistAvg = Math.round((cert.koist_min_weeks + cert.koist_max_weeks) / 2);
-                  const pct = tradAvg > 0 ? Math.round((1 - koistAvg / tradAvg) * 100) : 0;
-                  return `
-                <div class="sim-row rounded-xl flex items-center justify-between" style="padding:clamp(0.5rem,0.7vw,0.65rem) clamp(0.7rem,1vw,0.9rem); background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.05); transition:all 0.25s ease;">
-                  <div class="flex items-center" style="gap:9px">
-                    <i class="fas ${cert.icon}" style="color:${cert.color}; font-size:clamp(0.7rem,0.85vw,0.82rem); width:18px; text-align:center; filter:drop-shadow(0 0 3px ${cert.color}40);"></i>
-                    <span class="text-slate-200 font-semibold" style="font-size:clamp(0.76rem,0.92vw,0.9rem);">${cert.name}</span>
-                  </div>
-                  <div class="flex items-center" style="gap:clamp(0.5rem,0.9vw,0.75rem)">
-                    <span class="text-slate-400/80 line-through" style="font-size:clamp(0.68rem,0.82vw,0.78rem);">${tradAvg}주</span>
-                    <span class="text-cyan-300 font-black" style="font-size:clamp(0.8rem,0.98vw,0.95rem); text-shadow:0 0 12px rgba(34,211,238,0.25);">${koistAvg}주</span>
-                    <span class="rounded-full font-bold" style="padding:2px 9px; font-size:clamp(0.58rem,0.68vw,0.66rem); background:rgba(34,211,238,0.10); border:1px solid rgba(34,211,238,0.20); color:#22D3EE; letter-spacing:-0.01em;">-${pct}%</span>
-                  </div>
-                </div>`;
-                }).join('')}
+              <div class="hidden sm:flex items-center rounded-full shrink-0" style="gap:5px; padding:clamp(4px,0.4vw,6px) clamp(10px,1vw,16px); background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.22);">
+                <span class="text-white font-black" style="font-size:clamp(0.85rem,1.05vw,1.05rem)" id="headerReductionPct">${defaultReduction}%</span>
+                <span class="text-blue-300/90 font-medium" style="font-size:clamp(0.58rem,0.7vw,0.7rem)">${s.unified_reduction_label || '평균 단축'}</span>
               </div>
-              ${simCerts.length > 5 ? `
-              <div class="flex items-center justify-center" style="margin-top:clamp(0.5rem,0.7vw,0.6rem); gap:5px;">
-                <span class="text-slate-400/70" style="font-size:clamp(0.62rem,0.72vw,0.7rem)">+${simCerts.length - 5}개 인증유형 더보기</span>
-                <i class="fas fa-chevron-down text-slate-500/50" style="font-size:8px"></i>
-              </div>` : ''}
-              <!-- Mini stats bar -->
-              <div class="flex items-center justify-between" style="margin-top:clamp(0.6rem,0.9vw,0.8rem); padding-top:clamp(0.5rem,0.7vw,0.6rem); border-top:1px solid rgba(255,255,255,0.05);">
-                <span class="text-slate-400/60" style="font-size:clamp(0.58rem,0.68vw,0.65rem)"><i class="fas fa-chart-line mr-1" style="font-size:8px"></i>${totalEvals}건 평가실적</span>
-                <span class="text-cyan-400/70 font-semibold" style="font-size:clamp(0.58rem,0.68vw,0.65rem)"><i class="fas fa-bolt text-yellow-400/70 mr-0.5" style="font-size:7px"></i>평균 35% 단축</span>
+            </div>
+
+            <!-- Panel Body — White -->
+            <div class="unified-sim-body">
+              <!-- Tab Bar -->
+              <div class="eal-tabs flex rounded-xl overflow-hidden" style="margin-bottom:clamp(0.6rem,0.9vw,0.8rem); border:1px solid rgba(226,232,240,0.70); background: rgba(248,250,252,0.80);">
+                <button class="eal-tab active flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.6vw,8px) 0; font-size:clamp(0.68rem,0.82vw,0.82rem);" data-eal="overall" onclick="switchEAL('overall')">전체평균</button>
+                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.6vw,8px) 0; font-size:clamp(0.68rem,0.82vw,0.82rem); border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL2" onclick="switchEAL('EAL2')">EAL2</button>
+                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.6vw,8px) 0; font-size:clamp(0.68rem,0.82vw,0.82rem); border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL3" onclick="switchEAL('EAL3')">EAL3</button>
+                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.6vw,8px) 0; font-size:clamp(0.68rem,0.82vw,0.82rem); border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL4" onclick="switchEAL('EAL4')">EAL4</button>
+              </div>
+
+              <!-- Preparation Slider — 8K Sharp -->
+              <div class="rounded-xl" style="padding:clamp(0.5rem,0.7vw,0.7rem) clamp(0.7rem,1vw,0.9rem); margin-bottom:clamp(0.6rem,0.9vw,0.8rem); background: linear-gradient(135deg, rgba(16,185,129,0.035), rgba(59,130,246,0.025)); border: 1px solid rgba(16,185,129,0.10);">
+                <div class="flex items-center" style="gap:clamp(0.4rem,0.6vw,0.6rem)">
+                  <div class="flex items-center shrink-0" style="gap:5px">
+                    <i class="fas fa-clipboard-check text-emerald-500" style="font-size:clamp(10px,0.8vw,12px)"></i>
+                    <span class="font-bold text-slate-700" style="font-size:clamp(0.7rem,0.85vw,0.85rem)">사전준비</span>
+                  </div>
+                  <div class="flex-1 flex items-center" style="gap:clamp(0.2rem,0.4vw,0.4rem)">
+                    <span class="text-slate-400 shrink-0" style="font-size:clamp(9px,0.65vw,10px); font-weight:600;">1</span>
+                    <div class="flex-1 relative" style="height:clamp(30px,2.8vw,38px);">
+                      <div class="absolute left-0 right-0" style="top:50%; transform:translateY(-50%); height:clamp(6px,0.55vw,8px); border-radius:4px; background: linear-gradient(90deg, #EF4444 0%, #F59E0B 25%, #10B981 60%, #3B82F6 100%); opacity:0.20;"></div>
+                      <div id="prepFill" class="absolute left-0" style="top:50%; transform:translateY(-50%); height:clamp(6px,0.55vw,8px); border-radius:4px; width:50%; background: linear-gradient(90deg, #EF4444 0%, #F59E0B 30%, #10B981 70%, #3B82F6 100%); transition: width 0.12s ease; box-shadow:0 2px 6px rgba(0,0,0,0.08);"></div>
+                      <input type="range" id="prepSlider" min="1" max="100" step="1" value="50"
+                        class="prep-range"
+                        style="width:100%; position:absolute; top:50%; transform:translateY(-50%); cursor:pointer; -webkit-appearance:none; appearance:none; height:clamp(6px,0.55vw,8px); border-radius:4px; background: transparent; outline:none; z-index:2;"
+                        oninput="onPrepChange(this.value)">
+                    </div>
+                    <span class="text-slate-400 shrink-0" style="font-size:clamp(9px,0.65vw,10px); font-weight:600;">100</span>
+                    <div id="prepBadge" class="shrink-0 flex items-center rounded-full font-bold transition-all" style="gap:2px; padding:clamp(3px,0.3vw,4px) clamp(8px,0.7vw,12px); min-width:clamp(48px,4vw,60px); justify-content:center; background: rgba(16,185,129,0.10); border: 1px solid rgba(16,185,129,0.20); color: #10B981; font-size:clamp(0.65rem,0.78vw,0.78rem);">
+                      <span id="prepValueText">50</span><span style="font-size:0.7em; opacity:0.7">%</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Level guide dots -->
+                <div class="flex items-center justify-between" style="margin-top:4px; padding:0 0 0 clamp(65px,7.5vw,88px);">
+                  <div class="flex items-center" style="gap:2px"><span class="inline-block rounded-full" style="width:5px; height:5px; background:#EF4444;"></span><span class="text-slate-400 font-medium" style="font-size:clamp(8px,0.6vw,9px)">미흡</span></div>
+                  <div class="flex items-center" style="gap:2px"><span class="inline-block rounded-full" style="width:5px; height:5px; background:#F59E0B;"></span><span class="text-slate-400 font-medium" style="font-size:clamp(8px,0.6vw,9px)">보통</span></div>
+                  <div class="flex items-center" style="gap:2px"><span class="inline-block rounded-full" style="width:5px; height:5px; background:#10B981;"></span><span class="text-slate-400 font-medium" style="font-size:clamp(8px,0.6vw,9px)">양호</span></div>
+                  <div class="flex items-center" style="gap:2px"><span class="inline-block rounded-full" style="width:5px; height:5px; background:#3B82F6;"></span><span class="text-slate-400 font-medium" style="font-size:clamp(8px,0.6vw,9px)">우수</span></div>
+                </div>
+              </div>
+
+              <!-- Bar Charts — 8K Ultra-Sharp -->
+              <div id="ealPanel" class="bar-chart-container" style="display:flex; flex-direction:column; gap:clamp(0.5rem,0.7vw,0.7rem);">
+                <!-- CCRA bar -->
+                <div>
+                  <div class="flex justify-between items-center" style="margin-bottom:4px">
+                    <span class="text-slate-500 font-semibold flex items-center" style="gap:4px; font-size:clamp(0.68rem,0.82vw,0.82rem)"><span class="inline-block rounded-full" style="width:7px; height:7px; background: linear-gradient(135deg, #94A3B8, #64748B);"></span>전통 CCRA 평가 프로세스</span>
+                    <span id="ealGeneralTotal" class="text-slate-400 font-bold" style="font-size:clamp(0.68rem,0.82vw,0.82rem)">약 24개월</span>
+                  </div>
+                  <div class="relative rounded-xl overflow-hidden" style="height:clamp(32px,3.2vw,44px); background: linear-gradient(90deg, #F1F5F9, #E2E8F0);">
+                    <div id="ealGeneralBar" class="bar-animate eal-bar absolute left-0 top-0 h-full rounded-xl flex items-center" style="width:100%; background: linear-gradient(90deg, #F59E0B 0%, #F59E0B 50%, #94A3B8 50%, #94A3B8 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 2px 6px rgba(0,0,0,0.06);">
+                      <span id="ealGeneralPrep" class="absolute text-white font-bold" style="left:clamp(6px,0.6vw,10px); font-size:clamp(0.6rem,0.75vw,0.76rem); text-shadow:0 1px 4px rgba(0,0,0,0.35); letter-spacing:-0.01em;">준비 12개월</span>
+                      <span id="ealGeneralEval" class="absolute text-white font-bold" style="right:clamp(6px,0.6vw,10px); font-size:clamp(0.6rem,0.75vw,0.76rem); text-shadow:0 1px 4px rgba(0,0,0,0.35); letter-spacing:-0.01em;">평가 12개월</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- KOIST bar -->
+                <div>
+                  <div class="flex justify-between items-center" style="margin-bottom:4px">
+                    <span class="text-accent font-bold flex items-center" style="gap:4px; font-size:clamp(0.68rem,0.82vw,0.82rem)"><span class="inline-block rounded-full" style="width:7px; height:7px; background: linear-gradient(135deg, #2563EB, #06B6D4);"></span><i class="fas fa-bolt text-yellow-500" style="font-size:clamp(7px,0.55vw,9px); margin-right:2px;"></i>KOIST 평가 프로세스</span>
+                    <span id="ealKoistTotal" class="text-accent font-bold" style="font-size:clamp(0.68rem,0.82vw,0.82rem)">약 15개월</span>
+                  </div>
+                  <div class="relative rounded-xl overflow-hidden" style="height:clamp(32px,3.2vw,44px); background: linear-gradient(90deg, #F1F5F9, #E2E8F0);">
+                    <div id="ealKoistBar" class="bar-animate eal-bar absolute left-0 top-0 h-full rounded-xl flex items-center" style="width:62.5%; background: linear-gradient(90deg, #F59E0B 0%, #F59E0B 40%, #3B82F6 40%, #3B82F6 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 2px 6px rgba(0,0,0,0.06);">
+                      <span id="ealKoistPrep" class="absolute text-white font-bold" style="left:clamp(6px,0.6vw,10px); font-size:clamp(0.6rem,0.75vw,0.76rem); text-shadow:0 1px 4px rgba(0,0,0,0.35); letter-spacing:-0.01em;">준비 6개월</span>
+                      <span id="ealKoistEval" class="absolute text-white font-bold" style="right:clamp(6px,0.6vw,10px); font-size:clamp(0.6rem,0.75vw,0.76rem); text-shadow:0 1px 4px rgba(0,0,0,0.35); letter-spacing:-0.01em;">평가 9개월</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Result Summary Strip -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-xl" style="gap:clamp(0.4rem,0.5vw,0.5rem); padding:clamp(0.5rem,0.7vw,0.7rem) clamp(0.6rem,0.9vw,0.9rem); background: linear-gradient(135deg, rgba(59,130,246,0.04), rgba(6,182,212,0.025)); border: 1px solid rgba(59,130,246,0.10);">
+                  <div class="flex items-center" style="gap:clamp(0.4rem,0.5vw,0.5rem)">
+                    <div id="ealReductionBadge" class="shrink-0 rounded-xl flex items-center justify-center" style="width:clamp(36px,2.8vw,46px); height:clamp(36px,2.8vw,46px); background: linear-gradient(135deg, #2563EB, #06B6D4); box-shadow: 0 4px 16px rgba(37,99,235,0.25);">
+                      <span class="text-white font-black" style="font-size:clamp(0.78rem,1vw,1rem); text-rendering:geometricPrecision;">${defaultReduction}%</span>
+                    </div>
+                    <div>
+                      <p id="ealReductionText" class="text-primary font-bold" style="font-size:clamp(0.72rem,0.88vw,0.88rem)">평가기간 약 ${defaultReduction}% 단축</p>
+                      <p id="ealSavingText" class="text-slate-500" style="font-size:clamp(0.58rem,0.7vw,0.7rem)">약 9개월 절감 &middot; 원스톱 서비스</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center flex-wrap" style="gap:clamp(6px,0.5vw,8px)">
+                    <span id="simKoistPrepResult" class="font-medium" style="font-size:clamp(0.62rem,0.75vw,0.76rem); color:#F59E0B"><i class="fas fa-file-pen" style="font-size:8px; margin-right:2px;"></i>준비 <strong>6</strong>개월</span>
+                    <span id="simKoistEvalResult" class="font-medium" style="font-size:clamp(0.62rem,0.75vw,0.76rem); color:#3B82F6"><i class="fas fa-magnifying-glass" style="font-size:8px; margin-right:2px;"></i>평가 <strong>9</strong>개월</span>
+                    <span class="text-slate-300">|</span>
+                    <span class="font-medium" style="font-size:clamp(0.62rem,0.75vw,0.76rem); color:#64748B"><strong>${totalEvals}</strong>건 평가실적</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
       </div>
     </div>
   </section>
 
-  <!-- 8K Simulator Hero Styles -->
+  <!-- ═══════ Unified Hero + Simulator Styles — 8K Ultra-Sharp ═══════ -->
   <style>
-    .sim-hero-section { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: geometricPrecision; }
-    .sim-glass-card { transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease; }
-    .sim-glass-card:hover { transform: translateY(-4px); box-shadow: 0 16px 56px rgba(0,0,0,0.35), 0 6px 20px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.10); }
-    .sim-row:hover { background: rgba(255,255,255,0.07) !important; border-color: rgba(255,255,255,0.10) !important; transform: translateX(2px); }
-    @keyframes simOrb1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-15px, 20px) scale(1.05); } }
-    @keyframes simOrb2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(20px, -15px) scale(1.03); } }
-    @keyframes simOrb3 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-10px, -10px) scale(1.08); } }
-    .sim-orb-1 { animation: simOrb1 15s ease-in-out infinite; }
-    .sim-orb-2 { animation: simOrb2 18s ease-in-out infinite; }
-    .sim-orb-3 { animation: simOrb3 12s ease-in-out infinite; }
-  </style>
+    .unified-hero-section {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: geometricPrecision;
+    }
+    /* 2-column grid: 55% left / 45% right */
+    .unified-hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem, 4vw, 4rem);
+      align-items: center;
+    }
+    .unified-hero-left { max-width: 600px; }
 
-  <!-- ════════════════════════════════════════════════════════════════
-       EVALUATION PERIOD SIMULATOR — v21 8K Ultra-Sharp
-       ════════════════════════════════════════════════════════════════ -->
-  <section id="simCard" class="relative overflow-hidden sim-card-section" style="padding:clamp(1.5rem,2.5vw,2.5rem) 0 clamp(2rem,3vw,3rem); background: linear-gradient(180deg, #EEF2FF 0%, #F8FAFC 25%, #FFFFFF 100%);">
-    <!-- Subtle background pattern -->
-    <div class="absolute inset-0 opacity-[0.015]" style="background-image: radial-gradient(circle at 1px 1px, rgba(59,130,246,0.3) 1px, transparent 0); background-size: 28px 28px;"></div>
-    
-    <div class="relative fluid-container">
-      <div class="mx-auto" style="max-width:min(1060px, 100%)">
-        <div class="rounded-2xl overflow-hidden sim-main-card" style="box-shadow: 0 4px 32px rgba(10,15,30,0.07), 0 2px 8px rgba(10,15,30,0.03), 0 0 0 1px rgba(226,232,240,0.60); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; text-rendering:geometricPrecision;" data-aos="fade-up" data-aos-duration="600">
+    /* Simulator panel card */
+    .unified-sim-panel {
+      border-radius: clamp(12px, 1.2vw, 18px);
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.25), 0 2px 12px rgba(0,0,0,0.10), 0 0 0 1px rgba(255,255,255,0.06);
+      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+    .unified-sim-panel:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 48px rgba(0,0,0,0.30), 0 4px 16px rgba(0,0,0,0.12), 0 0 0 1px rgba(255,255,255,0.08);
+    }
+    .unified-sim-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: clamp(0.7rem, 1.1vw, 1rem) clamp(0.9rem, 1.4vw, 1.4rem);
+      background: linear-gradient(135deg, #0A0F1E 0%, #0F1B33 50%, #111D35 100%);
+      gap: 10px;
+    }
+    .unified-sim-body {
+      padding: clamp(0.8rem, 1.2vw, 1.2rem) clamp(0.9rem, 1.4vw, 1.4rem);
+      background: #ffffff;
+    }
 
-          <!-- Card Header — 8K Crisp -->
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between" style="padding:clamp(0.9rem,1.4vw,1.2rem) clamp(1.2rem,2vw,1.8rem); background: linear-gradient(135deg, #0A0F1E 0%, #0F1B33 50%, #111D35 100%);">
-            <div class="flex items-center" style="gap:12px">
-              <div class="rounded-xl flex items-center justify-center" style="width:36px; height:36px; background: linear-gradient(135deg, rgba(59,130,246,0.18), rgba(6,182,212,0.12)); border: 1px solid rgba(59,130,246,0.18);">
-                <i class="fas fa-chart-bar text-blue-400" style="font-size:15px"></i>
-              </div>
-              <div>
-                <p class="text-white font-bold" style="font-size:clamp(0.88rem,1.1vw,1.06rem); line-height:1.3; letter-spacing:-0.01em;">KOIST와 함께라면 평가기간을 <span class="text-cyan-300">대폭 단축</span>합니다</p>
-                <p class="text-slate-400/80" style="font-size:clamp(0.66rem,0.8vw,0.76rem); margin-top:2px">사전준비 수준에 따라 실시간으로 기간을 산출합니다</p>
-              </div>
-            </div>
-            <div class="hidden sm:flex items-center rounded-full" style="gap:6px; padding:6px 16px; background: rgba(59,130,246,0.10); border: 1px solid rgba(59,130,246,0.20);">
-              <span class="text-white font-black" style="font-size:clamp(0.92rem,1.15vw,1.1rem)" id="headerReductionPct">37%</span>
-              <span class="text-blue-300/90 font-medium" style="font-size:clamp(0.64rem,0.78vw,0.74rem)">평균 단축</span>
-            </div>
-          </div>
-
-          <div style="padding:clamp(1rem,1.5vw,1.4rem) clamp(1.2rem,2vw,1.8rem); background:#fff;">
-            <!-- Tab bar -->
-            <div class="eal-tabs flex rounded-xl overflow-hidden" style="margin-bottom:clamp(0.7rem,1vw,0.9rem); border:1px solid rgba(226,232,240,0.70); background: rgba(248,250,252,0.80);">
-              <button class="eal-tab active flex-1 text-center font-bold transition-all" style="padding:8px 0; font-size:clamp(0.74rem,0.92vw,0.88rem);" data-eal="overall" onclick="switchEAL('overall')">전체평균</button>
-              <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:8px 0; font-size:clamp(0.74rem,0.92vw,0.88rem); border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL2" onclick="switchEAL('EAL2')">EAL2</button>
-              <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:8px 0; font-size:clamp(0.74rem,0.92vw,0.88rem); border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL3" onclick="switchEAL('EAL3')">EAL3</button>
-              <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:8px 0; font-size:clamp(0.74rem,0.92vw,0.88rem); border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL4" onclick="switchEAL('EAL4')">EAL4</button>
-            </div>
-
-            <!-- Preparation Slider — 8K Sharp -->
-            <div class="rounded-xl" style="padding:clamp(0.6rem,0.9vw,0.8rem) clamp(0.8rem,1.2vw,1rem); margin-bottom:clamp(0.7rem,1vw,0.9rem); background: linear-gradient(135deg, rgba(16,185,129,0.035), rgba(59,130,246,0.025)); border: 1px solid rgba(16,185,129,0.10);">
-              <div class="flex items-center" style="gap:clamp(0.5rem,0.8vw,0.7rem)">
-                <div class="flex items-center shrink-0" style="gap:6px">
-                  <i class="fas fa-clipboard-check text-emerald-500" style="font-size:12px"></i>
-                  <span class="font-bold text-slate-700" style="font-size:clamp(0.76rem,0.95vw,0.92rem)">사전준비</span>
-                </div>
-                <div class="flex-1 flex items-center" style="gap:clamp(0.3rem,0.5vw,0.5rem)">
-                  <span class="text-slate-400 shrink-0" style="font-size:11px; font-weight:600;">1</span>
-                  <div class="flex-1 relative" style="height:38px;">
-                    <div class="absolute left-0 right-0" style="top:50%; transform:translateY(-50%); height:8px; border-radius:4px; background: linear-gradient(90deg, #EF4444 0%, #F59E0B 25%, #10B981 60%, #3B82F6 100%); opacity:0.20;"></div>
-                    <div id="prepFill" class="absolute left-0" style="top:50%; transform:translateY(-50%); height:8px; border-radius:4px; width:50%; background: linear-gradient(90deg, #EF4444 0%, #F59E0B 30%, #10B981 70%, #3B82F6 100%); transition: width 0.12s ease; box-shadow:0 2px 6px rgba(0,0,0,0.08);"></div>
-                    <input type="range" id="prepSlider" min="1" max="100" step="1" value="50"
-                      class="prep-range"
-                      style="width:100%; position:absolute; top:50%; transform:translateY(-50%); cursor:pointer; -webkit-appearance:none; appearance:none; height:8px; border-radius:4px; background: transparent; outline:none; z-index:2;"
-                      oninput="onPrepChange(this.value)">
-                  </div>
-                  <span class="text-slate-400 shrink-0" style="font-size:11px; font-weight:600;">100</span>
-                  <div id="prepBadge" class="shrink-0 flex items-center rounded-full font-bold transition-all" style="gap:3px; padding:4px 12px; min-width:62px; justify-content:center; background: rgba(16,185,129,0.10); border: 1px solid rgba(16,185,129,0.20); color: #10B981; font-size:clamp(0.72rem,0.88vw,0.85rem);">
-                    <span id="prepValueText">50</span><span style="font-size:0.7em; opacity:0.7">%</span>
-                  </div>
-                </div>
-              </div>
-              <!-- Level guide -->
-              <div class="flex items-center justify-between" style="margin-top:5px; padding:0 0 0 clamp(74px,8.5vw,95px);">
-                <div class="flex items-center" style="gap:3px"><span class="inline-block rounded-full" style="width:6px; height:6px; background:#EF4444;"></span><span class="text-slate-400 font-medium" style="font-size:10px">미흡</span></div>
-                <div class="flex items-center" style="gap:3px"><span class="inline-block rounded-full" style="width:6px; height:6px; background:#F59E0B;"></span><span class="text-slate-400 font-medium" style="font-size:10px">보통</span></div>
-                <div class="flex items-center" style="gap:3px"><span class="inline-block rounded-full" style="width:6px; height:6px; background:#10B981;"></span><span class="text-slate-400 font-medium" style="font-size:10px">양호</span></div>
-                <div class="flex items-center" style="gap:3px"><span class="inline-block rounded-full" style="width:6px; height:6px; background:#3B82F6;"></span><span class="text-slate-400 font-medium" style="font-size:10px">우수</span></div>
-              </div>
-            </div>
-
-            <!-- Bar Chart — 8K Ultra-Sharp -->
-            <div id="ealPanel" class="bar-chart-container" style="display:flex; flex-direction:column; gap:clamp(0.6rem,0.9vw,0.8rem);">
-              <!-- CCRA bar -->
-              <div>
-                <div class="flex justify-between items-center" style="margin-bottom:5px">
-                  <span class="text-slate-500 font-semibold flex items-center" style="gap:5px; font-size:clamp(0.76rem,0.95vw,0.92rem)"><span class="inline-block rounded-full" style="width:8px; height:8px; background: linear-gradient(135deg, #94A3B8, #64748B);"></span>전통 CCRA 평가 프로세스</span>
-                  <span id="ealGeneralTotal" class="text-slate-400 font-bold" style="font-size:clamp(0.76rem,0.95vw,0.92rem)">약 24개월</span>
-                </div>
-                <div class="relative rounded-xl overflow-hidden" style="height:clamp(38px,3.8vw,48px); background: linear-gradient(90deg, #F1F5F9, #E2E8F0);">
-                  <div id="ealGeneralBar" class="bar-animate eal-bar absolute left-0 top-0 h-full rounded-xl flex items-center" style="width:100%; background: linear-gradient(90deg, #F59E0B 0%, #F59E0B 50%, #94A3B8 50%, #94A3B8 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 2px 6px rgba(0,0,0,0.06);">
-                    <span id="ealGeneralPrep" class="absolute text-white font-bold" style="left:12px; font-size:clamp(0.68rem,0.86vw,0.82rem); text-shadow:0 1px 4px rgba(0,0,0,0.35); letter-spacing:-0.01em;">준비 12개월</span>
-                    <span id="ealGeneralEval" class="absolute text-white font-bold" style="right:12px; font-size:clamp(0.68rem,0.86vw,0.82rem); text-shadow:0 1px 4px rgba(0,0,0,0.35); letter-spacing:-0.01em;">평가 12개월</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- KOIST bar -->
-              <div>
-                <div class="flex justify-between items-center" style="margin-bottom:5px">
-                  <span class="text-accent font-bold flex items-center" style="gap:5px; font-size:clamp(0.76rem,0.95vw,0.92rem)"><span class="inline-block rounded-full" style="width:8px; height:8px; background: linear-gradient(135deg, #2563EB, #06B6D4);"></span><i class="fas fa-bolt text-yellow-500 mr-0.5" style="font-size:9px"></i>KOIST 평가 프로세스</span>
-                  <span id="ealKoistTotal" class="text-accent font-bold" style="font-size:clamp(0.76rem,0.95vw,0.92rem)">약 15개월</span>
-                </div>
-                <div class="relative rounded-xl overflow-hidden" style="height:clamp(38px,3.8vw,48px); background: linear-gradient(90deg, #F1F5F9, #E2E8F0);">
-                  <div id="ealKoistBar" class="bar-animate eal-bar absolute left-0 top-0 h-full rounded-xl flex items-center" style="width:62.5%; background: linear-gradient(90deg, #F59E0B 0%, #F59E0B 40%, #3B82F6 40%, #3B82F6 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 2px 6px rgba(0,0,0,0.06);">
-                    <span id="ealKoistPrep" class="absolute text-white font-bold" style="left:12px; font-size:clamp(0.68rem,0.86vw,0.82rem); text-shadow:0 1px 4px rgba(0,0,0,0.35); letter-spacing:-0.01em;">준비 6개월</span>
-                    <span id="ealKoistEval" class="absolute text-white font-bold" style="right:12px; font-size:clamp(0.68rem,0.86vw,0.82rem); text-shadow:0 1px 4px rgba(0,0,0,0.35); letter-spacing:-0.01em;">평가 9개월</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Result Summary — 8K Crisp -->
-              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-xl" style="gap:clamp(0.5rem,0.7vw,0.7rem); padding:clamp(0.6rem,0.9vw,0.8rem) clamp(0.8rem,1.2vw,1rem); background: linear-gradient(135deg, rgba(59,130,246,0.035), rgba(6,182,212,0.025)); border: 1px solid rgba(59,130,246,0.10);">
-                <div class="flex items-center" style="gap:clamp(0.5rem,0.7vw,0.7rem)">
-                  <div id="ealReductionBadge" class="shrink-0 rounded-xl flex items-center justify-center" style="width:clamp(42px,3.2vw,50px); height:clamp(42px,3.2vw,50px); background: linear-gradient(135deg, #2563EB, #06B6D4); box-shadow: 0 4px 16px rgba(37,99,235,0.25);">
-                    <span class="text-white font-black" style="font-size:clamp(0.88rem,1.15vw,1.08rem); text-rendering:geometricPrecision;">37%</span>
-                  </div>
-                  <div>
-                    <p id="ealReductionText" class="text-primary font-bold" style="font-size:clamp(0.8rem,1vw,0.96rem)">평가기간 약 37% 단축</p>
-                    <p id="ealSavingText" class="text-slate-500" style="font-size:clamp(0.66rem,0.8vw,0.76rem)">약 9개월 절감 &middot; 원스톱 서비스</p>
-                  </div>
-                </div>
-                <div class="flex items-center flex-wrap" style="gap:10px">
-                  <span id="simKoistPrepResult" class="font-medium" style="font-size:clamp(0.72rem,0.88vw,0.85rem); color:#F59E0B"><i class="fas fa-file-pen" style="font-size:9px; margin-right:3px;"></i>준비 <strong>6</strong>개월</span>
-                  <span id="simKoistEvalResult" class="font-medium" style="font-size:clamp(0.72rem,0.88vw,0.85rem); color:#3B82F6"><i class="fas fa-magnifying-glass" style="font-size:9px; margin-right:3px;"></i>평가 <strong>9</strong>개월</span>
-                  <span class="text-slate-300">|</span>
-                  <span class="font-medium" style="font-size:clamp(0.72rem,0.88vw,0.85rem); color:#64748B"><strong>${totalEvals}</strong>건 평가실적</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 8K Simulator Card Styles -->
-  <style>
-    .sim-card-section, .sim-card-section * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: geometricPrecision; }
-    .sim-main-card { transition: box-shadow 0.4s ease; }
-    .sim-main-card:hover { box-shadow: 0 8px 40px rgba(10,15,30,0.10), 0 2px 10px rgba(10,15,30,0.04), 0 0 0 1px rgba(226,232,240,0.65); }
+    /* EAL Tab active state */
+    .eal-tab { color: #94A3B8; cursor: pointer; border: none; background: transparent; }
+    .eal-tab.active { color: #fff; background: linear-gradient(135deg, #2563EB, #0891B2); box-shadow: 0 2px 8px rgba(37,99,235,0.25); }
+    .eal-tab:hover:not(.active) { color: #475569; background: rgba(0,0,0,0.03); }
     .eal-bar span { text-rendering: geometricPrecision; }
-    .prep-range::-webkit-slider-thumb { -webkit-appearance:none; width:26px; height:26px; border-radius:50%; background: white; border:3px solid #10B981; box-shadow: 0 2px 10px rgba(0,0,0,0.18), 0 0 0 3px rgba(16,185,129,0.08); cursor:pointer; transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s; position:relative; z-index:3; }
-    .prep-range::-moz-range-thumb { width:26px; height:26px; border-radius:50%; background: white; border:3px solid #10B981; box-shadow: 0 2px 10px rgba(0,0,0,0.18); cursor:pointer; }
+
+    /* Slider thumb */
+    .prep-range::-webkit-slider-thumb { -webkit-appearance:none; width:clamp(20px,1.8vw,26px); height:clamp(20px,1.8vw,26px); border-radius:50%; background: white; border:3px solid #10B981; box-shadow: 0 2px 10px rgba(0,0,0,0.18), 0 0 0 3px rgba(16,185,129,0.08); cursor:pointer; transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s; position:relative; z-index:3; }
+    .prep-range::-moz-range-thumb { width:22px; height:22px; border-radius:50%; background: white; border:3px solid #10B981; box-shadow: 0 2px 10px rgba(0,0,0,0.18); cursor:pointer; }
     .prep-range::-webkit-slider-thumb:hover { transform: scale(1.15); box-shadow: 0 4px 14px rgba(0,0,0,0.22), 0 0 0 4px rgba(16,185,129,0.12); }
     .prep-range::-webkit-slider-thumb:active { transform: scale(1.05); }
-    .prep-range::-webkit-slider-runnable-track { height:8px; border-radius:4px; background:transparent; }
+    .prep-range::-webkit-slider-runnable-track { height:clamp(6px,0.55vw,8px); border-radius:4px; background:transparent; }
     .prep-range::-moz-range-track { height:8px; border-radius:4px; background:transparent; }
+
+    /* Background orb animations */
+    @keyframes unifiedOrb1 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-15px, 18px) scale(1.04); } }
+    @keyframes unifiedOrb2 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(18px, -12px) scale(1.03); } }
+    @keyframes unifiedOrb3 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-10px, -8px) scale(1.06); } }
+    .unified-orb-1 { animation: unifiedOrb1 16s ease-in-out infinite; }
+    .unified-orb-2 { animation: unifiedOrb2 19s ease-in-out infinite; }
+    .unified-orb-3 { animation: unifiedOrb3 13s ease-in-out infinite; }
+
+    /* ── Responsive: Mobile → 1 column stack ── */
+    @media (max-width: 1023px) {
+      .unified-hero-grid {
+        grid-template-columns: 1fr;
+        gap: clamp(1.5rem, 3vw, 2rem);
+      }
+      .unified-hero-left { max-width: 100%; text-align: center; }
+      .unified-hero-left .flex.flex-wrap { justify-content: center; }
+      .unified-hero-left .inline-flex { margin-left: auto; margin-right: auto; }
+    }
+    @media (max-width: 639px) {
+      .unified-sim-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .unified-sim-header .hidden.sm\\:flex { display: flex !important; }
+    }
+
+    /* ── 4K (3840px) ── */
+    @media (min-width: 3840px) {
+      .unified-hero-grid { gap: 5rem; }
+      .unified-hero-left { max-width: 800px; }
+      .unified-sim-panel { border-radius: 24px; }
+      .unified-sim-header { padding: 1.4rem 2rem; }
+      .unified-sim-body { padding: 1.6rem 2rem; }
+    }
+
+    /* ── 8K (7680px) Ultra-Sharp ── */
+    @media (min-width: 7680px) {
+      .unified-hero-grid { gap: 8rem; }
+      .unified-hero-left { max-width: 1200px; }
+      .unified-sim-panel { border-radius: 36px; box-shadow: 0 16px 80px rgba(0,0,0,0.3), 0 4px 24px rgba(0,0,0,0.12); }
+      .unified-sim-header { padding: 2rem 3rem; }
+      .unified-sim-body { padding: 2.4rem 3rem; }
+      .eal-tab { padding: 14px 0 !important; font-size: 1.1rem !important; }
+      .prep-range::-webkit-slider-thumb { width: 40px !important; height: 40px !important; border-width: 5px !important; }
+    }
   </style>
 
   <!-- ════════════════════════════════════════════════════════
@@ -528,13 +424,12 @@ export function homePage(opts: {
         <p class="text-slate-500 f-text-sm max-w-md mx-auto">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
       </div>
 
-      <!-- Bento Grid (v22 - Dynamic font scale & gap from admin settings) -->
       ${(() => {
         const fontScale = parseFloat(s.services_tag_font_scale || '2') || 2;
         const gapScale = parseFloat(s.services_tag_gap_scale || '0.7') || 0.7;
-        const baseFontMin = 0.8; // rem base
-        const baseFontVw = 1.4;  // vw base
-        const baseFontMax = 1.1; // rem base
+        const baseFontMin = 0.8;
+        const baseFontVw = 1.4;
+        const baseFontMax = 1.1;
         const fMin = (baseFontMin * fontScale).toFixed(2);
         const fVw = (baseFontVw * fontScale).toFixed(1);
         const fMax = (baseFontMax * fontScale).toFixed(2);
@@ -648,7 +543,6 @@ export function homePage(opts: {
             <a href="/support/progress" class="text-accent font-semibold hover:underline f-text-xs inline-flex items-center" style="gap:4px">전체보기 <i class="fas fa-chevron-right" style="font-size:9px"></i></a>
           </div>
 
-          <!-- Dashboard Mini Cards -->
           ${catCounts.length > 0 ? `
           <div class="grid grid-cols-2 sm:grid-cols-4" style="gap:clamp(0.4rem,0.7vw,0.6rem); margin-bottom:var(--space-md)">
             ${catCounts.slice(0, 4).map(cc => {
@@ -672,13 +566,11 @@ export function homePage(opts: {
           </div>` : ''}
           ` : ''}
 
-          <!-- Total Count -->
           <div class="flex items-center justify-between rounded-lg" style="margin-bottom:var(--space-md); padding:6px 12px; background: linear-gradient(135deg, rgba(59,130,246,0.03), rgba(6,182,212,0.02)); border: 1px solid rgba(59,130,246,0.08);">
             <span class="text-slate-500 f-text-xs"><i class="fas fa-chart-pie text-blue-400 mr-1" style="font-size:9px"></i>총 시험·평가 실적</span>
             <span class="text-accent font-black f-text-sm">${totalEvals}건</span>
           </div>
 
-          <!-- Recent Items Table -->
           <div class="overflow-x-auto -mx-1 px-1">
             <table class="w-full" style="min-width:340px;">
               <thead>
@@ -748,11 +640,10 @@ export function homePage(opts: {
   </a>
 
   <!-- ════════════════════════════════════════════════════════
-       EAL Simulator Script (v21 - 8K Ultra-Sharp)
+       EAL Simulator Script (v26 - Unified Layout)
        ════════════════════════════════════════════════════════ -->
   <script>
   (function(){
-    // Animate bar widths on scroll
     var observed = false;
     var bars = document.querySelectorAll('.bar-animate');
     if (bars.length) {
@@ -772,7 +663,6 @@ export function homePage(opts: {
       observer.observe(bars[0].closest('.bar-chart-container') || bars[0]);
     }
 
-    /* EAL Data (admin-configurable) */
     var ealData = {
       overall: {
         general: { prep: ${s.eval_overall_general_prep || '12'}, eval: ${s.eval_overall_general_eval || '12'} },
@@ -881,9 +771,9 @@ export function homePage(opts: {
       if (savText) savText.textContent = '약 ' + fmtM(d.saving) + '개월 절감 \\u00b7 원스톱 서비스';
 
       var simPrep = document.getElementById('simKoistPrepResult');
-      if (simPrep) simPrep.innerHTML = '<i class="fas fa-file-pen" style="font-size:9px; margin-right:3px;"></i>준비 <strong>' + fmtM(d.koist.prep) + '</strong>개월';
+      if (simPrep) simPrep.innerHTML = '<i class="fas fa-file-pen" style="font-size:8px; margin-right:2px;"></i>준비 <strong>' + fmtM(d.koist.prep) + '</strong>개월';
       var simEval = document.getElementById('simKoistEvalResult');
-      if (simEval) simEval.innerHTML = '<i class="fas fa-magnifying-glass" style="font-size:9px; margin-right:3px;"></i>평가 <strong>' + fmtM(d.koist.eval) + '</strong>개월';
+      if (simEval) simEval.innerHTML = '<i class="fas fa-magnifying-glass" style="font-size:8px; margin-right:2px;"></i>평가 <strong>' + fmtM(d.koist.eval) + '</strong>개월';
     }
 
     function updatePrepUI(val) {
@@ -922,7 +812,6 @@ export function homePage(opts: {
       updateChart();
     };
 
-    // Initialize
     updatePrepUI(50);
     updateChart();
   })();
