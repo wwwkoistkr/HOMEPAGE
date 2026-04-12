@@ -16,7 +16,7 @@
       h += '<div class="border rounded-lg p-4">';
       h += '<div class="flex items-center justify-between gap-4">';
       h += '<div class="flex items-center gap-3 min-w-0">';
-      h += '<div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style="background:'+dept.color+'15"><i class="fas '+dept.icon+'" style="color:'+dept.color+'"></i></div>';
+      h += dept.image_url ? '<img src="'+dept.image_url+'" alt="'+dept.name+'" class="w-10 h-10 rounded-lg object-cover shrink-0" style="border:1px solid '+dept.color+'30">' : '<div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style="background:'+dept.color+'15"><i class="fas '+dept.icon+'" style="color:'+dept.color+'"></i></div>';
       h += '<div class="min-w-0"><div class="font-medium">'+dept.name+'</div>';
       h += '<div class="text-xs text-gray-400">/'+dept.slug+' | 순서:'+dept.sort_order+' | '+(dept.is_active?'<span class="text-green-600">활성</span>':'<span class="text-red-500">비활성</span>')+'</div></div></div>';
       h += '<div class="flex gap-2 shrink-0">';
@@ -43,7 +43,11 @@
       +'<input id="dOrder" type="number" value="'+(dept?.sort_order||0)+'" placeholder="순서" class="px-3 py-2 border rounded-lg text-sm">'
       +'</div>'
       +'<textarea id="dDesc" rows="2" placeholder="설명" class="w-full px-3 py-2 border rounded-lg text-sm mb-3">'+(dept?.description||'')+'</textarea>'
-      +'<div class="mb-3"><label class="block text-xs font-medium text-gray-500 mb-1"><i class="fas fa-image mr-1"></i>헤더 배경 이미지 URL (비워두면 기본 그라데이션 사용)</label>'
+      +'<div class="mb-3"><label class="block text-xs font-medium text-gray-500 mb-1"><i class="fas fa-image mr-1"></i>사업분야 아이콘 이미지 URL</label>'
+      +'<div class="flex gap-2 items-center">'
+      +'<input id="dImageUrl" value="'+(dept?.image_url||'')+'" placeholder="/static/images/dept-icons/... 또는 /api/images/..." class="flex-1 px-3 py-2 border rounded-lg text-sm">'
+      +(dept?.image_url ? '<img src="'+dept.image_url+'" class="w-10 h-10 rounded-lg object-cover border">' : '')+'</div></div>'
+      +'<div class="mb-3"><label class="block text-xs font-medium text-gray-500 mb-1"><i class="fas fa-panorama mr-1"></i>헤더 배경 이미지 URL (비워두면 기본 그라데이션 사용)</label>'
       +'<input id="dHeaderBg" value="'+(dept?.header_bg_url||'')+'" placeholder="/api/images/background/... 또는 외부 URL" class="w-full px-3 py-2 border rounded-lg text-sm"></div>'
       +'<div class="flex gap-2">'
       +'<button onclick="saveDept('+(dept?.id||'null')+')" class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm">저장</button>'
@@ -74,6 +78,7 @@
       icon: document.getElementById('dIcon').value,
       color: document.getElementById('dColor').value,
       sort_order: parseInt(document.getElementById('dOrder').value)||0,
+      image_url: document.getElementById('dImageUrl').value,
       header_bg_url: document.getElementById('dHeaderBg').value
     };
     if(id) await apiCall('/api/admin/departments/'+id, 'PUT', body);

@@ -1,4 +1,4 @@
-// KOIST - Home Page Template (v26.0 - Unified Hero+Simulator Single-Row, 8K Ultra-Sharp)
+// KOIST - Home Page Template (v27.0 - Unified Hero+Simulator, Image Icons, 8K Ultra-Sharp)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem, SimCertType } from '../types';
 
 function bgStyle(imageUrl: string | undefined, fallbackGradient: string, opacity: string = '0.85'): string {
@@ -444,9 +444,13 @@ export function homePage(opts: {
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-${gridCols}" style="gap:clamp(${gapMin}rem, ${gapVw}vw, ${gapMax}rem)">
         ${deps.map((dept, i) => `
         <a href="/services/${dept.slug}" class="card-service-xl group block relative" style="--card-accent:${dept.color}; padding:clamp(${padMin}rem, ${padVw}vw, ${padMax}rem);" data-aos="fade-up" data-aos-delay="${Math.min(i * 30, 250)}">
-          <div class="rounded-xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg mx-auto" style="width:clamp(48px,5vw,64px); height:clamp(48px,5vw,64px); background: linear-gradient(135deg, ${dept.color}15, ${dept.color}08); margin-bottom:clamp(0.5rem,0.8vw,0.7rem);">
+          ${dept.image_url ? `
+          <div class="rounded-xl overflow-hidden transition-all duration-500 group-hover:scale-105 group-hover:shadow-lg mx-auto" style="width:clamp(56px,6vw,80px); height:clamp(56px,6vw,80px); margin-bottom:clamp(0.5rem,0.8vw,0.7rem); border: 2px solid ${dept.color}20; box-shadow: 0 2px 12px ${dept.color}12;">
+            <img src="${dept.image_url}" alt="${dept.name}" class="w-full h-full object-cover" loading="lazy" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
+          </div>` : `
+          <div class="rounded-xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg mx-auto" style="width:clamp(56px,6vw,80px); height:clamp(56px,6vw,80px); background: linear-gradient(135deg, ${dept.color}15, ${dept.color}08); margin-bottom:clamp(0.5rem,0.8vw,0.7rem);">
             <i class="fas ${dept.icon}" style="color:${dept.color}; font-size:clamp(1.3rem,2vw,1.8rem)"></i>
-          </div>
+          </div>`}
           <h3 class="font-bold text-primary group-hover:text-accent transition-colors text-center" style="font-size:clamp(${fMin}rem,${fVw}vw,${fMax}rem); margin-bottom:4px; line-height:1.25; letter-spacing:-0.02em;">${dept.name}</h3>
           <p class="text-slate-500 leading-snug text-center line-clamp-2" style="font-size:clamp(0.68rem,0.85vw,0.82rem);">${dept.description || ''}</p>
           <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-1 group-hover:translate-x-0">
@@ -459,48 +463,7 @@ export function homePage(opts: {
     </div>
   </section>
 
-  <!-- ════════════════════════════════════════════════════════
-       FEATURED SERVICES (v21 - Premium Image Cards)
-       ════════════════════════════════════════════════════════ -->
-  <section class="f-section-y relative overflow-hidden" style="background: linear-gradient(180deg, #F0F4F8 0%, #FFFFFF 100%);">
-    <div class="relative fluid-container">
-      <div class="text-center" style="margin-bottom: clamp(2rem,3.5vw,3rem)" data-aos="fade-up">
-        <div class="inline-flex items-center rounded-full f-text-xs font-semibold" style="gap:6px; padding:5px 14px; margin-bottom:var(--space-sm); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB;">
-          <i class="fas fa-briefcase" style="font-size:9px"></i>주요 사업 소개
-        </div>
-        <h2 class="font-bold text-primary f-text-2xl" style="margin-bottom:var(--space-xs)">KOIST 핵심 사업분야</h2>
-        <p class="text-slate-500 f-text-sm max-w-lg mx-auto">정보보안 시험·인증의 모든 분야를 전문적으로 수행합니다</p>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5" style="gap:clamp(0.75rem, 1.5vw, 1.25rem)">
-        ${[
-          { title: 'CC평가', slug: 'cc-evaluation', img: '/static/images/services/cc-evaluation.jpg', desc: '보안기능의 안정성과 신뢰성을 보증하는 국제공통평가기준(CC) 인증 서비스' },
-          { title: '보안기능 시험', slug: 'security-function-test', img: '/static/images/services/security-test.jpg', desc: '공공기관 도입을 위한 객관적인 제품 검증 시험 서비스' },
-          { title: '성능평가', slug: 'performance-evaluation', img: '/static/images/services/performance.jpg', desc: '기준에 따른 정보보호제품의 성능을 객관적으로 검증하는 평가 서비스' },
-          { title: '시험성적서', slug: 'test-report', img: '/static/images/services/test-report.jpg', desc: '객관적인 신뢰성 확보 및 소프트웨어 품질 검증 시험 서비스' },
-          { title: '정보보안진단', slug: 'security-diagnosis', img: '/static/images/services/security-diagnosis.jpg', desc: '보안진단 시스템을 통한 등급 부여 및 종합 보안 진단 서비스' },
-        ].map((item, i) => `
-        <div class="featured-service-card group rounded-xl overflow-hidden bg-white border border-slate-200/50" style="box-shadow: var(--shadow-sm);" data-aos="fade-up" data-aos-delay="${i * 80}">
-          <div class="relative overflow-hidden" style="height:clamp(120px,10vw,160px)">
-            <img src="${item.img}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy">
-            <div class="absolute inset-0" style="background: linear-gradient(180deg, transparent 30%, rgba(10,15,30,0.75) 100%);"></div>
-            <div class="absolute bottom-0 left-0 right-0" style="padding:10px 14px;">
-              <h3 class="text-white font-bold f-text-sm">${item.title}</h3>
-            </div>
-          </div>
-          <div style="padding:clamp(0.75rem,1.2vw,1rem)">
-            <p class="text-slate-600 f-text-xs leading-relaxed">${item.desc}</p>
-            <a href="/services/${item.slug}" class="inline-flex items-center text-accent font-semibold f-text-xs mt-2 group-hover:gap-2 transition-all" style="gap:4px">
-              자세히 <i class="fas fa-arrow-right transition-transform duration-300 group-hover:translate-x-1" style="font-size:8px"></i>
-            </a>
-          </div>
-        </div>
-        `).join('')}
-      </div>
-    </div>
-  </section>
-
-  <div class="section-divider"></div>
+  <!-- Featured Services 섹션 삭제됨 (v27.0) - 상단 사업분야 그리드로 통합 -->
 
   <!-- ════════════════════════════════════════════════════════
        NOTICES + PROGRESS (v21 - Premium Dual Panels)

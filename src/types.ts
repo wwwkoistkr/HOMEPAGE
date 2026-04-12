@@ -42,6 +42,7 @@ export type Department = {
   description: string;
   icon: string;
   color: string;
+  image_url: string;
   header_bg_url: string;
   sort_order: number;
   is_active: number;

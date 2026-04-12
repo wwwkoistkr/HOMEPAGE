@@ -95,15 +95,15 @@ admin.get('/departments', async (c) => {
 });
 
 admin.post('/departments', async (c) => {
-  const { name, slug, description, icon, color, sort_order } = await c.req.json();
-  await c.env.DB.prepare('INSERT INTO departments (name, slug, description, icon, color, sort_order) VALUES (?,?,?,?,?,?)').bind(name, slug, description || '', icon || 'fa-shield-halved', color || '#3B82F6', sort_order || 0).run();
+  const { name, slug, description, icon, color, sort_order, image_url, header_bg_url } = await c.req.json();
+  await c.env.DB.prepare('INSERT INTO departments (name, slug, description, icon, color, sort_order, image_url, header_bg_url) VALUES (?,?,?,?,?,?,?,?)').bind(name, slug, description || '', icon || 'fa-shield-halved', color || '#3B82F6', sort_order || 0, image_url || '', header_bg_url || '').run();
   return c.json({ success: true });
 });
 
 admin.put('/departments/:id', async (c) => {
   const id = c.req.param('id');
   const body = await c.req.json();
-  const fields = ['name', 'slug', 'description', 'icon', 'color', 'sort_order', 'is_active', 'header_bg_url'];
+  const fields = ['name', 'slug', 'description', 'icon', 'color', 'sort_order', 'is_active', 'image_url', 'header_bg_url'];
   const updates: string[] = [];
   const values: any[] = [];
   for (const f of fields) { if (body[f] !== undefined) { updates.push(`${f} = ?`); values.push(body[f]); } }
