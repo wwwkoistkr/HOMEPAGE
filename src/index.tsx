@@ -342,14 +342,14 @@ app.get('/support/downloads', async (c) => {
   return c.html(layout({ settings, departments, title: '자료실', content }));
 });
 
-// About pages (DB-driven with fallback)
+// About pages (DB-driven, v27.1 - Premium layout with breadcrumbs)
 app.get('/about/:page', async (c) => {
   const page = c.req.param('page');
   const db = c.env.DB;
   const settings = await getSettings(db);
   const departments = (await db.prepare('SELECT * FROM departments WHERE is_active = 1 ORDER BY sort_order').all<Department>()).results || [];
 
-  // Try to load from about_pages table first
+  // Load from about_pages table
   let aboutPage: AboutPage | null = null;
   try {
     aboutPage = await db.prepare('SELECT * FROM about_pages WHERE slug = ?').bind(page).first<AboutPage>();
@@ -357,28 +357,72 @@ app.get('/about/:page', async (c) => {
     // Table might not exist yet
   }
 
-  // Fallback to hardcoded content if not in DB
-  const fallbackContent: Record<string, { title: string; content: string }> = {
-    greeting: { title: '인사말', content: '<h2>인사말</h2><p>한국정보보안기술원(KOIST)을 방문해 주셔서 감사합니다.</p><p>저희 KOIST는 정보보호 제품의 시험·평가·인증 전문기관으로서, 국내 최고 수준의 평가 인력과 시험 환경을 갖추고 있습니다.</p><p>IT 보안제품의 보안성과 성능을 객관적이고 공정하게 평가하여 국내 정보보호 산업 발전에 기여하고 있으며, 앞으로도 최상의 시험·인증 서비스를 제공하기 위해 최선을 다하겠습니다.</p><p>감사합니다.</p><p class="mt-4 font-bold">(주)한국정보보안기술원 임직원 일동</p>' },
-    history: { title: '연혁', content: '<h2>KOIST 연혁</h2><div class="space-y-4"><div class="flex gap-4"><span class="font-bold text-accent w-20 shrink-0">2025</span><div>암호모듈 검증시험(KCMVP) 민간시험 기관 지정</div></div><div class="flex gap-4"><span class="font-bold text-accent w-20 shrink-0">2020</span><div>성능평가 시험 업무 확대</div></div><div class="flex gap-4"><span class="font-bold text-accent w-20 shrink-0">2015</span><div>CC평가기관 지정 (과학기술정보통신부)</div></div><div class="flex gap-4"><span class="font-bold text-accent w-20 shrink-0">2010</span><div>(주)한국정보보안기술원 설립</div></div></div>' },
-    business: { title: '사업소개', content: '<h2>사업소개</h2><p>KOIST는 정보보호 분야의 종합 시험·평가·인증 서비스를 제공합니다.</p><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6"><div class="bg-blue-50 p-4 rounded-lg"><h3 class="font-bold text-blue-700">CC평가</h3><p class="text-sm text-blue-600 mt-1">국제 표준 기반 IT 보안제품 평가</p></div><div class="bg-purple-50 p-4 rounded-lg"><h3 class="font-bold text-purple-700">보안기능 시험</h3><p class="text-sm text-purple-600 mt-1">보안제품 기능 시험 및 인증</p></div><div class="bg-pink-50 p-4 rounded-lg"><h3 class="font-bold text-pink-700">KCMVP</h3><p class="text-sm text-pink-600 mt-1">암호모듈 검증시험</p></div><div class="bg-green-50 p-4 rounded-lg"><h3 class="font-bold text-green-700">성능평가</h3><p class="text-sm text-green-600 mt-1">보안제품 성능 객관적 평가</p></div></div>' },
-    location: { title: '오시는길', content: '<h2>오시는길</h2><div class="bg-gray-50 p-6 rounded-xl mb-6"><div class="flex items-start gap-3 mb-3"><i class="fas fa-location-dot text-accent mt-1"></i><div><strong>주소</strong><br>서울특별시 서초구 효령로 336 윤일빌딩 4층 한국정보보안기술원</div></div><div class="flex items-start gap-3 mb-3"><i class="fas fa-phone text-accent mt-1"></i><div><strong>전화</strong><br>02-586-1230</div></div><div class="flex items-start gap-3"><i class="fas fa-envelope text-accent mt-1"></i><div><strong>이메일</strong><br>koist@koist.kr</div></div></div>' },
+  // Minimal fallback for slug→title mapping (only if DB is empty)
+  const slugTitleMap: Record<string, string> = {
+    greeting: '인사말', history: '연혁', business: '사업소개', location: '오시는길'
   };
 
-  const title = aboutPage?.title || fallbackContent[page]?.title;
-  const contentBody = aboutPage?.content || fallbackContent[page]?.content;
+  const title = aboutPage?.title || slugTitleMap[page];
+  const contentBody = aboutPage?.content;
 
-  if (!title || !contentBody) return c.redirect('/');
+  if (!title) return c.redirect('/');
+
+  // Page icon map
+  const iconMap: Record<string, string> = {
+    greeting: 'fa-handshake', history: 'fa-clock-rotate-left',
+    business: 'fa-briefcase', location: 'fa-location-dot'
+  };
+  const pageIcon = iconMap[page] || 'fa-building';
+
+  // About sub-navigation tabs
+  const aboutTabs = [
+    { slug: 'greeting', title: '인사말', icon: 'fa-handshake' },
+    { slug: 'history', title: '연혁', icon: 'fa-clock-rotate-left' },
+    { slug: 'business', title: '사업소개', icon: 'fa-briefcase' },
+    { slug: 'location', title: '오시는길', icon: 'fa-location-dot' },
+  ];
 
   const contentHtml = `
-    <section class="bg-gradient-to-r from-primary to-primary-light py-[clamp(2.5rem,5vh,4rem)]">
-      <div class="w-[min(92vw,1400px)] mx-auto px-[clamp(1rem,3vw,3rem)]">
-        <h1 class="text-white font-bold text-[clamp(1.4rem,3vw,2.2rem)]"><i class="fas fa-building mr-2"></i>${title}</h1>
+    <!-- Page Header -->
+    <section class="relative overflow-hidden" style="padding: clamp(2.5rem,4.5vw,4.5rem) 0; background: linear-gradient(135deg, #0A0F1E 0%, #111D35 50%, #0D1525 100%);">
+      <div class="absolute top-4 right-[10%] w-32 h-32 rounded-full blur-3xl pointer-events-none" style="background: radial-gradient(circle, rgba(59,130,246,0.06), transparent);"></div>
+      <div class="absolute bottom-2 left-[15%] w-24 h-24 rounded-full blur-3xl pointer-events-none" style="background: radial-gradient(circle, rgba(6,182,212,0.05), transparent);"></div>
+      <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 24px 24px;"></div>
+      <div class="relative fluid-container">
+        <nav class="flex items-center flex-wrap text-slate-400 f-text-xs mb-3" style="gap:6px;">
+          <a href="/" class="hover:text-white transition-colors"><i class="fas fa-home" style="font-size:10px"></i></a>
+          <i class="fas fa-chevron-right text-[7px] text-slate-600/60"></i>
+          <span class="text-slate-500">기관소개</span>
+          <i class="fas fa-chevron-right text-[7px] text-slate-600/60"></i>
+          <span class="text-white/80">${title}</span>
+        </nav>
+        <h1 class="text-white font-bold f-text-2xl flex items-center" style="gap:clamp(8px,1vw,14px)">
+          <div class="rounded-xl flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(6,182,212,0.10)); border: 1px solid rgba(59,130,246,0.20);">
+            <i class="fas ${pageIcon} text-blue-400" style="font-size:clamp(14px,1.2vw,20px)"></i>
+          </div>
+          ${title}
+        </h1>
       </div>
     </section>
-    <section class="py-[clamp(2rem,4vh,4rem)]">
-      <div class="w-[min(92vw,1000px)] mx-auto px-[clamp(1rem,3vw,3rem)]">
-        <div class="bg-white rounded-xl border border-gray-100 p-[clamp(1.5rem,3vw,3rem)] prose prose-gray max-w-none">${contentBody}</div>
+
+    <!-- Sub-navigation tabs -->
+    <section class="bg-white border-b border-gray-100 sticky top-[var(--gnb-h)] z-30" style="box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+      <div class="fluid-container">
+        <nav class="flex overflow-x-auto" style="gap:0; -ms-overflow-style:none; scrollbar-width:none;">
+          ${aboutTabs.map(t => `
+          <a href="/about/${t.slug}" class="flex items-center shrink-0 font-semibold transition-all ${page === t.slug ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-800 border-b-2 border-transparent'}" style="gap:6px; padding:clamp(0.75rem,1vw,1rem) clamp(0.8rem,1.2vw,1.2rem); font-size:clamp(0.78rem,0.9vw,0.9rem); white-space:nowrap;">
+            <i class="fas ${t.icon}" style="font-size:clamp(10px,0.8vw,13px)"></i>${t.title}
+          </a>`).join('')}
+        </nav>
+      </div>
+    </section>
+
+    <!-- Content -->
+    <section class="f-section-y" style="background: var(--grad-surface);">
+      <div class="fluid-container" style="max-width:1000px;">
+        <div class="bg-white rounded-2xl border border-gray-100 p-[clamp(1.5rem,3.5vw,3rem)]" style="box-shadow: 0 4px 24px rgba(0,0,0,0.04);">
+          ${contentBody || `<div class="text-center py-12 text-gray-400"><i class="fas fa-edit text-3xl mb-3 block text-gray-300"></i><p class="font-medium">&ldquo;${title}&rdquo; 페이지 콘텐츠를 관리자 모드에서 등록해 주세요.</p><a href="/admin/about" class="inline-flex items-center gap-2 mt-4 text-blue-600 font-semibold text-sm hover:underline"><i class="fas fa-external-link-alt text-xs"></i>관리자 페이지로 이동</a></div>`}
+        </div>
       </div>
     </section>`;
 
