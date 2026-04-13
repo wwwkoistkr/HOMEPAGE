@@ -191,7 +191,7 @@ export function homePage(opts: {
 
           <!-- ═══════ Hero Contact Card (원본 koist.kr 스타일, 8K fluid) ═══════ -->
           <div class="hero-contact-card" data-aos="fade-up" data-aos-delay="200">
-            <p class="text-slate-400/80 font-medium" style="font-size:clamp(0.68rem,0.78vw,0.82rem); margin-bottom:clamp(0.5rem,0.8vw,0.8rem); letter-spacing:0.02em;">${s.hero_contact_label || '국가 시험·인증 전문기관 정보보안 기술을 완성'}</p>
+            <p class="text-slate-300/90 font-semibold" style="font-size:clamp(1.0rem,1.5vw,1.55rem); margin-bottom:clamp(0.8rem,1.4vw,1.4rem); letter-spacing:0.01em; text-rendering:geometricPrecision;">${s.hero_contact_label || '국가 시험·인증 전문기관 정보보안 기술을 완성'}</p>
             <div class="hero-contact-grid">
               <div class="hero-contact-item">
                 <div class="hero-contact-icon"><i class="fas fa-phone"></i></div>
@@ -396,44 +396,52 @@ export function homePage(opts: {
     .unified-orb-2 { animation: unifiedOrb2 19s ease-in-out infinite; }
     .unified-orb-3 { animation: unifiedOrb3 13s ease-in-out infinite; }
 
-    /* ═══ Hero Contact Card (원본 koist.kr 좌하단, 8K fluid) ═══ */
+    /* ═══ Hero Contact Card (v30.0 — 2.5x enlarged, 8K Ultra-Sharp, Windows/Mobile compat) ═══ */
     .hero-contact-card {
-      padding: clamp(0.7rem,1.1vw,1.2rem) clamp(0.9rem,1.4vw,1.5rem);
+      padding: clamp(1.4rem,2.5vw,2.8rem) clamp(1.8rem,3.2vw,3.5rem);
       background: rgba(255,255,255,0.03);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255,255,255,0.06);
-      border-radius: clamp(10px,1vw,16px);
-      max-width: 520px;
+      border-radius: clamp(14px,1.8vw,28px);
+      max-width: 680px;
+    }
+    @supports not (backdrop-filter: blur(1px)) {
+      .hero-contact-card { background: rgba(10,15,30,0.88); }
     }
     .hero-contact-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: clamp(0.35rem,0.5vw,0.55rem) clamp(0.6rem,1vw,1rem);
+      gap: clamp(0.7rem,1.1vw,1.2rem) clamp(1.2rem,2.2vw,2.2rem);
     }
     .hero-contact-item {
       display: flex;
       align-items: center;
-      gap: clamp(6px,0.5vw,8px);
-      font-size: clamp(0.68rem,0.78vw,0.82rem);
-      color: rgba(203,213,225,0.85);
+      gap: clamp(10px,1.2vw,16px);
+      font-size: clamp(1.0rem,1.6vw,1.65rem);
+      color: rgba(220,230,245,0.92);
       white-space: nowrap;
-      line-height: 1.4;
+      overflow-wrap: break-word;
+      line-height: 1.45;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
     }
     .hero-contact-addr {
       white-space: normal;
-      line-height: 1.5;
+      line-height: 1.55;
     }
     .hero-contact-icon {
-      width: clamp(22px,1.8vw,28px);
-      height: clamp(22px,1.8vw,28px);
-      border-radius: clamp(5px,0.4vw,7px);
+      width: clamp(38px,3.8vw,56px);
+      height: clamp(38px,3.8vw,56px);
+      border-radius: clamp(8px,0.8vw,14px);
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(59,130,246,0.10);
-      color: rgba(96,165,250,0.80);
-      font-size: clamp(8px,0.7vw,11px);
+      background: rgba(59,130,246,0.12);
+      color: rgba(96,165,250,0.90);
+      font-size: clamp(14px,1.6vw,22px);
       flex-shrink: 0;
     }
 
@@ -446,39 +454,75 @@ export function homePage(opts: {
       .unified-hero-left { max-width: 100%; text-align: center; }
       .unified-hero-left .flex.flex-wrap { justify-content: center; }
       .unified-hero-left .inline-flex { margin-left: auto; margin-right: auto; }
-      .hero-contact-card { margin-left: auto; margin-right: auto; text-align: left; }
+      .hero-contact-card { margin-left: auto; margin-right: auto; text-align: left; max-width: 92%; }
+      .hero-contact-item { font-size: clamp(0.92rem, 2.5vw, 1.3rem); }
+      .hero-contact-icon { width: clamp(34px, 5.5vw, 44px); height: clamp(34px, 5.5vw, 44px); font-size: clamp(12px, 2.2vw, 18px); }
     }
+    /* Mobile (639px) */
     @media (max-width: 639px) {
       .unified-sim-header { flex-direction: column; align-items: flex-start; gap: 8px; }
       .unified-sim-header .hidden.sm\\:flex { display: flex !important; }
-      .hero-contact-grid { grid-template-columns: 1fr; }
+      .hero-contact-grid { grid-template-columns: 1fr; gap: clamp(0.6rem,2vw,0.9rem); }
+      .hero-contact-item { white-space: normal; font-size: clamp(0.88rem, 3.8vw, 1.12rem); word-break: keep-all; overflow-wrap: break-word; }
+      .hero-contact-icon { width: 36px; height: 36px; font-size: 14px; border-radius: 8px; }
+      .hero-contact-card { padding: clamp(1rem,3.5vw,1.4rem) clamp(1.2rem,4vw,1.6rem); border-radius: 14px; }
+    }
+    /* Very small mobile (375px) */
+    @media (max-width: 375px) {
+      .hero-contact-item { font-size: 0.85rem; gap: 8px; }
+      .hero-contact-icon { width: 30px; height: 30px; font-size: 12px; }
     }
 
     /* ── 4K (3840px) ── */
-    @media (min-width: 3840px) {
-      .unified-hero-grid { gap: 5rem; }
-      .unified-hero-left { max-width: 800px; }
-      .unified-sim-panel { border-radius: 24px; }
-      .unified-sim-header { padding: 1.4rem 2rem; }
-      .unified-sim-body { padding: 1.6rem 2rem; }
-      .hero-contact-card { max-width: 700px; padding: 1.4rem 1.8rem; border-radius: 20px; }
-      .hero-contact-icon { width: 36px; height: 36px; font-size: 14px; }
-      .hero-contact-item { font-size: 1rem; gap: 10px; }
+    /* 2.5K (2560px) */
+    @media (min-width: 2560px) {
+      .hero-contact-item { font-size: 1.5rem; gap: 14px; }
+      .hero-contact-icon { width: 50px; height: 50px; font-size: 20px; }
+      .hero-contact-card { max-width: 780px; padding: 2rem 2.5rem; }
     }
 
-    /* ── 8K (7680px) Ultra-Sharp ── */
+    @media (min-width: 3840px) {
+      .unified-hero-grid { gap: 5rem; }
+      .unified-hero-left { max-width: 950px; }
+      .unified-sim-panel { border-radius: 24px; }
+      .unified-sim-header { padding: 1.6rem 2.2rem; }
+      .unified-sim-body { padding: 1.8rem 2.2rem; }
+      .hero-contact-card { max-width: 920px; padding: 2.5rem 3.2rem; border-radius: 28px; }
+      .hero-contact-icon { width: 64px; height: 64px; font-size: 24px; border-radius: 16px; }
+      .hero-contact-item { font-size: 1.85rem; gap: 18px; }
+      .hero-contact-grid { gap: 1.6rem 3rem; }
+    }
+
+    /* 8K (7680px) Ultra-Sharp */
     @media (min-width: 7680px) {
-      .unified-hero-grid { gap: 8rem; }
-      .unified-hero-left { max-width: 1200px; }
-      .unified-sim-panel { border-radius: 36px; box-shadow: 0 16px 80px rgba(0,0,0,0.3), 0 4px 24px rgba(0,0,0,0.12); }
-      .unified-sim-header { padding: 2rem 3rem; }
-      .unified-sim-body { padding: 2.4rem 3rem; }
-      .eal-tab { padding: 14px 0 !important; font-size: 1.1rem !important; }
-      .prep-range::-webkit-slider-thumb { width: 40px !important; height: 40px !important; border-width: 5px !important; }
-      .hero-contact-card { max-width: 1000px; padding: 2rem 2.5rem; border-radius: 28px; }
-      .hero-contact-icon { width: 48px; height: 48px; font-size: 18px; border-radius: 12px; }
-      .hero-contact-item { font-size: 1.3rem; gap: 14px; }
-      .hero-contact-grid { gap: 1rem 2rem; }
+      .unified-hero-grid { gap: 10rem; }
+      .unified-hero-left { max-width: 1600px; }
+      .unified-sim-panel { border-radius: 48px; box-shadow: 0 20px 100px rgba(0,0,0,0.3), 0 6px 32px rgba(0,0,0,0.12); }
+      .unified-sim-header { padding: 2.5rem 3.5rem; }
+      .unified-sim-body { padding: 3rem 3.5rem; }
+      .eal-tab { padding: 18px 0 !important; font-size: 1.4rem !important; }
+      .prep-range::-webkit-slider-thumb { width: 50px !important; height: 50px !important; border-width: 6px !important; }
+      .hero-contact-card { max-width: 1500px; padding: 4rem 5rem; border-radius: 48px; }
+      .hero-contact-icon { width: 96px; height: 96px; font-size: 38px; border-radius: 22px; }
+      .hero-contact-item { font-size: 3rem; gap: 28px; }
+      .hero-contact-grid { gap: 2.2rem 4.5rem; }
+      .hero-contact-card p { font-size: 2.8rem !important; }
+    }
+
+    /* ── Touch device: disable hover transforms on mobile ── */
+    @media (hover: none) and (pointer: coarse) {
+      .card-service-xl:hover { transform: none; box-shadow: var(--shadow-xs); }
+      .card-premium:hover { transform: none; }
+      .featured-service-card:hover { transform: none; }
+      .unified-sim-panel:hover { transform: none; }
+      .gnb-link:hover::after { width: 0; }
+      /* Ensure min 44px touch targets */
+      .eal-tab { min-height: 44px; }
+      .prep-range { min-height: 44px; }
+    }
+    /* iOS Safari vh fix */
+    @supports (height: 100dvh) {
+      .unified-hero-section { min-height: auto; }
     }
   </style>
 
