@@ -10,11 +10,12 @@
       "database_name": "koist-website-db",
       "database_id": "91f1eb2f-e9fa-45e8-8bea-4958ce74727a"
     }
-  ],
-  "r2_buckets": [
-    {
-      "binding": "R2",
-      "bucket_name": "koist-images"
-    }
   ]
+  // R2 버킷 - Cloudflare 대시보드에서 'koist-images' 버킷 생성 후 아래 주석 해제
+  // "r2_buckets": [
+  //   {
+  //     "binding": "R2",
+  //     "bucket_name": "koist-images"
+  //   }
+  // ]
 }
