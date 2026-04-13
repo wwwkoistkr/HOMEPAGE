@@ -1,8 +1,8 @@
 // KOIST Website - Main Entry Point
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import type { Bindings, Variables, Department, Popup, Notice, ProgressItem, DepPage, FAQ, AboutPage, SimCertType } from './types';
-import { getSettings } from './utils/db';
+import type { Bindings, Variables, Department, DepartmentWithPages, Popup, Notice, ProgressItem, DepPage, FAQ, AboutPage, SimCertType } from './types';
+import { getSettings, getDepartmentsWithPages } from './utils/db';
 import { hashPassword, generateSalt } from './utils/crypto';
 import { authMiddleware } from './middleware/auth';
 
@@ -81,7 +81,7 @@ app.route('/api/admin', adminApi);
 app.get('/', async (c) => {
   const db = c.env.DB;
   const settings = await getSettings(db);
-  const departments = (await db.prepare('SELECT * FROM departments WHERE is_active = 1 ORDER BY sort_order').all<Department>()).results || [];
+  const departments = await getDepartmentsWithPages(db);
   
   const now = new Date().toISOString();
   const popups = (await db.prepare(
@@ -107,7 +107,7 @@ app.get('/services/:slug', async (c) => {
   const db = c.env.DB;
   const slug = c.req.param('slug');
   const settings = await getSettings(db);
-  const departments = (await db.prepare('SELECT * FROM departments WHERE is_active = 1 ORDER BY sort_order').all<Department>()).results || [];
+  const departments = await getDepartmentsWithPages(db);
   
   const dept = await db.prepare('SELECT * FROM departments WHERE slug = ?').bind(slug).first<Department>();
   if (!dept) return c.html(layout({ settings, departments, title: '페이지를 찾을 수 없습니다', content: '<div class="py-20 text-center"><h1 class="text-2xl font-bold text-gray-400">페이지를 찾을 수 없습니다</h1><a href="/" class="mt-4 inline-block text-accent hover:underline">홈으로 돌아가기</a></div>' }), 404);
@@ -123,7 +123,7 @@ app.get('/services/:slug/:pageSlug', async (c) => {
   const db = c.env.DB;
   const { slug, pageSlug } = c.req.param();
   const settings = await getSettings(db);
-  const departments = (await db.prepare('SELECT * FROM departments WHERE is_active = 1 ORDER BY sort_order').all<Department>()).results || [];
+  const departments = await getDepartmentsWithPages(db);
 
   const dept = await db.prepare('SELECT * FROM departments WHERE slug = ?').bind(slug).first<Department>();
   if (!dept) return c.redirect('/');
@@ -172,7 +172,7 @@ app.get('/services/:slug/:pageSlug', async (c) => {
 app.get('/support/notice', async (c) => {
   const db = c.env.DB;
   const settings = await getSettings(db);
-  const departments = (await db.prepare('SELECT * FROM departments WHERE is_active = 1 ORDER BY sort_order').all<Department>()).results || [];
+  const departments = await getDepartmentsWithPages(db);
   const page = parseInt(c.req.query('page') || '1');
   const perPage = 15;
   const total = (await db.prepare('SELECT COUNT(*) as cnt FROM notices').first<{ cnt: number }>())?.cnt || 0;
@@ -186,7 +186,7 @@ app.get('/support/notice/:id', async (c) => {
   const db = c.env.DB;
   const id = c.req.param('id');
   const settings = await getSettings(db);
-  const departments = (await db.prepare('SELECT * FROM departments WHERE is_active = 1 ORDER BY sort_order').all<Department>()).results || [];
+  const departments = await getDepartmentsWithPages(db);
   
   await db.prepare('UPDATE notices SET views = views + 1 WHERE id = ?').bind(id).run();
   const notice = await db.prepare('SELECT * FROM notices WHERE id = ?').bind(id).first<Notice>();
@@ -200,7 +200,7 @@ app.get('/support/notice/:id', async (c) => {
 app.get('/support/faq', async (c) => {
   const db = c.env.DB;
   const settings = await getSettings(db);
-  const departments = (await db.prepare('SELECT * FROM departments WHERE is_active = 1 ORDER BY sort_order').all<Department>()).results || [];
+  const departments = await getDepartmentsWithPages(db);
   const faqs = (await db.prepare('SELECT * FROM faqs WHERE is_active = 1 ORDER BY sort_order').all<FAQ>()).results || [];
 
   const content = faqPage(faqs, settings);
@@ -211,7 +211,7 @@ app.get('/support/faq', async (c) => {
 app.get('/support/inquiry', async (c) => {
   const db = c.env.DB;
   const settings = await getSettings(db);
-  const departments = (await db.prepare('SELECT * FROM departments WHERE is_active = 1 ORDER BY sort_order').all<Department>()).results || [];
+  const departments = await getDepartmentsWithPages(db);
 
   const content = inquiryPage(settings);
   return c.html(layout({ settings, departments, title: '온라인 상담문의', content }));
@@ -221,7 +221,7 @@ app.get('/support/inquiry', async (c) => {
 app.get('/support/progress', async (c) => {
   const db = c.env.DB;
   const settings = await getSettings(db);
-  const departments = (await db.prepare('SELECT * FROM departments WHERE is_active = 1 ORDER BY sort_order').all<Department>()).results || [];
+  const departments = await getDepartmentsWithPages(db);
 
   const page = parseInt(c.req.query('page') || '1') || 1;
   const perPage = 15;
@@ -264,7 +264,7 @@ app.get('/support/progress', async (c) => {
 app.get('/support/documents', async (c) => {
   const db = c.env.DB;
   const settings = await getSettings(db);
-  const departments = (await db.prepare('SELECT * FROM departments WHERE is_active = 1 ORDER BY sort_order').all<Department>()).results || [];
+  const departments = await getDepartmentsWithPages(db);
 
   const content = `
   <section class="page-header relative overflow-hidden" style="padding: clamp(2.5rem,4vw,4.5rem) 0; background: linear-gradient(135deg, #0A0F1E 0%, #111D35 50%, #0D1525 100%);">
@@ -335,7 +335,7 @@ app.get('/support/documents', async (c) => {
 app.get('/support/downloads', async (c) => {
   const db = c.env.DB;
   const settings = await getSettings(db);
-  const departments = (await db.prepare('SELECT * FROM departments WHERE is_active = 1 ORDER BY sort_order').all<Department>()).results || [];
+  const departments = await getDepartmentsWithPages(db);
   const items = (await db.prepare('SELECT * FROM downloads ORDER BY created_at DESC').all()).results || [];
 
   const content = downloadsPage(items as any[], settings);
@@ -347,7 +347,7 @@ app.get('/about/:page', async (c) => {
   const page = c.req.param('page');
   const db = c.env.DB;
   const settings = await getSettings(db);
-  const departments = (await db.prepare('SELECT * FROM departments WHERE is_active = 1 ORDER BY sort_order').all<Department>()).results || [];
+  const departments = await getDepartmentsWithPages(db);
 
   // Load from about_pages table
   let aboutPage: AboutPage | null = null;

@@ -156,6 +156,10 @@ export type ImageRecord = {
 
 export type SettingsMap = Record<string, string>;
 
+export type DepartmentWithPages = Department & {
+  pages: Pick<DepPage, 'id' | 'title' | 'slug' | 'sort_order'>[];
+};
+
 export type SimCertType = {
   id: number;
   name: string;

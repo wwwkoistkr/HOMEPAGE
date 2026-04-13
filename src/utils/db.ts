@@ -1,5 +1,5 @@
 // KOIST - Database Helper Utilities
-import type { Bindings, SettingsMap, SiteSetting } from '../types';
+import type { Bindings, SettingsMap, SiteSetting, Department, DepartmentWithPages, DepPage } from '../types';
 
 export async function getSettings(db: D1Database): Promise<SettingsMap> {
   const result = await db.prepare('SELECT key, value FROM site_settings').all<SiteSetting>();
@@ -10,6 +10,16 @@ export async function getSettings(db: D1Database): Promise<SettingsMap> {
     }
   }
   return map;
+}
+
+export async function getDepartmentsWithPages(db: D1Database): Promise<DepartmentWithPages[]> {
+  const departments = (await db.prepare('SELECT * FROM departments WHERE is_active = 1 ORDER BY sort_order').all<Department>()).results || [];
+  const allPages = (await db.prepare('SELECT dept_id, id, title, slug, sort_order FROM dep_pages WHERE is_active = 1 ORDER BY sort_order').all<Pick<DepPage, 'dept_id' | 'id' | 'title' | 'slug' | 'sort_order'>>()).results || [];
+  
+  return departments.map(d => ({
+    ...d,
+    pages: allPages.filter(p => p.dept_id === d.id)
+  }));
 }
 
 export async function getSetting(db: D1Database, key: string): Promise<string> {

@@ -1,10 +1,10 @@
 // KOIST - Main Layout Template (v32.0 - 2x Text, Half Line-Height, Tab Menu, 8K Ultra-Sharp)
-import type { SettingsMap, Department } from '../types';
+import type { SettingsMap, DepartmentWithPages } from '../types';
 
 export function layout(opts: {
   title?: string;
   settings: SettingsMap;
-  departments?: Department[];
+  departments?: DepartmentWithPages[];
   bodyClass?: string;
   content: string;
   headExtra?: string;
@@ -292,10 +292,10 @@ export function layout(opts: {
     }
     /* ═══ Hover-only interactions guard ═══ */
     @media (hover: hover) and (pointer: fine) {
-      .gnb-item:hover .gnb-dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
+      .gnb-mega-trigger:hover { color: var(--gnb-link-hover, #FFFFFF); }
     }
     @media (hover: none) {
-      .gnb-item .gnb-dropdown { display: none; }
+      .mega-menu-panel { display: none; }
     }
 
     /* ═══ body:has() fallback for popup scroll lock ═══ */
@@ -422,19 +422,112 @@ export function layout(opts: {
       .gnb-link { font-size: var(--gnb-link-font, clamp(3.0rem, 2.5rem + 0.7vw, 4.2rem)); letter-spacing: -0.01em; }
     }
 
-    /* GNB Dropdown (v30 - touch/click accessible) */
-    .gnb-item .gnb-dropdown {
-      opacity: 0; visibility: hidden; transform: translateY(10px);
-      transition: all 0.3s var(--ease-out);
+    /* ═══════════════════════════════════════════════
+       MEGA DROPDOWN MENU (v37 - koist.kr style)
+       ═══════════════════════════════════════════════ */
+    .mega-menu-panel {
+      position: fixed;
+      top: var(--gnb-h);
+      left: 0;
+      right: 0;
+      background: rgba(255,255,255,0.98);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-top: 2px solid transparent;
+      border-image: linear-gradient(90deg, #2563EB 0%, #06B6D4 50%, #3B82F6 100%) 1;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.10), 0 4px 16px rgba(0,0,0,0.04);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      transition: opacity 0.3s var(--ease-out), visibility 0.3s, transform 0.3s var(--ease-out);
+      z-index: 49;
+      pointer-events: none;
     }
-    /* Hover activation only for mouse devices */
-    @media (hover: hover) {
-      .gnb-item:hover .gnb-dropdown {
-        opacity: 1; visibility: visible; transform: translateY(0);
-      }
+    .mega-menu-panel.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
     }
-    .gnb-item.gnb-open .gnb-dropdown {
-      opacity: 1; visibility: visible; transform: translateY(0);
+    @supports not (backdrop-filter: blur(1px)) {
+      .mega-menu-panel { background: rgba(255,255,255,0.99); }
+    }
+    .mega-menu-grid {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 0;
+      padding: clamp(1.2rem, 2vw, 2rem) 0;
+      overflow-x: auto;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .mega-menu-grid::-webkit-scrollbar { display: none; }
+    .mega-menu-column {
+      flex: 1 1 0;
+      min-width: 120px;
+      padding: 0 clamp(0.6rem, 1vw, 1.2rem);
+      border-right: 1px solid rgba(226,232,240,0.40);
+    }
+    .mega-menu-column:last-child { border-right: none; }
+    .mega-menu-heading {
+      font-size: clamp(0.82rem, 0.72rem + 0.28vw, 1.0rem);
+      font-weight: 700;
+      color: #1E293B;
+      margin-bottom: clamp(0.4rem, 0.6vw, 0.7rem);
+      padding-bottom: 5px;
+      border-bottom: 2px solid #3B82F6;
+      display: inline-block;
+      white-space: nowrap;
+    }
+    .mega-menu-heading a { color: inherit; text-decoration: none; transition: color 0.2s; }
+    .mega-menu-heading a:hover { color: #2563EB; }
+    .mega-menu-column ul { list-style: none; padding: 0; margin: 0; }
+    .mega-menu-column li a {
+      display: block;
+      padding: 4px 0;
+      font-size: clamp(0.75rem, 0.66rem + 0.24vw, 0.9rem);
+      color: #64748B;
+      text-decoration: none;
+      transition: color 0.2s, padding-left 0.25s var(--ease-out);
+      white-space: nowrap;
+    }
+    .mega-menu-column li a:hover {
+      color: #2563EB;
+      padding-left: 6px;
+    }
+    /* Highlight the column that matches the hovered GNB link */
+    .mega-menu-column.mega-col-active {
+      background: rgba(59,130,246,0.03);
+      border-radius: var(--radius-sm);
+    }
+    .mega-menu-column.mega-col-active .mega-menu-heading {
+      border-bottom-color: #06B6D4;
+    }
+    /* GNB link active indicator when mega menu is open */
+    .gnb-mega-trigger.gnb-link-active {
+      color: #FFFFFF !important;
+      text-shadow: 0 0 12px rgba(59,130,246,0.35);
+    }
+    .gnb-mega-trigger.gnb-link-active::after {
+      width: 80%; left: 10%;
+    }
+    /* Hide mega menu below lg breakpoint */
+    @media (max-width: 1023px) {
+      .mega-menu-panel { display: none !important; }
+    }
+    /* 4K adjustments */
+    @media (min-width: 2560px) {
+      .mega-menu-heading { font-size: clamp(1.0rem, 0.85rem + 0.25vw, 1.3rem); }
+      .mega-menu-column li a { font-size: clamp(0.9rem, 0.78rem + 0.2vw, 1.15rem); }
+    }
+    @media (min-width: 3840px) {
+      .mega-menu-heading { font-size: clamp(1.3rem, 1.1rem + 0.3vw, 1.7rem); }
+      .mega-menu-column li a { font-size: clamp(1.1rem, 0.95rem + 0.25vw, 1.5rem); }
+    }
+    @media (min-width: 7680px) {
+      .mega-menu-heading { font-size: 2.2rem; }
+      .mega-menu-column li a { font-size: 1.8rem; padding: 6px 0; }
+      .mega-menu-grid { padding: 3rem 0; }
     }
 
     /* ═══════════════════════════════════════════════
@@ -882,7 +975,7 @@ export function layout(opts: {
           </div>
         </div>
 
-        <!-- Desktop GNB (v31 - 2x Font, 2.5x Logo, Touch-friendly, Admin-Editable) -->
+        <!-- Desktop GNB (v37 - Mega Dropdown Menu, koist.kr style) -->
         ${(() => {
           const gnbFontScale = parseFloat(s.gnb_font_scale || '2.4') || 2.4;
           const gnbGapScale = parseFloat(s.gnb_gap_scale || '0.55') || 0.55;
@@ -903,12 +996,16 @@ export function layout(opts: {
           const gnbFontWeight = s.gnb_font_weight || '600';
           const gnbTextColor = s.gnb_text_color || 'rgba(220,228,240,0.92)';
           const gnbHoverColor = s.gnb_hover_color || '#FFFFFF';
-          const navItems = deps.filter(d => d.is_active).map(dept =>
-            '<div class="gnb-item relative">' +
-            '<a href="/services/' + dept.slug + '" class="gnb-link">' + dept.name + '</a>' +
-            '<div class="gnb-dropdown absolute top-full left-1/2 -translate-x-1/2 pt-2 min-w-[170px]" id="gnb-drop-' + dept.slug + '"></div>' +
-            '</div>'
-          ).join('');
+          const activeDeps = deps.filter(d => d.is_active);
+          const navItems = [
+            '<a href="/about/greeting" class="gnb-link gnb-mega-trigger" data-col="about">KOIST소개</a>'
+          ].concat(
+            activeDeps.map(dept =>
+              '<a href="/services/' + dept.slug + '" class="gnb-link gnb-mega-trigger" data-col="dept-' + dept.slug + '">' + dept.name + '</a>'
+            )
+          ).concat([
+            '<a href="/support/notice" class="gnb-link gnb-mega-trigger" data-col="support">고객지원</a>'
+          ]).join('');
           return '<style>:root{' +
             '--gnb-link-font:clamp(' + fMin + 'rem,' + fVwBase + 'rem + ' + fVwCoeff + 'vw,' + fMax + 'rem);' +
             '--gnb-link-pad-x:clamp(' + padXMin + 'rem,' + padXVw + 'vw,' + padXMax + 'rem);' +
@@ -917,11 +1014,47 @@ export function layout(opts: {
             '--gnb-link-color:' + gnbTextColor + ';' +
             '--gnb-link-hover:' + gnbHoverColor + ';' +
             '}</style>' +
-            '<nav class="hidden lg:flex items-center" style="gap:var(--gnb-nav-gap);margin-left:clamp(4px,0.8vw,10px);-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision;">' +
+            '<nav id="gnbNav" class="hidden lg:flex items-center" style="gap:var(--gnb-nav-gap);margin-left:clamp(4px,0.8vw,10px);-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision;">' +
             navItems +
-            '<a href="/support/notice" class="gnb-link">고객지원</a>' +
             '</nav>';
         })()}
+
+        <!-- Mega Dropdown Panel -->
+        <div id="megaMenu" class="mega-menu-panel" role="navigation" aria-label="전체 메뉴">
+          <div class="fluid-container">
+            <div class="mega-menu-grid">
+              <!-- KOIST소개 -->
+              <div class="mega-menu-column" data-col="about">
+                <h3 class="mega-menu-heading"><a href="/about/greeting">KOIST소개</a></h3>
+                <ul>
+                  <li><a href="/about/greeting">인사말</a></li>
+                  <li><a href="/about/history">연혁</a></li>
+                  <li><a href="/about/business">사업소개</a></li>
+                  <li><a href="/about/location">오시는길</a></li>
+                </ul>
+              </div>
+              <!-- Department columns -->
+              ${deps.filter(d => d.is_active && d.pages && d.pages.length > 0).map(dept => `
+              <div class="mega-menu-column" data-col="dept-${dept.slug}">
+                <h3 class="mega-menu-heading"><a href="/services/${dept.slug}">${dept.name}</a></h3>
+                <ul>
+                  ${dept.pages.map(p => `<li><a href="/services/${dept.slug}/${p.slug}">${p.title}</a></li>`).join('')}
+                </ul>
+              </div>`).join('')}
+              <!-- 고객지원 -->
+              <div class="mega-menu-column" data-col="support">
+                <h3 class="mega-menu-heading"><a href="/support/notice">고객지원</a></h3>
+                <ul>
+                  <li><a href="/support/notice">공지사항</a></li>
+                  <li><a href="/support/faq">FAQ</a></li>
+                  <li><a href="/support/downloads">자료실</a></li>
+                  <li><a href="/support/documents">시스템 문서</a></li>
+                  <li><a href="/support/inquiry">온라인 상담</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <!-- Right Actions -->
         <div class="flex items-center" style="gap:var(--space-sm)">
@@ -960,15 +1093,50 @@ export function layout(opts: {
           <div class="f-text-base font-bold text-accent tracking-tight">${s.phone || '02-586-1230'}</div>
         </div>
       </a>
-      <!-- Dept Links -->
+      <!-- Dept Links with sub-page accordion -->
       <div class="space-y-0.5">
-        ${deps.filter(d => d.is_active).map(dept => `
-        <a href="/services/${dept.slug}" class="flex items-center px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-all" style="gap: var(--space-sm)" onclick="closeMobileMenu()">
-          <div class="rounded-md flex items-center justify-center shrink-0" style="width:28px; height:28px; background:${dept.color}08">
-            <i class="fas ${dept.icon}" style="color:${dept.color}; font-size: var(--text-xs)"></i>
+        <!-- KOIST소개 -->
+        <div class="mobile-acc">
+          <button class="mobile-acc-btn flex items-center justify-between w-full px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-all" onclick="toggleMobileAcc(this)">
+            <span class="flex items-center" style="gap: var(--space-sm)">
+              <div class="rounded-md flex items-center justify-center shrink-0" style="width:28px; height:28px; background:rgba(59,130,246,0.08)">
+                <i class="fas fa-building" style="color:#3B82F6; font-size: var(--text-xs)"></i>
+              </div>
+              <span class="f-text-sm font-medium">KOIST소개</span>
+            </span>
+            <i class="fas fa-chevron-down text-gray-400 transition-transform" style="font-size:10px"></i>
+          </button>
+          <div class="mobile-acc-sub hidden pl-10 space-y-0.5 pb-1">
+            <a href="/about/greeting" class="block px-3 py-1.5 text-gray-500 hover:text-blue-600 f-text-xs rounded transition-colors" onclick="closeMobileMenu()">인사말</a>
+            <a href="/about/history" class="block px-3 py-1.5 text-gray-500 hover:text-blue-600 f-text-xs rounded transition-colors" onclick="closeMobileMenu()">연혁</a>
+            <a href="/about/business" class="block px-3 py-1.5 text-gray-500 hover:text-blue-600 f-text-xs rounded transition-colors" onclick="closeMobileMenu()">사업소개</a>
+            <a href="/about/location" class="block px-3 py-1.5 text-gray-500 hover:text-blue-600 f-text-xs rounded transition-colors" onclick="closeMobileMenu()">오시는길</a>
           </div>
-          <span class="f-text-sm font-medium">${dept.name}</span>
-        </a>
+        </div>
+        ${deps.filter(d => d.is_active).map(dept => `
+        <div class="mobile-acc">
+          ${dept.pages && dept.pages.length > 0 ? `
+          <button class="mobile-acc-btn flex items-center justify-between w-full px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-all" onclick="toggleMobileAcc(this)">
+            <span class="flex items-center" style="gap: var(--space-sm)">
+              <div class="rounded-md flex items-center justify-center shrink-0" style="width:28px; height:28px; background:${dept.color}08">
+                <i class="fas ${dept.icon}" style="color:${dept.color}; font-size: var(--text-xs)"></i>
+              </div>
+              <span class="f-text-sm font-medium">${dept.name}</span>
+            </span>
+            <i class="fas fa-chevron-down text-gray-400 transition-transform" style="font-size:10px"></i>
+          </button>
+          <div class="mobile-acc-sub hidden pl-10 space-y-0.5 pb-1">
+            ${dept.pages.map(p => `<a href="/services/${dept.slug}/${p.slug}" class="block px-3 py-1.5 text-gray-500 hover:text-blue-600 f-text-xs rounded transition-colors" onclick="closeMobileMenu()">${p.title}</a>`).join('')}
+          </div>
+          ` : `
+          <a href="/services/${dept.slug}" class="flex items-center px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-all" style="gap: var(--space-sm)" onclick="closeMobileMenu()">
+            <div class="rounded-md flex items-center justify-center shrink-0" style="width:28px; height:28px; background:${dept.color}08">
+              <i class="fas ${dept.icon}" style="color:${dept.color}; font-size: var(--text-xs)"></i>
+            </div>
+            <span class="f-text-sm font-medium">${dept.name}</span>
+          </a>
+          `}
+        </div>
         `).join('')}
       </div>
       <div class="border-t border-slate-100 my-3 pt-3 space-y-0.5">
@@ -1116,26 +1284,112 @@ export function layout(opts: {
       onScroll();
     })();
 
-    /* ── Touch-friendly GNB dropdown (click) for tablets ── */
+    /* ── Mega Dropdown Menu Logic ── */
     (function() {
+      var gnbNav = document.getElementById('gnbNav');
+      var mega = document.getElementById('megaMenu');
+      var gnbHeader = document.getElementById('gnb');
+      if (!gnbNav || !mega) return;
+
+      var hoverTimer = null;
+      var activeTrigger = null;
+
+      function showMega(triggerEl) {
+        clearTimeout(hoverTimer);
+        mega.classList.add('active');
+        // Highlight the matching column
+        var col = triggerEl ? triggerEl.getAttribute('data-col') : null;
+        mega.querySelectorAll('.mega-menu-column').forEach(function(c) {
+          c.classList.toggle('mega-col-active', c.getAttribute('data-col') === col);
+        });
+        // Highlight the trigger link
+        gnbNav.querySelectorAll('.gnb-mega-trigger').forEach(function(l) {
+          l.classList.toggle('gnb-link-active', l === triggerEl);
+        });
+        activeTrigger = triggerEl;
+      }
+
+      function hideMega() {
+        hoverTimer = setTimeout(function() {
+          mega.classList.remove('active');
+          gnbNav.querySelectorAll('.gnb-mega-trigger').forEach(function(l) {
+            l.classList.remove('gnb-link-active');
+          });
+          mega.querySelectorAll('.mega-menu-column').forEach(function(c) {
+            c.classList.remove('mega-col-active');
+          });
+          activeTrigger = null;
+        }, 180);
+      }
+
+      // Desktop hover behavior
+      if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        gnbNav.querySelectorAll('.gnb-mega-trigger').forEach(function(link) {
+          link.addEventListener('mouseenter', function() { showMega(link); });
+          link.addEventListener('mouseleave', function() { hideMega(); });
+        });
+        mega.addEventListener('mouseenter', function() { clearTimeout(hoverTimer); });
+        mega.addEventListener('mouseleave', function() { hideMega(); });
+        // Also show when hovering the GNB header area (to prevent gap issues)
+        gnbHeader.addEventListener('mouseleave', function(e) {
+          // Only hide if not entering the mega menu
+          if (!mega.contains(e.relatedTarget)) { hideMega(); }
+        });
+      }
+
+      // Touch/tablet: click toggle
       var isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
       if (isTouchDevice) {
-        document.querySelectorAll('.gnb-item').forEach(function(item) {
-          item.addEventListener('click', function(e) {
-            var dropdown = item.querySelector('.gnb-dropdown');
-            if (!dropdown || !dropdown.innerHTML.trim()) return;
-            var isOpen = item.classList.contains('gnb-open');
-            document.querySelectorAll('.gnb-item.gnb-open').forEach(function(el) { el.classList.remove('gnb-open'); });
-            if (!isOpen) { item.classList.add('gnb-open'); e.preventDefault(); }
+        gnbNav.querySelectorAll('.gnb-mega-trigger').forEach(function(link) {
+          link.addEventListener('click', function(e) {
+            if (mega.classList.contains('active') && activeTrigger === link) {
+              // Second tap → navigate
+              return;
+            }
+            e.preventDefault();
+            showMega(link);
           });
         });
         document.addEventListener('click', function(e) {
-          if (!e.target.closest('.gnb-item')) {
-            document.querySelectorAll('.gnb-item.gnb-open').forEach(function(el) { el.classList.remove('gnb-open'); });
+          if (!gnbNav.contains(e.target) && !mega.contains(e.target)) {
+            clearTimeout(hoverTimer);
+            mega.classList.remove('active');
+            gnbNav.querySelectorAll('.gnb-mega-trigger').forEach(function(l) { l.classList.remove('gnb-link-active'); });
           }
         });
       }
+
+      // Close mega menu on scroll (optional UX improvement)
+      var scrollClosing = false;
+      window.addEventListener('scroll', function() {
+        if (mega.classList.contains('active') && !scrollClosing) {
+          scrollClosing = true;
+          requestAnimationFrame(function() {
+            if (window.pageYOffset > 60) {
+              mega.classList.remove('active');
+              gnbNav.querySelectorAll('.gnb-mega-trigger').forEach(function(l) { l.classList.remove('gnb-link-active'); });
+            }
+            scrollClosing = false;
+          });
+        }
+      }, { passive: true });
     })();
+
+    /* ── Mobile Accordion Toggle ── */
+    function toggleMobileAcc(btn) {
+      var acc = btn.closest('.mobile-acc');
+      var sub = acc.querySelector('.mobile-acc-sub');
+      var icon = btn.querySelector('.fa-chevron-down');
+      if (!sub) return;
+      var isOpen = !sub.classList.contains('hidden');
+      // Close all others
+      document.querySelectorAll('.mobile-acc-sub').forEach(function(s) { s.classList.add('hidden'); });
+      document.querySelectorAll('.mobile-acc-btn .fa-chevron-down').forEach(function(i) { i.style.transform = ''; });
+      if (!isOpen) {
+        sub.classList.remove('hidden');
+        if (icon) icon.style.transform = 'rotate(180deg)';
+      }
+    }
 
     /* ── body:has() JS fallback for popup scroll lock ── */
     (function() {
