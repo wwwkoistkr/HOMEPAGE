@@ -423,7 +423,10 @@ export function layout(opts: {
     }
 
     /* ═══════════════════════════════════════════════
-       MEGA DROPDOWN MENU (v37 - koist.kr style)
+       MEGA DROPDOWN MENU (v38 - 2-row adaptive layout)
+       ─ Content-based flex widths
+       ─ Korean word-break aware
+       ─ 1024px → 8K fully responsive
        ═══════════════════════════════════════════════ */
     .mega-menu-panel {
       position: fixed;
@@ -442,6 +445,8 @@ export function layout(opts: {
       transition: opacity 0.3s var(--ease-out), visibility 0.3s, transform 0.3s var(--ease-out);
       z-index: 49;
       pointer-events: none;
+      max-height: 80vh;
+      overflow-y: auto;
     }
     .mega-menu-panel.active {
       opacity: 1;
@@ -452,52 +457,108 @@ export function layout(opts: {
     @supports not (backdrop-filter: blur(1px)) {
       .mega-menu-panel { background: rgba(255,255,255,0.99); }
     }
+
+    /* ── Grid: flex-wrap for natural 2-row flow ── */
     .mega-menu-grid {
       display: flex;
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
       gap: 0;
-      padding: clamp(1.2rem, 2vw, 2rem) 0;
-      overflow-x: auto;
-      -ms-overflow-style: none;
-      scrollbar-width: none;
+      padding: clamp(1.0rem, 1.5vw, 1.8rem) 0;
     }
-    .mega-menu-grid::-webkit-scrollbar { display: none; }
+
+    /* ── Row separator between top/bottom groups ── */
+    .mega-menu-row {
+      display: flex;
+      flex-wrap: nowrap;
+      width: 100%;
+      padding: clamp(0.5rem, 0.8vw, 0.8rem) 0;
+    }
+    .mega-menu-row + .mega-menu-row {
+      border-top: 1px solid rgba(226,232,240,0.50);
+      margin-top: clamp(0.4rem, 0.6vw, 0.6rem);
+      padding-top: clamp(0.8rem, 1vw, 1.0rem);
+    }
+
+    /* ── Columns: content-based widths ── */
     .mega-menu-column {
       flex: 1 1 0;
-      min-width: 120px;
-      padding: 0 clamp(0.6rem, 1vw, 1.2rem);
-      border-right: 1px solid rgba(226,232,240,0.40);
+      min-width: clamp(100px, 8vw, 160px);
+      padding: 0 clamp(0.5rem, 0.8vw, 1.0rem);
+      border-right: 1px solid rgba(226,232,240,0.35);
+      overflow: hidden;
     }
     .mega-menu-column:last-child { border-right: none; }
+
+    /* Wide columns for departments with long names or many sub-items */
+    .mega-menu-column.mega-col-wide {
+      flex: 1.4 1 0;
+      min-width: clamp(130px, 10vw, 200px);
+    }
+    /* Narrow columns for short-name departments */
+    .mega-menu-column.mega-col-narrow {
+      flex: 0.8 1 0;
+      min-width: clamp(80px, 6vw, 120px);
+    }
+
+    /* ── Headings: allow wrap for long Korean titles ── */
     .mega-menu-heading {
-      font-size: clamp(0.82rem, 0.72rem + 0.28vw, 1.0rem);
+      font-size: clamp(0.74rem, 0.65rem + 0.26vw, 0.92rem);
       font-weight: 700;
       color: #1E293B;
-      margin-bottom: clamp(0.4rem, 0.6vw, 0.7rem);
-      padding-bottom: 5px;
+      margin-bottom: clamp(0.35rem, 0.5vw, 0.6rem);
+      padding-bottom: 4px;
       border-bottom: 2px solid #3B82F6;
-      display: inline-block;
-      white-space: nowrap;
+      display: block;
+      white-space: normal;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+      line-height: 1.35;
+      letter-spacing: -0.01em;
     }
     .mega-menu-heading a { color: inherit; text-decoration: none; transition: color 0.2s; }
     .mega-menu-heading a:hover { color: #2563EB; }
+
+    /* ── Sub-links: allow wrap, readable spacing ── */
     .mega-menu-column ul { list-style: none; padding: 0; margin: 0; }
     .mega-menu-column li a {
       display: block;
-      padding: 4px 0;
-      font-size: clamp(0.75rem, 0.66rem + 0.24vw, 0.9rem);
+      padding: clamp(3px, 0.3vw, 5px) 0;
+      font-size: clamp(0.70rem, 0.62rem + 0.22vw, 0.85rem);
       color: #64748B;
       text-decoration: none;
       transition: color 0.2s, padding-left 0.25s var(--ease-out);
-      white-space: nowrap;
+      white-space: normal;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+      line-height: 1.40;
+      letter-spacing: -0.005em;
     }
     .mega-menu-column li a:hover {
       color: #2563EB;
-      padding-left: 6px;
+      padding-left: 5px;
     }
-    /* Highlight the column that matches the hovered GNB link */
+
+    /* ── Grouped sub-section inside a column ── */
+    .mega-sub-group {
+      margin-top: clamp(0.5rem, 0.7vw, 0.8rem);
+      padding-top: clamp(0.4rem, 0.5vw, 0.6rem);
+      border-top: 1px dashed rgba(203,213,225,0.6);
+    }
+    .mega-sub-group-title {
+      font-size: clamp(0.68rem, 0.60rem + 0.22vw, 0.82rem);
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: clamp(0.2rem, 0.3vw, 0.35rem);
+      white-space: normal;
+      word-break: keep-all;
+      line-height: 1.35;
+    }
+    .mega-sub-group-title a { color: inherit; text-decoration: none; transition: color 0.2s; }
+    .mega-sub-group-title a:hover { color: #2563EB; }
+
+    /* ── Highlight the column that matches the hovered GNB link ── */
     .mega-menu-column.mega-col-active {
-      background: rgba(59,130,246,0.03);
+      background: rgba(59,130,246,0.04);
       border-radius: var(--radius-sm);
     }
     .mega-menu-column.mega-col-active .mega-menu-heading {
@@ -511,23 +572,42 @@ export function layout(opts: {
     .gnb-mega-trigger.gnb-link-active::after {
       width: 80%; left: 10%;
     }
-    /* Hide mega menu below lg breakpoint */
+
+    /* ── Hide mega menu below lg breakpoint ── */
     @media (max-width: 1023px) {
       .mega-menu-panel { display: none !important; }
     }
-    /* 4K adjustments */
+
+    /* ── 2K (2560px) adjustments ── */
     @media (min-width: 2560px) {
-      .mega-menu-heading { font-size: clamp(1.0rem, 0.85rem + 0.25vw, 1.3rem); }
-      .mega-menu-column li a { font-size: clamp(0.9rem, 0.78rem + 0.2vw, 1.15rem); }
+      .mega-menu-heading { font-size: clamp(0.95rem, 0.82rem + 0.22vw, 1.20rem); }
+      .mega-menu-column li a { font-size: clamp(0.85rem, 0.74rem + 0.20vw, 1.08rem); }
+      .mega-sub-group-title { font-size: clamp(0.85rem, 0.74rem + 0.20vw, 1.05rem); }
+      .mega-menu-column { padding: 0 clamp(0.7rem, 1vw, 1.3rem); }
     }
+    /* ── 4K (3840px) adjustments ── */
     @media (min-width: 3840px) {
-      .mega-menu-heading { font-size: clamp(1.3rem, 1.1rem + 0.3vw, 1.7rem); }
-      .mega-menu-column li a { font-size: clamp(1.1rem, 0.95rem + 0.25vw, 1.5rem); }
+      .mega-menu-heading { font-size: clamp(1.25rem, 1.05rem + 0.28vw, 1.65rem); }
+      .mega-menu-column li a { font-size: clamp(1.05rem, 0.90rem + 0.24vw, 1.40rem); }
+      .mega-sub-group-title { font-size: clamp(1.10rem, 0.95rem + 0.24vw, 1.45rem); }
+      .mega-menu-column { padding: 0 clamp(1.0rem, 1.2vw, 1.8rem); }
+      .mega-menu-grid { padding: clamp(1.8rem, 2.5vw, 3rem) 0; }
     }
+    /* ── 5K (5120px) adjustments ── */
+    @media (min-width: 5120px) {
+      .mega-menu-heading { font-size: clamp(1.6rem, 1.35rem + 0.30vw, 2.0rem); }
+      .mega-menu-column li a { font-size: clamp(1.3rem, 1.12rem + 0.26vw, 1.70rem); }
+      .mega-sub-group-title { font-size: clamp(1.4rem, 1.20rem + 0.26vw, 1.80rem); }
+      .mega-menu-column { padding: 0 clamp(1.3rem, 1.5vw, 2.2rem); }
+    }
+    /* ── 8K (7680px) adjustments ── */
     @media (min-width: 7680px) {
-      .mega-menu-heading { font-size: 2.2rem; }
-      .mega-menu-column li a { font-size: 1.8rem; padding: 6px 0; }
-      .mega-menu-grid { padding: 3rem 0; }
+      .mega-menu-heading { font-size: 2.4rem; line-height: 1.3; }
+      .mega-menu-column li a { font-size: 2.0rem; padding: 8px 0; line-height: 1.35; }
+      .mega-sub-group-title { font-size: 2.1rem; }
+      .mega-menu-grid { padding: 3.5rem 0; }
+      .mega-menu-column { padding: 0 2.5rem; }
+      .mega-menu-row + .mega-menu-row { margin-top: 1.5rem; padding-top: 1.8rem; }
     }
 
     /* ═══════════════════════════════════════════════
@@ -1019,39 +1099,81 @@ export function layout(opts: {
             '</nav>';
         })()}
 
-        <!-- Mega Dropdown Panel -->
+        <!-- Mega Dropdown Panel (v38 - 2-row adaptive) -->
         <div id="megaMenu" class="mega-menu-panel" role="navigation" aria-label="전체 메뉴">
           <div class="fluid-container">
             <div class="mega-menu-grid">
-              <!-- KOIST소개 -->
-              <div class="mega-menu-column" data-col="about">
-                <h3 class="mega-menu-heading"><a href="/about/greeting">KOIST소개</a></h3>
-                <ul>
-                  <li><a href="/about/greeting">인사말</a></li>
-                  <li><a href="/about/history">연혁</a></li>
-                  <li><a href="/about/business">사업소개</a></li>
-                  <li><a href="/about/location">오시는길</a></li>
-                </ul>
-              </div>
-              <!-- Department columns -->
-              ${deps.filter(d => d.is_active && d.pages && d.pages.length > 0).map(dept => `
-              <div class="mega-menu-column" data-col="dept-${dept.slug}">
-                <h3 class="mega-menu-heading"><a href="/services/${dept.slug}">${dept.name}</a></h3>
-                <ul>
-                  ${dept.pages.map(p => `<li><a href="/services/${dept.slug}/${p.slug}">${p.title}</a></li>`).join('')}
-                </ul>
-              </div>`).join('')}
-              <!-- 고객지원 -->
-              <div class="mega-menu-column" data-col="support">
-                <h3 class="mega-menu-heading"><a href="/support/notice">고객지원</a></h3>
-                <ul>
-                  <li><a href="/support/notice">공지사항</a></li>
-                  <li><a href="/support/faq">FAQ</a></li>
-                  <li><a href="/support/downloads">자료실</a></li>
-                  <li><a href="/support/documents">시스템 문서</a></li>
-                  <li><a href="/support/inquiry">온라인 상담</a></li>
-                </ul>
-              </div>
+              ${(() => {
+                // Split departments into 2 rows for optimal layout
+                const activeDepsWithPages = deps.filter(d => d.is_active && d.pages && d.pages.length > 0);
+                // Separate single-page depts for grouping
+                const multiPageDeps = activeDepsWithPages.filter(d => d.pages.length > 1);
+                const singlePageDeps = activeDepsWithPages.filter(d => d.pages.length === 1);
+
+                // Row 1: KOIST소개 + first ~5 departments (shorter names)
+                const row1Deps = multiPageDeps.slice(0, 5);
+                // Row 2: remaining departments + grouped singles + 고객지원
+                const row2Deps = multiPageDeps.slice(5);
+
+                let html = '';
+                // ── ROW 1 ──
+                html += '<div class="mega-menu-row">';
+                // KOIST소개
+                html += '<div class="mega-menu-column" data-col="about">';
+                html += '<h3 class="mega-menu-heading"><a href="/about/greeting">KOIST소개</a></h3>';
+                html += '<ul><li><a href="/about/greeting">인사말</a></li>';
+                html += '<li><a href="/about/history">연혁</a></li>';
+                html += '<li><a href="/about/business">사업소개</a></li>';
+                html += '<li><a href="/about/location">오시는길</a></li></ul>';
+                html += '</div>';
+                // Row 1 departments
+                row1Deps.forEach(dept => {
+                  const wideCls = dept.name.length >= 7 ? ' mega-col-wide' : '';
+                  html += '<div class="mega-menu-column' + wideCls + '" data-col="dept-' + dept.slug + '">';
+                  html += '<h3 class="mega-menu-heading"><a href="/services/' + dept.slug + '">' + dept.name + '</a></h3>';
+                  html += '<ul>' + dept.pages.map(p => '<li><a href="/services/' + dept.slug + '/' + p.slug + '">' + p.title + '</a></li>').join('') + '</ul>';
+                  html += '</div>';
+                });
+                html += '</div>';
+
+                // ── ROW 2 ──
+                html += '<div class="mega-menu-row">';
+                // Row 2 multi-page departments
+                row2Deps.forEach(dept => {
+                  const wideCls = dept.name.length >= 7 || dept.pages.some(p => p.title.length >= 8) ? ' mega-col-wide' : '';
+                  html += '<div class="mega-menu-column' + wideCls + '" data-col="dept-' + dept.slug + '">';
+                  html += '<h3 class="mega-menu-heading"><a href="/services/' + dept.slug + '">' + dept.name + '</a></h3>';
+                  html += '<ul>' + dept.pages.map(p => '<li><a href="/services/' + dept.slug + '/' + p.slug + '">' + p.title + '</a></li>').join('') + '</ul>';
+                  html += '</div>';
+                });
+                // Grouped single-page departments
+                if (singlePageDeps.length > 0) {
+                  const alsoCols = singlePageDeps.slice(1).map(d => 'dept-' + d.slug).join(',');
+                  const alsoAttr = alsoCols ? ' data-col-also="' + alsoCols + '"' : '';
+                  html += '<div class="mega-menu-column mega-col-wide" data-col="dept-' + singlePageDeps[0].slug + '"' + alsoAttr + '>';
+                  html += '<h3 class="mega-menu-heading">기타 서비스</h3>';
+                  singlePageDeps.forEach((dept, idx) => {
+                    if (idx > 0) html += '<div class="mega-sub-group">';
+                    else html += '<div>';
+                    html += '<div class="mega-sub-group-title"><a href="/services/' + dept.slug + '">' + dept.name + '</a></div>';
+                    html += '<ul>' + dept.pages.map(p => '<li><a href="/services/' + dept.slug + '/' + p.slug + '">' + p.title + '</a></li>').join('') + '</ul>';
+                    html += '</div>';
+                  });
+                  html += '</div>';
+                }
+                // 고객지원
+                html += '<div class="mega-menu-column" data-col="support">';
+                html += '<h3 class="mega-menu-heading"><a href="/support/notice">고객지원</a></h3>';
+                html += '<ul><li><a href="/support/notice">공지사항</a></li>';
+                html += '<li><a href="/support/faq">FAQ</a></li>';
+                html += '<li><a href="/support/downloads">자료실</a></li>';
+                html += '<li><a href="/support/documents">시스템 문서</a></li>';
+                html += '<li><a href="/support/inquiry">온라인 상담</a></li></ul>';
+                html += '</div>';
+                html += '</div>';
+
+                return html;
+              })()}
             </div>
           </div>
         </div>
@@ -1297,10 +1419,16 @@ export function layout(opts: {
       function showMega(triggerEl) {
         clearTimeout(hoverTimer);
         mega.classList.add('active');
-        // Highlight the matching column
+        // Highlight the matching column (supports data-col-also for grouped columns)
         var col = triggerEl ? triggerEl.getAttribute('data-col') : null;
         mega.querySelectorAll('.mega-menu-column').forEach(function(c) {
-          c.classList.toggle('mega-col-active', c.getAttribute('data-col') === col);
+          var match = c.getAttribute('data-col') === col;
+          // Also check data-col-also for grouped single-page departments
+          if (!match && col) {
+            var also = c.getAttribute('data-col-also');
+            if (also) { match = also.split(',').indexOf(col) !== -1; }
+          }
+          c.classList.toggle('mega-col-active', match);
         });
         // Highlight the trigger link
         gnbNav.querySelectorAll('.gnb-mega-trigger').forEach(function(l) {
