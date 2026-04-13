@@ -1,4 +1,4 @@
-// KOIST - Home Page Template (v35.0 - Sim Panel Shift+Extend, 50:50 Hero, 8K Ultra-Sharp)
+// KOIST - Home Page Template (v35.2 - Left 70% text + 7cm wider, Equal Height, 8K Ultra-Sharp)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem, SimCertType } from '../types';
 
 function bgStyle(imageUrl: string | undefined, fallbackGradient: string, opacity: string = '0.85'): string {
@@ -162,37 +162,37 @@ export function homePage(opts: {
         <!-- ═══════ LEFT: Hero Text ═══════ -->
         <div class="unified-hero-left" data-aos="fade-right" data-aos-duration="700">
           <!-- Badge (2.5x enlarged) -->
-          <div class="inline-flex items-center rounded-full" style="gap:12px; padding:clamp(8px,0.8vw,12px) clamp(18px,1.8vw,28px); margin-bottom:clamp(1.2rem,2.2vw,2rem); background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.18); backdrop-filter: blur(12px);">
-            <span class="relative flex" style="height:clamp(10px,0.8vw,14px); width:clamp(10px,0.8vw,14px);">
+          <div class="inline-flex items-center rounded-full" style="gap:8px; padding:clamp(6px,0.56vw,8px) clamp(13px,1.26vw,20px); margin-bottom:clamp(0.84rem,1.54vw,1.4rem); background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.18); backdrop-filter: blur(12px);">
+            <span class="relative flex" style="height:clamp(7px,0.56vw,10px); width:clamp(7px,0.56vw,10px);">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-50"></span>
               <span class="relative inline-flex rounded-full h-full w-full bg-emerald-400"></span>
             </span>
-            <span class="text-blue-300 font-semibold tracking-wide" style="font-size:clamp(1.0rem,1.3vw,1.45rem); font-family:'Inter','Noto Sans KR',sans-serif; letter-spacing:0.04em;">${s.hero_badge_text || 'Korean Information Security Technology'}</span>
+            <span class="text-blue-300 font-semibold tracking-wide" style="font-size:clamp(0.70rem,0.91vw,1.01rem); font-family:'Inter','Noto Sans KR',sans-serif; letter-spacing:0.04em;">${s.hero_badge_text || 'Korean Information Security Technology'}</span>
           </div>
 
           <!-- Headline — 2.5x 8K Ultra-Sharp -->
-          <h1 class="text-white font-black" style="font-size:clamp(2.2rem, 1.6rem + 3.2vw, 4.8rem); line-height:1.1; margin-bottom:clamp(0.8rem,1.5vw,1.5rem); letter-spacing:-0.03em; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
+          <h1 class="text-white font-black" style="font-size:clamp(1.54rem, 1.12rem + 2.24vw, 3.36rem); line-height:1.1; margin-bottom:clamp(0.56rem,1.05vw,1.05rem); letter-spacing:-0.03em; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
             ${s.hero_line1 || '정보보안 시험·인증 전문기관'}
           </h1>
 
           <!-- Subtitle (2.5x) -->
-          <p class="text-slate-300/90 font-medium" style="font-size:clamp(1.15rem, 0.95rem + 0.9vw, 1.75rem); line-height:1.25; margin-bottom:clamp(1.8rem,3vw,3rem); max-width:680px; text-rendering:optimizeLegibility;">
+          <p class="text-slate-300/90 font-medium" style="font-size:clamp(0.80rem, 0.66rem + 0.63vw, 1.22rem); line-height:1.25; margin-bottom:clamp(1.26rem,2.1vw,2.1rem); max-width:480px; text-rendering:optimizeLegibility;">
             ${s.hero_line2 || 'IT제품 보안성 평가·인증의 원스톱 서비스, <span class="hero-gradient-text">한국정보보안기술원</span>'}
           </p>
 
           <!-- CTA Buttons (2.5x) -->
-          <div class="flex flex-wrap" style="gap:clamp(0.8rem,1.2vw,1.4rem); margin-bottom:clamp(2rem,3.5vw,3.5rem);">
-            <a href="/support/inquiry" class="btn-glow ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:10px; padding:clamp(0.9rem,1.3vw,1.2rem) clamp(1.8rem,2.8vw,2.8rem); font-size:clamp(1.1rem,1.35vw,1.5rem);">
-              <i class="fas fa-paper-plane" style="font-size:clamp(0.85rem,1vw,1.1rem)"></i> ${s.hero_btn_primary || '온라인 상담'}
+          <div class="flex flex-wrap" style="gap:clamp(0.56rem,0.84vw,0.98rem); margin-bottom:clamp(1.4rem,2.45vw,2.45rem);">
+            <a href="/support/inquiry" class="btn-glow ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:7px; padding:clamp(0.63rem,0.91vw,0.84rem) clamp(1.26rem,1.96vw,1.96rem); font-size:clamp(0.77rem,0.94vw,1.05rem);">
+              <i class="fas fa-paper-plane" style="font-size:clamp(0.59rem,0.70vw,0.77rem)"></i> ${s.hero_btn_primary || '온라인 상담'}
             </a>
-            <a href="#services" class="btn-ghost ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:10px; padding:clamp(0.9rem,1.3vw,1.2rem) clamp(1.8rem,2.8vw,2.8rem); font-size:clamp(1.1rem,1.35vw,1.5rem);">
-              <i class="fas fa-th-large" style="font-size:clamp(0.85rem,1vw,1.1rem)"></i> ${s.hero_btn_secondary || '사업분야 보기'}
+            <a href="#services" class="btn-ghost ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:7px; padding:clamp(0.63rem,0.91vw,0.84rem) clamp(1.26rem,1.96vw,1.96rem); font-size:clamp(0.77rem,0.94vw,1.05rem);">
+              <i class="fas fa-th-large" style="font-size:clamp(0.59rem,0.70vw,0.77rem)"></i> ${s.hero_btn_secondary || '사업분야 보기'}
             </a>
           </div>
 
           <!-- ═══════ Hero Contact Card (원본 koist.kr 스타일, 8K fluid) ═══════ -->
           <div class="hero-contact-card" data-aos="fade-up" data-aos-delay="200">
-            <p class="text-slate-300/90 font-bold" style="font-size:clamp(1.3rem,2vw,2.1rem); margin-bottom:clamp(1rem,1.8vw,1.8rem); letter-spacing:0.01em; text-rendering:geometricPrecision;">${s.hero_contact_label || '국가 시험·인증 전문기관 정보보안 기술을 완성'}</p>
+            <p class="text-slate-300/90 font-bold" style="font-size:clamp(0.91rem,1.40vw,1.47rem); margin-bottom:clamp(0.7rem,1.26vw,1.26rem); letter-spacing:0.01em; text-rendering:geometricPrecision;">${s.hero_contact_label || '국가 시험·인증 전문기관 정보보안 기술을 완성'}</p>
             <div class="hero-contact-grid">
               <div class="hero-contact-item">
                 <div class="hero-contact-icon"><i class="fas fa-phone"></i></div>
@@ -340,12 +340,12 @@ export function homePage(opts: {
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
     }
-    /* v35.1: right panel shifted 8cm + extended 10cm */
+    /* v35.2: left 70% text + 7cm wider, right panel shifted 8cm + extended 10cm, equal height */
     .unified-hero-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: clamp(1.5rem, 2.5vw, 2.5rem);
-      align-items: start;
+      align-items: stretch;
       overflow: visible;
     }
     .unified-hero-left {
@@ -353,6 +353,7 @@ export function homePage(opts: {
       flex-direction: column;
       justify-content: space-between;
       max-width: none;
+      width: calc(100% + 7cm);
     }
     .unified-hero-right {
       display: flex;
@@ -420,13 +421,13 @@ export function homePage(opts: {
 
     /* ═══ Hero Contact Card (v30.0 — 2.5x enlarged, 8K Ultra-Sharp, Windows/Mobile compat) ═══ */
     .hero-contact-card {
-      padding: clamp(1.4rem,2.5vw,2.8rem) clamp(1.8rem,3.2vw,3.5rem);
+      padding: clamp(0.98rem,1.75vw,1.96rem) clamp(1.26rem,2.24vw,2.45rem);
       background: rgba(255,255,255,0.03);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255,255,255,0.06);
-      border-radius: clamp(14px,1.8vw,28px);
-      max-width: 680px;
+      border-radius: clamp(10px,1.26vw,20px);
+      max-width: 480px;
     }
     @supports not (backdrop-filter: blur(1px)) {
       .hero-contact-card { background: rgba(10,15,30,0.88); }
@@ -434,13 +435,13 @@ export function homePage(opts: {
     .hero-contact-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: clamp(0.7rem,1.1vw,1.2rem) clamp(1.2rem,2.2vw,2.2rem);
+      gap: clamp(0.49rem,0.77vw,0.84rem) clamp(0.84rem,1.54vw,1.54rem);
     }
     .hero-contact-item {
       display: flex;
       align-items: center;
-      gap: clamp(10px,1.2vw,16px);
-      font-size: clamp(1.0rem,1.6vw,1.65rem);
+      gap: clamp(7px,0.84vw,11px);
+      font-size: clamp(0.70rem,1.12vw,1.15rem);
       color: rgba(220,230,245,0.92);
       white-space: nowrap;
       overflow-wrap: break-word;
@@ -455,15 +456,15 @@ export function homePage(opts: {
       line-height: 1.55;
     }
     .hero-contact-icon {
-      width: clamp(38px,3.8vw,56px);
-      height: clamp(38px,3.8vw,56px);
-      border-radius: clamp(8px,0.8vw,14px);
+      width: clamp(27px,2.66vw,39px);
+      height: clamp(27px,2.66vw,39px);
+      border-radius: clamp(6px,0.56vw,10px);
       display: flex;
       align-items: center;
       justify-content: center;
       background: rgba(59,130,246,0.12);
       color: rgba(96,165,250,0.90);
-      font-size: clamp(14px,1.6vw,22px);
+      font-size: clamp(10px,1.12vw,15px);
       flex-shrink: 0;
     }
 
@@ -474,7 +475,7 @@ export function homePage(opts: {
         gap: clamp(1.5rem, 3vw, 2rem);
         overflow: hidden;
       }
-      .unified-hero-left { max-width: 100%; text-align: center; }
+      .unified-hero-left { max-width: 100%; text-align: center; width: 100%; }
       .unified-hero-right { margin-left: 0; width: 100%; }
       .unified-hero-left .flex.flex-wrap { justify-content: center; }
       .unified-hero-left .inline-flex { margin-left: auto; margin-right: auto; }
