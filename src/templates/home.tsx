@@ -1,4 +1,4 @@
-// KOIST - Home Page Template (v32.0 - 70% Slider, 2x Services/Notices, Tab Menu, 8K Ultra-Sharp)
+// KOIST - Home Page Template (v34.0 - 50:50 Hero Split, 20% Services Text Reduction, 8K Ultra-Sharp)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem, SimCertType } from '../types';
 
 function bgStyle(imageUrl: string | undefined, fallbackGradient: string, opacity: string = '0.85'): string {
@@ -340,17 +340,25 @@ export function homePage(opts: {
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
     }
-    /* v33: 2-column grid — simulator 50% wider (2fr:3fr), shifted up 30% */
+    /* v34: 50:50 split, equal height both sides */
     .unified-hero-grid {
       display: grid;
-      grid-template-columns: 2fr 3fr;
-      gap: clamp(1.5rem, 3vw, 3rem);
-      align-items: start;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1.5rem, 2.5vw, 2.5rem);
+      align-items: stretch;
     }
-    .unified-hero-left { max-width: 620px; padding-top: clamp(1rem, 2vw, 2.5rem); }
-    .unified-hero-right { margin-top: clamp(-0.5rem, -1.5vw, -1rem); }
+    .unified-hero-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      max-width: none;
+    }
+    .unified-hero-right {
+      display: flex;
+      flex-direction: column;
+    }
     
-    /* Simulator panel card */
+    /* Simulator panel card — stretch to fill column height */
     .unified-sim-panel {
       border-radius: clamp(12px, 1.2vw, 18px);
       overflow: hidden;
@@ -358,6 +366,15 @@ export function homePage(opts: {
       transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease;
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .unified-sim-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
     .unified-sim-panel:hover {
       transform: translateY(-3px);
@@ -374,6 +391,7 @@ export function homePage(opts: {
     .unified-sim-body {
       padding: clamp(0.8rem, 1.2vw, 1.2rem) clamp(0.9rem, 1.4vw, 1.4rem);
       background: #ffffff;
+      flex: 1;
     }
 
     /* EAL Tab active state */
@@ -453,8 +471,8 @@ export function homePage(opts: {
         grid-template-columns: 1fr;
         gap: clamp(1.5rem, 3vw, 2rem);
       }
-      .unified-hero-left { max-width: 100%; text-align: center; padding-top: 0; }
-      .unified-hero-right { margin-top: 0; }
+      .unified-hero-left { max-width: 100%; text-align: center; }
+      .unified-hero-right { }
       .unified-hero-left .flex.flex-wrap { justify-content: center; }
       .unified-hero-left .inline-flex { margin-left: auto; margin-right: auto; }
       .hero-contact-card { margin-left: auto; margin-right: auto; text-align: left; max-width: 94%; }
@@ -487,8 +505,8 @@ export function homePage(opts: {
 
     /* ── 4K (3840px) ── */
     @media (min-width: 3840px) {
-      .unified-hero-grid { gap: 5rem; }
-      .unified-hero-left { max-width: 900px; }
+      .unified-hero-grid { gap: 4rem; }
+      .unified-hero-left { }
       .unified-sim-panel { border-radius: 28px; }
       .unified-sim-header { padding: 1.8rem 2.5rem; }
       .unified-sim-body { padding: 2rem 2.5rem; }
@@ -501,8 +519,8 @@ export function homePage(opts: {
 
     /* ── 8K (7680px) Ultra-Sharp ── */
     @media (min-width: 7680px) {
-      .unified-hero-grid { gap: 8rem; }
-      .unified-hero-left { max-width: 1500px; }
+      .unified-hero-grid { gap: 6rem; }
+      .unified-hero-left { }
       .unified-sim-panel { border-radius: 56px; box-shadow: 0 24px 120px rgba(0,0,0,0.3), 0 8px 40px rgba(0,0,0,0.12); }
       .unified-sim-header { padding: 3rem 4rem; }
       .unified-sim-body { padding: 3.5rem 4rem; }
@@ -585,15 +603,15 @@ export function homePage(opts: {
 
     <div class="relative fluid-container">
       <div class="text-center" style="margin-bottom: clamp(0.8rem,1.5vw,1.5rem)" data-aos="fade-up">
-        <div class="inline-flex items-center rounded-full font-semibold" style="gap:8px; padding:6px 18px; margin-bottom:var(--space-xs); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB; font-size: clamp(0.60rem, 0.50rem + 0.28vw, 0.88rem);">
+        <div class="inline-flex items-center rounded-full font-semibold" style="gap:8px; padding:6px 18px; margin-bottom:var(--space-xs); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB; font-size: clamp(0.76rem, 0.62rem + 0.36vw, 1.12rem);">
           <i class="fas fa-cubes" style="font-size:clamp(11px,0.9vw,16px)"></i>KOIST 사업분야
         </div>
-        <h2 class="font-bold text-primary" style="font-size: clamp(1.1rem, 0.85rem + 0.72vw, 1.92rem); margin-bottom:var(--space-2xs); line-height:1.2;">${s.services_title || '핵심 사업분야'}</h2>
-        <p class="text-slate-500 max-w-lg mx-auto" style="font-size: clamp(0.72rem, 0.58rem + 0.35vw, 1.05rem); line-height:1.25;">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
+        <h2 class="font-bold text-primary" style="font-size: clamp(1.44rem, 1.08rem + 0.92vw, 2.56rem); margin-bottom:var(--space-2xs); line-height:1.2;">${s.services_title || '핵심 사업분야'}</h2>
+        <p class="text-slate-500 max-w-lg mx-auto" style="font-size: clamp(0.88rem, 0.72rem + 0.42vw, 1.36rem); line-height:1.25;">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
       </div>
 
       ${(() => {
-        const fontScale = parseFloat(s.services_tag_font_scale || '1.2') || 1.2;
+        const fontScale = parseFloat(s.services_tag_font_scale || '1.6') || 1.6;
         const gapScale = parseFloat(s.services_tag_gap_scale || '0.5') || 0.5;
         const baseFontMin = 0.8;
         const baseFontVw = 1.4;
