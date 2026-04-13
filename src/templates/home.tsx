@@ -1,4 +1,4 @@
-// KOIST - Home Page Template (v34.0 - 50:50 Hero Split, 20% Services Text Reduction, 8K Ultra-Sharp)
+// KOIST - Home Page Template (v35.0 - Sim Panel Shift+Extend, 50:50 Hero, 8K Ultra-Sharp)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem, SimCertType } from '../types';
 
 function bgStyle(imageUrl: string | undefined, fallbackGradient: string, opacity: string = '0.85'): string {
@@ -140,10 +140,10 @@ export function homePage(opts: {
        상단: 히어로 텍스트 (배지 + 대제목 + 부제 + CTA 버튼 + 연락처)
        하단: 인터랙티브 시뮬레이터 패널 (70% 폭, 시험평가~고객지원 정렬)
        ════════════════════════════════════════════════════════════════════════ -->
-  <section class="unified-hero-section relative overflow-hidden" style="${bgStyle(s.hero_bg_url, 'linear-gradient(135deg, #070B14 0%, #0A1128 20%, #0F1E3D 45%, #162D5A 70%, #1A3A6E 100%)', heroOpacity)}">
+  <section class="unified-hero-section relative" style="overflow: visible; ${bgStyle(s.hero_bg_url, 'linear-gradient(135deg, #070B14 0%, #0A1128 20%, #0F1E3D 45%, #162D5A 70%, #1A3A6E 100%)', heroOpacity)}">
     <!-- 8K Animated background layers -->
     ${!s.hero_bg_url ? `
-    <div class="absolute inset-0 pointer-events-none" style="will-change:transform; -webkit-backface-visibility:hidden; transform:translateZ(0);">
+    <div class="absolute inset-0 pointer-events-none" style="overflow:hidden; will-change:transform; -webkit-backface-visibility:hidden; transform:translateZ(0);">
       <div class="absolute unified-orb-1" style="top:-8%; right:-5%; width:clamp(300px,42vw,750px); height:clamp(300px,42vw,750px); background: radial-gradient(circle, rgba(59,130,246,0.10) 0%, rgba(37,99,235,0.04) 40%, transparent 65%); border-radius:50%; filter:blur(60px);"></div>
       <div class="absolute unified-orb-2" style="bottom:-12%; left:-8%; width:clamp(250px,35vw,600px); height:clamp(250px,35vw,600px); background: radial-gradient(circle, rgba(6,182,212,0.07) 0%, rgba(34,211,238,0.03) 40%, transparent 65%); border-radius:50%; filter:blur(50px);"></div>
       <div class="absolute unified-orb-3" style="top:50%; left:40%; width:clamp(150px,20vw,350px); height:clamp(150px,20vw,350px); background: radial-gradient(circle, rgba(139,92,246,0.05) 0%, transparent 60%); border-radius:50%; filter:blur(40px);"></div>
@@ -340,12 +340,13 @@ export function homePage(opts: {
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
     }
-    /* v34: 50:50 split, equal height both sides */
+    /* v35: 50:50 split, right panel shifted right 13cm + extended 17cm */
     .unified-hero-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: clamp(1.5rem, 2.5vw, 2.5rem);
-      align-items: stretch;
+      align-items: start;
+      overflow: visible;
     }
     .unified-hero-left {
       display: flex;
@@ -356,9 +357,12 @@ export function homePage(opts: {
     .unified-hero-right {
       display: flex;
       flex-direction: column;
+      margin-left: 13cm;
+      width: calc(100% + 17cm);
+      min-width: 0;
     }
     
-    /* Simulator panel card — stretch to fill column height */
+    /* Simulator panel card — original height (no stretch) */
     .unified-sim-panel {
       border-radius: clamp(12px, 1.2vw, 18px);
       overflow: hidden;
@@ -366,12 +370,10 @@ export function homePage(opts: {
       transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease;
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
-      flex: 1;
       display: flex;
       flex-direction: column;
     }
     .unified-sim-body {
-      flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -465,14 +467,15 @@ export function homePage(opts: {
       flex-shrink: 0;
     }
 
-    /* ── Responsive: Mobile → 1 column stack (v32) ── */
+    /* ── Responsive: Mobile → 1 column stack, reset shift ── */
     @media (max-width: 1023px) {
       .unified-hero-grid {
         grid-template-columns: 1fr;
         gap: clamp(1.5rem, 3vw, 2rem);
+        overflow: hidden;
       }
       .unified-hero-left { max-width: 100%; text-align: center; }
-      .unified-hero-right { }
+      .unified-hero-right { margin-left: 0; width: 100%; }
       .unified-hero-left .flex.flex-wrap { justify-content: center; }
       .unified-hero-left .inline-flex { margin-left: auto; margin-right: auto; }
       .hero-contact-card { margin-left: auto; margin-right: auto; text-align: left; max-width: 94%; }
