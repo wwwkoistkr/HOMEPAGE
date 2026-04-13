@@ -1,4 +1,4 @@
-// KOIST - Main Layout Template (v31.0 - 2.5x Logo, 2x GNB, 2.5x Footer, Win/Mobile, 8K Ultra-Sharp)
+// KOIST - Main Layout Template (v32.0 - 2x Text, Half Line-Height, Tab Menu, 8K Ultra-Sharp)
 import type { SettingsMap, Department } from '../types';
 
 export function layout(opts: {
@@ -191,7 +191,7 @@ export function layout(opts: {
     }
     body {
       letter-spacing: -0.01em;
-      line-height: 1.7;
+      line-height: 1.25;
       background: var(--grad-surface);
       -webkit-tap-highlight-color: transparent;
       overflow-x: hidden;
@@ -220,15 +220,15 @@ export function layout(opts: {
       padding-right: var(--container-pad);
     }
 
-    /* ═══════ FLUID TEXT UTILITIES ═══════ */
-    .f-text-xs   { font-size: var(--text-xs); line-height: 1.6; }
-    .f-text-sm   { font-size: var(--text-sm); line-height: 1.65; }
-    .f-text-base { font-size: var(--text-base); line-height: 1.7; }
-    .f-text-lg   { font-size: var(--text-lg); line-height: 1.55; }
-    .f-text-xl   { font-size: var(--text-xl); line-height: 1.4; }
-    .f-text-2xl  { font-size: var(--text-2xl); line-height: 1.3; letter-spacing: -0.02em; }
-    .f-text-3xl  { font-size: var(--text-3xl); line-height: 1.2; letter-spacing: -0.025em; }
-    .f-text-hero { font-size: var(--text-hero); line-height: 1.15; letter-spacing: -0.03em; }
+    /* ═══════ FLUID TEXT UTILITIES (v32 - ~half line-height) ═══════ */
+    .f-text-xs   { font-size: var(--text-xs); line-height: 1.2; }
+    .f-text-sm   { font-size: var(--text-sm); line-height: 1.2; }
+    .f-text-base { font-size: var(--text-base); line-height: 1.25; }
+    .f-text-lg   { font-size: var(--text-lg); line-height: 1.2; }
+    .f-text-xl   { font-size: var(--text-xl); line-height: 1.15; }
+    .f-text-2xl  { font-size: var(--text-2xl); line-height: 1.1; letter-spacing: -0.02em; }
+    .f-text-3xl  { font-size: var(--text-3xl); line-height: 1.05; letter-spacing: -0.025em; }
+    .f-text-hero { font-size: var(--text-hero); line-height: 1.05; letter-spacing: -0.03em; }
 
     /* ═══════ FLUID SPACING UTILITIES ═══════ */
     .f-section-y    { padding-top: var(--space-2xl); padding-bottom: var(--space-2xl); }

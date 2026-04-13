@@ -1,4 +1,4 @@
-// KOIST - Home Page Template (v27.0 - Unified Hero+Simulator, Image Icons, 8K Ultra-Sharp)
+// KOIST - Home Page Template (v32.0 - 70% Slider, 2x Services/Notices, Tab Menu, 8K Ultra-Sharp)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem, SimCertType } from '../types';
 
 function bgStyle(imageUrl: string | undefined, fallbackGradient: string, opacity: string = '0.85'): string {
@@ -136,9 +136,9 @@ export function homePage(opts: {
   ` : ''}
 
   <!-- ════════════════════════════════════════════════════════════════════════
-       UNIFIED HERO + SIMULATOR — v26 8K ULTRA-SHARP SINGLE-ROW
-       좌측: 히어로 텍스트 (배지 + 대제목 + 부제 + CTA 버튼)
-       우측: 인터랙티브 시뮬레이터 패널 (헤더 + 탭 + 슬라이더 + 바차트 + 결과)
+       UNIFIED HERO + SIMULATOR — v32 8K ULTRA-SHARP
+       상단: 히어로 텍스트 (배지 + 대제목 + 부제 + CTA 버튼 + 연락처)
+       하단: 인터랙티브 시뮬레이터 패널 (70% 폭, 시험평가~고객지원 정렬)
        ════════════════════════════════════════════════════════════════════════ -->
   <section class="unified-hero-section relative overflow-hidden" style="${bgStyle(s.hero_bg_url, 'linear-gradient(135deg, #070B14 0%, #0A1128 20%, #0F1E3D 45%, #162D5A 70%, #1A3A6E 100%)', heroOpacity)}">
     <!-- 8K Animated background layers -->
@@ -156,6 +156,7 @@ export function homePage(opts: {
     ` : ''}
 
     <div class="relative fluid-container" style="padding-top:clamp(2.5rem,4.5vw,5rem); padding-bottom:clamp(2.5rem,4.5vw,5rem);">
+      <!-- ═══ v32: Top row — Hero text + Contact side by side ═══ -->
       <div class="unified-hero-grid">
 
         <!-- ═══════ LEFT: Hero Text ═══════ -->
@@ -170,12 +171,12 @@ export function homePage(opts: {
           </div>
 
           <!-- Headline — 2.5x 8K Ultra-Sharp -->
-          <h1 class="text-white font-black" style="font-size:clamp(2.2rem, 1.6rem + 3.2vw, 4.8rem); line-height:1.15; margin-bottom:clamp(0.8rem,1.5vw,1.5rem); letter-spacing:-0.03em; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
+          <h1 class="text-white font-black" style="font-size:clamp(2.2rem, 1.6rem + 3.2vw, 4.8rem); line-height:1.1; margin-bottom:clamp(0.8rem,1.5vw,1.5rem); letter-spacing:-0.03em; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
             ${s.hero_line1 || '정보보안 시험·인증 전문기관'}
           </h1>
 
           <!-- Subtitle (2.5x) -->
-          <p class="text-slate-300/90 font-medium" style="font-size:clamp(1.15rem, 0.95rem + 0.9vw, 1.75rem); line-height:1.55; margin-bottom:clamp(1.8rem,3vw,3rem); max-width:680px; text-rendering:optimizeLegibility;">
+          <p class="text-slate-300/90 font-medium" style="font-size:clamp(1.15rem, 0.95rem + 0.9vw, 1.75rem); line-height:1.25; margin-bottom:clamp(1.8rem,3vw,3rem); max-width:680px; text-rendering:optimizeLegibility;">
             ${s.hero_line2 || 'IT제품 보안성 평가·인증의 원스톱 서비스, <span class="hero-gradient-text">한국정보보안기술원</span>'}
           </p>
 
@@ -332,14 +333,14 @@ export function homePage(opts: {
     </div>
   </section>
 
-  <!-- ═══════ Unified Hero + Simulator Styles — 8K Ultra-Sharp ═══════ -->
+  <!-- ═══════ Unified Hero + Simulator Styles — v32 8K Ultra-Sharp ═══════ -->
   <style>
     .unified-hero-section {
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
     }
-    /* 2-column grid: 55% left / 45% right */
+    /* v32: 2-column grid for hero text + simulator side by side */
     .unified-hero-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -347,7 +348,7 @@ export function homePage(opts: {
       align-items: center;
     }
     .unified-hero-left { max-width: 720px; }
-
+    
     /* Simulator panel card */
     .unified-sim-panel {
       border-radius: clamp(12px, 1.2vw, 18px);
@@ -445,7 +446,7 @@ export function homePage(opts: {
       flex-shrink: 0;
     }
 
-    /* ── Responsive: Mobile → 1 column stack (v31) ── */
+    /* ── Responsive: Mobile → 1 column stack (v32) ── */
     @media (max-width: 1023px) {
       .unified-hero-grid {
         grid-template-columns: 1fr;
@@ -527,26 +528,71 @@ export function homePage(opts: {
     @supports (height: 100dvh) {
       .unified-hero-section { min-height: auto; }
     }
+
+    /* ═══ v32: Notice Tab Menu styles ═══ */
+    .notice-tab-bar {
+      display: flex;
+      border-bottom: 2px solid rgba(226,232,240,0.50);
+      margin-bottom: clamp(0.6rem, 1vw, 1rem);
+      gap: 0;
+    }
+    .notice-tab {
+      padding: clamp(0.5rem,0.8vw,0.75rem) clamp(0.8rem,1.2vw,1.2rem);
+      font-size: clamp(1.0rem, 0.85rem + 0.5vw, 1.6rem);
+      font-weight: 700;
+      color: #94A3B8;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+      letter-spacing: -0.01em;
+    }
+    .notice-tab.active {
+      color: #2563EB;
+      border-bottom-color: #2563EB;
+    }
+    .notice-tab:hover:not(.active) {
+      color: #475569;
+      background: rgba(59,130,246,0.03);
+    }
+    .notice-tab-content {
+      display: none;
+    }
+    .notice-tab-content.active {
+      display: block;
+    }
+    /* 8K notice tabs */
+    @media (min-width: 7680px) {
+      .notice-tab { font-size: 2.8rem; padding: 1.5rem 2.5rem; border-bottom-width: 6px; }
+      .notice-tab-bar { border-bottom-width: 4px; }
+    }
+    @media (min-width: 3840px) {
+      .notice-tab { font-size: 2.0rem; padding: 1rem 1.8rem; border-bottom-width: 4px; }
+      .notice-tab-bar { border-bottom-width: 3px; }
+    }
   </style>
 
   <!-- ════════════════════════════════════════════════════════
-       SERVICES SECTION (v21 - Premium Bento Grid, 3x Enlarged)
+       SERVICES SECTION (v32 - 2x Text Enlarged, Premium Bento Grid)
        ════════════════════════════════════════════════════════ -->
-  <section id="services" class="f-section-y-sm relative overflow-hidden" style="background: #FFFFFF;">
+  <section id="services" class="relative overflow-hidden" style="background: #FFFFFF; padding: clamp(1.5rem,2.5vw,2.5rem) 0;">
     <div class="absolute inset-0 opacity-[0.012]" style="background-image: radial-gradient(circle at 1px 1px, rgba(15,23,42,0.15) 1px, transparent 0); background-size: 32px 32px;"></div>
 
     <div class="relative fluid-container">
       <div class="text-center" style="margin-bottom: clamp(0.8rem,1.5vw,1.5rem)" data-aos="fade-up">
-        <div class="inline-flex items-center rounded-full f-text-xs font-semibold" style="gap:6px; padding:4px 12px; margin-bottom:var(--space-xs); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB;">
-          <i class="fas fa-cubes" style="font-size:9px"></i>KOIST 사업분야
+        <div class="inline-flex items-center rounded-full font-semibold" style="gap:8px; padding:6px 18px; margin-bottom:var(--space-xs); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB; font-size: clamp(0.95rem, 0.8rem + 0.4vw, 1.4rem);">
+          <i class="fas fa-cubes" style="font-size:clamp(11px,0.9vw,16px)"></i>KOIST 사업분야
         </div>
-        <h2 class="font-bold text-primary f-text-xl" style="margin-bottom:var(--space-2xs)">${s.services_title || '핵심 사업분야'}</h2>
-        <p class="text-slate-500 f-text-xs max-w-md mx-auto">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
+        <h2 class="font-bold text-primary" style="font-size: clamp(1.8rem, 1.4rem + 1.2vw, 3.2rem); margin-bottom:var(--space-2xs); line-height:1.2;">${s.services_title || '핵심 사업분야'}</h2>
+        <p class="text-slate-500 max-w-lg mx-auto" style="font-size: clamp(1.1rem, 0.9rem + 0.5vw, 1.7rem); line-height:1.25;">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
       </div>
 
       ${(() => {
-        const fontScale = parseFloat(s.services_tag_font_scale || '1') || 1;
-        const gapScale = parseFloat(s.services_tag_gap_scale || '0.35') || 0.35;
+        const fontScale = parseFloat(s.services_tag_font_scale || '2') || 2;
+        const gapScale = parseFloat(s.services_tag_gap_scale || '0.5') || 0.5;
         const baseFontMin = 0.8;
         const baseFontVw = 1.4;
         const baseFontMax = 1.1;
@@ -560,7 +606,7 @@ export function homePage(opts: {
         const padVw = (1.5 * gapScale).toFixed(1);
         const padMax = (1.3 * gapScale).toFixed(2);
         const gridCols = parseInt(s.services_grid_cols || '5') || 5;
-        const iconSize = parseFloat(s.services_icon_scale || '0.65') || 0.65;
+        const iconSize = parseFloat(s.services_icon_scale || '1.0') || 1.0;
         const iconW = (56 * iconSize).toFixed(0);
         const iconWMax = (80 * iconSize).toFixed(0);
         const iconVw = (6 * iconSize).toFixed(1);
@@ -572,16 +618,16 @@ export function homePage(opts: {
         ${deps.map((dept, i) => `
         <a href="/services/${dept.slug}" class="card-service-xl group block relative" style="--card-accent:${dept.color}; padding:clamp(${padMin}rem, ${padVw}vw, ${padMax}rem);" data-aos="fade-up" data-aos-delay="${Math.min(i * 20, 180)}">
           ${dept.image_url ? `
-          <div class="rounded-lg overflow-hidden transition-all duration-500 group-hover:scale-105 group-hover:shadow-lg mx-auto" style="width:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); height:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); margin-bottom:clamp(0.25rem,0.4vw,0.4rem); border: 1.5px solid ${dept.color}20; box-shadow: 0 1px 8px ${dept.color}10;">
+          <div class="rounded-lg overflow-hidden transition-all duration-500 group-hover:scale-105 group-hover:shadow-lg mx-auto" style="width:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); height:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); margin-bottom:clamp(0.4rem,0.6vw,0.6rem); border: 1.5px solid ${dept.color}20; box-shadow: 0 1px 8px ${dept.color}10;">
             <img src="${dept.image_url}" alt="${dept.name}" class="w-full h-full object-cover" loading="lazy" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
           </div>` : `
-          <div class="rounded-lg flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg mx-auto" style="width:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); height:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); background: linear-gradient(135deg, ${dept.color}15, ${dept.color}08); margin-bottom:clamp(0.25rem,0.4vw,0.4rem);">
-            <i class="fas ${dept.icon}" style="color:${dept.color}; font-size:clamp(0.9rem,1.4vw,1.2rem)"></i>
+          <div class="rounded-lg flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg mx-auto" style="width:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); height:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); background: linear-gradient(135deg, ${dept.color}15, ${dept.color}08); margin-bottom:clamp(0.4rem,0.6vw,0.6rem);">
+            <i class="fas ${dept.icon}" style="color:${dept.color}; font-size:clamp(1.2rem,2vw,1.8rem)"></i>
           </div>`}
-          <h3 class="font-bold text-primary group-hover:text-accent transition-colors text-center" style="font-size:clamp(${fMin}rem,${fVw}vw,${fMax}rem); margin-bottom:2px; line-height:1.25; letter-spacing:-0.02em;">${dept.name}</h3>
-          <p class="text-slate-500 leading-snug text-center line-clamp-2" style="font-size:clamp(${descFontMin}rem,${descFontVw}vw,${descFontMax}rem);">${dept.description || ''}</p>
+          <h3 class="font-bold text-primary group-hover:text-accent transition-colors text-center" style="font-size:clamp(${fMin}rem,${fVw}vw,${fMax}rem); margin-bottom:2px; line-height:1.15; letter-spacing:-0.02em;">${dept.name}</h3>
+          <p class="text-slate-500 text-center line-clamp-2" style="font-size:clamp(${descFontMin}rem,${descFontVw}vw,${descFontMax}rem); line-height:1.2;">${dept.description || ''}</p>
           <div class="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-1 group-hover:translate-x-0">
-            <i class="fas fa-arrow-right text-accent/50" style="font-size:10px"></i>
+            <i class="fas fa-arrow-right text-accent/50" style="font-size:12px"></i>
           </div>
         </a>
         `).join('')}
@@ -593,44 +639,153 @@ export function homePage(opts: {
   <!-- Featured Services 섹션 삭제됨 (v27.0) - 상단 사업분야 그리드로 통합 -->
 
   <!-- ════════════════════════════════════════════════════════
-       NOTICES + PROGRESS (v21 - Premium Dual Panels)
+       NOTICES + PROGRESS (v32 - 2x Text, Tab Menu, Premium Dual Panels)
        ════════════════════════════════════════════════════════ -->
-  <section class="f-section-y relative overflow-hidden" style="background: var(--grad-surface);">
+  <section class="relative overflow-hidden" style="background: var(--grad-surface); padding: clamp(1.5rem,2.5vw,2.5rem) 0;">
     <div class="relative fluid-container">
       <div class="grid grid-cols-1 lg:grid-cols-2" style="gap:clamp(1rem, 2vw, 1.5rem)">
 
-        <!-- Notices Panel -->
-        <div data-aos="fade-right" data-aos-duration="700" class="bg-white rounded-xl border border-slate-200/50" style="padding:clamp(1.25rem, 2.2vw, 1.75rem); box-shadow: var(--shadow-sm);">
-          <div class="flex justify-between items-center" style="margin-bottom:var(--space-md)">
-            <h3 class="font-bold text-primary flex items-center f-text-lg" style="gap:var(--space-sm)">
-              <div class="rounded-lg flex items-center justify-center" style="width:clamp(28px,2.5vw,34px); height:clamp(28px,2.5vw,34px); background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(96,165,250,0.05));">
-                <i class="fas fa-bullhorn text-accent f-text-sm"></i>
-              </div>
-              공지사항
-            </h3>
-            <a href="/support/notice" class="text-accent font-semibold hover:underline f-text-xs inline-flex items-center" style="gap:4px">더보기 <i class="fas fa-chevron-right" style="font-size:9px"></i></a>
+        <!-- ═══ Notices Panel with Tab Menu (v32) ═══ -->
+        <div data-aos="fade-right" data-aos-duration="700" class="bg-white rounded-xl border border-slate-200/50" style="padding:clamp(1.25rem, 2.2vw, 2rem); box-shadow: var(--shadow-sm);">
+          <!-- Tab Bar: 공지사항 / 자료실 / 시스템문서 / 오시는길 -->
+          <div class="notice-tab-bar" id="noticeTabBar">
+            <button class="notice-tab active" data-tab="notices" onclick="switchNoticeTab('notices')">
+              <i class="fas fa-bullhorn" style="font-size:clamp(10px,0.8vw,14px); margin-right:4px;"></i>공지사항
+            </button>
+            <button class="notice-tab" data-tab="downloads" onclick="switchNoticeTab('downloads')">
+              <i class="fas fa-download" style="font-size:clamp(10px,0.8vw,14px); margin-right:4px;"></i>자료실
+            </button>
+            <button class="notice-tab" data-tab="documents" onclick="switchNoticeTab('documents')">
+              <i class="fas fa-book" style="font-size:clamp(10px,0.8vw,14px); margin-right:4px;"></i>시스템문서
+            </button>
+            <button class="notice-tab" data-tab="location" onclick="switchNoticeTab('location')">
+              <i class="fas fa-location-dot" style="font-size:clamp(10px,0.8vw,14px); margin-right:4px;"></i>오시는길
+            </button>
           </div>
-          <div class="divide-y divide-slate-100/80">
-            ${notices.length > 0 ? notices.map(n => `
-            <a href="/support/notice/${n.id}" class="flex items-center py-2.5 hover:bg-blue-50/30 -mx-2 px-2 rounded-lg transition-colors group" style="gap:var(--space-sm)">
-              ${n.is_pinned ? '<span class="shrink-0 bg-red-500 text-white rounded flex items-center justify-center font-bold" style="width:18px; height:18px; font-size:8px; box-shadow: 0 2px 6px rgba(239,68,68,0.25);">N</span>' : '<span class="shrink-0 w-1.5 h-1.5 rounded-full bg-slate-300/80"></span>'}
-              <span class="flex-1 text-slate-700 truncate group-hover:text-accent transition-colors f-text-sm">${n.title}</span>
-              <span class="shrink-0 text-slate-400/70 f-text-xs tabular-nums">${n.created_at ? n.created_at.split('T')[0] : ''}</span>
-            </a>
-            `).join('') : '<p class="text-slate-400 text-center f-text-sm" style="padding:var(--space-xl) 0"><i class="fas fa-inbox text-slate-300 block" style="font-size:1.2rem;margin-bottom:8px"></i>등록된 공지사항이 없습니다.</p>'}
+
+          <!-- Tab Content: 공지사항 -->
+          <div class="notice-tab-content active" id="tab-notices">
+            <div class="flex justify-end" style="margin-bottom:clamp(0.3rem,0.5vw,0.5rem);">
+              <a href="/support/notice" class="text-accent font-semibold hover:underline inline-flex items-center" style="gap:4px; font-size:clamp(1.0rem, 0.85rem + 0.4vw, 1.5rem);">더보기 <i class="fas fa-chevron-right" style="font-size:clamp(9px,0.7vw,12px)"></i></a>
+            </div>
+            <div class="divide-y divide-slate-100/80">
+              ${notices.length > 0 ? notices.map(n => `
+              <a href="/support/notice/${n.id}" class="flex items-center hover:bg-blue-50/30 -mx-2 px-2 rounded-lg transition-colors group" style="gap:var(--space-sm); padding: clamp(0.4rem,0.6vw,0.6rem) 0;">
+                ${n.is_pinned ? '<span class="shrink-0 bg-red-500 text-white rounded flex items-center justify-center font-bold" style="width:clamp(22px,1.8vw,30px); height:clamp(22px,1.8vw,30px); font-size:clamp(9px,0.7vw,13px); box-shadow: 0 2px 6px rgba(239,68,68,0.25);">N</span>' : '<span class="shrink-0 rounded-full bg-slate-300/80" style="width:clamp(6px,0.5vw,8px); height:clamp(6px,0.5vw,8px);"></span>'}
+                <span class="flex-1 text-slate-700 truncate group-hover:text-accent transition-colors" style="font-size:clamp(1.1rem, 0.9rem + 0.5vw, 1.7rem); line-height:1.2;">${n.title}</span>
+                <span class="shrink-0 text-slate-400/70 tabular-nums" style="font-size:clamp(0.95rem, 0.8rem + 0.4vw, 1.4rem);">${n.created_at ? n.created_at.split('T')[0] : ''}</span>
+              </a>
+              `).join('') : '<p class="text-slate-400 text-center" style="padding:var(--space-xl) 0; font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem);"><i class="fas fa-inbox text-slate-300 block" style="font-size:clamp(1.4rem,1.2vw,2rem);margin-bottom:8px"></i>등록된 공지사항이 없습니다.</p>'}
+            </div>
+          </div>
+
+          <!-- Tab Content: 자료실 -->
+          <div class="notice-tab-content" id="tab-downloads">
+            <div class="flex justify-end" style="margin-bottom:clamp(0.3rem,0.5vw,0.5rem);">
+              <a href="/support/downloads" class="text-accent font-semibold hover:underline inline-flex items-center" style="gap:4px; font-size:clamp(1.0rem, 0.85rem + 0.4vw, 1.5rem);">전체보기 <i class="fas fa-chevron-right" style="font-size:clamp(9px,0.7vw,12px)"></i></a>
+            </div>
+            <div style="padding:clamp(1rem,1.5vw,1.5rem) 0;">
+              <div class="space-y-3">
+                <a href="/support/downloads" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">
+                  <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(59,130,246,0.06);"><i class="fas fa-file-pdf text-red-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">시험·평가 신청서 양식</span>
+                    <span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">PDF · 신청서류</span>
+                  </div>
+                </a>
+                <a href="/support/downloads" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">
+                  <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(16,185,129,0.06);"><i class="fas fa-file-lines text-emerald-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">평가 절차 안내서</span>
+                    <span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">PDF · 안내자료</span>
+                  </div>
+                </a>
+                <a href="/support/downloads" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">
+                  <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(139,92,246,0.06);"><i class="fas fa-file-zipper text-purple-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">CC인증 관련 자료 모음</span>
+                    <span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">ZIP · 참고자료</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Content: 시스템문서 -->
+          <div class="notice-tab-content" id="tab-documents">
+            <div class="flex justify-end" style="margin-bottom:clamp(0.3rem,0.5vw,0.5rem);">
+              <a href="/support/documents" class="text-accent font-semibold hover:underline inline-flex items-center" style="gap:4px; font-size:clamp(1.0rem, 0.85rem + 0.4vw, 1.5rem);">전체보기 <i class="fas fa-chevron-right" style="font-size:clamp(9px,0.7vw,12px)"></i></a>
+            </div>
+            <div style="padding:clamp(1rem,1.5vw,1.5rem) 0;">
+              <div class="space-y-3">
+                <a href="/support/documents" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">
+                  <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(59,130,246,0.06);"><i class="fas fa-book text-blue-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">품질경영시스템 매뉴얼</span>
+                    <span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">QMS 문서</span>
+                  </div>
+                </a>
+                <a href="/support/documents" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">
+                  <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(245,158,11,0.06);"><i class="fas fa-shield-halved text-amber-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">정보보호 관리체계 운영규정</span>
+                    <span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">ISMS 문서</span>
+                  </div>
+                </a>
+                <a href="/support/documents" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">
+                  <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(6,182,212,0.06);"><i class="fas fa-clipboard-list text-cyan-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">시험절차 표준운영규정</span>
+                    <span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">SOP 문서</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Content: 오시는길 -->
+          <div class="notice-tab-content" id="tab-location">
+            <div style="padding:clamp(1rem,1.5vw,1.5rem) 0;">
+              <div class="rounded-xl overflow-hidden border border-slate-100" style="margin-bottom:clamp(0.8rem,1.2vw,1.2rem);">
+                <div style="background: linear-gradient(135deg, rgba(59,130,246,0.04), rgba(6,182,212,0.03)); padding:clamp(1rem,1.5vw,1.5rem);">
+                  <div class="flex items-start" style="gap:clamp(10px,1vw,16px); margin-bottom:clamp(0.6rem,0.8vw,0.8rem);">
+                    <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(40px,3.5vw,56px); height:clamp(40px,3.5vw,56px); background:linear-gradient(135deg, #2563EB, #06B6D4);">
+                      <i class="fas fa-building text-white" style="font-size:clamp(16px,1.4vw,24px)"></i>
+                    </div>
+                    <div>
+                      <p class="font-bold text-primary" style="font-size:clamp(1.2rem,1rem+0.6vw,1.9rem); line-height:1.2; margin-bottom:4px;">(주)한국정보보안기술원</p>
+                      <p class="text-slate-500" style="font-size:clamp(1.0rem,0.85rem+0.4vw,1.5rem); line-height:1.2;">${s.address || '서울특별시 서초구 효령로 336 윤일빌딩 4층'}</p>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2" style="gap:clamp(0.4rem,0.6vw,0.6rem);">
+                    <div class="flex items-center" style="gap:6px;">
+                      <i class="fas fa-phone text-accent" style="font-size:clamp(10px,0.8vw,14px)"></i>
+                      <span class="text-slate-600" style="font-size:clamp(1.0rem,0.85rem+0.4vw,1.5rem);">${s.phone || '02-586-1230'}</span>
+                    </div>
+                    <div class="flex items-center" style="gap:6px;">
+                      <i class="fas fa-fax text-accent" style="font-size:clamp(10px,0.8vw,14px)"></i>
+                      <span class="text-slate-600" style="font-size:clamp(1.0rem,0.85rem+0.4vw,1.5rem);">FAX: ${s.fax || '02-586-1238'}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <a href="/about/location" class="btn-primary w-full justify-center" style="font-size:clamp(1.0rem,0.85rem+0.4vw,1.5rem); padding:clamp(0.6rem,0.8vw,0.8rem) 0;">
+                <i class="fas fa-map-location-dot"></i> 오시는길 상세보기
+              </a>
+            </div>
           </div>
         </div>
 
-        <!-- Progress Panel + Dashboard -->
-        <div data-aos="fade-left" data-aos-duration="700" class="bg-white rounded-xl border border-slate-200/50" style="padding:clamp(1.25rem, 2.2vw, 1.75rem); box-shadow: var(--shadow-sm);">
+        <!-- ═══ Progress Panel + Dashboard (v32 - 2x text) ═══ -->
+        <div data-aos="fade-left" data-aos-duration="700" class="bg-white rounded-xl border border-slate-200/50" style="padding:clamp(1.25rem, 2.2vw, 2rem); box-shadow: var(--shadow-sm);">
           <div class="flex justify-between items-center" style="margin-bottom:var(--space-md)">
-            <h3 class="font-bold text-primary flex items-center f-text-lg" style="gap:var(--space-sm)">
-              <div class="rounded-lg flex items-center justify-center" style="width:clamp(28px,2.5vw,34px); height:clamp(28px,2.5vw,34px); background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(6,182,212,0.05));">
-                <i class="fas fa-chart-bar text-emerald-500 f-text-sm"></i>
+            <h3 class="font-bold text-primary flex items-center" style="gap:var(--space-sm); font-size: clamp(1.4rem, 1.1rem + 0.8vw, 2.4rem);">
+              <div class="rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,50px); height:clamp(36px,3vw,50px); background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(6,182,212,0.05));">
+                <i class="fas fa-chart-bar text-emerald-500" style="font-size:clamp(14px,1.2vw,22px)"></i>
               </div>
               평가현황
             </h3>
-            <a href="/support/progress" class="text-accent font-semibold hover:underline f-text-xs inline-flex items-center" style="gap:4px">전체보기 <i class="fas fa-chevron-right" style="font-size:9px"></i></a>
+            <a href="/support/progress" class="text-accent font-semibold hover:underline inline-flex items-center" style="gap:4px; font-size:clamp(1.0rem, 0.85rem + 0.4vw, 1.5rem);">전체보기 <i class="fas fa-chevron-right" style="font-size:clamp(9px,0.7vw,12px)"></i></a>
           </div>
 
           ${catCounts.length > 0 ? `
@@ -638,36 +793,36 @@ export function homePage(opts: {
             ${catCounts.slice(0, 4).map(cc => {
               const m = catMeta[cc.category] || { icon: 'fa-circle', color: '#64748B' };
               return `
-            <a href="/support/progress?category=${encodeURIComponent(cc.category)}" class="group rounded-lg border border-slate-100 hover:border-slate-200 transition-all hover:shadow-sm text-center" style="padding:clamp(0.5rem,0.8vw,0.7rem);">
+            <a href="/support/progress?category=${encodeURIComponent(cc.category)}" class="group rounded-lg border border-slate-100 hover:border-slate-200 transition-all hover:shadow-sm text-center" style="padding:clamp(0.5rem,0.8vw,0.8rem);">
               <div class="flex items-center justify-center" style="gap:4px; margin-bottom:4px">
-                <i class="fas ${m.icon}" style="color:${m.color}; font-size:clamp(0.6rem,0.75vw,0.75rem)"></i>
-                <span class="text-slate-500 f-text-xs truncate">${cc.category}</span>
+                <i class="fas ${m.icon}" style="color:${m.color}; font-size:clamp(0.85rem,0.9vw,1.2rem)"></i>
+                <span class="text-slate-500 truncate" style="font-size:clamp(0.95rem,0.8rem+0.4vw,1.4rem);">${cc.category}</span>
               </div>
-              <div class="font-black f-text-lg" style="color:${m.color}; line-height:1.2;">${cc.cnt}<span class="text-slate-400 font-normal f-text-xs ml-0.5">건</span></div>
+              <div class="font-black" style="color:${m.color}; line-height:1.15; font-size:clamp(1.4rem,1.1rem+0.8vw,2.4rem);">${cc.cnt}<span class="text-slate-400 font-normal ml-0.5" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">건</span></div>
             </a>`;
             }).join('')}
           </div>
           ${catCounts.length > 4 ? `
-          <div class="flex flex-wrap" style="gap:4px; margin-bottom:var(--space-md)">
+          <div class="flex flex-wrap" style="gap:6px; margin-bottom:var(--space-md)">
             ${catCounts.slice(4).map(cc => {
               const m = catMeta[cc.category] || { icon: 'fa-circle', color: '#64748B' };
-              return `<a href="/support/progress?category=${encodeURIComponent(cc.category)}" class="inline-flex items-center rounded-full hover:shadow-sm transition-all f-text-xs" style="gap:4px; padding:3px 10px; background:${m.color}08; color:${m.color}; border:1px solid ${m.color}15;"><i class="fas ${m.icon}" style="font-size:7px"></i>${cc.category} <strong>${cc.cnt}</strong></a>`;
+              return `<a href="/support/progress?category=${encodeURIComponent(cc.category)}" class="inline-flex items-center rounded-full hover:shadow-sm transition-all" style="gap:4px; padding:4px 14px; background:${m.color}08; color:${m.color}; border:1px solid ${m.color}15; font-size:clamp(0.95rem,0.8rem+0.4vw,1.4rem);"><i class="fas ${m.icon}" style="font-size:clamp(8px,0.65vw,12px)"></i>${cc.category} <strong>${cc.cnt}</strong></a>`;
             }).join('')}
           </div>` : ''}
           ` : ''}
 
-          <div class="flex items-center justify-between rounded-lg" style="margin-bottom:var(--space-md); padding:6px 12px; background: linear-gradient(135deg, rgba(59,130,246,0.03), rgba(6,182,212,0.02)); border: 1px solid rgba(59,130,246,0.08);">
-            <span class="text-slate-500 f-text-xs"><i class="fas fa-chart-pie text-blue-400 mr-1" style="font-size:9px"></i>총 시험·평가 실적</span>
-            <span class="text-accent font-black f-text-sm">${totalEvals}건</span>
+          <div class="flex items-center justify-between rounded-lg" style="margin-bottom:var(--space-md); padding:clamp(6px,0.6vw,10px) clamp(12px,1vw,18px); background: linear-gradient(135deg, rgba(59,130,246,0.03), rgba(6,182,212,0.02)); border: 1px solid rgba(59,130,246,0.08);">
+            <span class="text-slate-500" style="font-size:clamp(0.95rem,0.8rem+0.4vw,1.4rem);"><i class="fas fa-chart-pie text-blue-400 mr-1" style="font-size:clamp(10px,0.8vw,14px)"></i>총 시험·평가 실적</span>
+            <span class="text-accent font-black" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem);">${totalEvals}건</span>
           </div>
 
           <div class="overflow-x-auto -mx-1 px-1">
             <table class="w-full" style="min-width:340px;">
               <thead>
                 <tr class="text-left text-slate-500 border-b border-slate-100">
-                  <th class="font-semibold f-text-xs" style="padding:0 6px 8px 0">제품명</th>
-                  <th class="font-semibold f-text-xs hidden sm:table-cell" style="padding:0 6px 8px; width:80px; text-align:center;">분류</th>
-                  <th class="font-semibold f-text-xs" style="padding:0 0 8px 6px; text-align:right; width:80px;">상태</th>
+                  <th class="font-semibold" style="padding:0 6px 8px 0; font-size:clamp(0.95rem,0.8rem+0.4vw,1.4rem);">제품명</th>
+                  <th class="font-semibold hidden sm:table-cell" style="padding:0 6px 8px; width:100px; text-align:center; font-size:clamp(0.95rem,0.8rem+0.4vw,1.4rem);">분류</th>
+                  <th class="font-semibold" style="padding:0 0 8px 6px; text-align:right; width:100px; font-size:clamp(0.95rem,0.8rem+0.4vw,1.4rem);">상태</th>
                 </tr>
               </thead>
               <tbody>
@@ -675,17 +830,17 @@ export function homePage(opts: {
                   const m = catMeta[p.category] || { icon: 'fa-circle', color: '#64748B' };
                   return `
                 <tr class="border-b border-slate-50/80 hover:bg-slate-50/40 transition-colors">
-                  <td class="text-slate-700 font-medium f-text-xs" style="padding:8px 6px 8px 0; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.product_name}</td>
-                  <td class="hidden sm:table-cell text-center" style="padding:8px 6px">
-                    <span class="inline-flex items-center gap-1 rounded-full f-text-xs" style="padding:1px 8px; background:${m.color}10; color:${m.color}; white-space:nowrap;"><i class="fas ${m.icon}" style="font-size:7px"></i>${p.category.length > 5 ? p.category.substring(0,5) + '..' : p.category}</span>
+                  <td class="text-slate-700 font-medium" style="padding:clamp(6px,0.6vw,10px) 6px clamp(6px,0.6vw,10px) 0; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:clamp(1.0rem,0.85rem+0.4vw,1.5rem);">${p.product_name}</td>
+                  <td class="hidden sm:table-cell text-center" style="padding:clamp(6px,0.6vw,10px) 6px">
+                    <span class="inline-flex items-center gap-1 rounded-full" style="padding:2px 10px; background:${m.color}10; color:${m.color}; white-space:nowrap; font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);"><i class="fas ${m.icon}" style="font-size:clamp(8px,0.65vw,12px)"></i>${p.category.length > 5 ? p.category.substring(0,5) + '..' : p.category}</span>
                   </td>
-                  <td style="padding:8px 0 8px 6px; text-align:right;">
-                    <span class="badge-status ${(p.status === '평가완료' || p.status === '발급완료') ? 'badge-complete' : (p.status === '평가진행' || p.status === '시험진행') ? 'badge-progress' : 'badge-received'}">
+                  <td style="padding:clamp(6px,0.6vw,10px) 0 clamp(6px,0.6vw,10px) 6px; text-align:right;">
+                    <span class="badge-status ${(p.status === '평가완료' || p.status === '발급완료') ? 'badge-complete' : (p.status === '평가진행' || p.status === '시험진행') ? 'badge-progress' : 'badge-received'}" style="font-size:clamp(0.9rem,0.75rem+0.35vw,1.3rem);">
                       <span class="badge-dot"></span>${p.status}
                     </span>
                   </td>
                 </tr>`;
-                }).join('') : '<tr><td colspan="3" class="text-center text-slate-400 f-text-sm" style="padding:var(--space-xl) 0"><i class="fas fa-chart-line text-slate-300 block" style="font-size:1.2rem;margin-bottom:8px"></i>등록된 현황이 없습니다.</td></tr>'}
+                }).join('') : '<tr><td colspan="3" class="text-center text-slate-400" style="padding:var(--space-xl) 0; font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem);"><i class="fas fa-chart-line text-slate-300 block" style="font-size:clamp(1.4rem,1.2vw,2rem);margin-bottom:8px"></i>등록된 현황이 없습니다.</td></tr>'}
               </tbody>
             </table>
           </div>
@@ -730,7 +885,25 @@ export function homePage(opts: {
   </a>
 
   <!-- ════════════════════════════════════════════════════════
-       EAL Simulator Script (v26 - Unified Layout)
+       Notice Tab Menu Script (v32)
+       ════════════════════════════════════════════════════════ -->
+  <script>
+  (function(){
+    window.switchNoticeTab = function(tabId) {
+      // Deactivate all tabs
+      document.querySelectorAll('.notice-tab').forEach(function(t) { t.classList.remove('active'); });
+      document.querySelectorAll('.notice-tab-content').forEach(function(c) { c.classList.remove('active'); });
+      // Activate selected tab
+      var tab = document.querySelector('.notice-tab[data-tab="' + tabId + '"]');
+      var content = document.getElementById('tab-' + tabId);
+      if (tab) tab.classList.add('active');
+      if (content) content.classList.add('active');
+    };
+  })();
+  </script>
+
+  <!-- ════════════════════════════════════════════════════════
+       EAL Simulator Script (v32 - Unified Layout)
        ════════════════════════════════════════════════════════ -->
   <script>
   (function(){
