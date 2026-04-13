@@ -180,13 +180,36 @@ export function homePage(opts: {
           </p>
 
           <!-- CTA Buttons -->
-          <div class="flex flex-wrap" style="gap:clamp(0.6rem,1vw,1rem);">
+          <div class="flex flex-wrap" style="gap:clamp(0.6rem,1vw,1rem); margin-bottom:clamp(1.5rem,2.5vw,2.5rem);">
             <a href="/support/inquiry" class="btn-glow ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:8px; padding:clamp(0.7rem,1vw,0.9rem) clamp(1.4rem,2vw,2rem); font-size:clamp(0.82rem,0.95vw,0.95rem);">
               <i class="fas fa-paper-plane" style="font-size:clamp(0.65rem,0.75vw,0.78rem)"></i> ${s.hero_btn_primary || '온라인 상담'}
             </a>
             <a href="#services" class="btn-ghost ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:8px; padding:clamp(0.7rem,1vw,0.9rem) clamp(1.4rem,2vw,2rem); font-size:clamp(0.82rem,0.95vw,0.95rem);">
               <i class="fas fa-th-large" style="font-size:clamp(0.65rem,0.75vw,0.78rem)"></i> ${s.hero_btn_secondary || '사업분야 보기'}
             </a>
+          </div>
+
+          <!-- ═══════ Hero Contact Card (원본 koist.kr 스타일, 8K fluid) ═══════ -->
+          <div class="hero-contact-card" data-aos="fade-up" data-aos-delay="200">
+            <p class="text-slate-400/80 font-medium" style="font-size:clamp(0.68rem,0.78vw,0.82rem); margin-bottom:clamp(0.5rem,0.8vw,0.8rem); letter-spacing:0.02em;">${s.hero_contact_label || '국가 시험·인증 전문기관 정보보안 기술을 완성'}</p>
+            <div class="hero-contact-grid">
+              <div class="hero-contact-item">
+                <div class="hero-contact-icon"><i class="fas fa-phone"></i></div>
+                <span>${s.phone || '02-586-1230'}</span>
+              </div>
+              <div class="hero-contact-item">
+                <div class="hero-contact-icon"><i class="fas fa-fax"></i></div>
+                <span>FAX: ${s.fax || '02-586-1238'}</span>
+              </div>
+              <div class="hero-contact-item">
+                <div class="hero-contact-icon"><i class="fas fa-envelope"></i></div>
+                <span>${s.email || 'koist@koist.kr'}</span>
+              </div>
+              <div class="hero-contact-item">
+                <div class="hero-contact-icon"><i class="fas fa-location-dot"></i></div>
+                <span class="hero-contact-addr">${s.address || '서울특별시 서초구 효령로 336 윤일빌딩 4층 한국정보보안기술원'}</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -373,6 +396,47 @@ export function homePage(opts: {
     .unified-orb-2 { animation: unifiedOrb2 19s ease-in-out infinite; }
     .unified-orb-3 { animation: unifiedOrb3 13s ease-in-out infinite; }
 
+    /* ═══ Hero Contact Card (원본 koist.kr 좌하단, 8K fluid) ═══ */
+    .hero-contact-card {
+      padding: clamp(0.7rem,1.1vw,1.2rem) clamp(0.9rem,1.4vw,1.5rem);
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: clamp(10px,1vw,16px);
+      max-width: 520px;
+    }
+    .hero-contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(0.35rem,0.5vw,0.55rem) clamp(0.6rem,1vw,1rem);
+    }
+    .hero-contact-item {
+      display: flex;
+      align-items: center;
+      gap: clamp(6px,0.5vw,8px);
+      font-size: clamp(0.68rem,0.78vw,0.82rem);
+      color: rgba(203,213,225,0.85);
+      white-space: nowrap;
+      line-height: 1.4;
+    }
+    .hero-contact-addr {
+      white-space: normal;
+      line-height: 1.5;
+    }
+    .hero-contact-icon {
+      width: clamp(22px,1.8vw,28px);
+      height: clamp(22px,1.8vw,28px);
+      border-radius: clamp(5px,0.4vw,7px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(59,130,246,0.10);
+      color: rgba(96,165,250,0.80);
+      font-size: clamp(8px,0.7vw,11px);
+      flex-shrink: 0;
+    }
+
     /* ── Responsive: Mobile → 1 column stack ── */
     @media (max-width: 1023px) {
       .unified-hero-grid {
@@ -382,10 +446,12 @@ export function homePage(opts: {
       .unified-hero-left { max-width: 100%; text-align: center; }
       .unified-hero-left .flex.flex-wrap { justify-content: center; }
       .unified-hero-left .inline-flex { margin-left: auto; margin-right: auto; }
+      .hero-contact-card { margin-left: auto; margin-right: auto; text-align: left; }
     }
     @media (max-width: 639px) {
       .unified-sim-header { flex-direction: column; align-items: flex-start; gap: 8px; }
       .unified-sim-header .hidden.sm\\:flex { display: flex !important; }
+      .hero-contact-grid { grid-template-columns: 1fr; }
     }
 
     /* ── 4K (3840px) ── */
@@ -395,6 +461,9 @@ export function homePage(opts: {
       .unified-sim-panel { border-radius: 24px; }
       .unified-sim-header { padding: 1.4rem 2rem; }
       .unified-sim-body { padding: 1.6rem 2rem; }
+      .hero-contact-card { max-width: 700px; padding: 1.4rem 1.8rem; border-radius: 20px; }
+      .hero-contact-icon { width: 36px; height: 36px; font-size: 14px; }
+      .hero-contact-item { font-size: 1rem; gap: 10px; }
     }
 
     /* ── 8K (7680px) Ultra-Sharp ── */
@@ -406,27 +475,31 @@ export function homePage(opts: {
       .unified-sim-body { padding: 2.4rem 3rem; }
       .eal-tab { padding: 14px 0 !important; font-size: 1.1rem !important; }
       .prep-range::-webkit-slider-thumb { width: 40px !important; height: 40px !important; border-width: 5px !important; }
+      .hero-contact-card { max-width: 1000px; padding: 2rem 2.5rem; border-radius: 28px; }
+      .hero-contact-icon { width: 48px; height: 48px; font-size: 18px; border-radius: 12px; }
+      .hero-contact-item { font-size: 1.3rem; gap: 14px; }
+      .hero-contact-grid { gap: 1rem 2rem; }
     }
   </style>
 
   <!-- ════════════════════════════════════════════════════════
        SERVICES SECTION (v21 - Premium Bento Grid, 3x Enlarged)
        ════════════════════════════════════════════════════════ -->
-  <section id="services" class="f-section-y relative overflow-hidden" style="background: #FFFFFF;">
+  <section id="services" class="f-section-y-sm relative overflow-hidden" style="background: #FFFFFF;">
     <div class="absolute inset-0 opacity-[0.012]" style="background-image: radial-gradient(circle at 1px 1px, rgba(15,23,42,0.15) 1px, transparent 0); background-size: 32px 32px;"></div>
 
     <div class="relative fluid-container">
-      <div class="text-center" style="margin-bottom: clamp(1.5rem,3vw,2.5rem)" data-aos="fade-up">
-        <div class="inline-flex items-center rounded-full f-text-xs font-semibold" style="gap:6px; padding:5px 14px; margin-bottom:var(--space-sm); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB;">
+      <div class="text-center" style="margin-bottom: clamp(0.8rem,1.5vw,1.5rem)" data-aos="fade-up">
+        <div class="inline-flex items-center rounded-full f-text-xs font-semibold" style="gap:6px; padding:4px 12px; margin-bottom:var(--space-xs); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB;">
           <i class="fas fa-cubes" style="font-size:9px"></i>KOIST 사업분야
         </div>
-        <h2 class="font-bold text-primary f-text-2xl" style="margin-bottom:var(--space-xs)">${s.services_title || '핵심 사업분야'}</h2>
-        <p class="text-slate-500 f-text-sm max-w-md mx-auto">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
+        <h2 class="font-bold text-primary f-text-xl" style="margin-bottom:var(--space-2xs)">${s.services_title || '핵심 사업분야'}</h2>
+        <p class="text-slate-500 f-text-xs max-w-md mx-auto">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
       </div>
 
       ${(() => {
-        const fontScale = parseFloat(s.services_tag_font_scale || '2') || 2;
-        const gapScale = parseFloat(s.services_tag_gap_scale || '0.7') || 0.7;
+        const fontScale = parseFloat(s.services_tag_font_scale || '1') || 1;
+        const gapScale = parseFloat(s.services_tag_gap_scale || '0.35') || 0.35;
         const baseFontMin = 0.8;
         const baseFontVw = 1.4;
         const baseFontMax = 1.1;
@@ -440,21 +513,28 @@ export function homePage(opts: {
         const padVw = (1.5 * gapScale).toFixed(1);
         const padMax = (1.3 * gapScale).toFixed(2);
         const gridCols = parseInt(s.services_grid_cols || '5') || 5;
+        const iconSize = parseFloat(s.services_icon_scale || '0.65') || 0.65;
+        const iconW = (56 * iconSize).toFixed(0);
+        const iconWMax = (80 * iconSize).toFixed(0);
+        const iconVw = (6 * iconSize).toFixed(1);
+        const descFontMin = (0.58 * fontScale).toFixed(2);
+        const descFontVw = (0.72 * fontScale).toFixed(1);
+        const descFontMax = (0.70 * fontScale).toFixed(2);
         return `
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-${gridCols}" style="gap:clamp(${gapMin}rem, ${gapVw}vw, ${gapMax}rem)">
         ${deps.map((dept, i) => `
-        <a href="/services/${dept.slug}" class="card-service-xl group block relative" style="--card-accent:${dept.color}; padding:clamp(${padMin}rem, ${padVw}vw, ${padMax}rem);" data-aos="fade-up" data-aos-delay="${Math.min(i * 30, 250)}">
+        <a href="/services/${dept.slug}" class="card-service-xl group block relative" style="--card-accent:${dept.color}; padding:clamp(${padMin}rem, ${padVw}vw, ${padMax}rem);" data-aos="fade-up" data-aos-delay="${Math.min(i * 20, 180)}">
           ${dept.image_url ? `
-          <div class="rounded-xl overflow-hidden transition-all duration-500 group-hover:scale-105 group-hover:shadow-lg mx-auto" style="width:clamp(56px,6vw,80px); height:clamp(56px,6vw,80px); margin-bottom:clamp(0.5rem,0.8vw,0.7rem); border: 2px solid ${dept.color}20; box-shadow: 0 2px 12px ${dept.color}12;">
+          <div class="rounded-lg overflow-hidden transition-all duration-500 group-hover:scale-105 group-hover:shadow-lg mx-auto" style="width:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); height:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); margin-bottom:clamp(0.25rem,0.4vw,0.4rem); border: 1.5px solid ${dept.color}20; box-shadow: 0 1px 8px ${dept.color}10;">
             <img src="${dept.image_url}" alt="${dept.name}" class="w-full h-full object-cover" loading="lazy" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
           </div>` : `
-          <div class="rounded-xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg mx-auto" style="width:clamp(56px,6vw,80px); height:clamp(56px,6vw,80px); background: linear-gradient(135deg, ${dept.color}15, ${dept.color}08); margin-bottom:clamp(0.5rem,0.8vw,0.7rem);">
-            <i class="fas ${dept.icon}" style="color:${dept.color}; font-size:clamp(1.3rem,2vw,1.8rem)"></i>
+          <div class="rounded-lg flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg mx-auto" style="width:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); height:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); background: linear-gradient(135deg, ${dept.color}15, ${dept.color}08); margin-bottom:clamp(0.25rem,0.4vw,0.4rem);">
+            <i class="fas ${dept.icon}" style="color:${dept.color}; font-size:clamp(0.9rem,1.4vw,1.2rem)"></i>
           </div>`}
-          <h3 class="font-bold text-primary group-hover:text-accent transition-colors text-center" style="font-size:clamp(${fMin}rem,${fVw}vw,${fMax}rem); margin-bottom:4px; line-height:1.25; letter-spacing:-0.02em;">${dept.name}</h3>
-          <p class="text-slate-500 leading-snug text-center line-clamp-2" style="font-size:clamp(0.68rem,0.85vw,0.82rem);">${dept.description || ''}</p>
-          <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-1 group-hover:translate-x-0">
-            <i class="fas fa-arrow-right text-accent/50" style="font-size:12px"></i>
+          <h3 class="font-bold text-primary group-hover:text-accent transition-colors text-center" style="font-size:clamp(${fMin}rem,${fVw}vw,${fMax}rem); margin-bottom:2px; line-height:1.25; letter-spacing:-0.02em;">${dept.name}</h3>
+          <p class="text-slate-500 leading-snug text-center line-clamp-2" style="font-size:clamp(${descFontMin}rem,${descFontVw}vw,${descFontMax}rem);">${dept.description || ''}</p>
+          <div class="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-1 group-hover:translate-x-0">
+            <i class="fas fa-arrow-right text-accent/50" style="font-size:10px"></i>
           </div>
         </a>
         `).join('')}

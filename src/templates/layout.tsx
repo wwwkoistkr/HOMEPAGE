@@ -944,7 +944,7 @@ export function layout(opts: {
           </div>
         </div>
 
-        <!-- Quick Links -->
+        <!-- Quick Links: 사업분야 -->
         <div class="md:col-span-3">
           <h4 class="text-white/90 font-semibold f-text-sm tracking-wide" style="margin-bottom: var(--space-md)">사업분야</h4>
           <ul class="space-y-2.5 f-text-sm">
@@ -952,21 +952,27 @@ export function layout(opts: {
           </ul>
         </div>
 
-        <!-- Support Links + Phone -->
-        <div class="md:col-span-4">
+        <!-- Quick Links: 고객지원 (사업분야와 동일 스타일) -->
+        <div class="md:col-span-2">
           <h4 class="text-white/90 font-semibold f-text-sm tracking-wide" style="margin-bottom: var(--space-md)">고객지원</h4>
-          <div class="grid grid-cols-2 f-text-sm" style="gap: var(--space-sm); margin-bottom: var(--space-lg)">
-            <a href="/support/notice" class="hover:text-white transition-colors text-gray-500">공지사항</a>
-            <a href="/support/faq" class="hover:text-white transition-colors text-gray-500">FAQ</a>
-            <a href="/support/downloads" class="hover:text-white transition-colors text-gray-500">자료실</a>
-            <a href="/support/inquiry" class="hover:text-white transition-colors text-gray-500">온라인 상담</a>
-            <a href="/support/documents" class="hover:text-white transition-colors text-gray-500">시스템 문서</a>
-            <a href="/about/greeting" class="hover:text-white transition-colors text-gray-500">KOIST 소개</a>
-            <a href="/about/location" class="hover:text-white transition-colors text-gray-500">오시는길</a>
-          </div>
+          <ul class="space-y-2.5 f-text-sm">
+            <li><a href="/support/notice" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>공지사항</a></li>
+            <li><a href="/support/downloads" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>자료실</a></li>
+            <li><a href="/support/documents" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>시스템 문서</a></li>
+            <li><a href="/about/location" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>오시는길</a></li>
+          </ul>
+        </div>
+
+        <!-- Phone Card -->
+        <div class="md:col-span-2">
           <div class="rounded-xl" style="padding: var(--space-md); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
             <p class="f-text-xs text-gray-600 font-medium" style="margin-bottom: 6px">빠른 상담 전화</p>
             <a href="tel:${s.phone || '02-586-1230'}" class="font-black tracking-tight hover:opacity-80 transition-opacity block" style="font-size: var(--text-xl); background: linear-gradient(135deg, #FFFFFF, #93C5FD); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${s.phone || '02-586-1230'}</a>
+          </div>
+          <div class="mt-4 space-y-2 f-text-xs">
+            <a href="/support/faq" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>FAQ</a>
+            <a href="/support/inquiry" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all block" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>온라인 상담</a>
+            <a href="/about/greeting" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all block" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>KOIST 소개</a>
           </div>
         </div>
       </div>
