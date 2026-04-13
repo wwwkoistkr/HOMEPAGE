@@ -173,6 +173,17 @@ export function layout(opts: {
         --text-2xl: 3.5rem;
         --text-3xl: 4.4rem;
       }
+      /* 8K image scaling — override inline clamp max values */
+      .kolas-mark { height: 220px !important; }
+      .footer-logo { height: 120px !important; }
+    }
+    @media (min-width: 3840px) {
+      .kolas-mark { height: 140px !important; }
+      .footer-logo { height: 80px !important; }
+    }
+    @media (min-width: 2560px) {
+      .kolas-mark { height: 110px !important; }
+      .footer-logo { height: 64px !important; }
     }
 
     /* ═══════ GLOBAL HiDPI RENDERING (v30 Windows/Mobile compat) ═══════ */
@@ -1051,7 +1062,7 @@ export function layout(opts: {
           </a>
           <!-- KOLAS 국제공인시험기관 마크 (v31 - 2.5x enlarged) -->
           <div class="hidden md:flex items-center" style="padding-left: clamp(10px, 1.4vw, 20px); border-left: 1px solid rgba(255,255,255,0.08);">
-            <img src="/static/images/kolas.png" alt="KOLAS 국제공인시험기관" style="height:clamp(54px, 48px + 1.8vw, 84px);" class="w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" title="KOLAS 국제공인시험기관 인정 (KTL-F-588)">
+            <img src="/static/images/kolas.png" alt="KOLAS 국제공인시험기관" style="height:clamp(54px, 48px + 1.8vw, 84px);" class="kolas-mark w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" title="KOLAS 국제공인시험기관 인정 (KTL-F-588)">
           </div>
         </div>
 
@@ -1292,7 +1303,7 @@ export function layout(opts: {
         <div class="md:col-span-5">
           <div style="margin-bottom: var(--space-lg)">
             <div class="inline-flex items-center rounded-xl" style="padding: var(--space-sm) var(--space-md); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);">
-              <img src="/static/images/logo-horizontal.png" alt="${siteName}" style="height:clamp(32px, 26px + 0.9vw, 48px)" class="w-auto object-contain opacity-90">
+              <img src="/static/images/logo-horizontal.png" alt="${siteName}" style="height:clamp(32px, 26px + 0.9vw, 48px)" class="footer-logo w-auto object-contain opacity-90">
             </div>
           </div>
           <p class="f-text-lg leading-relaxed text-gray-500 max-w-lg" style="margin-bottom: var(--space-md)">${s.site_slogan || '최상의 시험·인증 서비스로 정보보안 기술을 완성'}</p>

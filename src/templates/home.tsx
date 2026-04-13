@@ -192,7 +192,7 @@ export function homePage(opts: {
 
           <!-- ═══════ Hero Contact Card (원본 koist.kr 스타일, 8K fluid) ═══════ -->
           <div class="hero-contact-card" data-aos="fade-up" data-aos-delay="200">
-            <p class="text-slate-300/90 font-bold" style="font-size:clamp(0.46rem,0.70vw,0.74rem); margin-bottom:clamp(0.25rem,0.44vw,0.44rem); letter-spacing:0.01em; white-space:nowrap; text-rendering:geometricPrecision;">${s.hero_contact_label || '국가 시험·인증 전문기관 정보보안 기술을 완성'}</p>
+            <p class="text-slate-300/90 font-bold" style="font-size:clamp(0.69rem,1.05vw,1.11rem); margin-bottom:clamp(0.38rem,0.66vw,0.66rem); letter-spacing:0.01em; white-space:nowrap; text-rendering:geometricPrecision;">${s.hero_contact_label || '국가 시험·인증 전문기관 정보보안 기술을 완성'}</p>
             <div class="hero-contact-grid">
               <div class="hero-contact-item">
                 <div class="hero-contact-icon"><i class="fas fa-phone"></i></div>
@@ -358,7 +358,7 @@ export function homePage(opts: {
     .unified-hero-right {
       display: flex;
       flex-direction: column;
-      margin-left: 8cm;
+      margin-left: 3cm;
       width: calc(100% + 10cm);
       min-width: 0;
     }
@@ -421,7 +421,7 @@ export function homePage(opts: {
 
     /* ═══ Hero Contact Card (v39 — 7cm left reduction, 50% text shrink, compact) ═══ */
     .hero-contact-card {
-      padding: clamp(0.35rem,0.61vw,0.69rem) clamp(0.50rem,0.80vw,0.90rem);
+      padding: clamp(0.53rem,0.92vw,1.04rem) clamp(0.75rem,1.20vw,1.35rem);
       background: rgba(255,255,255,0.03);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
@@ -441,13 +441,13 @@ export function homePage(opts: {
     .hero-contact-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: clamp(0.17rem,0.27vw,0.30rem) clamp(0.30rem,0.54vw,0.54rem);
+      gap: clamp(0.26rem,0.41vw,0.45rem) 2cm;
     }
     .hero-contact-item {
       display: flex;
       align-items: center;
-      gap: clamp(4px,0.42vw,6px);
-      font-size: clamp(0.35rem,0.58vw,0.58rem);
+      gap: clamp(6px,0.63vw,9px);
+      font-size: clamp(0.52rem,0.87vw,0.87rem);
       color: rgba(220,230,245,0.92);
       white-space: nowrap;
       overflow-wrap: break-word;
@@ -462,15 +462,15 @@ export function homePage(opts: {
       line-height: 1.40;
     }
     .hero-contact-icon {
-      width: clamp(14px,1.33vw,20px);
-      height: clamp(14px,1.33vw,20px);
-      border-radius: clamp(3px,0.28vw,5px);
+      width: clamp(21px,2.00vw,30px);
+      height: clamp(21px,2.00vw,30px);
+      border-radius: clamp(4px,0.42vw,7px);
       display: flex;
       align-items: center;
       justify-content: center;
       background: rgba(59,130,246,0.12);
       color: rgba(96,165,250,0.90);
-      font-size: clamp(5px,0.56vw,8px);
+      font-size: clamp(8px,0.84vw,12px);
       flex-shrink: 0;
     }
 
@@ -486,32 +486,34 @@ export function homePage(opts: {
       .unified-hero-left .flex.flex-wrap { justify-content: center; }
       .unified-hero-left .inline-flex { margin-left: auto; margin-right: auto; }
       .hero-contact-card { margin-left: auto; margin-right: auto; text-align: left; max-width: 94%; flex: none; }
-      .hero-contact-item { font-size: clamp(0.50rem, 1.4vw, 0.73rem); }
-      .hero-contact-icon { width: clamp(19px, 3vw, 25px); height: clamp(19px, 3vw, 25px); font-size: clamp(7px, 1.3vw, 10px); }
+      .hero-contact-item { font-size: clamp(0.75rem, 2.1vw, 1.10rem); }
+      .hero-contact-icon { width: clamp(28px, 4.5vw, 38px); height: clamp(28px, 4.5vw, 38px); font-size: clamp(11px, 2.0vw, 15px); }
+      .hero-contact-grid { gap: clamp(0.26rem,0.41vw,0.45rem) 2cm; }
       .hero-contact-addr { white-space: normal; }
     }
     /* Mobile (639px) */
     @media (max-width: 639px) {
       .unified-sim-header { flex-direction: column; align-items: flex-start; gap: 8px; }
       .unified-sim-header .hidden.sm\\:flex { display: flex !important; }
-      .hero-contact-grid { grid-template-columns: 1fr; gap: clamp(0.35rem,1.3vw,0.5rem); }
-      .hero-contact-item { white-space: normal; font-size: clamp(0.48rem, 2vw, 0.60rem); word-break: keep-all; overflow-wrap: break-word; }
-      .hero-contact-icon { width: 20px; height: 20px; font-size: 8px; border-radius: 5px; }
-      .hero-contact-card { padding: clamp(0.6rem,2vw,0.8rem) clamp(0.7rem,2.3vw,0.9rem); border-radius: 10px; }
-      .hero-contact-card p { font-size: clamp(0.53rem, 2.1vw, 0.65rem) !important; }
+      .hero-contact-grid { grid-template-columns: 1fr; gap: clamp(0.53rem,2.0vw,0.75rem); }
+      .hero-contact-item { white-space: normal; font-size: clamp(0.72rem, 3vw, 0.90rem); word-break: keep-all; overflow-wrap: break-word; }
+      .hero-contact-icon { width: 30px; height: 30px; font-size: 12px; border-radius: 7px; }
+      .hero-contact-card { padding: clamp(0.9rem,3vw,1.2rem) clamp(1.05rem,3.5vw,1.35rem); border-radius: 14px; }
+      .hero-contact-card p { font-size: clamp(0.80rem, 3.2vw, 0.98rem) !important; }
     }
     /* Very small mobile (375px) */
     @media (max-width: 375px) {
-      .hero-contact-item { font-size: 0.46rem; gap: 4px; }
-      .hero-contact-icon { width: 17px; height: 17px; font-size: 7px; }
+      .hero-contact-item { font-size: 0.69rem; gap: 6px; }
+      .hero-contact-icon { width: 25px; height: 25px; font-size: 10px; }
     }
 
     /* ── 2.5K (2560px) ── */
     @media (min-width: 2560px) {
-      .hero-contact-item { font-size: 0.9rem; gap: 9px; }
-      .hero-contact-icon { width: 29px; height: 29px; font-size: 12px; border-radius: 7px; }
-      .hero-contact-card { max-width: 700px; padding: 1.3rem 1.6rem; border-radius: 14px; }
-      .hero-contact-card p { font-size: 0.95rem !important; }
+      .hero-contact-item { font-size: 1.35rem; gap: 14px; }
+      .hero-contact-icon { width: 44px; height: 44px; font-size: 18px; border-radius: 10px; }
+      .hero-contact-card { max-width: 900px; padding: 2.0rem 2.4rem; border-radius: 20px; }
+      .hero-contact-card p { font-size: 1.43rem !important; }
+      .hero-contact-grid { gap: 0.6rem 2.5cm; }
     }
 
     /* ── 4K (3840px) ── */
@@ -521,11 +523,13 @@ export function homePage(opts: {
       .unified-sim-panel { border-radius: 28px; }
       .unified-sim-header { padding: 1.8rem 2.5rem; }
       .unified-sim-body { padding: 2rem 2.5rem; }
-      .hero-contact-card { max-width: 800px; padding: 1.6rem 2rem; border-radius: 16px; }
-      .hero-contact-icon { width: 38px; height: 38px; font-size: 15px; border-radius: 9px; }
-      .hero-contact-item { font-size: 1.15rem; gap: 11px; }
-      .hero-contact-grid { gap: 0.9rem 1.8rem; }
-      .hero-contact-card p { font-size: 1.2rem !important; }
+      .hero-contact-card { max-width: 1100px; padding: 2.4rem 3rem; border-radius: 22px; }
+      .hero-contact-icon { width: 57px; height: 57px; font-size: 23px; border-radius: 13px; }
+      .hero-contact-item { font-size: 1.73rem; gap: 17px; }
+      .hero-contact-grid { gap: 1.4rem 3cm; }
+      .hero-contact-card p { font-size: 1.8rem !important; }
+      /* 4K dept icon scaling */
+      .card-service-xl .rounded-lg { width: 200px !important; height: 200px !important; }
     }
 
     /* ── 8K (7680px) Ultra-Sharp ── */
@@ -537,11 +541,13 @@ export function homePage(opts: {
       .unified-sim-body { padding: 3.5rem 4rem; }
       .eal-tab { padding: 22px 0 !important; font-size: 1.8rem !important; }
       .prep-range::-webkit-slider-thumb { width: 60px !important; height: 60px !important; border-width: 7px !important; }
-      .hero-contact-card { max-width: 1200px; padding: 2.5rem 3.3rem; border-radius: 28px; }
-      .hero-contact-icon { width: 55px; height: 55px; font-size: 22px; border-radius: 13px; }
-      .hero-contact-item { font-size: 1.8rem; gap: 16px; }
-      .hero-contact-grid { gap: 1.4rem 2.8rem; }
-      .hero-contact-card p { font-size: 1.7rem !important; }
+      .hero-contact-card { max-width: 1800px; padding: 3.8rem 5.0rem; border-radius: 42px; }
+      .hero-contact-icon { width: 83px; height: 83px; font-size: 33px; border-radius: 20px; }
+      .hero-contact-item { font-size: 2.7rem; gap: 24px; }
+      .hero-contact-grid { gap: 2.1rem 4.2cm; }
+      .hero-contact-card p { font-size: 2.6rem !important; }
+      /* 8K dept icon scaling */
+      .card-service-xl .rounded-lg { width: 320px !important; height: 320px !important; }
     }
 
     /* ── Touch device: disable hover transforms on mobile ── */
