@@ -192,7 +192,7 @@ export function homePage(opts: {
 
           <!-- ═══════ Hero Contact Card (원본 koist.kr 스타일, 8K fluid) ═══════ -->
           <div class="hero-contact-card" data-aos="fade-up" data-aos-delay="200">
-            <p class="text-slate-300/90 font-bold" style="font-size:clamp(0.91rem,1.40vw,1.47rem); margin-bottom:clamp(0.7rem,1.26vw,1.26rem); letter-spacing:0.01em; text-rendering:geometricPrecision;">${s.hero_contact_label || '국가 시험·인증 전문기관 정보보안 기술을 완성'}</p>
+            <p class="text-slate-300/90 font-bold" style="font-size:clamp(0.64rem,0.98vw,1.03rem); margin-bottom:clamp(0.49rem,0.88vw,0.88rem); letter-spacing:0.01em; text-rendering:geometricPrecision;">${s.hero_contact_label || '국가 시험·인증 전문기관 정보보안 기술을 완성'}</p>
             <div class="hero-contact-grid">
               <div class="hero-contact-item">
                 <div class="hero-contact-icon"><i class="fas fa-phone"></i></div>
@@ -340,7 +340,7 @@ export function homePage(opts: {
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
     }
-    /* v35.3: left +22cm (15cm wider card), equal height with sim */
+    /* v35.4: left +15cm (card -7cm narrower), card text 30% smaller */
     .unified-hero-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -353,7 +353,7 @@ export function homePage(opts: {
       flex-direction: column;
       justify-content: space-between;
       max-width: none;
-      width: calc(100% + 22cm);
+      width: calc(100% + 15cm);
     }
     .unified-hero-right {
       display: flex;
@@ -421,12 +421,12 @@ export function homePage(opts: {
 
     /* ═══ Hero Contact Card (v30.0 — 2.5x enlarged, 8K Ultra-Sharp, Windows/Mobile compat) ═══ */
     .hero-contact-card {
-      padding: clamp(0.98rem,1.75vw,1.96rem) clamp(1.26rem,2.24vw,2.45rem);
+      padding: clamp(0.69rem,1.22vw,1.37rem) clamp(0.88rem,1.57vw,1.72rem);
       background: rgba(255,255,255,0.03);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255,255,255,0.06);
-      border-radius: clamp(10px,1.26vw,20px);
+      border-radius: clamp(7px,0.88vw,14px);
       max-width: none;
       width: 100%;
       flex: 1;
@@ -440,13 +440,13 @@ export function homePage(opts: {
     .hero-contact-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: clamp(0.49rem,0.77vw,0.84rem) clamp(0.84rem,1.54vw,1.54rem);
+      gap: clamp(0.34rem,0.54vw,0.59rem) clamp(0.59rem,1.08vw,1.08rem);
     }
     .hero-contact-item {
       display: flex;
       align-items: center;
-      gap: clamp(7px,0.84vw,11px);
-      font-size: clamp(0.70rem,1.12vw,1.15rem);
+      gap: clamp(5px,0.59vw,8px);
+      font-size: clamp(0.49rem,0.78vw,0.81rem);
       color: rgba(220,230,245,0.92);
       white-space: nowrap;
       overflow-wrap: break-word;
@@ -461,15 +461,15 @@ export function homePage(opts: {
       line-height: 1.45;
     }
     .hero-contact-icon {
-      width: clamp(27px,2.66vw,39px);
-      height: clamp(27px,2.66vw,39px);
-      border-radius: clamp(6px,0.56vw,10px);
+      width: clamp(19px,1.86vw,27px);
+      height: clamp(19px,1.86vw,27px);
+      border-radius: clamp(4px,0.39vw,7px);
       display: flex;
       align-items: center;
       justify-content: center;
       background: rgba(59,130,246,0.12);
       color: rgba(96,165,250,0.90);
-      font-size: clamp(10px,1.12vw,15px);
+      font-size: clamp(7px,0.78vw,11px);
       flex-shrink: 0;
     }
 
