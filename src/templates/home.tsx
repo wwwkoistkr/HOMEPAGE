@@ -340,14 +340,15 @@ export function homePage(opts: {
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
     }
-    /* v32: 2-column grid for hero text + simulator side by side */
+    /* v33: 2-column grid — simulator 50% wider (2fr:3fr), shifted up 30% */
     .unified-hero-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: clamp(2rem, 4vw, 4rem);
-      align-items: center;
+      grid-template-columns: 2fr 3fr;
+      gap: clamp(1.5rem, 3vw, 3rem);
+      align-items: start;
     }
-    .unified-hero-left { max-width: 720px; }
+    .unified-hero-left { max-width: 620px; padding-top: clamp(1rem, 2vw, 2.5rem); }
+    .unified-hero-right { margin-top: clamp(-0.5rem, -1.5vw, -1rem); }
     
     /* Simulator panel card */
     .unified-sim-panel {
@@ -452,7 +453,8 @@ export function homePage(opts: {
         grid-template-columns: 1fr;
         gap: clamp(1.5rem, 3vw, 2rem);
       }
-      .unified-hero-left { max-width: 100%; text-align: center; }
+      .unified-hero-left { max-width: 100%; text-align: center; padding-top: 0; }
+      .unified-hero-right { margin-top: 0; }
       .unified-hero-left .flex.flex-wrap { justify-content: center; }
       .unified-hero-left .inline-flex { margin-left: auto; margin-right: auto; }
       .hero-contact-card { margin-left: auto; margin-right: auto; text-align: left; max-width: 94%; }
@@ -485,8 +487,8 @@ export function homePage(opts: {
 
     /* ── 4K (3840px) ── */
     @media (min-width: 3840px) {
-      .unified-hero-grid { gap: 6rem; }
-      .unified-hero-left { max-width: 1050px; }
+      .unified-hero-grid { gap: 5rem; }
+      .unified-hero-left { max-width: 900px; }
       .unified-sim-panel { border-radius: 28px; }
       .unified-sim-header { padding: 1.8rem 2.5rem; }
       .unified-sim-body { padding: 2rem 2.5rem; }
@@ -499,8 +501,8 @@ export function homePage(opts: {
 
     /* ── 8K (7680px) Ultra-Sharp ── */
     @media (min-width: 7680px) {
-      .unified-hero-grid { gap: 12rem; }
-      .unified-hero-left { max-width: 1800px; }
+      .unified-hero-grid { gap: 8rem; }
+      .unified-hero-left { max-width: 1500px; }
       .unified-sim-panel { border-radius: 56px; box-shadow: 0 24px 120px rgba(0,0,0,0.3), 0 8px 40px rgba(0,0,0,0.12); }
       .unified-sim-header { padding: 3rem 4rem; }
       .unified-sim-body { padding: 3.5rem 4rem; }
@@ -583,15 +585,15 @@ export function homePage(opts: {
 
     <div class="relative fluid-container">
       <div class="text-center" style="margin-bottom: clamp(0.8rem,1.5vw,1.5rem)" data-aos="fade-up">
-        <div class="inline-flex items-center rounded-full font-semibold" style="gap:8px; padding:6px 18px; margin-bottom:var(--space-xs); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB; font-size: clamp(0.95rem, 0.8rem + 0.4vw, 1.4rem);">
+        <div class="inline-flex items-center rounded-full font-semibold" style="gap:8px; padding:6px 18px; margin-bottom:var(--space-xs); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB; font-size: clamp(0.60rem, 0.50rem + 0.28vw, 0.88rem);">
           <i class="fas fa-cubes" style="font-size:clamp(11px,0.9vw,16px)"></i>KOIST 사업분야
         </div>
-        <h2 class="font-bold text-primary" style="font-size: clamp(1.8rem, 1.4rem + 1.2vw, 3.2rem); margin-bottom:var(--space-2xs); line-height:1.2;">${s.services_title || '핵심 사업분야'}</h2>
-        <p class="text-slate-500 max-w-lg mx-auto" style="font-size: clamp(1.1rem, 0.9rem + 0.5vw, 1.7rem); line-height:1.25;">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
+        <h2 class="font-bold text-primary" style="font-size: clamp(1.1rem, 0.85rem + 0.72vw, 1.92rem); margin-bottom:var(--space-2xs); line-height:1.2;">${s.services_title || '핵심 사업분야'}</h2>
+        <p class="text-slate-500 max-w-lg mx-auto" style="font-size: clamp(0.72rem, 0.58rem + 0.35vw, 1.05rem); line-height:1.25;">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
       </div>
 
       ${(() => {
-        const fontScale = parseFloat(s.services_tag_font_scale || '2') || 2;
+        const fontScale = parseFloat(s.services_tag_font_scale || '1.2') || 1.2;
         const gapScale = parseFloat(s.services_tag_gap_scale || '0.5') || 0.5;
         const baseFontMin = 0.8;
         const baseFontVw = 1.4;
@@ -636,7 +638,327 @@ export function homePage(opts: {
     </div>
   </section>
 
-  <!-- Featured Services 섹션 삭제됨 (v27.0) - 상단 사업분야 그리드로 통합 -->
+  <!-- ════════════════════════════════════════════════════════
+       v33: INLINE ACCORDION — 공지사항/자료실/시스템문서/오시는길
+       사업분야 바로 아래, 클릭 → 펼치기 → 항목 클릭 → 내용 → 닫기 → 원위치
+       ════════════════════════════════════════════════════════ -->
+  <section id="homeAccordionSection" class="relative" style="background:#FFFFFF; border-top:1px solid rgba(226,232,240,0.40);">
+    <div class="fluid-container" style="padding-top:0; padding-bottom:0;">
+      <!-- Accordion Trigger Bar -->
+      <button id="accordionTrigger" onclick="toggleHomeAccordion()" class="w-full flex items-center justify-between transition-all hover:bg-blue-50/30" style="padding:clamp(0.7rem,1.1vw,1rem) clamp(0.5rem,1vw,1rem); border-radius:0; cursor:pointer; border:none; background:transparent;">
+        <span class="flex items-center" style="gap:clamp(6px,0.6vw,10px);">
+          <i class="fas fa-bullhorn text-accent" style="font-size:clamp(12px,1vw,16px)"></i>
+          <span class="font-bold text-primary" style="font-size:clamp(0.85rem,0.72rem+0.38vw,1.15rem);">공지사항 / 자료실 / 시스템문서 / 오시는길</span>
+        </span>
+        <span class="flex items-center" style="gap:6px;">
+          <span class="text-slate-400 font-medium" style="font-size:clamp(0.7rem,0.6rem+0.2vw,0.85rem);">펼쳐보기</span>
+          <i id="accordionArrow" class="fas fa-chevron-down text-slate-400 transition-transform" style="font-size:clamp(10px,0.8vw,13px); transition:transform 0.3s ease;"></i>
+        </span>
+      </button>
+
+      <!-- Accordion Body (hidden by default) -->
+      <div id="accordionBody" style="max-height:0; overflow:hidden; transition:max-height 0.45s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.3s ease; opacity:0;">
+        <div style="padding:0 clamp(0.5rem,1vw,1rem) clamp(1rem,1.5vw,1.5rem);">
+
+          <!-- 4-tab bar -->
+          <div class="acc-tab-bar flex" style="border-bottom:2px solid rgba(226,232,240,0.50); margin-bottom:clamp(0.5rem,0.8vw,0.8rem); gap:0;">
+            <button class="acc-tab active" data-acctab="acc-notices" onclick="switchAccTab('acc-notices')">
+              <i class="fas fa-bullhorn" style="font-size:clamp(9px,0.7vw,12px); margin-right:3px;"></i>공지사항
+            </button>
+            <button class="acc-tab" data-acctab="acc-downloads" onclick="switchAccTab('acc-downloads')">
+              <i class="fas fa-download" style="font-size:clamp(9px,0.7vw,12px); margin-right:3px;"></i>자료실
+            </button>
+            <button class="acc-tab" data-acctab="acc-documents" onclick="switchAccTab('acc-documents')">
+              <i class="fas fa-book" style="font-size:clamp(9px,0.7vw,12px); margin-right:3px;"></i>시스템문서
+            </button>
+            <button class="acc-tab" data-acctab="acc-location" onclick="switchAccTab('acc-location')">
+              <i class="fas fa-location-dot" style="font-size:clamp(9px,0.7vw,12px); margin-right:3px;"></i>오시는길
+            </button>
+          </div>
+
+          <!-- Tab Content: 공지사항 (AJAX loaded) -->
+          <div class="acc-tab-content active" id="acc-notices">
+            <div id="accNoticeList" class="divide-y divide-slate-100/80">
+              <p class="text-slate-400 text-center" style="padding:1.5rem 0; font-size:clamp(0.8rem,0.7rem+0.2vw,0.95rem);"><i class="fas fa-spinner fa-spin mr-1"></i> 불러오는 중...</p>
+            </div>
+            <!-- Notice detail expand area -->
+            <div id="accNoticeDetail" style="display:none; margin-top:clamp(0.5rem,0.8vw,0.8rem);">
+              <div class="rounded-xl border border-blue-100 bg-blue-50/30" style="padding:clamp(1rem,1.5vw,1.5rem);">
+                <h4 id="accNoticeDetailTitle" class="font-bold text-primary" style="font-size:clamp(0.9rem,0.78rem+0.35vw,1.15rem); margin-bottom:clamp(0.4rem,0.6vw,0.6rem); line-height:1.3;"></h4>
+                <div id="accNoticeDetailBody" class="text-slate-600" style="font-size:clamp(0.8rem,0.7rem+0.25vw,0.95rem); line-height:1.6; word-break:keep-all; overflow-wrap:break-word;"></div>
+                <div style="text-align:center; margin-top:clamp(0.8rem,1.2vw,1.2rem);">
+                  <button onclick="closeAccDetail()" class="inline-flex items-center font-semibold text-white rounded-lg transition-all hover:opacity-90" style="gap:5px; padding:clamp(0.4rem,0.6vw,0.55rem) clamp(1.2rem,1.8vw,1.6rem); font-size:clamp(0.75rem,0.65rem+0.22vw,0.88rem); background:linear-gradient(135deg,#2563EB,#06B6D4);">
+                    <i class="fas fa-times" style="font-size:10px"></i> 닫기
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Content: 자료실 (AJAX loaded) -->
+          <div class="acc-tab-content" id="acc-downloads">
+            <div id="accDownloadList" class="divide-y divide-slate-100/80">
+              <p class="text-slate-400 text-center" style="padding:1.5rem 0; font-size:clamp(0.8rem,0.7rem+0.2vw,0.95rem);"><i class="fas fa-spinner fa-spin mr-1"></i> 불러오는 중...</p>
+            </div>
+          </div>
+
+          <!-- Tab Content: 시스템문서 (static) -->
+          <div class="acc-tab-content" id="acc-documents">
+            <div class="space-y-2">
+              <a href="/static/docs/architecture-diagram.html" target="_blank" class="flex items-center hover:bg-blue-50/30 px-2 rounded-lg transition-colors group" style="gap:clamp(6px,0.6vw,10px); padding-top:clamp(0.35rem,0.5vw,0.5rem); padding-bottom:clamp(0.35rem,0.5vw,0.5rem);">
+                <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(30px,2.5vw,40px); height:clamp(30px,2.5vw,40px); background:rgba(59,130,246,0.06);"><i class="fas fa-sitemap text-blue-400" style="font-size:clamp(11px,0.9vw,15px)"></i></div>
+                <div class="flex-1 min-w-0">
+                  <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(0.8rem,0.7rem+0.25vw,0.95rem); line-height:1.3;">시스템 설계서 (Architecture Diagram)</span>
+                  <span class="text-slate-400" style="font-size:clamp(0.65rem,0.56rem+0.18vw,0.78rem);">v8.0 · 시스템 아키텍처, DB 스키마, API 설계</span>
+                </div>
+                <i class="fas fa-external-link-alt text-slate-300 group-hover:text-accent" style="font-size:clamp(9px,0.7vw,12px)"></i>
+              </a>
+              <a href="/static/docs/development-guide.html" target="_blank" class="flex items-center hover:bg-blue-50/30 px-2 rounded-lg transition-colors group" style="gap:clamp(6px,0.6vw,10px); padding-top:clamp(0.35rem,0.5vw,0.5rem); padding-bottom:clamp(0.35rem,0.5vw,0.5rem);">
+                <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(30px,2.5vw,40px); height:clamp(30px,2.5vw,40px); background:rgba(16,185,129,0.06);"><i class="fas fa-code text-emerald-400" style="font-size:clamp(11px,0.9vw,15px)"></i></div>
+                <div class="flex-1 min-w-0">
+                  <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(0.8rem,0.7rem+0.25vw,0.95rem); line-height:1.3;">개발지침서 (Development Guide)</span>
+                  <span class="text-slate-400" style="font-size:clamp(0.65rem,0.56rem+0.18vw,0.78rem);">v8.0 · 기술 스택, 디렉터리 구조, API 가이드</span>
+                </div>
+                <i class="fas fa-external-link-alt text-slate-300 group-hover:text-accent" style="font-size:clamp(9px,0.7vw,12px)"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Tab Content: 오시는길 (static from settings) -->
+          <div class="acc-tab-content" id="acc-location">
+            <div class="rounded-xl overflow-hidden border border-slate-100" style="padding:clamp(0.8rem,1.2vw,1.2rem);">
+              <div class="flex items-start" style="gap:clamp(8px,0.8vw,12px); margin-bottom:clamp(0.5rem,0.7vw,0.7rem);">
+                <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(32px,2.8vw,44px); height:clamp(32px,2.8vw,44px); background:linear-gradient(135deg,#2563EB,#06B6D4);">
+                  <i class="fas fa-building text-white" style="font-size:clamp(12px,1vw,18px)"></i>
+                </div>
+                <div>
+                  <p class="font-bold text-primary" style="font-size:clamp(0.85rem,0.75rem+0.3vw,1.1rem); line-height:1.3; margin-bottom:3px;">(주)한국정보보안기술원</p>
+                  <p class="text-slate-500" style="font-size:clamp(0.75rem,0.65rem+0.22vw,0.9rem); line-height:1.3;">${s.address || '서울특별시 서초구 효령로 336 윤일빌딩 4층'}</p>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2" style="gap:clamp(0.3rem,0.5vw,0.5rem);">
+                <div class="flex items-center" style="gap:5px;">
+                  <i class="fas fa-phone text-accent" style="font-size:clamp(9px,0.7vw,12px)"></i>
+                  <span class="text-slate-600" style="font-size:clamp(0.75rem,0.65rem+0.22vw,0.9rem);">${s.phone || '02-586-1230'}</span>
+                </div>
+                <div class="flex items-center" style="gap:5px;">
+                  <i class="fas fa-fax text-accent" style="font-size:clamp(9px,0.7vw,12px)"></i>
+                  <span class="text-slate-600" style="font-size:clamp(0.75rem,0.65rem+0.22vw,0.9rem);">FAX: ${s.fax || '02-586-1238'}</span>
+                </div>
+              </div>
+              <a href="/about/location" class="inline-flex items-center font-semibold text-accent hover:underline" style="gap:4px; margin-top:clamp(0.5rem,0.7vw,0.7rem); font-size:clamp(0.75rem,0.65rem+0.22vw,0.9rem);">
+                <i class="fas fa-map-location-dot" style="font-size:clamp(9px,0.7vw,12px)"></i> 오시는길 상세보기
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- v33 Accordion Styles -->
+  <style>
+    .acc-tab-bar { display:flex; gap:0; }
+    .acc-tab {
+      padding:clamp(0.35rem,0.55vw,0.5rem) clamp(0.6rem,0.9vw,0.9rem);
+      font-size:clamp(0.75rem,0.65rem+0.22vw,0.9rem);
+      font-weight:700;
+      color:#94A3B8;
+      background:transparent;
+      border:none;
+      border-bottom:2.5px solid transparent;
+      margin-bottom:-2px;
+      cursor:pointer;
+      transition:all 0.25s ease;
+      white-space:nowrap;
+    }
+    .acc-tab.active { color:#2563EB; border-bottom-color:#2563EB; }
+    .acc-tab:hover:not(.active) { color:#475569; background:rgba(59,130,246,0.03); }
+    .acc-tab-content { display:none; }
+    .acc-tab-content.active { display:block; }
+    .acc-notice-row {
+      display:flex; align-items:center; gap:clamp(6px,0.6vw,10px);
+      padding:clamp(0.35rem,0.5vw,0.5rem) clamp(0.25rem,0.4vw,0.4rem);
+      cursor:pointer; border-radius:8px; transition:background 0.2s ease;
+    }
+    .acc-notice-row:hover { background:rgba(59,130,246,0.04); }
+    .acc-dl-row {
+      display:flex; align-items:center; gap:clamp(6px,0.6vw,10px);
+      padding:clamp(0.35rem,0.5vw,0.5rem) clamp(0.25rem,0.4vw,0.4rem);
+      border-radius:8px; transition:background 0.2s ease;
+    }
+    .acc-dl-row:hover { background:rgba(59,130,246,0.04); }
+    #accordionArrow.open { transform:rotate(180deg); }
+    @media (min-width:3840px) {
+      .acc-tab { font-size:1.6rem; padding:0.8rem 1.4rem; }
+      .acc-notice-row, .acc-dl-row { padding:0.7rem 0.6rem; }
+    }
+    @media (min-width:7680px) {
+      .acc-tab { font-size:2.4rem; padding:1.2rem 2rem; border-bottom-width:5px; }
+      .acc-tab-bar { border-bottom-width:4px; }
+    }
+  </style>
+
+  <!-- v33 Accordion JavaScript -->
+  <script>
+  (function(){
+    var accOpen = false;
+    var accScrollY = 0;
+    var accDataLoaded = { notices:false, downloads:false };
+
+    window.toggleHomeAccordion = function() {
+      var body = document.getElementById('accordionBody');
+      var arrow = document.getElementById('accordionArrow');
+      if (!body) return;
+      if (!accOpen) {
+        accScrollY = window.pageYOffset || document.documentElement.scrollTop;
+        body.style.maxHeight = body.scrollHeight + 400 + 'px';
+        body.style.opacity = '1';
+        arrow.classList.add('open');
+        accOpen = true;
+        loadAccTab('acc-notices');
+      } else {
+        closeHomeAccordion();
+      }
+    };
+
+    function closeHomeAccordion() {
+      var body = document.getElementById('accordionBody');
+      var arrow = document.getElementById('accordionArrow');
+      if (!body) return;
+      body.style.maxHeight = '0';
+      body.style.opacity = '0';
+      arrow.classList.remove('open');
+      accOpen = false;
+      var detail = document.getElementById('accNoticeDetail');
+      if (detail) detail.style.display = 'none';
+      setTimeout(function() {
+        window.scrollTo({ top: accScrollY, behavior: 'smooth' });
+      }, 100);
+    }
+
+    window.switchAccTab = function(tabId) {
+      document.querySelectorAll('.acc-tab').forEach(function(t) { t.classList.remove('active'); });
+      document.querySelectorAll('.acc-tab-content').forEach(function(c) { c.classList.remove('active'); });
+      var tab = document.querySelector('.acc-tab[data-acctab="' + tabId + '"]');
+      var content = document.getElementById(tabId);
+      if (tab) tab.classList.add('active');
+      if (content) content.classList.add('active');
+      loadAccTab(tabId);
+      // Hide notice detail when switching tabs
+      var detail = document.getElementById('accNoticeDetail');
+      if (detail) detail.style.display = 'none';
+      // Re-calc max-height
+      var body = document.getElementById('accordionBody');
+      if (body && accOpen) {
+        body.style.maxHeight = body.scrollHeight + 400 + 'px';
+      }
+    };
+
+    function loadAccTab(tabId) {
+      if (tabId === 'acc-notices' && !accDataLoaded.notices) {
+        fetch('/api/notices?limit=10')
+          .then(function(r) { return r.json(); })
+          .then(function(res) {
+            accDataLoaded.notices = true;
+            var list = document.getElementById('accNoticeList');
+            if (!list) return;
+            if (!res.data || res.data.length === 0) {
+              list.innerHTML = '<p class="text-slate-400 text-center" style="padding:1.5rem 0; font-size:clamp(0.8rem,0.7rem+0.2vw,0.95rem);">등록된 공지사항이 없습니다.</p>';
+              return;
+            }
+            var html = '';
+            res.data.forEach(function(n) {
+              var date = n.created_at ? n.created_at.split('T')[0] : '';
+              var pinBadge = n.is_pinned ? '<span class="shrink-0 bg-red-500 text-white rounded flex items-center justify-center font-bold" style="width:20px;height:20px;font-size:9px;">N</span>' : '<span class="shrink-0 rounded-full bg-slate-300/80" style="width:5px;height:5px;"></span>';
+              html += '<div class="acc-notice-row" onclick="loadAccNotice(' + n.id + ')">' + pinBadge + '<span class="flex-1 text-slate-700 truncate" style="font-size:clamp(0.8rem,0.7rem+0.25vw,0.95rem);line-height:1.3;">' + escH(n.title) + '</span><span class="shrink-0 text-slate-400/70 tabular-nums" style="font-size:clamp(0.68rem,0.58rem+0.18vw,0.82rem);">' + date + '</span></div>';
+            });
+            list.innerHTML = html;
+            // Re-calc max-height after content loaded
+            var body = document.getElementById('accordionBody');
+            if (body && accOpen) body.style.maxHeight = body.scrollHeight + 400 + 'px';
+          })
+          .catch(function() {
+            var list = document.getElementById('accNoticeList');
+            if (list) list.innerHTML = '<p class="text-slate-400 text-center" style="padding:1rem 0;">데이터를 불러오지 못했습니다.</p>';
+          });
+      }
+      if (tabId === 'acc-downloads' && !accDataLoaded.downloads) {
+        fetch('/api/downloads')
+          .then(function(r) { return r.json(); })
+          .then(function(res) {
+            accDataLoaded.downloads = true;
+            var list = document.getElementById('accDownloadList');
+            if (!list) return;
+            if (!res.data || res.data.length === 0) {
+              list.innerHTML = '<p class="text-slate-400 text-center" style="padding:1.5rem 0; font-size:clamp(0.8rem,0.7rem+0.2vw,0.95rem);">등록된 자료가 없습니다.</p>';
+              return;
+            }
+            var iconMap = { pdf:'fa-file-pdf text-red-400', doc:'fa-file-word text-blue-400', docx:'fa-file-word text-blue-400', xls:'fa-file-excel text-green-400', xlsx:'fa-file-excel text-green-400', zip:'fa-file-zipper text-purple-400', hwp:'fa-file-lines text-cyan-400' };
+            var html = '';
+            res.data.forEach(function(d) {
+              var ext = (d.file_type || '').toLowerCase();
+              var iconCls = iconMap[ext] || 'fa-file text-slate-400';
+              html += '<a href="/api/downloads/' + d.id + '/file" target="_blank" class="acc-dl-row group" style="text-decoration:none;color:inherit;">' +
+                '<div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(28px,2.2vw,36px);height:clamp(28px,2.2vw,36px);background:rgba(59,130,246,0.05);"><i class="fas ' + iconCls + '" style="font-size:clamp(10px,0.9vw,14px)"></i></div>' +
+                '<div class="flex-1 min-w-0"><span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(0.8rem,0.7rem+0.25vw,0.95rem);line-height:1.3;">' + escH(d.title) + '</span>' +
+                '<span class="text-slate-400" style="font-size:clamp(0.65rem,0.56rem+0.18vw,0.78rem);">' + (ext.toUpperCase() || 'FILE') + (d.file_size ? ' · ' + formatSize(d.file_size) : '') + '</span></div>' +
+                '<i class="fas fa-download text-slate-300 group-hover:text-accent" style="font-size:clamp(9px,0.7vw,12px)"></i></a>';
+            });
+            list.innerHTML = html;
+            var body = document.getElementById('accordionBody');
+            if (body && accOpen) body.style.maxHeight = body.scrollHeight + 400 + 'px';
+          })
+          .catch(function() {
+            var list = document.getElementById('accDownloadList');
+            if (list) list.innerHTML = '<p class="text-slate-400 text-center" style="padding:1rem 0;">데이터를 불러오지 못했습니다.</p>';
+          });
+      }
+    }
+
+    window.loadAccNotice = function(id) {
+      var detail = document.getElementById('accNoticeDetail');
+      var titleEl = document.getElementById('accNoticeDetailTitle');
+      var bodyEl = document.getElementById('accNoticeDetailBody');
+      if (!detail || !titleEl || !bodyEl) return;
+      titleEl.textContent = '';
+      bodyEl.innerHTML = '<p class="text-slate-400"><i class="fas fa-spinner fa-spin mr-1"></i> 불러오는 중...</p>';
+      detail.style.display = 'block';
+      // Re-calc max-height
+      var accBody = document.getElementById('accordionBody');
+      if (accBody && accOpen) accBody.style.maxHeight = accBody.scrollHeight + 800 + 'px';
+      // Scroll to detail
+      setTimeout(function() { detail.scrollIntoView({ behavior:'smooth', block:'nearest' }); }, 100);
+
+      fetch('/api/notices/' + id)
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+          if (!res.data) { bodyEl.innerHTML = '<p class="text-slate-400">내용을 불러오지 못했습니다.</p>'; return; }
+          titleEl.textContent = res.data.title || '';
+          bodyEl.innerHTML = res.data.content || '<p class="text-slate-400">내용이 없습니다.</p>';
+          if (accBody && accOpen) accBody.style.maxHeight = accBody.scrollHeight + 800 + 'px';
+          setTimeout(function() { detail.scrollIntoView({ behavior:'smooth', block:'nearest' }); }, 50);
+        })
+        .catch(function() { bodyEl.innerHTML = '<p class="text-slate-400">내용을 불러오지 못했습니다.</p>'; });
+    };
+
+    window.closeAccDetail = function() {
+      var detail = document.getElementById('accNoticeDetail');
+      if (detail) detail.style.display = 'none';
+      // Close accordion and return to original scroll
+      closeHomeAccordion();
+    };
+
+    function escH(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+    function formatSize(bytes) {
+      if (!bytes) return '';
+      var kb = bytes / 1024;
+      if (kb < 1024) return kb.toFixed(0) + ' KB';
+      return (kb / 1024).toFixed(1) + ' MB';
+    }
+  })();
+  </script>
 
   <!-- ════════════════════════════════════════════════════════
        NOTICES + PROGRESS (v32 - 2x Text, Tab Menu, Premium Dual Panels)
