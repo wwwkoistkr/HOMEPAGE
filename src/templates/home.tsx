@@ -340,7 +340,7 @@ export function homePage(opts: {
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
     }
-    /* v35.2: left 70% text + 7cm wider, right panel shifted 8cm + extended 10cm, equal height */
+    /* v35.3: left +22cm (15cm wider card), equal height with sim */
     .unified-hero-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -353,7 +353,7 @@ export function homePage(opts: {
       flex-direction: column;
       justify-content: space-between;
       max-width: none;
-      width: calc(100% + 7cm);
+      width: calc(100% + 22cm);
     }
     .unified-hero-right {
       display: flex;
@@ -427,7 +427,12 @@ export function homePage(opts: {
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255,255,255,0.06);
       border-radius: clamp(10px,1.26vw,20px);
-      max-width: 480px;
+      max-width: none;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     @supports not (backdrop-filter: blur(1px)) {
       .hero-contact-card { background: rgba(10,15,30,0.88); }
@@ -452,8 +457,8 @@ export function homePage(opts: {
       text-rendering: geometricPrecision;
     }
     .hero-contact-addr {
-      white-space: normal;
-      line-height: 1.55;
+      white-space: nowrap;
+      line-height: 1.45;
     }
     .hero-contact-icon {
       width: clamp(27px,2.66vw,39px);
@@ -479,9 +484,10 @@ export function homePage(opts: {
       .unified-hero-right { margin-left: 0; width: 100%; }
       .unified-hero-left .flex.flex-wrap { justify-content: center; }
       .unified-hero-left .inline-flex { margin-left: auto; margin-right: auto; }
-      .hero-contact-card { margin-left: auto; margin-right: auto; text-align: left; max-width: 94%; }
+      .hero-contact-card { margin-left: auto; margin-right: auto; text-align: left; max-width: 94%; flex: none; }
       .hero-contact-item { font-size: clamp(1.0rem, 2.8vw, 1.45rem); }
       .hero-contact-icon { width: clamp(38px, 6vw, 50px); height: clamp(38px, 6vw, 50px); font-size: clamp(14px, 2.5vw, 20px); }
+      .hero-contact-addr { white-space: normal; }
     }
     /* Mobile (639px) */
     @media (max-width: 639px) {
