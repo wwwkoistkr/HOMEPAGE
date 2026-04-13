@@ -1,4 +1,4 @@
-// KOIST - Main Layout Template (v30.0 - 2.5x Logo, 2x GNB, Windows/Mobile Compat, 8K Ultra-Sharp)
+// KOIST - Main Layout Template (v31.0 - 2.5x Logo, 2x GNB, 2.5x Footer, Win/Mobile, 8K Ultra-Sharp)
 import type { SettingsMap, Department } from '../types';
 
 export function layout(opts: {
@@ -87,15 +87,15 @@ export function layout(opts: {
        ═══════════════════════════════════════════════════════════════════ */
 
     :root {
-      /* ── Fluid Typography Scale (Korean-optimized, v30 enhanced) ── */
-      --text-xs:   clamp(0.75rem, 0.68rem + 0.22vw, 0.88rem);
-      --text-sm:   clamp(0.85rem, 0.78rem + 0.26vw, 1.00rem);
-      --text-base: clamp(0.95rem, 0.87rem + 0.32vw, 1.12rem);
-      --text-lg:   clamp(1.08rem, 0.96rem + 0.42vw, 1.30rem);
-      --text-xl:   clamp(1.25rem, 1.08rem + 0.52vw, 1.55rem);
-      --text-2xl:  clamp(1.48rem, 1.22rem + 0.72vw, 2.00rem);
-      --text-3xl:  clamp(1.82rem, 1.42rem + 1.05vw, 2.60rem);
-      --text-hero: clamp(2.25rem, 1.65rem + 1.8vw, 3.60rem);
+      /* ── Fluid Typography Scale (Korean-optimized, v31 enhanced) ── */
+      --text-xs:   clamp(0.78rem, 0.70rem + 0.24vw, 0.92rem);
+      --text-sm:   clamp(0.88rem, 0.80rem + 0.28vw, 1.05rem);
+      --text-base: clamp(1.0rem, 0.90rem + 0.35vw, 1.18rem);
+      --text-lg:   clamp(1.12rem, 1.0rem + 0.45vw, 1.38rem);
+      --text-xl:   clamp(1.32rem, 1.12rem + 0.58vw, 1.65rem);
+      --text-2xl:  clamp(1.55rem, 1.28rem + 0.78vw, 2.15rem);
+      --text-3xl:  clamp(1.92rem, 1.50rem + 1.1vw, 2.80rem);
+      --text-hero: clamp(2.5rem, 1.8rem + 2vw, 4.0rem);
 
       /* ── Fluid Spacing Scale ── */
       --space-2xs: clamp(0.15rem, 0.1rem + 0.1vw, 0.25rem);
@@ -110,8 +110,8 @@ export function layout(opts: {
       --container-pad: clamp(1rem, 0.5rem + 2vw, 2.5rem);
       --container-max: min(100% - var(--container-pad) * 2, 1320px);
 
-      /* ── GNB (v30 - taller for 2.5x logo) ── */
-      --gnb-h: clamp(78px, 68px + 2.5vw, 110px);
+      /* ── GNB (v31 - taller for 2.5x logo, 2x text) ── */
+      --gnb-h: clamp(82px, 72px + 2.8vw, 118px);
 
       /* ── Premium Shadow Scale (4-level) ── */
       --shadow-xs:  0 1px 2px rgba(10,15,30,0.03);
@@ -146,32 +146,32 @@ export function layout(opts: {
     /* ── 4K Ultra-wide ── */
     @media (min-width: 2560px) {
       :root {
-        --container-max: min(100% - 5rem, 1600px);
-        --text-hero: clamp(2.8rem, 2rem + 1.2vw, 4rem);
-        --gnb-h: 90px;
+        --container-max: min(100% - 5rem, 1700px);
+        --text-hero: clamp(3.0rem, 2.2rem + 1.3vw, 4.5rem);
+        --gnb-h: 96px;
       }
     }
     /* ── 5K+ ── */
     @media (min-width: 3840px) {
       :root {
-        --container-max: min(100% - 8rem, 1920px);
-        --text-hero: clamp(3.2rem, 2.5rem + 1vw, 4.5rem);
-        --gnb-h: 100px;
+        --container-max: min(100% - 8rem, 2100px);
+        --text-hero: clamp(3.6rem, 2.8rem + 1.2vw, 5.2rem);
+        --gnb-h: 110px;
       }
     }
     /* ── 8K (7680px+) ── */
     @media (min-width: 7680px) {
       :root {
-        --container-max: min(100% - 12rem, 2400px);
-        --text-hero: clamp(4rem, 3rem + 1.2vw, 6rem);
-        --gnb-h: 120px;
-        --text-xs: 1.2rem;
-        --text-sm: 1.4rem;
-        --text-base: 1.6rem;
-        --text-lg: 1.9rem;
-        --text-xl: 2.3rem;
-        --text-2xl: 3rem;
-        --text-3xl: 3.8rem;
+        --container-max: min(100% - 14rem, 2800px);
+        --text-hero: clamp(4.5rem, 3.5rem + 1.4vw, 7rem);
+        --gnb-h: 140px;
+        --text-xs: 1.4rem;
+        --text-sm: 1.65rem;
+        --text-base: 1.9rem;
+        --text-lg: 2.3rem;
+        --text-xl: 2.8rem;
+        --text-2xl: 3.5rem;
+        --text-3xl: 4.4rem;
       }
     }
 
@@ -385,10 +385,10 @@ export function layout(opts: {
                   inset 0 -1px 0 rgba(255,255,255,0.02);
     }
 
-    /* GNB Link — v30 8K Ultra-Sharp (2x+ font, Windows/Mobile compat) */
+    /* GNB Link — v31 8K Ultra-Sharp (2x font, Windows/Mobile compat) */
     .gnb-link {
-      padding: var(--gnb-link-pad-y, 0.5rem) var(--gnb-link-pad-x, clamp(0.18rem, 0.32vw, 0.40rem));
-      font-size: var(--gnb-link-font, clamp(1.05rem, 0.90rem + 0.48vw, 1.30rem));
+      padding: var(--gnb-link-pad-y, 0.5rem) var(--gnb-link-pad-x, clamp(0.22rem, 0.38vw, 0.48rem));
+      font-size: var(--gnb-link-font, clamp(1.12rem, 0.95rem + 0.52vw, 1.42rem));
       font-weight: var(--gnb-link-weight, 600);
       color: var(--gnb-link-color, rgba(220,228,240,0.92));
       white-space: nowrap;
@@ -411,15 +411,15 @@ export function layout(opts: {
     }
     .gnb-link:hover { color: var(--gnb-link-hover, #FFFFFF); text-shadow: 0 0 12px rgba(59,130,246,0.25); }
     .gnb-link:hover::after { width: 80%; left: 10%; }
-    /* 4K+ GNB scaling */
+    /* 4K+ GNB scaling (v31 2x text) */
     @media (min-width: 2560px) {
-      .gnb-link { font-size: var(--gnb-link-font, clamp(1.4rem, 1.2rem + 0.3vw, 1.8rem)); }
+      .gnb-link { font-size: var(--gnb-link-font, clamp(1.5rem, 1.3rem + 0.35vw, 1.95rem)); }
     }
     @media (min-width: 3840px) {
-      .gnb-link { font-size: var(--gnb-link-font, clamp(1.8rem, 1.5rem + 0.5vw, 2.4rem)); }
+      .gnb-link { font-size: var(--gnb-link-font, clamp(1.95rem, 1.6rem + 0.55vw, 2.6rem)); }
     }
     @media (min-width: 7680px) {
-      .gnb-link { font-size: var(--gnb-link-font, clamp(2.6rem, 2.2rem + 0.6vw, 3.6rem)); letter-spacing: -0.01em; }
+      .gnb-link { font-size: var(--gnb-link-font, clamp(3.0rem, 2.5rem + 0.7vw, 4.2rem)); letter-spacing: -0.01em; }
     }
 
     /* GNB Dropdown (v30 - touch/click accessible) */
@@ -856,35 +856,35 @@ export function layout(opts: {
     <div class="fluid-container">
       <div class="flex items-center justify-between" style="height:var(--gnb-h)">
 
-        <!-- Logo + KOLAS Mark (v30 - 2.5x enlarged logo) -->
-        <div class="flex items-center shrink-0" style="gap: clamp(12px, 1.8vw, 24px); max-width: clamp(360px, 30vw, 560px);">
+        <!-- Logo + KOLAS Mark (v31 - 2.5x enlarged logo) -->
+        <div class="flex items-center shrink-0" style="gap: clamp(14px, 2vw, 28px); max-width: clamp(400px, 34vw, 620px);">
           <a href="/" class="flex items-center shrink-0 group" style="gap: var(--space-sm)">
             ${s.logo_url && s.logo_url.trim() !== '' && s.logo_url !== '/static/images/logo.png' ? `
-            <img src="${s.logo_url}" alt="${siteName}" style="height:clamp(60px, 50px + 2vw, 90px); max-width:clamp(320px, 28vw, 520px);" class="w-auto object-contain transition-transform group-hover:scale-[1.02]">
+            <img src="${s.logo_url}" alt="${siteName}" style="height:clamp(64px, 54px + 2.2vw, 96px); max-width:clamp(340px, 30vw, 560px);" class="w-auto object-contain transition-transform group-hover:scale-[1.02]">
             ` : `
-            <div class="flex items-center" style="gap: clamp(8px, 0.8vw, 14px)">
+            <div class="flex items-center" style="gap: clamp(10px, 1vw, 16px)">
               <div class="relative">
                 <div class="absolute inset-0 rounded-xl blur-md transition-all group-hover:blur-lg" style="background: linear-gradient(135deg, rgba(59,130,246,0.25), rgba(6,182,212,0.20));"></div>
-                <div class="relative rounded-xl flex items-center justify-center" style="width:clamp(52px,5vw,76px); height:clamp(52px,5vw,76px); background: linear-gradient(135deg, #2563EB, #06B6D4);">
-                  <i class="fas fa-shield-halved text-white" style="font-size:clamp(24px,2.5vw,36px)"></i>
+                <div class="relative rounded-xl flex items-center justify-center" style="width:clamp(56px,5.5vw,82px); height:clamp(56px,5.5vw,82px); background: linear-gradient(135deg, #2563EB, #06B6D4);">
+                  <i class="fas fa-shield-halved text-white" style="font-size:clamp(26px,2.8vw,40px)"></i>
                 </div>
               </div>
               <div>
-                <div class="font-bold text-white leading-tight tracking-tight" style="font-size:clamp(1.3rem, 1.05rem + 0.8vw, 1.85rem);">한국정보보안기술원</div>
-                <div class="tracking-[0.18em] font-medium" style="font-size:clamp(0.8rem, 0.68rem + 0.38vw, 1.1rem); background: linear-gradient(90deg, #94A3B8, #64748B); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">KOIST</div>
+                <div class="font-bold text-white leading-tight tracking-tight" style="font-size:clamp(1.4rem, 1.1rem + 0.9vw, 2.0rem);">한국정보보안기술원</div>
+                <div class="tracking-[0.18em] font-medium" style="font-size:clamp(0.85rem, 0.72rem + 0.42vw, 1.2rem); background: linear-gradient(90deg, #94A3B8, #64748B); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">KOIST</div>
               </div>
             </div>
             `}
           </a>
-          <!-- KOLAS 국제공인시험기관 마크 (v30 - 2.5x enlarged) -->
-          <div class="hidden md:flex items-center" style="padding-left: clamp(8px, 1.2vw, 16px); border-left: 1px solid rgba(255,255,255,0.08);">
-            <img src="/static/images/kolas.png" alt="KOLAS 국제공인시험기관" style="height:clamp(50px, 44px + 1.5vw, 78px);" class="w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" title="KOLAS 국제공인시험기관 인정 (KTL-F-588)">
+          <!-- KOLAS 국제공인시험기관 마크 (v31 - 2.5x enlarged) -->
+          <div class="hidden md:flex items-center" style="padding-left: clamp(10px, 1.4vw, 20px); border-left: 1px solid rgba(255,255,255,0.08);">
+            <img src="/static/images/kolas.png" alt="KOLAS 국제공인시험기관" style="height:clamp(54px, 48px + 1.8vw, 84px);" class="w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" title="KOLAS 국제공인시험기관 인정 (KTL-F-588)">
           </div>
         </div>
 
-        <!-- Desktop GNB (v30 - 2x Font, 2.5x Logo, Touch-friendly, Admin-Editable) -->
+        <!-- Desktop GNB (v31 - 2x Font, 2.5x Logo, Touch-friendly, Admin-Editable) -->
         ${(() => {
-          const gnbFontScale = parseFloat(s.gnb_font_scale || '2.2') || 2.2;
+          const gnbFontScale = parseFloat(s.gnb_font_scale || '2.4') || 2.4;
           const gnbGapScale = parseFloat(s.gnb_gap_scale || '0.55') || 0.55;
           const baseFontMin = 0.70;
           const baseFontVw = 0.30;
@@ -925,7 +925,7 @@ export function layout(opts: {
 
         <!-- Right Actions -->
         <div class="flex items-center" style="gap:var(--space-sm)">
-          <a href="tel:${s.phone || '02-586-1230'}" class="hidden sm:inline-flex items-center text-white font-bold rounded-lg transition-all ripple-btn" style="gap: 8px; padding: clamp(0.5rem,0.7vw,0.7rem) clamp(1rem,1.4vw,1.5rem); font-size: clamp(0.95rem, 0.82rem + 0.5vw, 1.2rem); background: linear-gradient(135deg, rgba(59,130,246,0.85), rgba(6,182,212,0.85)); box-shadow: 0 4px 16px rgba(59,130,246,0.25), inset 0 1px 0 rgba(255,255,255,0.12); border-radius: clamp(8px,0.6vw,12px);">
+          <a href="tel:${s.phone || '02-586-1230'}" class="hidden sm:inline-flex items-center text-white font-bold rounded-lg transition-all ripple-btn" style="gap: 10px; padding: clamp(0.55rem,0.8vw,0.8rem) clamp(1.1rem,1.6vw,1.7rem); font-size: clamp(1.0rem, 0.88rem + 0.55vw, 1.35rem); background: linear-gradient(135deg, rgba(59,130,246,0.85), rgba(6,182,212,0.85)); box-shadow: 0 4px 16px rgba(59,130,246,0.25), inset 0 1px 0 rgba(255,255,255,0.12); border-radius: clamp(9px,0.7vw,14px);">
             <i class="fas fa-phone" style="font-size:clamp(11px,0.9vw,15px)"></i>
             <span>${s.phone || '02-586-1230'}</span>
           </a>
@@ -998,46 +998,46 @@ export function layout(opts: {
     <div class="relative fluid-container f-section-y">
       <div class="grid grid-cols-1 md:grid-cols-12" style="gap: clamp(1.5rem, 2.5vw, 3rem)">
 
-        <!-- Company Info -->
+        <!-- Company Info (v31 - 2.5x footer text + logo) -->
         <div class="md:col-span-5">
           <div style="margin-bottom: var(--space-lg)">
             <div class="inline-flex items-center rounded-xl" style="padding: var(--space-sm) var(--space-md); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);">
-              <img src="/static/images/logo-horizontal.png" alt="${siteName}" style="height:clamp(24px, 20px + 0.6vw, 32px)" class="w-auto object-contain opacity-90">
+              <img src="/static/images/logo-horizontal.png" alt="${siteName}" style="height:clamp(32px, 26px + 0.9vw, 48px)" class="w-auto object-contain opacity-90">
             </div>
           </div>
-          <p class="f-text-base leading-relaxed text-gray-500 max-w-sm" style="margin-bottom: var(--space-md)">${s.site_slogan || '최상의 시험·인증 서비스로 정보보안 기술을 완성'}</p>
-          <div class="space-y-3 f-text-base">
+          <p class="f-text-lg leading-relaxed text-gray-500 max-w-lg" style="margin-bottom: var(--space-md)">${s.site_slogan || '최상의 시험·인증 서비스로 정보보안 기술을 완성'}</p>
+          <div class="space-y-3.5 f-text-lg">
             <div class="flex items-center" style="gap: var(--space-sm)">
-              <div class="shrink-0 rounded-md flex items-center justify-center" style="width:clamp(28px,2.2vw,36px); height:clamp(28px,2.2vw,36px); background: rgba(59,130,246,0.08);"><i class="fas fa-phone text-accent/60" style="font-size:clamp(10px,0.9vw,14px)"></i></div>
+              <div class="shrink-0 rounded-md flex items-center justify-center" style="width:clamp(34px,2.8vw,46px); height:clamp(34px,2.8vw,46px); background: rgba(59,130,246,0.10);"><i class="fas fa-phone text-accent/60" style="font-size:clamp(13px,1.2vw,18px)"></i></div>
               <span class="text-gray-400">${s.phone || '02-586-1230'}</span>
             </div>
             <div class="flex items-center" style="gap: var(--space-sm)">
-              <div class="shrink-0 rounded-md flex items-center justify-center" style="width:clamp(28px,2.2vw,36px); height:clamp(28px,2.2vw,36px); background: rgba(59,130,246,0.08);"><i class="fas fa-fax text-accent/60" style="font-size:clamp(10px,0.9vw,14px)"></i></div>
+              <div class="shrink-0 rounded-md flex items-center justify-center" style="width:clamp(34px,2.8vw,46px); height:clamp(34px,2.8vw,46px); background: rgba(59,130,246,0.10);"><i class="fas fa-fax text-accent/60" style="font-size:clamp(13px,1.2vw,18px)"></i></div>
               <span class="text-gray-400">FAX: ${s.fax || '02-586-1238'}</span>
             </div>
             <div class="flex items-center" style="gap: var(--space-sm)">
-              <div class="shrink-0 rounded-md flex items-center justify-center" style="width:clamp(28px,2.2vw,36px); height:clamp(28px,2.2vw,36px); background: rgba(59,130,246,0.08);"><i class="fas fa-envelope text-accent/60" style="font-size:clamp(10px,0.9vw,14px)"></i></div>
+              <div class="shrink-0 rounded-md flex items-center justify-center" style="width:clamp(34px,2.8vw,46px); height:clamp(34px,2.8vw,46px); background: rgba(59,130,246,0.10);"><i class="fas fa-envelope text-accent/60" style="font-size:clamp(13px,1.2vw,18px)"></i></div>
               <a href="mailto:${s.email || 'koist@koist.kr'}" class="hover:text-white transition-colors text-gray-400">${s.email || 'koist@koist.kr'}</a>
             </div>
             <div class="flex items-start" style="gap: var(--space-sm)">
-              <div class="shrink-0 rounded-md flex items-center justify-center mt-0.5" style="width:clamp(28px,2.2vw,36px); height:clamp(28px,2.2vw,36px); background: rgba(59,130,246,0.08);"><i class="fas fa-location-dot text-accent/60" style="font-size:clamp(10px,0.9vw,14px)"></i></div>
+              <div class="shrink-0 rounded-md flex items-center justify-center mt-0.5" style="width:clamp(34px,2.8vw,46px); height:clamp(34px,2.8vw,46px); background: rgba(59,130,246,0.10);"><i class="fas fa-location-dot text-accent/60" style="font-size:clamp(13px,1.2vw,18px)"></i></div>
               <span class="text-gray-400" style="overflow-wrap:break-word; word-break:keep-all;">${s.address || ''}</span>
             </div>
           </div>
         </div>
 
-        <!-- Quick Links: 사업분야 -->
+        <!-- Quick Links: 사업분야 (v31 - 2.5x) -->
         <div class="md:col-span-3">
-          <h4 class="text-white/90 font-semibold f-text-sm tracking-wide" style="margin-bottom: var(--space-md)">사업분야</h4>
-          <ul class="space-y-2.5 f-text-sm">
+          <h4 class="text-white/90 font-bold f-text-base tracking-wide" style="margin-bottom: var(--space-md)">사업분야</h4>
+          <ul class="space-y-3 f-text-base">
             ${deps.filter(d => d.is_active).slice(0, 6).map(d => `<li><a href="/services/${d.slug}" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>${d.name}</a></li>`).join('')}
           </ul>
         </div>
 
-        <!-- Quick Links: 고객지원 (사업분야와 동일 스타일) -->
+        <!-- Quick Links: 고객지원 (v31 - 2.5x) -->
         <div class="md:col-span-2">
-          <h4 class="text-white/90 font-semibold f-text-sm tracking-wide" style="margin-bottom: var(--space-md)">고객지원</h4>
-          <ul class="space-y-2.5 f-text-sm">
+          <h4 class="text-white/90 font-bold f-text-base tracking-wide" style="margin-bottom: var(--space-md)">고객지원</h4>
+          <ul class="space-y-3 f-text-base">
             <li><a href="/support/notice" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>공지사항</a></li>
             <li><a href="/support/downloads" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>자료실</a></li>
             <li><a href="/support/documents" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>시스템 문서</a></li>
@@ -1048,10 +1048,10 @@ export function layout(opts: {
         <!-- Phone Card -->
         <div class="md:col-span-2">
           <div class="rounded-xl" style="padding: var(--space-md); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
-            <p class="f-text-xs text-gray-600 font-medium" style="margin-bottom: 6px">빠른 상담 전화</p>
-            <a href="tel:${s.phone || '02-586-1230'}" class="font-black tracking-tight hover:opacity-80 transition-opacity block" style="font-size: var(--text-xl); background: linear-gradient(135deg, #FFFFFF, #93C5FD); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${s.phone || '02-586-1230'}</a>
+            <p class="f-text-sm text-gray-600 font-medium" style="margin-bottom: 8px">빠른 상담 전화</p>
+            <a href="tel:${s.phone || '02-586-1230'}" class="font-black tracking-tight hover:opacity-80 transition-opacity block" style="font-size: var(--text-2xl); background: linear-gradient(135deg, #FFFFFF, #93C5FD); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${s.phone || '02-586-1230'}</a>
           </div>
-          <div class="mt-4 space-y-2 f-text-xs">
+          <div class="mt-4 space-y-2.5 f-text-sm">
             <a href="/support/faq" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>FAQ</a>
             <a href="/support/inquiry" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all block" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>온라인 상담</a>
             <a href="/about/greeting" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all block" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>KOIST 소개</a>
@@ -1061,8 +1061,8 @@ export function layout(opts: {
 
       <!-- Bottom bar -->
       <div class="flex flex-col sm:flex-row justify-between items-center" style="margin-top: var(--space-xl); padding-top: var(--space-lg); border-top: 1px solid rgba(255,255,255,0.04); gap: var(--space-sm);">
-        <p class="f-text-xs text-slate-600">&copy; ${new Date().getFullYear()} ${siteName}. All rights reserved.</p>
-        <div class="flex items-center f-text-xs text-slate-600" style="gap:var(--space-sm)">
+        <p class="f-text-sm text-slate-600">&copy; ${new Date().getFullYear()} ${siteName}. All rights reserved.</p>
+        <div class="flex items-center f-text-sm text-slate-600" style="gap:var(--space-sm)">
           <a href="/about/greeting" class="hover:text-white transition-colors">KOIST 소개</a>
           <span class="text-slate-700">|</span>
           <a href="/support/inquiry" class="hover:text-white transition-colors">문의하기</a>

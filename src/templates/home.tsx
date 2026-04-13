@@ -160,38 +160,38 @@ export function homePage(opts: {
 
         <!-- ═══════ LEFT: Hero Text ═══════ -->
         <div class="unified-hero-left" data-aos="fade-right" data-aos-duration="700">
-          <!-- Badge -->
-          <div class="inline-flex items-center rounded-full" style="gap:8px; padding:clamp(5px,0.5vw,7px) clamp(12px,1.2vw,18px); margin-bottom:clamp(1rem,1.8vw,1.5rem); background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.18); backdrop-filter: blur(12px);">
-            <span class="relative flex" style="height:clamp(8px,0.6vw,10px); width:clamp(8px,0.6vw,10px);">
+          <!-- Badge (2.5x enlarged) -->
+          <div class="inline-flex items-center rounded-full" style="gap:12px; padding:clamp(8px,0.8vw,12px) clamp(18px,1.8vw,28px); margin-bottom:clamp(1.2rem,2.2vw,2rem); background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.18); backdrop-filter: blur(12px);">
+            <span class="relative flex" style="height:clamp(10px,0.8vw,14px); width:clamp(10px,0.8vw,14px);">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-50"></span>
               <span class="relative inline-flex rounded-full h-full w-full bg-emerald-400"></span>
             </span>
-            <span class="text-blue-300 font-semibold tracking-wide" style="font-size:clamp(0.7rem,0.85vw,0.88rem); font-family:'Inter','Noto Sans KR',sans-serif; letter-spacing:0.04em;">${s.hero_badge_text || 'Korean Information Security Technology'}</span>
+            <span class="text-blue-300 font-semibold tracking-wide" style="font-size:clamp(1.0rem,1.3vw,1.45rem); font-family:'Inter','Noto Sans KR',sans-serif; letter-spacing:0.04em;">${s.hero_badge_text || 'Korean Information Security Technology'}</span>
           </div>
 
-          <!-- Headline — 8K Ultra-Sharp -->
-          <h1 class="text-white font-black" style="font-size:clamp(1.5rem, 1.1rem + 2vw, 3rem); line-height:1.2; margin-bottom:clamp(0.6rem,1vw,1rem); letter-spacing:-0.025em; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
+          <!-- Headline — 2.5x 8K Ultra-Sharp -->
+          <h1 class="text-white font-black" style="font-size:clamp(2.2rem, 1.6rem + 3.2vw, 4.8rem); line-height:1.15; margin-bottom:clamp(0.8rem,1.5vw,1.5rem); letter-spacing:-0.03em; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
             ${s.hero_line1 || '정보보안 시험·인증 전문기관'}
           </h1>
 
-          <!-- Subtitle -->
-          <p class="text-slate-300/90 font-medium" style="font-size:clamp(0.88rem, 0.75rem + 0.6vw, 1.15rem); line-height:1.6; margin-bottom:clamp(1.5rem,2.5vw,2.2rem); max-width:520px; text-rendering:optimizeLegibility;">
+          <!-- Subtitle (2.5x) -->
+          <p class="text-slate-300/90 font-medium" style="font-size:clamp(1.15rem, 0.95rem + 0.9vw, 1.75rem); line-height:1.55; margin-bottom:clamp(1.8rem,3vw,3rem); max-width:680px; text-rendering:optimizeLegibility;">
             ${s.hero_line2 || 'IT제품 보안성 평가·인증의 원스톱 서비스, <span class="hero-gradient-text">한국정보보안기술원</span>'}
           </p>
 
-          <!-- CTA Buttons -->
-          <div class="flex flex-wrap" style="gap:clamp(0.6rem,1vw,1rem); margin-bottom:clamp(1.5rem,2.5vw,2.5rem);">
-            <a href="/support/inquiry" class="btn-glow ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:8px; padding:clamp(0.7rem,1vw,0.9rem) clamp(1.4rem,2vw,2rem); font-size:clamp(0.82rem,0.95vw,0.95rem);">
-              <i class="fas fa-paper-plane" style="font-size:clamp(0.65rem,0.75vw,0.78rem)"></i> ${s.hero_btn_primary || '온라인 상담'}
+          <!-- CTA Buttons (2.5x) -->
+          <div class="flex flex-wrap" style="gap:clamp(0.8rem,1.2vw,1.4rem); margin-bottom:clamp(2rem,3.5vw,3.5rem);">
+            <a href="/support/inquiry" class="btn-glow ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:10px; padding:clamp(0.9rem,1.3vw,1.2rem) clamp(1.8rem,2.8vw,2.8rem); font-size:clamp(1.1rem,1.35vw,1.5rem);">
+              <i class="fas fa-paper-plane" style="font-size:clamp(0.85rem,1vw,1.1rem)"></i> ${s.hero_btn_primary || '온라인 상담'}
             </a>
-            <a href="#services" class="btn-ghost ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:8px; padding:clamp(0.7rem,1vw,0.9rem) clamp(1.4rem,2vw,2rem); font-size:clamp(0.82rem,0.95vw,0.95rem);">
-              <i class="fas fa-th-large" style="font-size:clamp(0.65rem,0.75vw,0.78rem)"></i> ${s.hero_btn_secondary || '사업분야 보기'}
+            <a href="#services" class="btn-ghost ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:10px; padding:clamp(0.9rem,1.3vw,1.2rem) clamp(1.8rem,2.8vw,2.8rem); font-size:clamp(1.1rem,1.35vw,1.5rem);">
+              <i class="fas fa-th-large" style="font-size:clamp(0.85rem,1vw,1.1rem)"></i> ${s.hero_btn_secondary || '사업분야 보기'}
             </a>
           </div>
 
           <!-- ═══════ Hero Contact Card (원본 koist.kr 스타일, 8K fluid) ═══════ -->
           <div class="hero-contact-card" data-aos="fade-up" data-aos-delay="200">
-            <p class="text-slate-300/90 font-semibold" style="font-size:clamp(1.0rem,1.5vw,1.55rem); margin-bottom:clamp(0.8rem,1.4vw,1.4rem); letter-spacing:0.01em; text-rendering:geometricPrecision;">${s.hero_contact_label || '국가 시험·인증 전문기관 정보보안 기술을 완성'}</p>
+            <p class="text-slate-300/90 font-bold" style="font-size:clamp(1.3rem,2vw,2.1rem); margin-bottom:clamp(1rem,1.8vw,1.8rem); letter-spacing:0.01em; text-rendering:geometricPrecision;">${s.hero_contact_label || '국가 시험·인증 전문기관 정보보안 기술을 완성'}</p>
             <div class="hero-contact-grid">
               <div class="hero-contact-item">
                 <div class="hero-contact-icon"><i class="fas fa-phone"></i></div>
@@ -223,8 +223,8 @@ export function homePage(opts: {
                   <i class="fas fa-chart-bar text-blue-400" style="font-size:clamp(11px,1vw,15px)"></i>
                 </div>
                 <div style="min-width:0;">
-                  <p class="text-white font-bold truncate" style="font-size:clamp(0.78rem,0.95vw,1rem); line-height:1.3; letter-spacing:-0.01em;">${s.unified_panel_title || 'KOIST와 함께라면 평가기간을 <span class="text-cyan-300">대폭 단축</span>합니다'}</p>
-                  <p class="text-slate-400/80 truncate" style="font-size:clamp(0.6rem,0.7vw,0.72rem); margin-top:1px;">${s.unified_panel_subtitle || '사전준비 수준에 따라 실시간으로 기간을 산출합니다'}</p>
+                  <p class="text-white font-bold truncate" style="font-size:clamp(0.95rem,1.15vw,1.25rem); line-height:1.3; letter-spacing:-0.01em;">${s.unified_panel_title || 'KOIST와 함께라면 평가기간을 <span class="text-cyan-300">대폭 단축</span>합니다'}</p>
+                  <p class="text-slate-400/80 truncate" style="font-size:clamp(0.72rem,0.85vw,0.9rem); margin-top:2px;">${s.unified_panel_subtitle || '사전준비 수준에 따라 실시간으로 기간을 산출합니다'}</p>
                 </div>
               </div>
               <div class="hidden sm:flex items-center rounded-full shrink-0" style="gap:5px; padding:clamp(4px,0.4vw,6px) clamp(10px,1vw,16px); background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.22);">
@@ -346,7 +346,7 @@ export function homePage(opts: {
       gap: clamp(2rem, 4vw, 4rem);
       align-items: center;
     }
-    .unified-hero-left { max-width: 600px; }
+    .unified-hero-left { max-width: 720px; }
 
     /* Simulator panel card */
     .unified-sim-panel {
@@ -445,7 +445,7 @@ export function homePage(opts: {
       flex-shrink: 0;
     }
 
-    /* ── Responsive: Mobile → 1 column stack ── */
+    /* ── Responsive: Mobile → 1 column stack (v31) ── */
     @media (max-width: 1023px) {
       .unified-hero-grid {
         grid-template-columns: 1fr;
@@ -454,59 +454,62 @@ export function homePage(opts: {
       .unified-hero-left { max-width: 100%; text-align: center; }
       .unified-hero-left .flex.flex-wrap { justify-content: center; }
       .unified-hero-left .inline-flex { margin-left: auto; margin-right: auto; }
-      .hero-contact-card { margin-left: auto; margin-right: auto; text-align: left; max-width: 92%; }
-      .hero-contact-item { font-size: clamp(0.92rem, 2.5vw, 1.3rem); }
-      .hero-contact-icon { width: clamp(34px, 5.5vw, 44px); height: clamp(34px, 5.5vw, 44px); font-size: clamp(12px, 2.2vw, 18px); }
+      .hero-contact-card { margin-left: auto; margin-right: auto; text-align: left; max-width: 94%; }
+      .hero-contact-item { font-size: clamp(1.0rem, 2.8vw, 1.45rem); }
+      .hero-contact-icon { width: clamp(38px, 6vw, 50px); height: clamp(38px, 6vw, 50px); font-size: clamp(14px, 2.5vw, 20px); }
     }
     /* Mobile (639px) */
     @media (max-width: 639px) {
       .unified-sim-header { flex-direction: column; align-items: flex-start; gap: 8px; }
       .unified-sim-header .hidden.sm\\:flex { display: flex !important; }
-      .hero-contact-grid { grid-template-columns: 1fr; gap: clamp(0.6rem,2vw,0.9rem); }
-      .hero-contact-item { white-space: normal; font-size: clamp(0.88rem, 3.8vw, 1.12rem); word-break: keep-all; overflow-wrap: break-word; }
-      .hero-contact-icon { width: 36px; height: 36px; font-size: 14px; border-radius: 8px; }
-      .hero-contact-card { padding: clamp(1rem,3.5vw,1.4rem) clamp(1.2rem,4vw,1.6rem); border-radius: 14px; }
+      .hero-contact-grid { grid-template-columns: 1fr; gap: clamp(0.7rem,2.5vw,1rem); }
+      .hero-contact-item { white-space: normal; font-size: clamp(0.95rem, 4vw, 1.2rem); word-break: keep-all; overflow-wrap: break-word; }
+      .hero-contact-icon { width: 40px; height: 40px; font-size: 16px; border-radius: 10px; }
+      .hero-contact-card { padding: clamp(1.2rem,4vw,1.6rem) clamp(1.4rem,4.5vw,1.8rem); border-radius: 16px; }
+      .hero-contact-card p { font-size: clamp(1.05rem, 4.2vw, 1.3rem) !important; }
     }
     /* Very small mobile (375px) */
     @media (max-width: 375px) {
-      .hero-contact-item { font-size: 0.85rem; gap: 8px; }
-      .hero-contact-icon { width: 30px; height: 30px; font-size: 12px; }
+      .hero-contact-item { font-size: 0.92rem; gap: 8px; }
+      .hero-contact-icon { width: 34px; height: 34px; font-size: 14px; }
+    }
+
+    /* ── 2.5K (2560px) ── */
+    @media (min-width: 2560px) {
+      .hero-contact-item { font-size: 1.8rem; gap: 18px; }
+      .hero-contact-icon { width: 58px; height: 58px; font-size: 24px; border-radius: 14px; }
+      .hero-contact-card { max-width: 900px; padding: 2.5rem 3.2rem; border-radius: 28px; }
+      .hero-contact-card p { font-size: 1.9rem !important; }
     }
 
     /* ── 4K (3840px) ── */
-    /* 2.5K (2560px) */
-    @media (min-width: 2560px) {
-      .hero-contact-item { font-size: 1.5rem; gap: 14px; }
-      .hero-contact-icon { width: 50px; height: 50px; font-size: 20px; }
-      .hero-contact-card { max-width: 780px; padding: 2rem 2.5rem; }
-    }
-
     @media (min-width: 3840px) {
-      .unified-hero-grid { gap: 5rem; }
-      .unified-hero-left { max-width: 950px; }
-      .unified-sim-panel { border-radius: 24px; }
-      .unified-sim-header { padding: 1.6rem 2.2rem; }
-      .unified-sim-body { padding: 1.8rem 2.2rem; }
-      .hero-contact-card { max-width: 920px; padding: 2.5rem 3.2rem; border-radius: 28px; }
-      .hero-contact-icon { width: 64px; height: 64px; font-size: 24px; border-radius: 16px; }
-      .hero-contact-item { font-size: 1.85rem; gap: 18px; }
-      .hero-contact-grid { gap: 1.6rem 3rem; }
+      .unified-hero-grid { gap: 6rem; }
+      .unified-hero-left { max-width: 1050px; }
+      .unified-sim-panel { border-radius: 28px; }
+      .unified-sim-header { padding: 1.8rem 2.5rem; }
+      .unified-sim-body { padding: 2rem 2.5rem; }
+      .hero-contact-card { max-width: 1100px; padding: 3.2rem 4rem; border-radius: 32px; }
+      .hero-contact-icon { width: 76px; height: 76px; font-size: 30px; border-radius: 18px; }
+      .hero-contact-item { font-size: 2.3rem; gap: 22px; }
+      .hero-contact-grid { gap: 1.8rem 3.5rem; }
+      .hero-contact-card p { font-size: 2.4rem !important; }
     }
 
-    /* 8K (7680px) Ultra-Sharp */
+    /* ── 8K (7680px) Ultra-Sharp ── */
     @media (min-width: 7680px) {
-      .unified-hero-grid { gap: 10rem; }
-      .unified-hero-left { max-width: 1600px; }
-      .unified-sim-panel { border-radius: 48px; box-shadow: 0 20px 100px rgba(0,0,0,0.3), 0 6px 32px rgba(0,0,0,0.12); }
-      .unified-sim-header { padding: 2.5rem 3.5rem; }
-      .unified-sim-body { padding: 3rem 3.5rem; }
-      .eal-tab { padding: 18px 0 !important; font-size: 1.4rem !important; }
-      .prep-range::-webkit-slider-thumb { width: 50px !important; height: 50px !important; border-width: 6px !important; }
-      .hero-contact-card { max-width: 1500px; padding: 4rem 5rem; border-radius: 48px; }
-      .hero-contact-icon { width: 96px; height: 96px; font-size: 38px; border-radius: 22px; }
-      .hero-contact-item { font-size: 3rem; gap: 28px; }
-      .hero-contact-grid { gap: 2.2rem 4.5rem; }
-      .hero-contact-card p { font-size: 2.8rem !important; }
+      .unified-hero-grid { gap: 12rem; }
+      .unified-hero-left { max-width: 1800px; }
+      .unified-sim-panel { border-radius: 56px; box-shadow: 0 24px 120px rgba(0,0,0,0.3), 0 8px 40px rgba(0,0,0,0.12); }
+      .unified-sim-header { padding: 3rem 4rem; }
+      .unified-sim-body { padding: 3.5rem 4rem; }
+      .eal-tab { padding: 22px 0 !important; font-size: 1.8rem !important; }
+      .prep-range::-webkit-slider-thumb { width: 60px !important; height: 60px !important; border-width: 7px !important; }
+      .hero-contact-card { max-width: 1800px; padding: 5rem 6.5rem; border-radius: 56px; }
+      .hero-contact-icon { width: 110px; height: 110px; font-size: 44px; border-radius: 26px; }
+      .hero-contact-item { font-size: 3.6rem; gap: 32px; }
+      .hero-contact-grid { gap: 2.8rem 5.5rem; }
+      .hero-contact-card p { font-size: 3.4rem !important; }
     }
 
     /* ── Touch device: disable hover transforms on mobile ── */
