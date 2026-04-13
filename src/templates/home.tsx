@@ -340,7 +340,7 @@ export function homePage(opts: {
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
     }
-    /* v35: 50:50 split, right panel shifted right 13cm + extended 17cm */
+    /* v35.1: right panel shifted 8cm + extended 10cm */
     .unified-hero-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -357,8 +357,8 @@ export function homePage(opts: {
     .unified-hero-right {
       display: flex;
       flex-direction: column;
-      margin-left: 13cm;
-      width: calc(100% + 17cm);
+      margin-left: 8cm;
+      width: calc(100% + 10cm);
       min-width: 0;
     }
     
