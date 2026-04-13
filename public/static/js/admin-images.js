@@ -26,8 +26,21 @@
 
   function render(images) {
     let html = `
-      <!-- Upload Area -->
-      <div class="mb-6">
+      <!-- R2 Status Banner -->
+      <div id="r2StatusBanner" class="mb-4 hidden"></div>
+
+      <!-- Upload Mode Tabs -->
+      <div class="flex gap-2 mb-4">
+        <button id="tabFileUpload" onclick="switchUploadMode('file')" class="px-4 py-2 rounded-lg text-sm font-medium bg-blue-500 text-white transition-colors">
+          <i class="fas fa-cloud-upload-alt mr-1"></i> 파일 업로드
+        </button>
+        <button id="tabUrlRegister" onclick="switchUploadMode('url')" class="px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
+          <i class="fas fa-link mr-1"></i> URL 등록
+        </button>
+      </div>
+
+      <!-- File Upload Area -->
+      <div id="fileUploadArea" class="mb-6">
         <div id="uploadArea" class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-blue-400 hover:bg-blue-50/30 transition-all cursor-pointer relative">
           <input type="file" id="fileInput" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" multiple>
           <i class="fas fa-cloud-upload-alt text-4xl text-gray-300 mb-3 block"></i>
@@ -60,6 +73,34 @@
         </div>
       </div>
 
+      <!-- URL Register Area (hidden by default) -->
+      <div id="urlRegisterArea" class="mb-6 hidden">
+        <div class="bg-gray-50 rounded-xl p-4 border">
+          <div class="flex flex-wrap items-end gap-3">
+            <div class="flex-[2] min-w-[250px]">
+              <label class="block text-sm font-medium text-gray-600 mb-1">이미지 URL</label>
+              <input type="url" id="urlInput" placeholder="https://example.com/image.jpg" class="w-full px-3 py-2 border rounded-lg text-sm">
+            </div>
+            <div class="flex-1 min-w-[150px]">
+              <label class="block text-sm font-medium text-gray-600 mb-1">카테고리</label>
+              <select id="urlCategory" class="w-full px-3 py-2 border rounded-lg text-sm">
+                ${categories.map(c => `<option value="${c.value}">${c.label}</option>`).join('')}
+              </select>
+            </div>
+            <div class="flex-1 min-w-[150px]">
+              <label class="block text-sm font-medium text-gray-600 mb-1">설명 (alt text)</label>
+              <input type="text" id="urlAlt" placeholder="이미지 설명..." class="w-full px-3 py-2 border rounded-lg text-sm">
+            </div>
+            <button onclick="doUrlRegister()" class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg font-medium text-sm transition-colors">
+              <i class="fas fa-link mr-1"></i> 등록
+            </button>
+          </div>
+          <div id="urlPreview" class="mt-3 hidden">
+            <img id="urlPreviewImg" src="" class="w-32 h-32 object-cover rounded-lg border" onerror="this.parentNode.classList.add('hidden')">
+          </div>
+        </div>
+      </div>
+
       <!-- Filter -->
       <div class="flex items-center gap-2 mb-4">
         <span class="text-sm text-gray-500">필터:</span>
@@ -74,7 +115,7 @@
         ${images.map(img => `
         <div class="group relative bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all">
           <div class="aspect-square bg-gray-100 overflow-hidden">
-            <img src="/api/images/${img.r2_key}" alt="${img.alt_text || img.original_name}" 
+            <img src="${img.mime_type === 'image/external' ? img.r2_key : '/api/images/' + img.r2_key}" alt="${img.alt_text || img.original_name}" 
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform" 
                  loading="lazy" onerror="this.parentNode.innerHTML='<div class=\\'flex items-center justify-center h-full text-gray-300\\'><i class=\\'fas fa-image text-3xl\\'></i></div>'">
           </div>
@@ -87,7 +128,7 @@
           </div>
           <!-- Actions overlay -->
           <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-            <button onclick="copyImageUrl('${img.r2_key}')" title="URL 복사" class="w-7 h-7 bg-white/90 rounded-lg shadow text-gray-600 hover:text-blue-500 flex items-center justify-center text-xs">
+            <button onclick="copyImageUrl('${img.mime_type === 'image/external' ? img.r2_key : '/api/images/' + img.r2_key}')" title="URL 복사" class="w-7 h-7 bg-white/90 rounded-lg shadow text-gray-600 hover:text-blue-500 flex items-center justify-center text-xs">
               <i class="fas fa-copy"></i>
             </button>
             <button onclick="deleteImage(${img.id}, '${img.original_name}')" title="삭제" class="w-7 h-7 bg-white/90 rounded-lg shadow text-gray-600 hover:text-red-500 flex items-center justify-center text-xs">
@@ -114,6 +155,24 @@
   function initUpload() {
     const fileInput = document.getElementById('fileInput');
     const uploadArea = document.getElementById('uploadArea');
+
+    // Check R2 status
+    checkR2Status();
+
+    // URL preview on input
+    const urlInput = document.getElementById('urlInput');
+    if (urlInput) {
+      urlInput.addEventListener('input', function() {
+        const preview = document.getElementById('urlPreview');
+        const img = document.getElementById('urlPreviewImg');
+        if (this.value && this.value.match(/^https?:\/\/.+/)) {
+          img.src = this.value;
+          preview.classList.remove('hidden');
+        } else {
+          preview.classList.add('hidden');
+        }
+      });
+    }
 
     fileInput.addEventListener('change', (e) => {
       selectedFiles = Array.from(e.target.files);
@@ -195,8 +254,8 @@
     }, 1000);
   };
 
-  window.copyImageUrl = function(r2Key) {
-    const url = `/api/images/${r2Key}`;
+  window.copyImageUrl = function(fullUrl) {
+    const url = fullUrl;
     navigator.clipboard.writeText(url).then(() => {
       // Show a brief toast
       const toast = document.createElement('div');
@@ -216,6 +275,74 @@
   window.filterImages = function(cat) {
     currentFilter = cat;
     loadImages();
+  };
+
+  // R2 status check
+  async function checkR2Status() {
+    try {
+      const res = await apiCall('/api/admin/images/r2-status');
+      const banner = document.getElementById('r2StatusBanner');
+      if (!banner) return;
+      if (res && res.r2_available) {
+        banner.className = 'mb-4 bg-green-50 border border-green-200 text-green-700 rounded-lg p-3 text-sm flex items-center gap-2';
+        banner.innerHTML = '<i class="fas fa-check-circle"></i> R2 스토리지 연결됨 - 파일 업로드 및 URL 등록 모두 가능합니다.';
+        banner.classList.remove('hidden');
+      } else {
+        banner.className = 'mb-4 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg p-3 text-sm flex items-center gap-2';
+        banner.innerHTML = '<i class="fas fa-exclamation-triangle"></i> R2 스토리지 미연결 - 파일 업로드는 메타데이터만 저장됩니다. URL 등록을 권장합니다.';
+        banner.classList.remove('hidden');
+        // Auto-switch to URL mode
+        switchUploadMode('url');
+      }
+    } catch (e) { /* ignore */ }
+  }
+
+  // Upload mode switch
+  window.switchUploadMode = function(mode) {
+    const tabFile = document.getElementById('tabFileUpload');
+    const tabUrl = document.getElementById('tabUrlRegister');
+    const fileArea = document.getElementById('fileUploadArea');
+    const urlArea = document.getElementById('urlRegisterArea');
+    if (mode === 'file') {
+      tabFile.className = 'px-4 py-2 rounded-lg text-sm font-medium bg-blue-500 text-white transition-colors';
+      tabUrl.className = 'px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors';
+      fileArea.classList.remove('hidden');
+      urlArea.classList.add('hidden');
+    } else {
+      tabUrl.className = 'px-4 py-2 rounded-lg text-sm font-medium bg-green-500 text-white transition-colors';
+      tabFile.className = 'px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors';
+      urlArea.classList.remove('hidden');
+      fileArea.classList.add('hidden');
+    }
+  };
+
+  // URL register
+  window.doUrlRegister = async function() {
+    const url = document.getElementById('urlInput').value.trim();
+    const category = document.getElementById('urlCategory').value;
+    const altText = document.getElementById('urlAlt').value.trim();
+    if (!url || !url.match(/^https?:\/\/.+/)) {
+      alert('올바른 이미지 URL을 입력해주세요.');
+      return;
+    }
+    try {
+      const res = await fetch('/api/admin/images', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, category, alt_text: altText }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById('urlInput').value = '';
+        document.getElementById('urlAlt').value = '';
+        document.getElementById('urlPreview').classList.add('hidden');
+        loadImages();
+      } else {
+        alert(data.error || '등록 실패');
+      }
+    } catch (err) {
+      alert('등록 실패: ' + err.message);
+    }
   };
 
   loadImages();

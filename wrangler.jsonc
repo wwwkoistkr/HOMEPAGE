@@ -11,11 +11,10 @@
       "database_id": "91f1eb2f-e9fa-45e8-8bea-4958ce74727a"
     }
   ],
-  // R2 비활성화 상태 - Cloudflare 대시보드에서 R2 활성화 후 아래 주석 해제
-  // "r2_buckets": [
-  //   {
-  //     "binding": "R2",
-  //     "bucket_name": "koist-images"
-  //   }
-  // ]
+  "r2_buckets": [
+    {
+      "binding": "R2",
+      "bucket_name": "koist-images"
+    }
+  ]
 }

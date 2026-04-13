@@ -21,6 +21,7 @@
     theme: { label: '디자인', icon: 'fa-palette', color: 'purple' },
     background: { label: '배경 이미지', icon: 'fa-image', color: 'pink' },
     content: { label: '홈페이지 텍스트', icon: 'fa-font', color: 'orange' },
+    simulator: { label: '시뮬레이터 UI 라벨', icon: 'fa-sliders', color: 'indigo' },
     evaluation: { label: '평가기간 시뮬레이터 관리', icon: 'fa-chart-bar', color: 'cyan', custom: true },
     seo: { label: 'SEO', icon: 'fa-search', color: 'teal' },
   };

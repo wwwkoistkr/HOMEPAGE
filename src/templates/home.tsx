@@ -238,10 +238,10 @@ export function homePage(opts: {
             <div class="unified-sim-body">
               <!-- Tab Bar -->
               <div class="eal-tabs flex rounded-xl overflow-hidden" style="margin-bottom:clamp(0.6rem,0.9vw,0.8rem); border:1px solid rgba(226,232,240,0.70); background: rgba(248,250,252,0.80);">
-                <button class="eal-tab active flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.6vw,8px) 0; font-size:clamp(0.68rem,0.82vw,0.82rem);" data-eal="overall" onclick="switchEAL('overall')">전체평균</button>
-                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.6vw,8px) 0; font-size:clamp(0.68rem,0.82vw,0.82rem); border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL2" onclick="switchEAL('EAL2')">EAL2</button>
-                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.6vw,8px) 0; font-size:clamp(0.68rem,0.82vw,0.82rem); border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL3" onclick="switchEAL('EAL3')">EAL3</button>
-                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.6vw,8px) 0; font-size:clamp(0.68rem,0.82vw,0.82rem); border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL4" onclick="switchEAL('EAL4')">EAL4</button>
+                <button class="eal-tab active flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.6vw,8px) 0; font-size:clamp(0.68rem,0.82vw,0.82rem);" data-eal="overall" onclick="switchEAL('overall')">${s.sim_tab_overall || '\uC804\uCCB4\uD3C9\uADE0'}</button>
+                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.6vw,8px) 0; font-size:clamp(0.68rem,0.82vw,0.82rem); border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL2" onclick="switchEAL('EAL2')">${s.sim_tab_eal2 || 'EAL2'}</button>
+                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.6vw,8px) 0; font-size:clamp(0.68rem,0.82vw,0.82rem); border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL3" onclick="switchEAL('EAL3')">${s.sim_tab_eal3 || 'EAL3'}</button>
+                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.6vw,8px) 0; font-size:clamp(0.68rem,0.82vw,0.82rem); border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL4" onclick="switchEAL('EAL4')">${s.sim_tab_eal4 || 'EAL4'}</button>
               </div>
 
               <!-- Preparation Slider — 8K Sharp -->
@@ -249,7 +249,7 @@ export function homePage(opts: {
                 <div class="flex items-center" style="gap:clamp(0.4rem,0.6vw,0.6rem)">
                   <div class="flex items-center shrink-0" style="gap:5px">
                     <i class="fas fa-clipboard-check text-emerald-500" style="font-size:clamp(10px,0.8vw,12px)"></i>
-                    <span class="font-bold text-slate-700" style="font-size:clamp(0.7rem,0.85vw,0.85rem)">사전준비</span>
+                    <span class="font-bold text-slate-700" style="font-size:clamp(0.7rem,0.85vw,0.85rem)">${s.sim_label_prep || '사전준비'}</span>
                   </div>
                   <div class="flex-1 flex items-center" style="gap:clamp(0.2rem,0.4vw,0.4rem)">
                     <span class="text-slate-400 shrink-0" style="font-size:clamp(9px,0.65vw,10px); font-weight:600;">1</span>
@@ -281,7 +281,7 @@ export function homePage(opts: {
                 <!-- CCRA bar -->
                 <div>
                   <div class="flex justify-between items-center" style="margin-bottom:4px">
-                    <span class="text-slate-500 font-semibold flex items-center" style="gap:4px; font-size:clamp(0.68rem,0.82vw,0.82rem)"><span class="inline-block rounded-full" style="width:7px; height:7px; background: linear-gradient(135deg, #94A3B8, #64748B);"></span>전통 CCRA 평가 프로세스</span>
+                    <span class="text-slate-500 font-semibold flex items-center" style="gap:4px; font-size:clamp(0.68rem,0.82vw,0.82rem)"><span class="inline-block rounded-full" style="width:7px; height:7px; background: linear-gradient(135deg, #94A3B8, #64748B);"></span>${s.sim_label_traditional || '전통 CCRA 평가 프로세스'}</span>
                     <span id="ealGeneralTotal" class="text-slate-400 font-bold" style="font-size:clamp(0.68rem,0.82vw,0.82rem)">약 24개월</span>
                   </div>
                   <div class="relative rounded-xl overflow-hidden" style="height:clamp(32px,3.2vw,44px); background: linear-gradient(90deg, #F1F5F9, #E2E8F0);">
@@ -295,7 +295,7 @@ export function homePage(opts: {
                 <!-- KOIST bar -->
                 <div>
                   <div class="flex justify-between items-center" style="margin-bottom:4px">
-                    <span class="text-accent font-bold flex items-center" style="gap:4px; font-size:clamp(0.68rem,0.82vw,0.82rem)"><span class="inline-block rounded-full" style="width:7px; height:7px; background: linear-gradient(135deg, #2563EB, #06B6D4);"></span><i class="fas fa-bolt text-yellow-500" style="font-size:clamp(7px,0.55vw,9px); margin-right:2px;"></i>KOIST 평가 프로세스</span>
+                    <span class="text-accent font-bold flex items-center" style="gap:4px; font-size:clamp(0.68rem,0.82vw,0.82rem)"><span class="inline-block rounded-full" style="width:7px; height:7px; background: linear-gradient(135deg, #2563EB, #06B6D4);"></span><i class="fas fa-bolt text-yellow-500" style="font-size:clamp(7px,0.55vw,9px); margin-right:2px;"></i>${s.sim_label_koist || 'KOIST 평가 프로세스'}</span>
                     <span id="ealKoistTotal" class="text-accent font-bold" style="font-size:clamp(0.68rem,0.82vw,0.82rem)">약 15개월</span>
                   </div>
                   <div class="relative rounded-xl overflow-hidden" style="height:clamp(32px,3.2vw,44px); background: linear-gradient(90deg, #F1F5F9, #E2E8F0);">
@@ -620,7 +620,7 @@ export function homePage(opts: {
     <div class="relative fluid-container">
       <div class="text-center" style="margin-bottom: clamp(0.8rem,1.5vw,1.5rem)" data-aos="fade-up">
         <div class="inline-flex items-center rounded-full font-semibold" style="gap:8px; padding:6px 18px; margin-bottom:var(--space-xs); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB; font-size: clamp(0.76rem, 0.62rem + 0.36vw, 1.12rem);">
-          <i class="fas fa-cubes" style="font-size:clamp(11px,0.9vw,16px)"></i>KOIST 사업분야
+          <i class="fas fa-cubes" style="font-size:clamp(11px,0.9vw,16px)"></i>${s.services_badge || 'KOIST 사업분야'}
         </div>
         <h2 class="font-bold text-primary" style="font-size: clamp(1.44rem, 1.08rem + 0.92vw, 2.56rem); margin-bottom:var(--space-2xs); line-height:1.2;">${s.services_title || '핵심 사업분야'}</h2>
         <p class="text-slate-500 max-w-lg mx-auto" style="font-size: clamp(0.88rem, 0.72rem + 0.42vw, 1.36rem); line-height:1.25;">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
@@ -682,10 +682,10 @@ export function homePage(opts: {
       <button id="accordionTrigger" onclick="toggleHomeAccordion()" class="w-full flex items-center justify-between transition-all hover:bg-blue-50/30" style="padding:clamp(0.7rem,1.1vw,1rem) clamp(0.5rem,1vw,1rem); border-radius:0; cursor:pointer; border:none; background:transparent;">
         <span class="flex items-center" style="gap:clamp(6px,0.6vw,10px);">
           <i class="fas fa-bullhorn text-accent" style="font-size:clamp(12px,1vw,16px)"></i>
-          <span class="font-bold text-primary" style="font-size:clamp(0.85rem,0.72rem+0.38vw,1.15rem);">공지사항 / 자료실 / 시스템문서 / 오시는길</span>
+          <span class="font-bold text-primary" style="font-size:clamp(0.85rem,0.72rem+0.38vw,1.15rem);">${s.accordion_title || '공지사항 / 자료실 / 시스템문서 / 오시는길'}</span>
         </span>
         <span class="flex items-center" style="gap:6px;">
-          <span class="text-slate-400 font-medium" style="font-size:clamp(0.7rem,0.6rem+0.2vw,0.85rem);">펼쳐보기</span>
+          <span class="text-slate-400 font-medium" style="font-size:clamp(0.7rem,0.6rem+0.2vw,0.85rem);">${s.accordion_expand_label || '펼쳐보기'}</span>
           <i id="accordionArrow" class="fas fa-chevron-down text-slate-400 transition-transform" style="font-size:clamp(10px,0.8vw,13px); transition:transform 0.3s ease;"></i>
         </span>
       </button>
@@ -766,7 +766,7 @@ export function homePage(opts: {
                   <i class="fas fa-building text-white" style="font-size:clamp(12px,1vw,18px)"></i>
                 </div>
                 <div>
-                  <p class="font-bold text-primary" style="font-size:clamp(0.85rem,0.75rem+0.3vw,1.1rem); line-height:1.3; margin-bottom:3px;">(주)한국정보보안기술원</p>
+                  <p class="font-bold text-primary" style="font-size:clamp(0.85rem,0.75rem+0.3vw,1.1rem); line-height:1.3; margin-bottom:3px;">${s.company_name || '(주)한국정보보안기술원'}</p>
                   <p class="text-slate-500" style="font-size:clamp(0.75rem,0.65rem+0.22vw,0.9rem); line-height:1.3;">${s.address || '서울특별시 서초구 효령로 336 윤일빌딩 4층'}</p>
                 </div>
               </div>
@@ -1035,67 +1035,23 @@ export function homePage(opts: {
             </div>
           </div>
 
-          <!-- Tab Content: 자료실 -->
+          <!-- Tab Content: 자료실 (AJAX from DB) -->
           <div class="notice-tab-content" id="tab-downloads">
             <div class="flex justify-end" style="margin-bottom:clamp(0.3rem,0.5vw,0.5rem);">
               <a href="/support/downloads" class="text-accent font-semibold hover:underline inline-flex items-center" style="gap:4px; font-size:clamp(1.0rem, 0.85rem + 0.4vw, 1.5rem);">전체보기 <i class="fas fa-chevron-right" style="font-size:clamp(9px,0.7vw,12px)"></i></a>
             </div>
-            <div style="padding:clamp(1rem,1.5vw,1.5rem) 0;">
-              <div class="space-y-3">
-                <a href="/support/downloads" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">
-                  <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(59,130,246,0.06);"><i class="fas fa-file-pdf text-red-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>
-                  <div class="flex-1 min-w-0">
-                    <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">시험·평가 신청서 양식</span>
-                    <span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">PDF · 신청서류</span>
-                  </div>
-                </a>
-                <a href="/support/downloads" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">
-                  <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(16,185,129,0.06);"><i class="fas fa-file-lines text-emerald-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>
-                  <div class="flex-1 min-w-0">
-                    <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">평가 절차 안내서</span>
-                    <span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">PDF · 안내자료</span>
-                  </div>
-                </a>
-                <a href="/support/downloads" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">
-                  <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(139,92,246,0.06);"><i class="fas fa-file-zipper text-purple-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>
-                  <div class="flex-1 min-w-0">
-                    <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">CC인증 관련 자료 모음</span>
-                    <span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">ZIP · 참고자료</span>
-                  </div>
-                </a>
-              </div>
+            <div id="noticeDownloadList" style="padding:clamp(1rem,1.5vw,1.5rem) 0;">
+              <p class="text-slate-400 text-center" style="font-size:clamp(0.8rem,0.7rem+0.2vw,0.95rem);"><i class="fas fa-spinner fa-spin mr-1"></i> 불러오는 중...</p>
             </div>
           </div>
 
-          <!-- Tab Content: 시스템문서 -->
+          <!-- Tab Content: 시스템문서 (AJAX from DB) -->
           <div class="notice-tab-content" id="tab-documents">
             <div class="flex justify-end" style="margin-bottom:clamp(0.3rem,0.5vw,0.5rem);">
               <a href="/support/documents" class="text-accent font-semibold hover:underline inline-flex items-center" style="gap:4px; font-size:clamp(1.0rem, 0.85rem + 0.4vw, 1.5rem);">전체보기 <i class="fas fa-chevron-right" style="font-size:clamp(9px,0.7vw,12px)"></i></a>
             </div>
-            <div style="padding:clamp(1rem,1.5vw,1.5rem) 0;">
-              <div class="space-y-3">
-                <a href="/support/documents" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">
-                  <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(59,130,246,0.06);"><i class="fas fa-book text-blue-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>
-                  <div class="flex-1 min-w-0">
-                    <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">품질경영시스템 매뉴얼</span>
-                    <span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">QMS 문서</span>
-                  </div>
-                </a>
-                <a href="/support/documents" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">
-                  <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(245,158,11,0.06);"><i class="fas fa-shield-halved text-amber-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>
-                  <div class="flex-1 min-w-0">
-                    <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">정보보호 관리체계 운영규정</span>
-                    <span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">ISMS 문서</span>
-                  </div>
-                </a>
-                <a href="/support/documents" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">
-                  <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(6,182,212,0.06);"><i class="fas fa-clipboard-list text-cyan-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>
-                  <div class="flex-1 min-w-0">
-                    <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">시험절차 표준운영규정</span>
-                    <span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">SOP 문서</span>
-                  </div>
-                </a>
-              </div>
+            <div id="noticeDocumentList" style="padding:clamp(1rem,1.5vw,1.5rem) 0;">
+              <p class="text-slate-400 text-center" style="font-size:clamp(0.8rem,0.7rem+0.2vw,0.95rem);"><i class="fas fa-spinner fa-spin mr-1"></i> 불러오는 중...</p>
             </div>
           </div>
 
@@ -1109,7 +1065,7 @@ export function homePage(opts: {
                       <i class="fas fa-building text-white" style="font-size:clamp(16px,1.4vw,24px)"></i>
                     </div>
                     <div>
-                      <p class="font-bold text-primary" style="font-size:clamp(1.2rem,1rem+0.6vw,1.9rem); line-height:1.2; margin-bottom:4px;">(주)한국정보보안기술원</p>
+                      <p class="font-bold text-primary" style="font-size:clamp(1.2rem,1rem+0.6vw,1.9rem); line-height:1.2; margin-bottom:4px;">${s.company_name || '(주)한국정보보안기술원'}</p>
                       <p class="text-slate-500" style="font-size:clamp(1.0rem,0.85rem+0.4vw,1.5rem); line-height:1.2;">${s.address || '서울특별시 서초구 효령로 336 윤일빌딩 4층'}</p>
                     </div>
                   </div>
@@ -1139,7 +1095,7 @@ export function homePage(opts: {
               <div class="rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,50px); height:clamp(36px,3vw,50px); background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(6,182,212,0.05));">
                 <i class="fas fa-chart-bar text-emerald-500" style="font-size:clamp(14px,1.2vw,22px)"></i>
               </div>
-              평가현황
+              ${s.progress_title || '평가현황'}
             </h3>
             <a href="/support/progress" class="text-accent font-semibold hover:underline inline-flex items-center" style="gap:4px; font-size:clamp(1.0rem, 0.85rem + 0.4vw, 1.5rem);">전체보기 <i class="fas fa-chevron-right" style="font-size:clamp(9px,0.7vw,12px)"></i></a>
           </div>
@@ -1168,7 +1124,7 @@ export function homePage(opts: {
           ` : ''}
 
           <div class="flex items-center justify-between rounded-lg" style="margin-bottom:var(--space-md); padding:clamp(6px,0.6vw,10px) clamp(12px,1vw,18px); background: linear-gradient(135deg, rgba(59,130,246,0.03), rgba(6,182,212,0.02)); border: 1px solid rgba(59,130,246,0.08);">
-            <span class="text-slate-500" style="font-size:clamp(0.95rem,0.8rem+0.4vw,1.4rem);"><i class="fas fa-chart-pie text-blue-400 mr-1" style="font-size:clamp(10px,0.8vw,14px)"></i>총 시험·평가 실적</span>
+            <span class="text-slate-500" style="font-size:clamp(0.95rem,0.8rem+0.4vw,1.4rem);"><i class="fas fa-chart-pie text-blue-400 mr-1" style="font-size:clamp(10px,0.8vw,14px)"></i>${s.progress_total_label || '총 시험·평가 실적'}</span>
             <span class="text-accent font-black" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem);">${totalEvals}건</span>
           </div>
 
@@ -1245,16 +1201,95 @@ export function homePage(opts: {
        ════════════════════════════════════════════════════════ -->
   <script>
   (function(){
+    var ntDataLoaded = { downloads: false, documents: false };
+    var iconMap = { pdf:'fa-file-pdf text-red-400', doc:'fa-file-word text-blue-400', docx:'fa-file-word text-blue-400', xls:'fa-file-excel text-green-400', xlsx:'fa-file-excel text-green-400', zip:'fa-file-zipper text-purple-400', hwp:'fa-file-lines text-cyan-400' };
+    var colorPalette = ['rgba(59,130,246,0.06)', 'rgba(16,185,129,0.06)', 'rgba(139,92,246,0.06)', 'rgba(245,158,11,0.06)', 'rgba(6,182,212,0.06)'];
+
+    function escH2(str) { var d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+    function fmtSize(bytes) {
+      if (!bytes) return '';
+      var kb = bytes / 1024;
+      return kb < 1024 ? kb.toFixed(0) + ' KB' : (kb / 1024).toFixed(1) + ' MB';
+    }
+
     window.switchNoticeTab = function(tabId) {
-      // Deactivate all tabs
       document.querySelectorAll('.notice-tab').forEach(function(t) { t.classList.remove('active'); });
       document.querySelectorAll('.notice-tab-content').forEach(function(c) { c.classList.remove('active'); });
-      // Activate selected tab
       var tab = document.querySelector('.notice-tab[data-tab="' + tabId + '"]');
       var content = document.getElementById('tab-' + tabId);
       if (tab) tab.classList.add('active');
       if (content) content.classList.add('active');
+      // Lazy load downloads / documents
+      if (tabId === 'downloads' && !ntDataLoaded.downloads) loadNoticeDownloads();
+      if (tabId === 'documents' && !ntDataLoaded.documents) loadNoticeDocuments();
     };
+
+    function loadNoticeDownloads() {
+      fetch('/api/downloads').then(function(r) { return r.json(); }).then(function(res) {
+        ntDataLoaded.downloads = true;
+        var el = document.getElementById('noticeDownloadList');
+        if (!el) return;
+        if (!res.data || res.data.length === 0) {
+          el.innerHTML = '<p class="text-slate-400 text-center" style="padding:1.5rem 0; font-size:clamp(0.8rem,0.7rem+0.2vw,0.95rem);">등록된 자료가 없습니다.</p>';
+          return;
+        }
+        var html = '<div class="space-y-3">';
+        res.data.slice(0, 5).forEach(function(d, i) {
+          var ext = (d.file_name || '').split('.').pop().toLowerCase();
+          var iconCls = iconMap[ext] || 'fa-file text-slate-400';
+          var bgColor = colorPalette[i % colorPalette.length];
+          html += '<a href="/api/downloads/' + d.id + '/file" target="_blank" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">' +
+            '<div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:' + bgColor + ';"><i class="fas ' + iconCls + '" style="font-size:clamp(14px,1.2vw,20px)"></i></div>' +
+            '<div class="flex-1 min-w-0">' +
+            '<span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">' + escH2(d.title) + '</span>' +
+            '<span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">' + (ext.toUpperCase() || 'FILE') + (d.file_size ? ' · ' + fmtSize(d.file_size) : '') + ' · ' + (d.category || '일반') + '</span>' +
+            '</div></a>';
+        });
+        html += '</div>';
+        el.innerHTML = html;
+      }).catch(function() {
+        var el = document.getElementById('noticeDownloadList');
+        if (el) el.innerHTML = '<p class="text-slate-400 text-center" style="padding:1rem 0;">데이터를 불러오지 못했습니다.</p>';
+      });
+    }
+
+    function loadNoticeDocuments() {
+      // Documents are also stored as downloads with category='document'
+      fetch('/api/downloads').then(function(r) { return r.json(); }).then(function(res) {
+        ntDataLoaded.documents = true;
+        var el = document.getElementById('noticeDocumentList');
+        if (!el) return;
+        var docs = (res.data || []).filter(function(d) { return d.category === 'document' || d.category === 'system'; });
+        if (docs.length === 0) {
+          // Fallback: show static system docs
+          el.innerHTML = '<div class="space-y-3">' +
+            '<a href="/static/docs/architecture-diagram.html" target="_blank" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">' +
+            '<div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(59,130,246,0.06);"><i class="fas fa-sitemap text-blue-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>' +
+            '<div class="flex-1 min-w-0"><span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">시스템 설계서</span><span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">HTML · 시스템 아키텍처</span></div></a>' +
+            '<a href="/static/docs/development-guide.html" target="_blank" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">' +
+            '<div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(16,185,129,0.06);"><i class="fas fa-code text-emerald-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>' +
+            '<div class="flex-1 min-w-0"><span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">개발지침서</span><span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">HTML · 기술 가이드</span></div></a></div>';
+          return;
+        }
+        var html = '<div class="space-y-3">';
+        docs.slice(0, 5).forEach(function(d, i) {
+          var ext = (d.file_name || '').split('.').pop().toLowerCase();
+          var iconCls = iconMap[ext] || 'fa-book text-blue-400';
+          var bgColor = colorPalette[i % colorPalette.length];
+          html += '<a href="/api/downloads/' + d.id + '/file" target="_blank" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">' +
+            '<div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:' + bgColor + ';"><i class="fas ' + iconCls + '" style="font-size:clamp(14px,1.2vw,20px)"></i></div>' +
+            '<div class="flex-1 min-w-0">' +
+            '<span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">' + escH2(d.title) + '</span>' +
+            '<span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">' + (d.description || d.category || '문서') + '</span>' +
+            '</div></a>';
+        });
+        html += '</div>';
+        el.innerHTML = html;
+      }).catch(function() {
+        var el = document.getElementById('noticeDocumentList');
+        if (el) el.innerHTML = '<p class="text-slate-400 text-center" style="padding:1rem 0;">데이터를 불러오지 못했습니다.</p>';
+      });
+    }
   })();
   </script>
 

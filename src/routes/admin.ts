@@ -357,12 +357,21 @@ admin.get('/images', async (c) => {
   return c.json({ success: true, data: result.results || [] });
 });
 
+// Check if R2 is available
+function hasR2(env: Bindings): boolean {
+  return !!(env as any).R2;
+}
+
+// GET /api/admin/images/r2-status - Check R2 availability
+admin.get('/images/r2-status', async (c) => {
+  return c.json({ success: true, r2_available: hasR2(c.env) });
+});
+
 admin.post('/images', async (c) => {
   try {
     const contentType = c.req.header('content-type') || '';
     
     if (contentType.includes('multipart/form-data')) {
-      // Handle file upload via multipart form data
       const formData = await c.req.formData();
       const file = formData.get('file') as File | null;
       const category = (formData.get('category') as string) || 'general';
@@ -370,13 +379,11 @@ admin.post('/images', async (c) => {
 
       if (!file) return c.json({ error: '파일을 선택해주세요.' }, 400);
 
-      // Validate file type
       const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
       if (!allowedTypes.includes(file.type)) {
         return c.json({ error: '지원하지 않는 파일 형식입니다. (JPG, PNG, GIF, WebP, SVG만 가능)' }, 400);
       }
 
-      // Max 5MB
       if (file.size > 5 * 1024 * 1024) {
         return c.json({ error: '파일 크기는 5MB 이하만 가능합니다.' }, 400);
       }
@@ -385,13 +392,16 @@ admin.post('/images', async (c) => {
       const ext = file.name.split('.').pop() || 'jpg';
       const safeName = `${category}/${timestamp}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
       
-      // Upload to R2
-      const arrayBuffer = await file.arrayBuffer();
-      await c.env.R2.put(safeName, arrayBuffer, {
-        httpMetadata: { contentType: file.type },
-      });
+      if (hasR2(c.env)) {
+        // Upload to R2
+        const arrayBuffer = await file.arrayBuffer();
+        await c.env.R2.put(safeName, arrayBuffer, {
+          httpMetadata: { contentType: file.type },
+        });
+      } else {
+        // R2 not available — save metadata only (URL-based mode)
+      }
 
-      // Save metadata to D1
       await c.env.DB.prepare(
         'INSERT INTO images (file_name, original_name, r2_key, mime_type, file_size, category, alt_text) VALUES (?,?,?,?,?,?,?)'
       ).bind(safeName, file.name, safeName, file.type, file.size, category, altText).run();
@@ -403,8 +413,20 @@ admin.post('/images', async (c) => {
         data: image,
         url: `/api/images/${safeName}` 
       });
+    } else if (contentType.includes('application/json')) {
+      // URL-based image registration (no R2 needed)
+      const { url, category, alt_text } = await c.req.json();
+      if (!url) return c.json({ error: 'URL을 입력해주세요.' }, 400);
+
+      const safeName = url; // Use the URL itself as the key
+      await c.env.DB.prepare(
+        'INSERT INTO images (file_name, original_name, r2_key, mime_type, file_size, category, alt_text) VALUES (?,?,?,?,?,?,?)'
+      ).bind(safeName, url.split('/').pop() || 'image', safeName, 'image/external', 0, category || 'general', alt_text || '').run();
+
+      const image = await c.env.DB.prepare('SELECT * FROM images WHERE r2_key = ?').bind(safeName).first<ImageRecord>();
+      return c.json({ success: true, data: image, url });
     } else {
-      return c.json({ error: 'Content-Type must be multipart/form-data' }, 400);
+      return c.json({ error: 'Content-Type must be multipart/form-data or application/json' }, 400);
     }
   } catch (err: any) {
     return c.json({ error: '업로드 실패: ' + (err.message || '알 수 없는 오류') }, 500);
@@ -416,14 +438,15 @@ admin.delete('/images/:id', async (c) => {
   const image = await c.env.DB.prepare('SELECT * FROM images WHERE id = ?').bind(id).first<ImageRecord>();
   if (!image) return c.json({ error: '이미지를 찾을 수 없습니다.' }, 404);
 
-  // Delete from R2
-  try {
-    await c.env.R2.delete(image.r2_key);
-  } catch {
-    // R2 delete failure is non-critical
+  // Delete from R2 (only if R2 is available and it's not an external URL)
+  if (hasR2(c.env) && image.mime_type !== 'image/external') {
+    try {
+      await c.env.R2.delete(image.r2_key);
+    } catch {
+      // R2 delete failure is non-critical
+    }
   }
 
-  // Delete from D1
   await c.env.DB.prepare('DELETE FROM images WHERE id = ?').bind(id).run();
   return c.json({ success: true });
 });

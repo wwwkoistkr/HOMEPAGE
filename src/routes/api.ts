@@ -124,10 +124,20 @@ api.get('/sim-cert-types', async (c) => {
   return c.json({ success: true, data: result.results });
 });
 
-// GET /api/images/:key+ - Serve images from R2 (public, cached)
+// GET /api/images/:key+ - Serve images from R2 (public, cached) or redirect for external URLs
 api.get('/images/*', async (c) => {
   const key = c.req.path.replace('/api/images/', '');
   if (!key) return c.json({ error: 'Image key required' }, 400);
+
+  // If key looks like an external URL, redirect
+  if (key.startsWith('http://') || key.startsWith('https://')) {
+    return c.redirect(key, 302);
+  }
+
+  // Check if R2 is available
+  if (!(c.env as any).R2) {
+    return c.json({ error: 'R2 storage not configured. Use external image URLs.' }, 503);
+  }
 
   try {
     const object = await c.env.R2.get(key);
