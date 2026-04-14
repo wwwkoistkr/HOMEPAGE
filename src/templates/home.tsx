@@ -249,58 +249,58 @@ export function homePage(opts: {
     </div>
     ` : ''}
 
-    <div class="relative fluid-container" style="padding-top:clamp(2.5rem,4.5vw,5rem); padding-bottom:clamp(2.5rem,4.5vw,5rem);">
-      <!-- ═══ v32: Top row — Hero text + Contact side by side ═══ -->
+    <div class="relative" style="width:100%;padding-top:clamp(2.5rem,4.5vw,5rem); padding-bottom:clamp(2.5rem,4.5vw,5rem); padding-left:clamp(1rem,2vw,2.5rem); padding-right:clamp(1rem,2vw,2.5rem);">
+      <!-- ═══ v24: Top row — Hero text + Simulator, perfect 50:50 split ═══ -->
       <div class="unified-hero-grid">
 
         <!-- ═══════ LEFT: Hero Text ═══════ -->
-        <div class="unified-hero-left" data-aos="fade-right" data-aos-duration="700">
+        <div class="unified-hero-left" data-aos="fade-up" data-aos-duration="700">
           <!-- Badge (2.5x enlarged) -->
           <div class="inline-flex items-center rounded-full" style="gap:8px; padding:clamp(6px,0.56vw,8px) clamp(13px,1.26vw,20px); margin-bottom:clamp(0.84rem,1.54vw,1.4rem); background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.18); backdrop-filter: blur(12px);">
             <span class="relative flex" style="height:clamp(7px,0.56vw,10px); width:clamp(7px,0.56vw,10px);">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-50"></span>
               <span class="relative inline-flex rounded-full h-full w-full bg-emerald-400"></span>
             </span>
-            <span class="text-blue-300 font-semibold tracking-wide" style="font-size:clamp(0.70rem,0.91vw,1.01rem); font-family:'Inter','Noto Sans KR',sans-serif; letter-spacing:0.04em;">${s.hero_badge_text || 'Korean Information Security Technology'}</span>
+            <span class="text-blue-300 font-semibold tracking-wide" data-admin-edit="hero_badge_text" style="font-size:clamp(0.70rem,0.91vw,1.01rem); font-family:'Inter','Noto Sans KR',sans-serif; letter-spacing:0.04em;">${s.hero_badge_text || 'Korean Information Security Technology'}</span>
           </div>
 
-          <!-- Headline — 2.5x 8K Ultra-Sharp -->
-          <h1 class="text-white font-black" style="font-size:clamp(1.54rem, 1.12rem + 2.24vw, 3.36rem); line-height:1.1; margin-bottom:clamp(0.56rem,1.05vw,1.05rem); letter-spacing:-0.03em; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
+          <!-- Headline — 8K Ultra-Sharp -->
+          <h1 class="text-white font-black" data-admin-edit="hero_line1" style="font-size:clamp(1.54rem, 1.12rem + 2.24vw, 3.36rem); line-height:1.1; margin-bottom:clamp(0.56rem,1.05vw,1.05rem); letter-spacing:-0.03em; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
             ${s.hero_line1 || '정보보안 시험·인증 전문기관'}
           </h1>
 
-          <!-- Subtitle (2.5x) -->
-          <p class="text-slate-300/90 font-medium" style="font-size:clamp(0.80rem, 0.66rem + 0.63vw, 1.22rem); line-height:1.25; margin-bottom:clamp(1.26rem,2.1vw,2.1rem); max-width:none; white-space:nowrap; text-rendering:optimizeLegibility;">
+          <!-- Subtitle -->
+          <p class="text-slate-300/90 font-medium" data-admin-edit="hero_line2" style="font-size:clamp(0.80rem, 0.66rem + 0.63vw, 1.22rem); line-height:1.25; margin-bottom:clamp(1.26rem,2.1vw,2.1rem); max-width:none; text-rendering:optimizeLegibility;">
             ${s.hero_line2 || 'IT제품 보안성 평가·인증의 원스톱 서비스, <span class="hero-gradient-text">한국정보보안기술원</span>'}
           </p>
 
-          <!-- CTA Buttons (2.5x) -->
+          <!-- CTA Buttons -->
           <div class="flex flex-wrap" style="gap:clamp(0.56rem,0.84vw,0.98rem); margin-bottom:clamp(0.4rem,0.8vw,0.8rem);">
-            <a href="/support/inquiry" class="btn-glow ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:7px; padding:clamp(0.63rem,0.91vw,0.84rem) clamp(1.26rem,1.96vw,1.96rem); font-size:clamp(0.77rem,0.94vw,1.05rem);">
+            <a href="/support/inquiry" class="btn-glow ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" data-admin-edit="hero_btn_primary" style="gap:7px; padding:clamp(0.63rem,0.91vw,0.84rem) clamp(1.26rem,1.96vw,1.96rem); font-size:clamp(0.77rem,0.94vw,1.05rem);">
               <i class="fas fa-paper-plane" style="font-size:clamp(0.59rem,0.70vw,0.77rem)"></i> ${s.hero_btn_primary || '온라인 상담'}
             </a>
-            <a href="#services" class="btn-ghost ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:7px; padding:clamp(0.63rem,0.91vw,0.84rem) clamp(1.26rem,1.96vw,1.96rem); font-size:clamp(0.77rem,0.94vw,1.05rem);">
+            <a href="#services" class="btn-ghost ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" data-admin-edit="hero_btn_secondary" style="gap:7px; padding:clamp(0.63rem,0.91vw,0.84rem) clamp(1.26rem,1.96vw,1.96rem); font-size:clamp(0.77rem,0.94vw,1.05rem);">
               <i class="fas fa-th-large" style="font-size:clamp(0.59rem,0.70vw,0.77rem)"></i> ${s.hero_btn_secondary || '사업분야 보기'}
             </a>
           </div>
 
-          <!-- ═══════ Hero Contact Card (원본 koist.kr 스타일, 8K fluid) ═══════ -->
-          <div class="hero-contact-card" data-aos="fade-up" data-aos-delay="200">
-            <p class="text-slate-300/90 font-bold" style="font-size:clamp(0.69rem,1.05vw,1.11rem); margin-bottom:clamp(0.38rem,0.66vw,0.66rem); letter-spacing:0.01em; white-space:nowrap; text-rendering:geometricPrecision;">${s.hero_contact_label || '국가 시험·인증 전문기관 정보보안 기술을 완성'}</p>
-            <div class="hero-contact-grid">
-              <div class="hero-contact-item">
+          <!-- ═══════ Hero Contact Card ═══════ -->
+          <div class="hero-contact-card" data-aos="fade-up" data-aos-delay="200" data-admin-edit="hero_contact_section">
+            <p class="text-slate-300/90 font-bold" data-admin-edit="hero_contact_label" style="font-size:clamp(0.69rem,1.05vw,1.11rem); margin-bottom:clamp(0.38rem,0.66vw,0.66rem); letter-spacing:0.01em; text-rendering:geometricPrecision;">${s.hero_contact_label || '국가 시험·인증 전문기관 정보보안 기술을 완성'}</p>
+            <div class="hero-contact-grid" data-admin-edit="hero_contact_info">
+              <div class="hero-contact-item" data-admin-edit="phone">
                 <div class="hero-contact-icon"><i class="fas fa-phone"></i></div>
                 <span>${s.phone || '02-586-1230'}</span>
               </div>
-              <div class="hero-contact-item">
+              <div class="hero-contact-item" data-admin-edit="fax">
                 <div class="hero-contact-icon"><i class="fas fa-fax"></i></div>
                 <span>FAX: ${s.fax || '02-586-1238'}</span>
               </div>
-              <div class="hero-contact-item">
+              <div class="hero-contact-item" data-admin-edit="email">
                 <div class="hero-contact-icon"><i class="fas fa-envelope"></i></div>
                 <span>${s.email || 'koist@koist.kr'}</span>
               </div>
-              <div class="hero-contact-item">
+              <div class="hero-contact-item" data-admin-edit="address">
                 <div class="hero-contact-icon"><i class="fas fa-location-dot"></i></div>
                 <span class="hero-contact-addr">${s.address || '서울특별시 서초구 효령로 336 윤일빌딩 4층 한국정보보안기술원'}</span>
               </div>
@@ -309,8 +309,8 @@ export function homePage(opts: {
         </div>
 
         <!-- ═══════ RIGHT: Interactive Simulator Panel ═══════ -->
-        <div class="unified-hero-right" data-aos="fade-left" data-aos-duration="700" data-aos-delay="150">
-          <div class="unified-sim-panel" id="simCard">
+        <div class="unified-hero-right" data-aos="fade-up" data-aos-duration="700" data-aos-delay="150">
+          <div class="unified-sim-panel" id="simCard" data-admin-edit="sim_panel">
             <!-- Panel Header — Dark Navy -->
             <div class="unified-sim-header">
               <div class="flex items-center" style="gap:clamp(8px,0.8vw,12px);">
@@ -318,8 +318,8 @@ export function homePage(opts: {
                   <i class="fas fa-chart-bar text-blue-400" style="font-size:clamp(11px,1vw,15px)"></i>
                 </div>
                 <div style="min-width:0;">
-                  <p class="text-white font-bold truncate" style="font-size:clamp(0.95rem,1.15vw,1.25rem); line-height:1.3; letter-spacing:-0.01em;">${s.unified_panel_title || 'KOIST와 함께라면 평가기간을 <span class="text-cyan-300">대폭 단축</span>합니다'}</p>
-                  <p class="text-slate-400/80 truncate" style="font-size:clamp(0.72rem,0.85vw,0.9rem); margin-top:2px;">${s.unified_panel_subtitle || '사전준비 수준에 따라 실시간으로 기간을 산출합니다'}</p>
+                  <p class="text-white font-bold" data-admin-edit="unified_panel_title" style="font-size:clamp(0.85rem,1.05vw,1.15rem); line-height:1.3; letter-spacing:-0.01em;">${s.unified_panel_title || 'KOIST와 함께라면 평가기간을 <span class="text-cyan-300">대폭 단축</span>합니다'}</p>
+                  <p class="text-slate-400/80" data-admin-edit="unified_panel_subtitle" style="font-size:clamp(0.68rem,0.80vw,0.85rem); margin-top:2px;">${s.unified_panel_subtitle || '사전준비 수준에 따라 실시간으로 기간을 산출합니다'}</p>
                 </div>
               </div>
               <div class="hidden sm:flex items-center rounded-full shrink-0" style="gap:5px; padding:clamp(4px,0.4vw,6px) clamp(10px,1vw,16px); background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.22);">
@@ -434,30 +434,45 @@ export function homePage(opts: {
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
     }
-    /* v35.4: left +15cm (card -7cm narrower), card text 30% smaller */
+    /* v35.4: 50:50 balanced hero layout — each half centered */
     .unified-hero-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: clamp(1.5rem, 2.5vw, 2.5rem);
+      gap: 0;
       align-items: stretch;
-      overflow: visible;
+      width: 100%;
+      max-width: 100%;
+      overflow: hidden;
     }
     .unified-hero-left {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      max-width: none;
-      width: calc(100% + 15cm);
+      justify-content: center;
+      max-width: 100%;
+      width: 100%;
+      padding: 0 clamp(1rem, 2vw, 3rem);
+      overflow: hidden;
     }
     .unified-hero-right {
       display: flex;
       flex-direction: column;
-      margin-left: 3cm;
-      width: calc(100% + 10cm);
+      justify-content: center;
+      align-items: center;
+      margin-left: 0;
+      width: 100%;
+      max-width: 100%;
       min-width: 0;
+      overflow: hidden;
+    }
+    /* Prevent AOS transforms from breaking grid layout */
+    .unified-hero-grid > [data-aos] {
+      transform: none !important;
+    }
+    .unified-hero-grid > .aos-animate {
+      transform: none !important;
     }
     
-    /* Simulator panel card — original height (no stretch) */
+    /* Simulator panel card — contained within right half, centered */
     .unified-sim-panel {
       border-radius: clamp(12px, 1.2vw, 18px);
       overflow: hidden;
@@ -467,6 +482,8 @@ export function homePage(opts: {
       text-rendering: geometricPrecision;
       display: flex;
       flex-direction: column;
+      width: 100%;
+      max-width: clamp(400px, 42vw, 860px);
     }
     .unified-sim-body {
       display: flex;
@@ -573,10 +590,10 @@ export function homePage(opts: {
       .unified-hero-grid {
         grid-template-columns: 1fr;
         gap: clamp(1.5rem, 3vw, 2rem);
-        overflow: hidden;
       }
-      .unified-hero-left { max-width: 100%; text-align: center; width: 100%; }
-      .unified-hero-right { margin-left: 0; width: 100%; }
+      .unified-hero-left { max-width: 100%; text-align: center; width: 100%; padding: 0 clamp(0.5rem, 2vw, 1.5rem); }
+      .unified-hero-right { margin-left: 0; width: 100%; align-items: center; }
+      .unified-sim-panel { max-width: 100%; }
       .unified-hero-left .flex.flex-wrap { justify-content: center; }
       .unified-hero-left .inline-flex { margin-left: auto; margin-right: auto; }
       .hero-contact-card { margin-left: auto; margin-right: auto; text-align: left; max-width: 94%; flex: none; }
@@ -605,19 +622,21 @@ export function homePage(opts: {
     @media (min-width: 2560px) {
       .hero-contact-item { font-size: 1.35rem; gap: 14px; }
       .hero-contact-icon { width: 44px; height: 44px; font-size: 18px; border-radius: 10px; }
-      .hero-contact-card { max-width: 900px; padding: 2.0rem 2.4rem; border-radius: 20px; }
+      .hero-contact-card { max-width: 100%; padding: 2.0rem 2.4rem; border-radius: 20px; }
       .hero-contact-card p { font-size: 1.43rem !important; }
       .hero-contact-grid { gap: 0.6rem 2.5cm; }
+      .unified-hero-left { padding: 0 2rem; }
+      .unified-sim-panel { max-width: clamp(500px, 40vw, 900px); }
     }
 
     /* ── 4K (3840px) ── */
     @media (min-width: 3840px) {
-      .unified-hero-grid { gap: 4rem; }
-      .unified-hero-left { }
-      .unified-sim-panel { border-radius: 28px; }
+      .unified-hero-grid { gap: 0; }
+      .unified-hero-left { padding: 0 3rem; }
+      .unified-sim-panel { border-radius: 28px; max-width: clamp(700px, 40vw, 1200px); }
       .unified-sim-header { padding: 1.8rem 2.5rem; }
       .unified-sim-body { padding: 2rem 2.5rem; }
-      .hero-contact-card { max-width: 1100px; padding: 2.4rem 3rem; border-radius: 22px; }
+      .hero-contact-card { max-width: 100%; padding: 2.4rem 3rem; border-radius: 22px; }
       .hero-contact-icon { width: 57px; height: 57px; font-size: 23px; border-radius: 13px; }
       .hero-contact-item { font-size: 1.73rem; gap: 17px; }
       .hero-contact-grid { gap: 1.4rem 3cm; }
@@ -628,14 +647,14 @@ export function homePage(opts: {
 
     /* ── 8K (7680px) Ultra-Sharp ── */
     @media (min-width: 7680px) {
-      .unified-hero-grid { gap: 6rem; }
-      .unified-hero-left { }
-      .unified-sim-panel { border-radius: 56px; box-shadow: 0 24px 120px rgba(0,0,0,0.3), 0 8px 40px rgba(0,0,0,0.12); }
+      .unified-hero-grid { gap: 0; }
+      .unified-hero-left { padding: 0 5rem; }
+      .unified-sim-panel { border-radius: 56px; box-shadow: 0 24px 120px rgba(0,0,0,0.3), 0 8px 40px rgba(0,0,0,0.12); max-width: clamp(1200px, 40vw, 2400px); }
       .unified-sim-header { padding: 3rem 4rem; }
       .unified-sim-body { padding: 3.5rem 4rem; }
       .eal-tab { padding: 22px 0 !important; font-size: 1.8rem !important; }
       .prep-range::-webkit-slider-thumb { width: 60px !important; height: 60px !important; border-width: 7px !important; }
-      .hero-contact-card { max-width: 1800px; padding: 3.8rem 5.0rem; border-radius: 42px; }
+      .hero-contact-card { max-width: 100%; padding: 3.8rem 5.0rem; border-radius: 42px; }
       .hero-contact-icon { width: 83px; height: 83px; font-size: 33px; border-radius: 20px; }
       .hero-contact-item { font-size: 2.7rem; gap: 24px; }
       .hero-contact-grid { gap: 2.1rem 4.2cm; }
@@ -734,11 +753,11 @@ export function homePage(opts: {
 
     <div class="relative fluid-container">
       <div class="text-center" style="margin-bottom: clamp(0.8rem,1.5vw,1.5rem)" data-aos="fade-up">
-        <div class="inline-flex items-center rounded-full font-semibold services-badge-text" style="gap:8px; padding:6px 18px; margin-bottom:var(--space-xs); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB; font-size: clamp(1.14rem, 0.93rem + 0.54vw, 1.68rem);">
+        <div class="inline-flex items-center rounded-full font-semibold services-badge-text" data-admin-edit="services_badge" style="gap:8px; padding:6px 18px; margin-bottom:var(--space-xs); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB; font-size: clamp(1.14rem, 0.93rem + 0.54vw, 1.68rem);">
           <i class="fas fa-cubes" style="font-size:clamp(16px,1.35vw,24px)"></i>${s.services_badge || 'KOIST 사업분야'}
         </div>
-        <h2 class="font-bold text-primary services-title-text" style="font-size: clamp(2.16rem, 1.62rem + 1.38vw, 3.84rem); margin-bottom:var(--space-2xs); line-height:1.15;">${s.services_title || '핵심 사업분야'}</h2>
-        <p class="text-slate-500 max-w-2xl mx-auto services-subtitle-text" style="font-size: clamp(1.10rem, 0.90rem + 0.52vw, 1.72rem); line-height:1.3;">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
+        <h2 class="font-bold text-primary services-title-text" data-admin-edit="services_title" style="font-size: clamp(2.16rem, 1.62rem + 1.38vw, 3.84rem); margin-bottom:var(--space-2xs); line-height:1.15;">${s.services_title || '핵심 사업분야'}</h2>
+        <p class="text-slate-500 max-w-2xl mx-auto services-subtitle-text" data-admin-edit="services_subtitle" style="font-size: clamp(1.10rem, 0.90rem + 0.52vw, 1.72rem); line-height:1.3;">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
       </div>
 
       ${(() => {

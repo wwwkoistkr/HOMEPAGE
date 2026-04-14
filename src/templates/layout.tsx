@@ -396,10 +396,10 @@ export function layout(opts: {
                   inset 0 -1px 0 rgba(255,255,255,0.02);
     }
 
-    /* GNB Link — v31 8K Ultra-Sharp (2x font, Windows/Mobile compat) */
+    /* GNB Link — v24 8K Ultra-Sharp (auto-fit to viewport, Windows/Mobile compat) */
     .gnb-link {
-      padding: var(--gnb-link-pad-y, 0.5rem) var(--gnb-link-pad-x, clamp(0.22rem, 0.38vw, 0.48rem));
-      font-size: var(--gnb-link-font, clamp(1.12rem, 0.95rem + 0.52vw, 1.42rem));
+      padding: var(--gnb-link-pad-y, 0.5rem) var(--gnb-link-pad-x, clamp(0.15rem, 0.30vw, 0.40rem));
+      font-size: var(--gnb-link-font, clamp(0.88rem, 0.75rem + 0.42vw, 1.15rem));
       font-weight: var(--gnb-link-weight, 600);
       color: var(--gnb-link-color, rgba(220,228,240,0.92));
       white-space: nowrap;
@@ -409,7 +409,6 @@ export function layout(opts: {
       text-rendering: geometricPrecision;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      /* Windows ClearType enhancement */
       font-feature-settings: 'kern' 1, 'liga' 1;
     }
     .gnb-link::after {
@@ -1037,39 +1036,39 @@ export function layout(opts: {
 
   <!-- ═══════════ GNB (Premium Frosted Glass) ═══════════ -->
   <header id="gnb" class="fixed top-0 left-0 right-0 z-50" style="${s.gnb_bg_url ? `background-image: linear-gradient(rgba(10,15,30,0.88), rgba(10,15,30,0.92)), url('${s.gnb_bg_url}'); background-size:cover; background-position:center;` : 'background: rgba(10,15,30,0.92); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);'} border-bottom: 1px solid rgba(255,255,255,0.04);">
-    <div class="fluid-container">
-      <div class="flex items-center justify-between" style="height:var(--gnb-h)">
+    <!-- v24: Full-width header, KOLAS→Logo→GNB left-aligned with 0.5cm (19px) gaps -->
+    <div style="width:100%;max-width:100%;padding:0 clamp(6px,0.4vw,10px);margin:0;">
+      <div class="flex items-center" style="height:var(--gnb-h);gap:19px;justify-content:flex-start;">
 
-        <!-- Logo + KOLAS Mark (v31 - 2.5x enlarged logo) -->
-        <div class="flex items-center shrink-0" style="gap: clamp(14px, 2vw, 28px); max-width: clamp(400px, 34vw, 620px);">
-          <a href="/" class="flex items-center shrink-0 group" style="gap: var(--space-sm)">
-            ${s.logo_url && s.logo_url.trim() !== '' && s.logo_url !== '/static/images/logo.png' ? `
-            <img src="${s.logo_url}" alt="${siteName}" style="height:clamp(64px, 54px + 2.2vw, 96px); max-width:clamp(340px, 30vw, 560px);" class="w-auto object-contain transition-transform group-hover:scale-[1.02]">
-            ` : `
-            <div class="flex items-center" style="gap: clamp(10px, 1vw, 16px)">
-              <div class="relative">
-                <div class="absolute inset-0 rounded-xl blur-md transition-all group-hover:blur-lg" style="background: linear-gradient(135deg, rgba(59,130,246,0.25), rgba(6,182,212,0.20));"></div>
-                <div class="relative rounded-xl flex items-center justify-center" style="width:clamp(56px,5.5vw,82px); height:clamp(56px,5.5vw,82px); background: linear-gradient(135deg, #2563EB, #06B6D4);">
-                  <i class="fas fa-shield-halved text-white" style="font-size:clamp(26px,2.8vw,40px)"></i>
-                </div>
-              </div>
-              <div>
-                <div class="font-bold text-white leading-tight tracking-tight" style="font-size:clamp(1.4rem, 1.1rem + 0.9vw, 2.0rem);">한국정보보안기술원</div>
-                <div class="tracking-[0.18em] font-medium" style="font-size:clamp(0.85rem, 0.72rem + 0.42vw, 1.2rem); background: linear-gradient(90deg, #94A3B8, #64748B); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">KOIST</div>
+        <!-- KOLAS Mark (FIRST — left edge, flush to left) -->
+        <div class="hidden md:flex items-center shrink-0" style="padding:0;margin:0;">
+          <img src="/static/images/kolas.png" alt="KOLAS 국제공인시험기관" style="height:clamp(54px, 48px + 1.8vw, 84px);" class="kolas-mark w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" title="KOLAS 국제공인시험기관 인정 (KTL-F-588)" data-admin-edit="kolas_image">
+        </div>
+
+        <!-- Logo (SECOND — 0.5cm gap from KOLAS) -->
+        <a href="/" class="flex items-center shrink-0 group" data-admin-edit="site_logo">
+          ${s.logo_url && s.logo_url.trim() !== '' && s.logo_url !== '/static/images/logo.png' ? `
+          <img src="${s.logo_url}" alt="${siteName}" style="height:clamp(64px, 54px + 2.2vw, 96px); max-width:clamp(340px, 30vw, 560px);" class="w-auto object-contain transition-transform group-hover:scale-[1.02]">
+          ` : `
+          <div class="flex items-center" style="gap: clamp(10px, 1vw, 16px)">
+            <div class="relative">
+              <div class="absolute inset-0 rounded-xl blur-md transition-all group-hover:blur-lg" style="background: linear-gradient(135deg, rgba(59,130,246,0.25), rgba(6,182,212,0.20));"></div>
+              <div class="relative rounded-xl flex items-center justify-center" style="width:clamp(56px,5.5vw,82px); height:clamp(56px,5.5vw,82px); background: linear-gradient(135deg, #2563EB, #06B6D4);">
+                <i class="fas fa-shield-halved text-white" style="font-size:clamp(26px,2.8vw,40px)"></i>
               </div>
             </div>
-            `}
-          </a>
-          <!-- KOLAS 국제공인시험기관 마크 (v31 - 2.5x enlarged) -->
-          <div class="hidden md:flex items-center" style="padding-left: clamp(10px, 1.4vw, 20px); border-left: 1px solid rgba(255,255,255,0.08);">
-            <img src="/static/images/kolas.png" alt="KOLAS 국제공인시험기관" style="height:clamp(54px, 48px + 1.8vw, 84px);" class="kolas-mark w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" title="KOLAS 국제공인시험기관 인정 (KTL-F-588)">
+            <div>
+              <div class="font-bold text-white leading-tight tracking-tight" style="font-size:clamp(1.4rem, 1.1rem + 0.9vw, 2.0rem);">한국정보보안기술원</div>
+              <div class="tracking-[0.18em] font-medium" style="font-size:clamp(0.85rem, 0.72rem + 0.42vw, 1.2rem); background: linear-gradient(90deg, #94A3B8, #64748B); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">KOIST</div>
+            </div>
           </div>
-        </div>
+          `}
+        </a>
 
         <!-- Desktop GNB (v37 - Mega Dropdown Menu, koist.kr style) -->
         ${(() => {
-          const gnbFontScale = parseFloat(s.gnb_font_scale || '2.4') || 2.4;
-          const gnbGapScale = parseFloat(s.gnb_gap_scale || '0.55') || 0.55;
+          const gnbFontScale = parseFloat(s.gnb_font_scale || '1.5') || 1.5;
+          const gnbGapScale = parseFloat(s.gnb_gap_scale || '0.40') || 0.40;
           const baseFontMin = 0.70;
           const baseFontVw = 0.30;
           const baseFontMax = 0.85;
@@ -1105,9 +1104,10 @@ export function layout(opts: {
             '--gnb-link-color:' + gnbTextColor + ';' +
             '--gnb-link-hover:' + gnbHoverColor + ';' +
             '}</style>' +
-            '<nav id="gnbNav" class="hidden lg:flex items-center" style="gap:var(--gnb-nav-gap);margin-left:clamp(4px,0.8vw,10px);-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision;">' +
+            '<nav id="gnbNav" class="hidden lg:flex items-center gnb-nav-fit" style="flex:1;margin-left:19px;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision;overflow:hidden;flex-wrap:nowrap;">' +
             navItems +
-            '</nav>';
+            '</nav>' +
+            '<style>.gnb-nav-fit{gap:clamp(0.01rem, 0.04vw, 0.06rem)!important;}.gnb-nav-fit>.gnb-link{font-size:clamp(0.72rem, 0.50rem + 0.44vw, 0.99rem)!important;padding-left:clamp(0.04rem, 0.14vw, 0.18rem)!important;padding-right:clamp(0.04rem, 0.14vw, 0.18rem)!important;letter-spacing:-0.03em!important;}</style>';
         })()}
 
         <!-- Mega Dropdown Panel (v38 - 2-row adaptive) -->
@@ -1189,10 +1189,10 @@ export function layout(opts: {
           </div>
         </div>
 
-        <!-- Right Actions -->
-        <div class="flex items-center" style="gap:var(--space-sm)">
-          <a href="tel:${s.phone || '02-586-1230'}" class="hidden sm:inline-flex items-center text-white font-bold rounded-lg transition-all ripple-btn" style="gap: 10px; padding: clamp(0.55rem,0.8vw,0.8rem) clamp(1.1rem,1.6vw,1.7rem); font-size: clamp(1.0rem, 0.88rem + 0.55vw, 1.35rem); background: linear-gradient(135deg, rgba(59,130,246,0.85), rgba(6,182,212,0.85)); box-shadow: 0 4px 16px rgba(59,130,246,0.25), inset 0 1px 0 rgba(255,255,255,0.12); border-radius: clamp(9px,0.7vw,14px);">
-            <i class="fas fa-phone" style="font-size:clamp(11px,0.9vw,15px)"></i>
+        <!-- Right Actions (compact for nav space) -->
+        <div class="flex items-center shrink-0" style="gap:var(--space-xs);margin-left:auto;">
+          <a href="tel:${s.phone || '02-586-1230'}" class="hidden xl:inline-flex items-center text-white font-bold rounded-lg transition-all ripple-btn" style="gap: 6px; padding: clamp(0.4rem,0.6vw,0.6rem) clamp(0.7rem,1vw,1.1rem); font-size: clamp(0.80rem, 0.70rem + 0.35vw, 1.0rem); background: linear-gradient(135deg, rgba(59,130,246,0.85), rgba(6,182,212,0.85)); box-shadow: 0 4px 16px rgba(59,130,246,0.25), inset 0 1px 0 rgba(255,255,255,0.12); border-radius: clamp(8px,0.6vw,12px);">
+            <i class="fas fa-phone" style="font-size:clamp(9px,0.7vw,12px)"></i>
             <span>${s.phone || '02-586-1230'}</span>
           </a>
           <button id="mobileMenuBtn" class="lg:hidden p-2 text-slate-400 hover:text-white transition-colors" aria-label="메뉴 열기">
@@ -1599,6 +1599,244 @@ export function layout(opts: {
     ${s.google_conversion_id ? `gtag('event', 'conversion', {'send_to': '${s.google_conversion_id}'});` : ''}
   </script>
   ` : ''}
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ADMIN INLINE EDITING MODE (v24)
+       로그인한 관리자가 홈페이지에서 직접 텍스트/이미지/박스 편집
+       ═══════════════════════════════════════════════════════════ -->
+  <script>
+  (function() {
+    // Check if admin is logged in
+    var token = (document.cookie.match(/koist_token=([^;]*)/) || [])[1];
+    if (!token) return;
+
+    var isAdminMode = false;
+    var editableElements = [];
+    var pendingChanges = {};
+
+    // Create admin toolbar
+    var toolbar = document.createElement('div');
+    toolbar.id = 'adminToolbar';
+    toolbar.innerHTML = 
+      '<div style="display:flex;align-items:center;gap:12px;padding:8px 20px;background:linear-gradient(135deg,#1E293B,#0F172A);border-top:2px solid #3B82F6;box-shadow:0 -4px 20px rgba(0,0,0,0.3);position:fixed;bottom:0;left:0;right:0;z-index:9999;font-family:Noto Sans KR,sans-serif;">' +
+        '<div style="display:flex;align-items:center;gap:8px;">' +
+          '<i class="fas fa-shield-halved" style="color:#3B82F6;font-size:16px;"></i>' +
+          '<span style="color:#E2E8F0;font-weight:700;font-size:14px;">KOIST Admin</span>' +
+        '</div>' +
+        '<button id="adminToggleEdit" onclick="toggleAdminEdit()" style="padding:6px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #3B82F6;background:transparent;color:#60A5FA;transition:all 0.2s;">' +
+          '<i class="fas fa-edit" style="margin-right:4px;"></i>편집모드' +
+        '</button>' +
+        '<span id="adminChangeCount" style="color:#94A3B8;font-size:12px;display:none;">변경: <strong id="adminChangeCnt" style="color:#FBBF24;">0</strong>건</span>' +
+        '<button id="adminSaveBtn" onclick="saveAdminChanges()" style="padding:6px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:linear-gradient(135deg,#2563EB,#06B6D4);color:#fff;display:none;transition:all 0.2s;box-shadow:0 2px 8px rgba(37,99,235,0.3);">' +
+          '<i class="fas fa-save" style="margin-right:4px;"></i>저장' +
+        '</button>' +
+        '<button id="adminCancelBtn" onclick="cancelAdminEdit()" style="padding:6px 12px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #475569;background:transparent;color:#94A3B8;display:none;">' +
+          '취소' +
+        '</button>' +
+        '<div style="flex:1;"></div>' +
+        '<a href="/admin/dashboard" style="color:#94A3B8;font-size:12px;text-decoration:none;display:flex;align-items:center;gap:4px;"><i class="fas fa-cog"></i>대시보드</a>' +
+        '<a href="/" onclick="document.cookie=\'koist_token=;path=/;max-age=0\'" style="color:#EF4444;font-size:12px;text-decoration:none;display:flex;align-items:center;gap:4px;margin-left:8px;"><i class="fas fa-sign-out-alt"></i>로그아웃</a>' +
+      '</div>';
+    document.body.appendChild(toolbar);
+    document.body.style.paddingBottom = '48px';
+
+    // Find all editable elements
+    function findEditables() {
+      editableElements = [];
+      document.querySelectorAll('[data-admin-edit]').forEach(function(el) {
+        editableElements.push(el);
+      });
+      return editableElements;
+    }
+
+    // Toggle admin edit mode
+    window.toggleAdminEdit = function() {
+      isAdminMode = !isAdminMode;
+      var btn = document.getElementById('adminToggleEdit');
+      var saveBtn = document.getElementById('adminSaveBtn');
+      var cancelBtn = document.getElementById('adminCancelBtn');
+      var countSpan = document.getElementById('adminChangeCount');
+
+      if (isAdminMode) {
+        btn.style.background = '#3B82F6';
+        btn.style.color = '#fff';
+        btn.innerHTML = '<i class="fas fa-edit" style="margin-right:4px;"></i>편집중';
+        saveBtn.style.display = 'inline-block';
+        cancelBtn.style.display = 'inline-block';
+        countSpan.style.display = 'inline-block';
+        activateEditables();
+      } else {
+        btn.style.background = 'transparent';
+        btn.style.color = '#60A5FA';
+        btn.innerHTML = '<i class="fas fa-edit" style="margin-right:4px;"></i>편집모드';
+        saveBtn.style.display = 'none';
+        cancelBtn.style.display = 'none';
+        countSpan.style.display = 'none';
+        deactivateEditables();
+      }
+    };
+
+    function activateEditables() {
+      findEditables();
+      editableElements.forEach(function(el) {
+        var key = el.getAttribute('data-admin-edit');
+        // Store original content
+        if (!el.dataset.adminOriginal) {
+          el.dataset.adminOriginal = el.innerHTML;
+        }
+        // Add visual edit indicator
+        el.style.outline = '2px dashed rgba(59,130,246,0.4)';
+        el.style.outlineOffset = '2px';
+        el.style.cursor = 'pointer';
+        el.style.position = 'relative';
+
+        // Make text editable
+        if (!key.includes('image') && !key.includes('logo') && !key.includes('kolas')) {
+          el.contentEditable = 'true';
+          el.style.outline = '2px dashed rgba(59,130,246,0.5)';
+        }
+
+        // Add edit label
+        var label = document.createElement('span');
+        label.className = 'admin-edit-label';
+        label.style.cssText = 'position:absolute;top:-18px;left:0;background:#3B82F6;color:#fff;font-size:10px;padding:1px 6px;border-radius:4px 4px 0 0;z-index:100;pointer-events:none;font-weight:600;white-space:nowrap;line-height:1.5;';
+        label.textContent = getEditLabel(key);
+        el.style.position = 'relative';
+        el.appendChild(label);
+
+        // Listen for changes
+        el.addEventListener('input', function() {
+          pendingChanges[key] = el.innerText.trim();
+          updateChangeCount();
+        });
+
+        // For image elements, add click-to-change
+        if (key.includes('image') || key.includes('logo') || key.includes('kolas')) {
+          el.addEventListener('click', function(e) {
+            if (!isAdminMode) return;
+            e.preventDefault();
+            e.stopPropagation();
+            var img = el.querySelector('img') || el;
+            var currentSrc = img.src || img.style.backgroundImage;
+            var newUrl = prompt('이미지 URL을 입력하세요:', currentSrc);
+            if (newUrl && newUrl.trim()) {
+              if (img.tagName === 'IMG') {
+                img.src = newUrl.trim();
+              }
+              pendingChanges[key] = newUrl.trim();
+              updateChangeCount();
+            }
+          });
+        }
+      });
+    }
+
+    function deactivateEditables() {
+      editableElements.forEach(function(el) {
+        el.contentEditable = 'false';
+        el.style.outline = '';
+        el.style.outlineOffset = '';
+        el.style.cursor = '';
+        // Remove labels
+        el.querySelectorAll('.admin-edit-label').forEach(function(l) { l.remove(); });
+      });
+    }
+
+    function getEditLabel(key) {
+      var labels = {
+        'hero_badge_text': '배지 텍스트',
+        'hero_line1': '메인 제목',
+        'hero_line2': '부제목',
+        'hero_btn_primary': '메인 버튼',
+        'hero_btn_secondary': '보조 버튼',
+        'hero_contact_label': '연락처 제목',
+        'hero_contact_section': '연락처 섹션',
+        'hero_contact_info': '연락처 정보',
+        'phone': '전화번호',
+        'fax': 'FAX',
+        'email': '이메일',
+        'address': '주소',
+        'unified_panel_title': '시뮬레이터 제목',
+        'unified_panel_subtitle': '시뮬레이터 부제',
+        'sim_panel': '시뮬레이터 패널',
+        'services_badge': '서비스 배지',
+        'services_title': '서비스 제목',
+        'services_subtitle': '서비스 부제',
+        'site_logo': '사이트 로고',
+        'kolas_image': 'KOLAS 마크',
+      };
+      return labels[key] || key;
+    }
+
+    function updateChangeCount() {
+      var cnt = Object.keys(pendingChanges).length;
+      var el = document.getElementById('adminChangeCnt');
+      if (el) el.textContent = cnt;
+    }
+
+    // Save changes via API
+    window.saveAdminChanges = async function() {
+      var keys = Object.keys(pendingChanges);
+      if (keys.length === 0) {
+        alert('변경된 항목이 없습니다.');
+        return;
+      }
+
+      var saveBtn = document.getElementById('adminSaveBtn');
+      saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:4px;"></i>저장중...';
+      saveBtn.disabled = true;
+
+      var errors = [];
+      for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        var value = pendingChanges[key];
+        try {
+          var res = await fetch('/api/admin/settings/' + key, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({ value: value })
+          });
+          if (!res.ok) errors.push(key);
+        } catch (e) {
+          errors.push(key);
+        }
+      }
+
+      saveBtn.disabled = false;
+      if (errors.length === 0) {
+        saveBtn.innerHTML = '<i class="fas fa-check" style="margin-right:4px;"></i>저장완료!';
+        pendingChanges = {};
+        updateChangeCount();
+        setTimeout(function() {
+          saveBtn.innerHTML = '<i class="fas fa-save" style="margin-right:4px;"></i>저장';
+        }, 2000);
+        // Update original content
+        editableElements.forEach(function(el) {
+          el.dataset.adminOriginal = el.innerHTML;
+        });
+      } else {
+        saveBtn.innerHTML = '<i class="fas fa-save" style="margin-right:4px;"></i>저장';
+        alert(errors.length + '개 항목 저장 실패. 다시 시도해주세요.');
+      }
+    };
+
+    // Cancel edit mode
+    window.cancelAdminEdit = function() {
+      // Restore original content
+      editableElements.forEach(function(el) {
+        if (el.dataset.adminOriginal) {
+          el.innerHTML = el.dataset.adminOriginal;
+        }
+      });
+      pendingChanges = {};
+      updateChangeCount();
+      window.toggleAdminEdit();
+    };
+  })();
+  </script>
 </body>
 </html>`;
 }
