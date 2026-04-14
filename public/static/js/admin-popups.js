@@ -128,6 +128,40 @@
       + '<label class="block text-xs font-medium text-gray-500 mb-1"><i class="fas fa-code mr-1"></i>HTML 콘텐츠</label>'
       + '<textarea id="pContent" rows="8" placeholder="HTML 콘텐츠를 입력하세요" class="w-full px-3 py-2 border rounded-lg text-sm font-mono focus:ring-2 focus:ring-blue-300">' + (popup?.popup_type === 'html' ? (popup?.content || '') : '') + '</textarea>'
       + '</div>'
+      // === STYLE EDITOR SECTION ===
+      + '<div class="mt-4 border rounded-xl overflow-hidden">'
+      + '<button type="button" onclick="toggleStyleEditor()" class="w-full flex items-center justify-between px-4 py-3 bg-gradient-to-r from-violet-50 to-purple-50 hover:from-violet-100 hover:to-purple-100 transition-colors">'
+      + '<span class="flex items-center gap-2 text-sm font-semibold text-violet-700"><i class="fas fa-palette"></i>스타일 편집 (글자크기 / 색상 / 여백)</span>'
+      + '<i id="styleToggleIcon" class="fas fa-chevron-down text-violet-400 text-xs transition-transform"></i>'
+      + '</button>'
+      + '<div id="styleEditorPanel" class="hidden p-4 bg-white border-t space-y-4">'
+      // -- Font sizes row --
+      + '<div class="grid grid-cols-2 gap-3">'
+      + '<div><label class="block text-xs font-medium text-gray-500 mb-1"><i class="fas fa-heading mr-1"></i>제목 글자 크기 (px)</label>'
+      + '<div class="flex items-center gap-2"><input id="pTitleFontSize" type="range" min="10" max="72" step="1" value="' + (popup?.title_font_size || 17) + '" class="flex-1 accent-violet-500" oninput="document.getElementById(\'pTitleFontSizeVal\').textContent=this.value"><span id="pTitleFontSizeVal" class="text-sm font-mono text-violet-600 w-8 text-right">' + (popup?.title_font_size || 17) + '</span></div></div>'
+      + '<div><label class="block text-xs font-medium text-gray-500 mb-1"><i class="fas fa-font mr-1"></i>본문 글자 크기 (px)</label>'
+      + '<div class="flex items-center gap-2"><input id="pFontSize" type="range" min="8" max="72" step="1" value="' + (popup?.font_size || 17) + '" class="flex-1 accent-violet-500" oninput="document.getElementById(\'pFontSizeVal\').textContent=this.value"><span id="pFontSizeVal" class="text-sm font-mono text-violet-600 w-8 text-right">' + (popup?.font_size || 17) + '</span></div></div>'
+      + '</div>'
+      // -- Line height & padding row --
+      + '<div class="grid grid-cols-2 gap-3">'
+      + '<div><label class="block text-xs font-medium text-gray-500 mb-1"><i class="fas fa-text-height mr-1"></i>줄간격</label>'
+      + '<div class="flex items-center gap-2"><input id="pLineHeight" type="range" min="1.0" max="3.0" step="0.1" value="' + (popup?.line_height || 1.7) + '" class="flex-1 accent-violet-500" oninput="document.getElementById(\'pLineHeightVal\').textContent=parseFloat(this.value).toFixed(1)"><span id="pLineHeightVal" class="text-sm font-mono text-violet-600 w-8 text-right">' + (popup?.line_height || 1.7) + '</span></div></div>'
+      + '<div><label class="block text-xs font-medium text-gray-500 mb-1"><i class="fas fa-expand mr-1"></i>내부 여백 (px)</label>'
+      + '<div class="flex items-center gap-2"><input id="pPadding" type="range" min="0" max="100" step="2" value="' + (popup?.padding || 20) + '" class="flex-1 accent-violet-500" oninput="document.getElementById(\'pPaddingVal\').textContent=this.value"><span id="pPaddingVal" class="text-sm font-mono text-violet-600 w-8 text-right">' + (popup?.padding || 20) + '</span></div></div>'
+      + '</div>'
+      // -- Colors row --
+      + '<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">'
+      + '<div><label class="block text-xs font-medium text-gray-500 mb-1"><i class="fas fa-fill-drip mr-1"></i>배경 색상</label>'
+      + '<div class="flex items-center gap-2"><input id="pBgColor" type="color" value="' + (popup?.bg_color || '#ffffff') + '" class="w-8 h-8 rounded border cursor-pointer"><input id="pBgColorText" type="text" value="' + (popup?.bg_color || '#ffffff') + '" class="flex-1 px-2 py-1 border rounded text-xs font-mono" oninput="document.getElementById(\'pBgColor\').value=this.value" onchange="document.getElementById(\'pBgColor\').value=this.value"></div></div>'
+      + '<div><label class="block text-xs font-medium text-gray-500 mb-1"><i class="fas fa-pen-fancy mr-1"></i>본문 글자 색상</label>'
+      + '<div class="flex items-center gap-2"><input id="pTextColor" type="color" value="' + (popup?.text_color && popup.text_color.startsWith('#') ? popup.text_color : '#374151') + '" class="w-8 h-8 rounded border cursor-pointer"><input id="pTextColorText" type="text" value="' + (popup?.text_color || '#374151') + '" class="flex-1 px-2 py-1 border rounded text-xs font-mono" oninput="document.getElementById(\'pTextColor\').value=this.value" onchange="document.getElementById(\'pTextColor\').value=this.value"></div></div>'
+      + '<div><label class="block text-xs font-medium text-gray-500 mb-1"><i class="fas fa-tag mr-1"></i>제목 글자 색상</label>'
+      + '<div class="flex items-center gap-2"><input id="pTitleColor" type="color" value="' + (popup?.title_color && popup.title_color.startsWith('#') ? popup.title_color : '#1f2937') + '" class="w-8 h-8 rounded border cursor-pointer"><input id="pTitleColorText" type="text" value="' + (popup?.title_color || '#1f2937') + '" class="flex-1 px-2 py-1 border rounded text-xs font-mono" oninput="document.getElementById(\'pTitleColor\').value=this.value" onchange="document.getElementById(\'pTitleColor\').value=this.value"></div></div>'
+      + '<div><label class="block text-xs font-medium text-gray-500 mb-1"><i class="fas fa-paint-roller mr-1"></i>제목 배경 색상</label>'
+      + '<div class="flex items-center gap-2"><input id="pTitleBgColor" type="color" value="' + (popup?.title_bg_color && popup.title_bg_color.startsWith('#') ? popup.title_bg_color : '#f8fafc') + '" class="w-8 h-8 rounded border cursor-pointer"><input id="pTitleBgColorText" type="text" value="' + (popup?.title_bg_color || '') + '" placeholder="비우면 기본 그라데이션" class="flex-1 px-2 py-1 border rounded text-xs font-mono" oninput="document.getElementById(\'pTitleBgColor\').value=this.value" onchange="document.getElementById(\'pTitleBgColor\').value=this.value"></div></div>'
+      + '</div>'
+      + '<p class="text-xs text-gray-400"><i class="fas fa-info-circle mr-1"></i>색상은 HEX(#ffffff) 또는 rgba(255,255,255,0.9) 형식 지원. 제목 배경 색상을 비우면 기본 그라데이션 적용.</p>'
+      + '</div></div>'
       + '<div class="flex gap-2 mt-4">'
       + '<button onclick="savePopup(' + (popup?.id || 'null') + ')" class="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors"><i class="fas fa-save mr-1"></i>저장</button>'
       + '<button onclick="document.getElementById(\'popupFormArea\').classList.add(\'hidden\')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2.5 rounded-lg text-sm transition-colors">취소</button>'
@@ -229,6 +263,14 @@
       position_left: 0,
       start_date: document.getElementById('pStart').value || null,
       end_date: document.getElementById('pEnd').value || null,
+      font_size: parseInt(document.getElementById('pFontSize')?.value) || 17,
+      title_font_size: parseInt(document.getElementById('pTitleFontSize')?.value) || 17,
+      bg_color: document.getElementById('pBgColorText')?.value || '#ffffff',
+      title_bg_color: document.getElementById('pTitleBgColorText')?.value || '',
+      text_color: document.getElementById('pTextColorText')?.value || '#374151',
+      title_color: document.getElementById('pTitleColorText')?.value || '#1f2937',
+      line_height: parseFloat(document.getElementById('pLineHeight')?.value) || 1.7,
+      padding: parseInt(document.getElementById('pPadding')?.value) || 20,
     };
     if (!body.title) { alert('제목을 입력해 주세요.'); return; }
     if (type === 'image' && !body.image_url) { alert('이미지 URL을 입력하거나 이미지를 업로드해 주세요.'); return; }
@@ -292,6 +334,23 @@
     await apiCall('/api/admin/popups/' + id, 'PUT', { is_active: active });
     await loadPopups();
   };
+
+  window.toggleStyleEditor = function() {
+    var panel = document.getElementById('styleEditorPanel');
+    var icon = document.getElementById('styleToggleIcon');
+    if (panel) {
+      panel.classList.toggle('hidden');
+      if (icon) icon.style.transform = panel.classList.contains('hidden') ? '' : 'rotate(180deg)';
+    }
+  };
+
+  // Sync color picker ↔ text input
+  document.addEventListener('input', function(e) {
+    if (e.target.id === 'pBgColor') document.getElementById('pBgColorText').value = e.target.value;
+    if (e.target.id === 'pTextColor') document.getElementById('pTextColorText').value = e.target.value;
+    if (e.target.id === 'pTitleColor') document.getElementById('pTitleColorText').value = e.target.value;
+    if (e.target.id === 'pTitleBgColor') document.getElementById('pTitleBgColorText').value = e.target.value;
+  });
 
   window.deletePopup = async function(id) {
     if (!confirm('정말 삭제하시겠습니까?')) return;

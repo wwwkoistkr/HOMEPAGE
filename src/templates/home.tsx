@@ -49,139 +49,139 @@ export function homePage(opts: {
   <div id="popupOverlay" class="fixed inset-0 z-[9998] transition-opacity duration-300" style="background:rgba(0,0,0,0.15);" onclick="closeAllPopups()"></div>
   <div id="popupContainer" class="fixed z-[9999] popup-multi-container">
     <div class="popup-close-all-bar">
-      <button onclick="closeAllPopups()" class="inline-flex items-center gap-3 bg-white/95 text-gray-700 font-semibold rounded-full shadow-lg hover:bg-white transition-all" style="padding:14px 36px; font-size:22px;">
-        <i class="fas fa-times" style="font-size:20px"></i> 모두 닫기
+      <button onclick="closeAllPopups()" class="inline-flex items-center gap-2 bg-white/95 text-gray-700 font-semibold rounded-full shadow-lg hover:bg-white transition-all" style="padding:10px 25px; font-size:15px;">
+        <i class="fas fa-times" style="font-size:14px"></i> 모두 닫기
       </button>
     </div>
     <div class="popup-grid">
-      ${popups.map((p, i) => `
-      <div class="popup-card bg-white rounded-2xl overflow-hidden shadow-2xl"
-           data-popup-id="${p.id}" id="popup-${p.id}"
-           style="border:1px solid rgba(226,232,240,0.5); animation: popupSlideIn ${0.3 + i * 0.1}s ease-out;">
-        <div class="flex justify-between items-center border-b border-slate-100" style="padding:20px 28px; background:linear-gradient(135deg, rgba(248,250,252,0.95), rgba(241,245,249,0.95));">
-          <span class="font-semibold text-gray-800" style="font-size:24px; line-height:1.3;">${p.title}</span>
-          <button onclick="closeSinglePopup(${p.id})" class="w-12 h-12 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors" aria-label="닫기">
-            <i class="fas fa-times" style="font-size:22px;"></i>
-          </button>
-        </div>
-        <div class="overflow-y-auto" style="max-height:calc(80vh - 180px); -webkit-overflow-scrolling:touch;">
-          ${p.popup_type === 'image' && p.image_url 
-            ? `<img src="${p.image_url}" alt="${p.title}" class="w-full h-auto" loading="lazy">` 
-            : `<div style="padding:28px; font-size:24px; line-height:1.7; color:#374151;">${p.content || ''}</div>`}
-        </div>
-        <div class="flex justify-between items-center border-t border-slate-100" style="padding:16px 28px; background:rgba(248,250,252,0.7);">
-          <label class="flex items-center gap-3 cursor-pointer select-none">
-            <input type="checkbox" id="noshow-${p.id}" class="w-6 h-6 rounded border-gray-300 text-blue-600 focus:ring-blue-500 accent-blue-600">
-            <span class="text-gray-500" style="font-size:20px;">오늘 하루 안 보기</span>
-          </label>
-          <button onclick="closeSinglePopup(${p.id})" class="text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100 transition-colors font-medium" style="padding:10px 24px; font-size:22px;">닫기</button>
-        </div>
-      </div>
-      `).join('')}
+      ${popups.map((p, i) => {
+        const bgCol = p.bg_color || '#ffffff';
+        const txtCol = p.text_color || '#374151';
+        const ttlCol = p.title_color || '#1f2937';
+        const ttlBg = p.title_bg_color || '';
+        const fSize = p.font_size || 17;
+        const tFSize = p.title_font_size || 17;
+        const lh = p.line_height || 1.7;
+        const pad = p.padding || 20;
+        const headerBg = ttlBg ? 'background:' + ttlBg + ';' : 'background:linear-gradient(135deg, rgba(248,250,252,0.95), rgba(241,245,249,0.95));';
+        const contentHtml = (p.popup_type === 'image' && p.image_url)
+          ? '<img src="' + p.image_url + '" alt="' + p.title.replace(/"/g, '&quot;') + '" class="w-full h-auto" loading="lazy">'
+          : '<div style="padding:' + pad + 'px; font-size:' + fSize + 'px; line-height:' + lh + '; color:' + txtCol + ';">' + (p.content || '') + '</div>';
+        return '<div class="popup-card rounded-2xl overflow-hidden shadow-2xl" data-popup-id="' + p.id + '" id="popup-' + p.id + '" style="background:' + bgCol + '; border:1px solid rgba(226,232,240,0.5); animation: popupSlideIn ' + (0.3 + i * 0.1) + 's ease-out;">'
+          + '<div class="popup-header flex justify-between items-center border-b border-slate-100" style="padding:14px 20px; ' + headerBg + '">'
+          + '<span class="font-semibold" style="font-size:' + tFSize + 'px; line-height:1.3; color:' + ttlCol + ';">' + p.title + '</span>'
+          + '<button onclick="closeSinglePopup(' + p.id + ')" class="popup-close-btn flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors" style="width:34px; height:34px;" aria-label="닫기"><i class="fas fa-times" style="font-size:15px;"></i></button>'
+          + '</div>'
+          + '<div class="popup-body overflow-y-auto" style="max-height:calc(80vh - 140px); -webkit-overflow-scrolling:touch;">' + contentHtml + '</div>'
+          + '<div class="popup-footer flex justify-between items-center border-t border-slate-100" style="padding:11px 20px; background:rgba(248,250,252,0.7);">'
+          + '<label class="flex items-center gap-2 cursor-pointer select-none"><input type="checkbox" id="noshow-' + p.id + '" class="popup-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500 accent-blue-600" style="width:18px; height:18px;"><span class="text-gray-500" style="font-size:14px;">오늘 하루 안 보기</span></label>'
+          + '<button onclick="closeSinglePopup(' + p.id + ')" class="text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100 transition-colors font-medium" style="padding:7px 17px; font-size:15px;">닫기</button>'
+          + '</div></div>';
+      }).join('')}
     </div>
   </div>
   <style>
-    /* ── PC (default) ── */
-    .popup-multi-container { top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(96vw, 1840px); max-height: 92vh; }
-    .popup-close-all-bar { text-align: center; margin-bottom: 20px; }
-    .popup-grid { display: flex; gap: 28px; align-items: flex-start; }
+    /* ── PC (default) ── 30% 축소 적용 (×0.7) */
+    .popup-multi-container { top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(96vw, 1288px); max-height: 92vh; }
+    .popup-close-all-bar { text-align: center; margin-bottom: 14px; }
+    .popup-grid { display: flex; gap: 20px; align-items: flex-start; }
     .popup-card { flex: 1; min-width: 0; max-height: 85vh; }
 
-    /* ── Tablet (768px ~ 1024px): 세로 배치 + 적절한 크기 ── */
+    /* ── Tablet (768px ~ 1024px) ── */
     @media (min-width: 768px) and (max-width: 1024px) {
-      .popup-multi-container { width: min(88vw, 580px) !important; max-height: 90vh; }
-      .popup-close-all-bar { margin-bottom: 10px; }
-      .popup-close-all-bar button { padding: 8px 22px !important; font-size: 15px !important; }
-      .popup-close-all-bar button i { font-size: 13px !important; }
-      .popup-grid { flex-direction: column; gap: 14px; max-height: 82vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+      .popup-multi-container { width: min(88vw, 406px) !important; max-height: 90vh; }
+      .popup-close-all-bar { margin-bottom: 7px; }
+      .popup-close-all-bar button { padding: 6px 15px !important; font-size: 11px !important; }
+      .popup-close-all-bar button i { font-size: 9px !important; }
+      .popup-grid { flex-direction: column; gap: 10px; max-height: 82vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
       .popup-card { flex: none; width: 100%; max-height: none; }
-      .popup-card .flex.justify-between.border-b { padding: 12px 16px !important; }
-      .popup-card .flex.justify-between.border-b span { font-size: 16px !important; }
-      .popup-card .flex.justify-between.border-b button { width: 36px !important; height: 36px !important; }
-      .popup-card .flex.justify-between.border-b button i { font-size: 16px !important; }
-      .popup-card .overflow-y-auto { max-height: none !important; }
-      .popup-card .flex.justify-between.border-t { padding: 10px 16px !important; }
-      .popup-card .flex.justify-between.border-t span { font-size: 13px !important; }
-      .popup-card .flex.justify-between.border-t input { width: 18px !important; height: 18px !important; }
-      .popup-card .flex.justify-between.border-t button { padding: 6px 14px !important; font-size: 14px !important; }
+      .popup-header { padding: 8px 11px !important; }
+      .popup-header span { font-size: 11px !important; }
+      .popup-close-btn { width: 25px !important; height: 25px !important; }
+      .popup-close-btn i { font-size: 11px !important; }
+      .popup-body { max-height: none !important; }
+      .popup-footer { padding: 7px 11px !important; }
+      .popup-footer span { font-size: 9px !important; }
+      .popup-checkbox { width: 13px !important; height: 13px !important; }
+      .popup-footer button:last-child { padding: 4px 10px !important; font-size: 10px !important; }
     }
 
-    /* ── Mobile (≤767px): 세로 배치 + 축소 ── */
+    /* ── Mobile (≤767px) ── */
     @media (max-width: 767px) {
-      .popup-multi-container { width: min(94vw, 400px) !important; max-height: 88vh; top: 48%; }
-      .popup-close-all-bar { margin-bottom: 8px; position: sticky; top: 0; z-index: 10; }
-      .popup-close-all-bar button { padding: 7px 18px !important; font-size: 13px !important; gap: 6px !important; }
-      .popup-close-all-bar button i { font-size: 11px !important; }
-      .popup-grid { flex-direction: column; gap: 10px; max-height: 80vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-      .popup-card { flex: none; width: 100%; max-height: none; border-radius: 12px !important; }
-      .popup-card .flex.justify-between.border-b { padding: 10px 14px !important; }
-      .popup-card .flex.justify-between.border-b span { font-size: 14px !important; line-height: 1.25 !important; }
-      .popup-card .flex.justify-between.border-b button { width: 32px !important; height: 32px !important; min-width: 32px; }
-      .popup-card .flex.justify-between.border-b button i { font-size: 14px !important; }
-      .popup-card .overflow-y-auto { max-height: 35vh !important; }
-      .popup-card .flex.justify-between.border-t { padding: 8px 14px !important; }
-      .popup-card .flex.justify-between.border-t label { gap: 6px !important; }
-      .popup-card .flex.justify-between.border-t span { font-size: 11px !important; }
-      .popup-card .flex.justify-between.border-t input { width: 16px !important; height: 16px !important; }
-      .popup-card .flex.justify-between.border-t button { padding: 5px 12px !important; font-size: 12px !important; }
+      .popup-multi-container { width: min(94vw, 340px) !important; max-height: 88vh; top: 48%; }
+      .popup-close-all-bar { margin-bottom: 6px; position: sticky; top: 0; z-index: 10; }
+      .popup-close-all-bar button { padding: 6px 14px !important; font-size: 11px !important; gap: 4px !important; }
+      .popup-close-all-bar button i { font-size: 9px !important; }
+      .popup-grid { flex-direction: column; gap: 8px; max-height: 80vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+      .popup-card { flex: none; width: 100%; max-height: none; border-radius: 10px !important; }
+      .popup-header { padding: 8px 10px !important; }
+      .popup-header span { font-size: 12px !important; line-height: 1.25 !important; }
+      .popup-close-btn { width: 26px !important; height: 26px !important; min-width: 26px; }
+      .popup-close-btn i { font-size: 11px !important; }
+      .popup-body { max-height: 35vh !important; }
+      .popup-footer { padding: 6px 10px !important; }
+      .popup-footer label { gap: 4px !important; }
+      .popup-footer span { font-size: 9px !important; }
+      .popup-checkbox { width: 13px !important; height: 13px !important; }
+      .popup-footer button:last-child { padding: 4px 10px !important; font-size: 10px !important; }
     }
 
-    /* ── Small Mobile (≤375px): 더 작은 화면 ── */
+    /* ── Small Mobile (≤375px) ── */
     @media (max-width: 375px) {
       .popup-multi-container { width: 96vw !important; }
-      .popup-card .flex.justify-between.border-b span { font-size: 13px !important; }
-      .popup-card .overflow-y-auto { max-height: 30vh !important; }
+      .popup-header span { font-size: 11px !important; }
+      .popup-body { max-height: 28vh !important; }
     }
 
-    /* ── 2.5K (2560px) ── */
+    /* ── 2.5K (2560px) ── ×0.7 */
     @media (min-width: 2560px) {
-      .popup-multi-container { width: min(90vw, 2800px); }
-      .popup-grid { gap: 36px; }
-      .popup-card { border-radius: 24px !important; }
-      .popup-card .flex.justify-between.border-b { padding: 28px 36px !important; }
-      .popup-card .flex.justify-between.border-b span { font-size: 32px !important; }
-      .popup-card .flex.justify-between.border-b button { width: 56px !important; height: 56px !important; }
-      .popup-card .flex.justify-between.border-b button i { font-size: 28px !important; }
-      .popup-card .overflow-y-auto { font-size: 30px !important; }
-      .popup-card .flex.justify-between.border-t { padding: 22px 36px !important; }
-      .popup-card .flex.justify-between.border-t span { font-size: 26px !important; }
-      .popup-card .flex.justify-between.border-t input { width: 28px !important; height: 28px !important; }
-      .popup-card .flex.justify-between.border-t button { padding: 14px 32px !important; font-size: 26px !important; }
-      .popup-close-all-bar button { padding: 14px 36px !important; font-size: 24px !important; }
+      .popup-multi-container { width: min(90vw, 1960px); }
+      .popup-grid { gap: 25px; }
+      .popup-card { border-radius: 17px !important; }
+      .popup-header { padding: 20px 25px !important; }
+      .popup-header span { font-size: 22px !important; }
+      .popup-close-btn { width: 39px !important; height: 39px !important; }
+      .popup-close-btn i { font-size: 20px !important; }
+      .popup-body { font-size: 21px !important; }
+      .popup-footer { padding: 15px 25px !important; }
+      .popup-footer span { font-size: 18px !important; }
+      .popup-checkbox { width: 20px !important; height: 20px !important; }
+      .popup-footer button:last-child { padding: 10px 22px !important; font-size: 18px !important; }
+      .popup-close-all-bar button { padding: 10px 25px !important; font-size: 17px !important; }
     }
 
-    /* ── 4K (3840px) ── */
+    /* ── 4K (3840px) ── ×0.7 */
     @media (min-width: 3840px) {
-      .popup-multi-container { width: min(88vw, 4200px); }
-      .popup-grid { gap: 48px; }
-      .popup-card { border-radius: 32px !important; }
-      .popup-card .flex.justify-between.border-b { padding: 36px 48px !important; }
-      .popup-card .flex.justify-between.border-b span { font-size: 44px !important; }
-      .popup-card .flex.justify-between.border-b button { width: 72px !important; height: 72px !important; }
-      .popup-card .flex.justify-between.border-b button i { font-size: 36px !important; }
-      .popup-card .overflow-y-auto { font-size: 40px !important; }
-      .popup-card .flex.justify-between.border-t { padding: 28px 48px !important; }
-      .popup-card .flex.justify-between.border-t span { font-size: 34px !important; }
-      .popup-card .flex.justify-between.border-t input { width: 36px !important; height: 36px !important; }
-      .popup-card .flex.justify-between.border-t button { padding: 18px 44px !important; font-size: 34px !important; }
-      .popup-close-all-bar button { padding: 18px 48px !important; font-size: 32px !important; }
+      .popup-multi-container { width: min(88vw, 2940px); }
+      .popup-grid { gap: 34px; }
+      .popup-card { border-radius: 22px !important; }
+      .popup-header { padding: 25px 34px !important; }
+      .popup-header span { font-size: 31px !important; }
+      .popup-close-btn { width: 50px !important; height: 50px !important; }
+      .popup-close-btn i { font-size: 25px !important; }
+      .popup-body { font-size: 28px !important; }
+      .popup-footer { padding: 20px 34px !important; }
+      .popup-footer span { font-size: 24px !important; }
+      .popup-checkbox { width: 25px !important; height: 25px !important; }
+      .popup-footer button:last-child { padding: 13px 31px !important; font-size: 24px !important; }
+      .popup-close-all-bar button { padding: 13px 34px !important; font-size: 22px !important; }
     }
 
-    /* ── 8K (7680px) ── */
+    /* ── 8K (7680px) ── ×0.7 */
     @media (min-width: 7680px) {
-      .popup-multi-container { width: min(86vw, 7400px); }
-      .popup-grid { gap: 64px; }
-      .popup-card { border-radius: 48px !important; }
-      .popup-card .flex.justify-between.border-b { padding: 56px 72px !important; }
-      .popup-card .flex.justify-between.border-b span { font-size: 72px !important; }
-      .popup-card .flex.justify-between.border-b button { width: 104px !important; height: 104px !important; }
-      .popup-card .flex.justify-between.border-b button i { font-size: 56px !important; }
-      .popup-card .overflow-y-auto { font-size: 64px !important; }
-      .popup-card .flex.justify-between.border-t { padding: 44px 72px !important; }
-      .popup-card .flex.justify-between.border-t span { font-size: 52px !important; }
-      .popup-card .flex.justify-between.border-t input { width: 52px !important; height: 52px !important; }
-      .popup-card .flex.justify-between.border-t button { padding: 28px 64px !important; font-size: 52px !important; }
-      .popup-close-all-bar button { padding: 28px 72px !important; font-size: 48px !important; }
+      .popup-multi-container { width: min(86vw, 5180px); }
+      .popup-grid { gap: 45px; }
+      .popup-card { border-radius: 34px !important; }
+      .popup-header { padding: 39px 50px !important; }
+      .popup-header span { font-size: 50px !important; }
+      .popup-close-btn { width: 73px !important; height: 73px !important; }
+      .popup-close-btn i { font-size: 39px !important; }
+      .popup-body { font-size: 45px !important; }
+      .popup-footer { padding: 31px 50px !important; }
+      .popup-footer span { font-size: 36px !important; }
+      .popup-checkbox { width: 36px !important; height: 36px !important; }
+      .popup-footer button:last-child { padding: 20px 45px !important; font-size: 36px !important; }
+      .popup-close-all-bar button { padding: 20px 50px !important; font-size: 34px !important; }
     }
 
     @keyframes popupSlideIn { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
