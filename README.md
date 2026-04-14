@@ -1,38 +1,40 @@
-# KOIST Website v13.0
+# KOIST Website v24.0
 
-**(주)한국정보보안기술원** 공식 웹사이트 - 10개 사업 평가현황 통합 관리 시스템
+**(주)한국정보보안기술원** 공식 웹사이트 - 8K 울트라샤프 + 관리자 인라인 편집 시스템
 
 ## URLs
+- **Sandbox**: https://3000-i0chksvz2v05lxmcn60fh-3c7ff1b5.sandbox.novita.ai
 - **Production**: https://koist-website.pages.dev
-- **평가현황**: https://koist-website.pages.dev/support/progress
-- **시스템 문서**: https://koist-website.pages.dev/support/documents
-- **관리자**: https://koist-website.pages.dev/admin (admin / admin1234)
+- **관리자**: /admin (admin / admin1234)
 
-## v13.0 업데이트 내역 (2026-04-11)
+## v24.0 업데이트 내역 (2026-04-14)
 
-### 1. 10개 카테고리 서비스 카드 3배 확대
-- **그리드**: 5열 -> 4열 (데스크톱), 3열(태블릿), 2열(모바일)
-- **아이콘**: 36-48px -> 56-76px (약 2배)
-- **제목**: f-text-sm(13px) -> clamp(0.95rem~1.2rem) (약 2.5배 체감)
-- **설명**: f-text-xs(11px) -> clamp(0.72rem~0.88rem) (약 2배)
-- **카드 패딩**: 확대 (1.2rem ~ 1.8rem), 텍스트 중앙 정렬
-- **간격 최적화**: gap 축소로 화면 높이 증가 방지
-- 새로운 CSS 클래스 `.card-service-xl` 도입
+### 1. 헤더 레이아웃 재설계
+- KOLAS 로고 → 사이트 로고 → GNB 12개 메뉴 → 전화버튼, 왼쪽 끝부터 일자 배치
+- 요소 간 0.5cm(19px) 균일 간격
+- GNB 폰트 자동 축소로 12개 메뉴 1920px 뷰포트 내 완전 표시
+- 전화번호 버튼 xl(1280px) 이상에서만 표시
 
-### 2. EAL별 인터랙티브 바 그래프
-- **EAL 탭 전환**: EAL2 / EAL3 / EAL4 탭 클릭으로 데이터 전환
-- **데이터 근거** (NIAP/NIST, UT Austin, CCLab 2024, KOIST DB):
-  - EAL2: 일반 14개월 -> KOIST 8개월 (43% 단축)
-  - EAL3: 일반 18개월 -> KOIST 11개월 (39% 단축)
-  - EAL4: 일반 26개월 -> KOIST 15개월 (42% 단축)
-- **CSS 애니메이션**: 바 width transition 0.8s, 탭 active gradient
-- **KOIST 실적**: EAL2=68건, EAL3=25건, EAL4=47건 표시
-- 순수 CSS + Vanilla JS (외부 라이브러리 없음)
+### 2. 히어로 영역 50:50 완벽 분할
+- CSS Grid `1fr 1fr`로 정확한 50% 분할
+- 왼쪽: 배지 + 대제목 + 부제 + CTA 버튼 + 연락처 카드
+- 오른쪽: 인터랙티브 시뮬레이터 패널 (중앙 정렬, max-width 제한)
+- AOS 애니메이션 fade-up 전환 (translateX 충돌 방지)
 
-### 3. 대시보드 통합
-- 기존 우측 대시보드(카테고리 건수)를 **평가현황 패널에 통합**
-- 상단 4개 카테고리 미니 카드 + 하단 태그 + 총 실적 + 테이블
-- EAL 인터랙티브 그래프가 바 차트 섹션 우측에 배치
+### 3. 관리자 인라인 편집 모드 (신규)
+- 로그인한 관리자에게 하단 고정 툴바 표시
+- 편집모드 토글 → 모든 `data-admin-edit` 요소에 점선 테두리
+- 텍스트: contentEditable로 직접 편집
+- 이미지: 클릭 → URL 입력 다이얼로그
+- 변경사항 카운트 표시 → 일괄 API 저장
+- 편집 가능 요소: 배지, 제목, 부제, 버튼, 연락처, 시뮬레이터 타이틀, 서비스 섹션 등
+
+### 4. 8K 해상도 및 반응형
+- 모든 크기에 CSS clamp() 기반 유체 타이포그래피
+- 320px(모바일) ~ 7680px(8K) 전 범위 지원
+- 모바일: 1열 스택 레이아웃
+- 태블릿: 1열 + 풀폭 시뮬레이터
+- 4K/8K: 확대 스케일링 자동 적용
 
 ## 주요 기능
 
