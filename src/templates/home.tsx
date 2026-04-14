@@ -81,15 +81,58 @@ export function homePage(opts: {
     </div>
   </div>
   <style>
+    /* ── PC (default) ── */
     .popup-multi-container { top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(96vw, 1840px); max-height: 92vh; }
     .popup-close-all-bar { text-align: center; margin-bottom: 20px; }
     .popup-grid { display: flex; gap: 28px; align-items: flex-start; }
     .popup-card { flex: 1; min-width: 0; max-height: 85vh; }
-    @media (max-width: 767px) {
-      .popup-multi-container { width: min(96vw, 520px); }
-      .popup-grid { flex-direction: column; max-height: 80vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-      .popup-card { flex: none; width: 100%; }
+
+    /* ── Tablet (768px ~ 1024px): 세로 배치 + 적절한 크기 ── */
+    @media (min-width: 768px) and (max-width: 1024px) {
+      .popup-multi-container { width: min(88vw, 580px) !important; max-height: 90vh; }
+      .popup-close-all-bar { margin-bottom: 10px; }
+      .popup-close-all-bar button { padding: 8px 22px !important; font-size: 15px !important; }
+      .popup-close-all-bar button i { font-size: 13px !important; }
+      .popup-grid { flex-direction: column; gap: 14px; max-height: 82vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+      .popup-card { flex: none; width: 100%; max-height: none; }
+      .popup-card .flex.justify-between.border-b { padding: 12px 16px !important; }
+      .popup-card .flex.justify-between.border-b span { font-size: 16px !important; }
+      .popup-card .flex.justify-between.border-b button { width: 36px !important; height: 36px !important; }
+      .popup-card .flex.justify-between.border-b button i { font-size: 16px !important; }
+      .popup-card .overflow-y-auto { max-height: none !important; }
+      .popup-card .flex.justify-between.border-t { padding: 10px 16px !important; }
+      .popup-card .flex.justify-between.border-t span { font-size: 13px !important; }
+      .popup-card .flex.justify-between.border-t input { width: 18px !important; height: 18px !important; }
+      .popup-card .flex.justify-between.border-t button { padding: 6px 14px !important; font-size: 14px !important; }
     }
+
+    /* ── Mobile (≤767px): 세로 배치 + 축소 ── */
+    @media (max-width: 767px) {
+      .popup-multi-container { width: min(94vw, 400px) !important; max-height: 88vh; top: 48%; }
+      .popup-close-all-bar { margin-bottom: 8px; position: sticky; top: 0; z-index: 10; }
+      .popup-close-all-bar button { padding: 7px 18px !important; font-size: 13px !important; gap: 6px !important; }
+      .popup-close-all-bar button i { font-size: 11px !important; }
+      .popup-grid { flex-direction: column; gap: 10px; max-height: 80vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+      .popup-card { flex: none; width: 100%; max-height: none; border-radius: 12px !important; }
+      .popup-card .flex.justify-between.border-b { padding: 10px 14px !important; }
+      .popup-card .flex.justify-between.border-b span { font-size: 14px !important; line-height: 1.25 !important; }
+      .popup-card .flex.justify-between.border-b button { width: 32px !important; height: 32px !important; min-width: 32px; }
+      .popup-card .flex.justify-between.border-b button i { font-size: 14px !important; }
+      .popup-card .overflow-y-auto { max-height: 35vh !important; }
+      .popup-card .flex.justify-between.border-t { padding: 8px 14px !important; }
+      .popup-card .flex.justify-between.border-t label { gap: 6px !important; }
+      .popup-card .flex.justify-between.border-t span { font-size: 11px !important; }
+      .popup-card .flex.justify-between.border-t input { width: 16px !important; height: 16px !important; }
+      .popup-card .flex.justify-between.border-t button { padding: 5px 12px !important; font-size: 12px !important; }
+    }
+
+    /* ── Small Mobile (≤375px): 더 작은 화면 ── */
+    @media (max-width: 375px) {
+      .popup-multi-container { width: 96vw !important; }
+      .popup-card .flex.justify-between.border-b span { font-size: 13px !important; }
+      .popup-card .overflow-y-auto { max-height: 30vh !important; }
+    }
+
     @keyframes popupSlideIn { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
     @keyframes popupFadeOut { from { opacity: 1; } to { opacity: 0; transform: scale(0.95); } }
   </style>
