@@ -133,6 +133,57 @@ export function homePage(opts: {
       .popup-card .overflow-y-auto { max-height: 30vh !important; }
     }
 
+    /* ── 2.5K (2560px) ── */
+    @media (min-width: 2560px) {
+      .popup-multi-container { width: min(90vw, 2800px); }
+      .popup-grid { gap: 36px; }
+      .popup-card { border-radius: 24px !important; }
+      .popup-card .flex.justify-between.border-b { padding: 28px 36px !important; }
+      .popup-card .flex.justify-between.border-b span { font-size: 32px !important; }
+      .popup-card .flex.justify-between.border-b button { width: 56px !important; height: 56px !important; }
+      .popup-card .flex.justify-between.border-b button i { font-size: 28px !important; }
+      .popup-card .overflow-y-auto { font-size: 30px !important; }
+      .popup-card .flex.justify-between.border-t { padding: 22px 36px !important; }
+      .popup-card .flex.justify-between.border-t span { font-size: 26px !important; }
+      .popup-card .flex.justify-between.border-t input { width: 28px !important; height: 28px !important; }
+      .popup-card .flex.justify-between.border-t button { padding: 14px 32px !important; font-size: 26px !important; }
+      .popup-close-all-bar button { padding: 14px 36px !important; font-size: 24px !important; }
+    }
+
+    /* ── 4K (3840px) ── */
+    @media (min-width: 3840px) {
+      .popup-multi-container { width: min(88vw, 4200px); }
+      .popup-grid { gap: 48px; }
+      .popup-card { border-radius: 32px !important; }
+      .popup-card .flex.justify-between.border-b { padding: 36px 48px !important; }
+      .popup-card .flex.justify-between.border-b span { font-size: 44px !important; }
+      .popup-card .flex.justify-between.border-b button { width: 72px !important; height: 72px !important; }
+      .popup-card .flex.justify-between.border-b button i { font-size: 36px !important; }
+      .popup-card .overflow-y-auto { font-size: 40px !important; }
+      .popup-card .flex.justify-between.border-t { padding: 28px 48px !important; }
+      .popup-card .flex.justify-between.border-t span { font-size: 34px !important; }
+      .popup-card .flex.justify-between.border-t input { width: 36px !important; height: 36px !important; }
+      .popup-card .flex.justify-between.border-t button { padding: 18px 44px !important; font-size: 34px !important; }
+      .popup-close-all-bar button { padding: 18px 48px !important; font-size: 32px !important; }
+    }
+
+    /* ── 8K (7680px) ── */
+    @media (min-width: 7680px) {
+      .popup-multi-container { width: min(86vw, 7400px); }
+      .popup-grid { gap: 64px; }
+      .popup-card { border-radius: 48px !important; }
+      .popup-card .flex.justify-between.border-b { padding: 56px 72px !important; }
+      .popup-card .flex.justify-between.border-b span { font-size: 72px !important; }
+      .popup-card .flex.justify-between.border-b button { width: 104px !important; height: 104px !important; }
+      .popup-card .flex.justify-between.border-b button i { font-size: 56px !important; }
+      .popup-card .overflow-y-auto { font-size: 64px !important; }
+      .popup-card .flex.justify-between.border-t { padding: 44px 72px !important; }
+      .popup-card .flex.justify-between.border-t span { font-size: 52px !important; }
+      .popup-card .flex.justify-between.border-t input { width: 52px !important; height: 52px !important; }
+      .popup-card .flex.justify-between.border-t button { padding: 28px 64px !important; font-size: 52px !important; }
+      .popup-close-all-bar button { padding: 28px 72px !important; font-size: 48px !important; }
+    }
+
     @keyframes popupSlideIn { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
     @keyframes popupFadeOut { from { opacity: 1; } to { opacity: 0; transform: scale(0.95); } }
   </style>
