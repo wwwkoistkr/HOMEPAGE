@@ -46,7 +46,7 @@ export function homePage(opts: {
        POPUP SYSTEM (Mobile-Responsive Modal)
        ════════════════════════════════════════════════ -->
   ${popups.length > 0 ? `
-  <div id="popupOverlay" class="fixed inset-0 z-[9998] transition-opacity duration-300" style="background:rgba(0,0,0,0.5); backdrop-filter:blur(4px);" onclick="closeAllPopups()"></div>
+  <div id="popupOverlay" class="fixed inset-0 z-[9998] transition-opacity duration-300" style="background:rgba(0,0,0,0.15);" onclick="closeAllPopups()"></div>
   <div id="popupContainer" class="fixed z-[9999] popup-multi-container">
     <div class="popup-close-all-bar">
       <button onclick="closeAllPopups()" class="inline-flex items-center gap-2 bg-white/95 text-gray-700 font-semibold rounded-full shadow-lg hover:bg-white transition-all" style="padding:8px 20px; font-size:13px;">
@@ -610,6 +610,26 @@ export function homePage(opts: {
       .notice-tab { font-size: 2.0rem; padding: 1rem 1.8rem; border-bottom-width: 4px; }
       .notice-tab-bar { border-bottom-width: 3px; }
     }
+
+    /* ── Services Section 50% enlarged — 2.5K/4K/8K scaling ── */
+    @media (min-width: 2560px) {
+      .services-badge-text { font-size: clamp(1.5rem, 1.2rem + 0.4vw, 2.0rem) !important; padding: 10px 28px !important; gap: 12px !important; }
+      .services-badge-text i { font-size: clamp(22px, 1.6vw, 30px) !important; }
+      .services-title-text { font-size: clamp(3.0rem, 2.4rem + 0.8vw, 4.2rem) !important; }
+      .services-subtitle-text { font-size: clamp(1.5rem, 1.2rem + 0.4vw, 2.0rem) !important; max-width: 56rem !important; }
+    }
+    @media (min-width: 3840px) {
+      .services-badge-text { font-size: clamp(2.2rem, 1.8rem + 0.5vw, 3.0rem) !important; padding: 14px 38px !important; gap: 16px !important; border-radius: 9999px; }
+      .services-badge-text i { font-size: clamp(28px, 2vw, 42px) !important; }
+      .services-title-text { font-size: clamp(4.2rem, 3.4rem + 1.2vw, 6.0rem) !important; }
+      .services-subtitle-text { font-size: clamp(2.0rem, 1.6rem + 0.6vw, 2.8rem) !important; max-width: 72rem !important; }
+    }
+    @media (min-width: 7680px) {
+      .services-badge-text { font-size: clamp(3.6rem, 3.0rem + 0.8vw, 5.0rem) !important; padding: 24px 60px !important; gap: 24px !important; }
+      .services-badge-text i { font-size: clamp(48px, 3.5vw, 72px) !important; }
+      .services-title-text { font-size: clamp(7.0rem, 5.6rem + 1.8vw, 10.0rem) !important; letter-spacing: -0.02em; }
+      .services-subtitle-text { font-size: clamp(3.6rem, 3.0rem + 0.8vw, 5.0rem) !important; max-width: 120rem !important; }
+    }
   </style>
 
   <!-- ════════════════════════════════════════════════════════
@@ -620,11 +640,11 @@ export function homePage(opts: {
 
     <div class="relative fluid-container">
       <div class="text-center" style="margin-bottom: clamp(0.8rem,1.5vw,1.5rem)" data-aos="fade-up">
-        <div class="inline-flex items-center rounded-full font-semibold" style="gap:8px; padding:6px 18px; margin-bottom:var(--space-xs); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB; font-size: clamp(0.76rem, 0.62rem + 0.36vw, 1.12rem);">
-          <i class="fas fa-cubes" style="font-size:clamp(11px,0.9vw,16px)"></i>${s.services_badge || 'KOIST 사업분야'}
+        <div class="inline-flex items-center rounded-full font-semibold services-badge-text" style="gap:8px; padding:6px 18px; margin-bottom:var(--space-xs); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB; font-size: clamp(1.14rem, 0.93rem + 0.54vw, 1.68rem);">
+          <i class="fas fa-cubes" style="font-size:clamp(16px,1.35vw,24px)"></i>${s.services_badge || 'KOIST 사업분야'}
         </div>
-        <h2 class="font-bold text-primary" style="font-size: clamp(1.44rem, 1.08rem + 0.92vw, 2.56rem); margin-bottom:var(--space-2xs); line-height:1.2;">${s.services_title || '핵심 사업분야'}</h2>
-        <p class="text-slate-500 max-w-lg mx-auto" style="font-size: clamp(0.88rem, 0.72rem + 0.42vw, 1.36rem); line-height:1.25;">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
+        <h2 class="font-bold text-primary services-title-text" style="font-size: clamp(2.16rem, 1.62rem + 1.38vw, 3.84rem); margin-bottom:var(--space-2xs); line-height:1.15;">${s.services_title || '핵심 사업분야'}</h2>
+        <p class="text-slate-500 max-w-2xl mx-auto services-subtitle-text" style="font-size: clamp(1.10rem, 0.90rem + 0.52vw, 1.72rem); line-height:1.3;">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
       </div>
 
       ${(() => {
