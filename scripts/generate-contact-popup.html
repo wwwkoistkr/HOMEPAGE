@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KOIST Contact Popup</title>
-<!-- Google Font: Noto Sans KR for clean Korean text -->
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>KOIST CCTV/IPTV 시험기관 팝업</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   
@@ -17,77 +16,119 @@
     min-height: 100vh;
   }
 
-  .contact-card {
-    width: 600px;
-    background: linear-gradient(145deg, #0b1628 0%, #0f1d35 35%, #132444 65%, #0d1a30 100%);
+  .popup-card {
+    width: 620px;
+    background: linear-gradient(150deg, #0b1628 0%, #0f1d35 30%, #132444 60%, #0d1a30 100%);
     border-radius: 18px;
-    padding: 36px 40px 32px;
+    padding: 0;
     font-family: 'Noto Sans KR', sans-serif;
     color: #e2e8f0;
     position: relative;
     overflow: hidden;
     box-shadow: 
       0 4px 32px rgba(0,0,0,0.4),
-      0 0 0 1px rgba(56,98,168,0.25),
-      inset 0 1px 0 rgba(255,255,255,0.05);
+      0 0 0 1px rgba(56,98,168,0.3),
+      inset 0 1px 0 rgba(255,255,255,0.06);
   }
 
-  /* Subtle glow decoration */
-  .contact-card::before {
+  /* Top accent bar */
+  .top-bar {
+    height: 5px;
+    background: linear-gradient(90deg, #3b82f6, #06b6d4, #10b981);
+  }
+
+  /* Subtle glow decorations */
+  .popup-card::before {
     content: '';
     position: absolute;
-    top: -80px; right: -80px;
-    width: 200px; height: 200px;
-    background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%);
+    top: -60px; right: -60px;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle, rgba(6,182,212,0.10) 0%, transparent 70%);
     pointer-events: none;
   }
-  .contact-card::after {
+  .popup-card::after {
     content: '';
     position: absolute;
-    bottom: -60px; left: -60px;
-    width: 160px; height: 160px;
-    background: radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%);
+    bottom: -50px; left: -50px;
+    width: 150px; height: 150px;
+    background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
     pointer-events: none;
   }
 
-  /* Title area */
-  .card-header {
-    text-align: center;
-    margin-bottom: 28px;
+  .inner {
+    padding: 32px 36px 28px;
     position: relative;
   }
-  .card-subtitle {
-    font-size: 13px;
-    font-weight: 500;
-    color: rgba(147,197,253,0.8);
-    letter-spacing: 3px;
-    text-transform: uppercase;
+
+  /* ── Badge ── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(59,130,246,0.15));
+    border: 1px solid rgba(6,182,212,0.25);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #67e8f9;
+    letter-spacing: 0.5px;
+    margin-bottom: 18px;
+  }
+  .badge-dot {
+    width: 6px; height: 6px;
+    background: #22d3ee;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── Announcement text ── */
+  .announce-text {
+    font-size: 17.5px;
+    font-weight: 600;
+    color: #f1f5f9;
+    line-height: 1.65;
     margin-bottom: 8px;
+    word-break: keep-all;
   }
-  .card-title {
-    font-size: 22px;
-    font-weight: 800;
-    color: #ffffff;
-    letter-spacing: -0.02em;
-    line-height: 1.3;
-  }
-  .card-title-accent {
+  .announce-text .highlight {
     color: #60a5fa;
+    font-weight: 800;
   }
-  .card-divider {
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(90deg, #3b82f6, #10b981);
-    border-radius: 2px;
-    margin: 14px auto 0;
+  .announce-text .date {
+    color: #fbbf24;
+    font-weight: 700;
+  }
+  .announce-text .subject {
+    color: #34d399;
+    font-weight: 700;
   }
 
-  /* Contact grid */
+  /* ── Divider ── */
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(148,163,184,0.2), transparent);
+    margin: 20px 0;
+  }
+
+  /* ── Contact section ── */
+  .contact-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(148,163,184,0.7);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
   .contact-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px 32px;
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
 
   .contact-row {
@@ -97,134 +138,119 @@
   }
 
   .contact-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    font-size: 16px;
   }
-  .icon-phone { background: linear-gradient(135deg, #2563eb, #3b82f6); color: #fff; }
-  .icon-fax   { background: linear-gradient(135deg, #7c3aed, #8b5cf6); color: #fff; }
-  .icon-email { background: linear-gradient(135deg, #059669, #10b981); color: #fff; }
-  .icon-addr  { background: linear-gradient(135deg, #d97706, #f59e0b); color: #fff; }
+  .icon-direct { background: linear-gradient(135deg, #0891b2, #06b6d4); }
+  .icon-email  { background: linear-gradient(135deg, #059669, #10b981); }
+  .icon-koist  { background: linear-gradient(135deg, #2563eb, #3b82f6); }
 
   .contact-info {
     display: flex;
     flex-direction: column;
-    gap: 1px;
+    gap: 0px;
   }
   .contact-label {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 500;
-    color: rgba(148,163,184,0.8);
-    letter-spacing: 0.5px;
+    color: rgba(148,163,184,0.7);
+    letter-spacing: 0.3px;
   }
   .contact-value {
     font-size: 15px;
     font-weight: 600;
     color: #f1f5f9;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
   }
-  .contact-value.phone-highlight {
-    color: #60a5fa;
+  .contact-value.phone-big {
     font-size: 17px;
     font-weight: 700;
+    color: #67e8f9;
   }
 
-  /* Address (full width) */
-  .contact-row.full-width {
-    grid-column: 1 / -1;
-    margin-top: 4px;
-    padding-top: 14px;
-    border-top: 1px solid rgba(148,163,184,0.12);
-  }
-  .contact-value.address {
-    font-size: 13.5px;
-    font-weight: 500;
-    color: rgba(226,232,240,0.9);
-    line-height: 1.5;
-  }
-
-  /* Footer accent line */
-  .card-footer-line {
-    margin-top: 20px;
+  /* ── Footer ── */
+  .footer-line {
+    margin-top: 22px;
     height: 3px;
-    background: linear-gradient(90deg, transparent, rgba(59,130,246,0.3), rgba(16,185,129,0.3), transparent);
+    background: linear-gradient(90deg, transparent, rgba(6,182,212,0.25), rgba(59,130,246,0.25), transparent);
     border-radius: 2px;
   }
 </style>
 </head>
 <body>
 
-<div class="contact-card" id="captureTarget">
-  <!-- Header -->
-  <div class="card-header">
-    <div class="card-subtitle">National Testing & Certification</div>
-    <div class="card-title">
-      <span class="card-title-accent">한국정보보안기술원</span> 연락처
+<div class="popup-card" id="captureTarget">
+  <div class="top-bar"></div>
+  <div class="inner">
+
+    <!-- Badge -->
+    <div class="badge">
+      <span class="badge-dot"></span>
+      국가 공인 시험기관 지정
     </div>
-    <div class="card-divider"></div>
+
+    <!-- Announcement (1~2줄 안내 문장) -->
+    <div class="announce-text">
+      <span class="highlight">KOIST(한국정보보안기술원)</span>은<br>
+      <span class="date">2026. 3. 16일</span> 부로
+      <span class="subject">CCTV, IPTV 분야의<br>국가 공인 시험기관</span>으로 지정되었습니다.
+    </div>
+
+    <!-- Divider -->
+    <div class="section-divider"></div>
+
+    <!-- Contact info -->
+    <div class="contact-title">담당부서 연락처</div>
+    <div class="contact-grid">
+
+      <!-- 평가팀 직통 -->
+      <div class="contact-row">
+        <div class="contact-icon icon-direct">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+          </svg>
+        </div>
+        <div class="contact-info">
+          <span class="contact-label">평가팀 (직통)</span>
+          <span class="contact-value phone-big">070-4265-0886</span>
+        </div>
+      </div>
+
+      <!-- 이메일 -->
+      <div class="contact-row">
+        <div class="contact-icon icon-email">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-8.97 5.7a1.94 1.94 0 01-2.06 0L2 7"/>
+          </svg>
+        </div>
+        <div class="contact-info">
+          <span class="contact-label">E-MAIL</span>
+          <span class="contact-value">jhchoi@koist.kr</span>
+        </div>
+      </div>
+
+      <!-- KOIST 대표번호 -->
+      <div class="contact-row">
+        <div class="contact-icon icon-koist">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </div>
+        <div class="contact-info">
+          <span class="contact-label">KOIST 대표</span>
+          <span class="contact-value">02-586-1230</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-line"></div>
   </div>
-
-  <!-- Contact Grid -->
-  <div class="contact-grid">
-    <!-- Phone -->
-    <div class="contact-row">
-      <div class="contact-icon icon-phone">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
-        </svg>
-      </div>
-      <div class="contact-info">
-        <span class="contact-label">TEL</span>
-        <span class="contact-value phone-highlight">02-586-1230</span>
-      </div>
-    </div>
-
-    <!-- FAX -->
-    <div class="contact-row">
-      <div class="contact-icon icon-fax">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 9V2h12v7"/><rect x="6" y="13" width="12" height="8" rx="1"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
-        </svg>
-      </div>
-      <div class="contact-info">
-        <span class="contact-label">FAX</span>
-        <span class="contact-value">02-586-1238</span>
-      </div>
-    </div>
-
-    <!-- Email -->
-    <div class="contact-row">
-      <div class="contact-icon icon-email">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-8.97 5.7a1.94 1.94 0 01-2.06 0L2 7"/>
-        </svg>
-      </div>
-      <div class="contact-info">
-        <span class="contact-label">E-MAIL</span>
-        <span class="contact-value">koist@koist.kr</span>
-      </div>
-    </div>
-
-    <!-- Address (spans full width) -->
-    <div class="contact-row full-width">
-      <div class="contact-icon icon-addr">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
-        </svg>
-      </div>
-      <div class="contact-info">
-        <span class="contact-label">ADDRESS</span>
-        <span class="contact-value address">서울특별시 서초구 효령로 336 윤일빌딩 4층 한국정보보안기술원</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="card-footer-line"></div>
 </div>
 
 </body>
