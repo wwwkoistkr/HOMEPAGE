@@ -49,8 +49,8 @@ export function homePage(opts: {
   <div id="popupOverlay" class="fixed inset-0 z-[9998] transition-opacity duration-300" style="background:rgba(0,0,0,0.15);" onclick="closeAllPopups()"></div>
   <div id="popupContainer" class="fixed z-[9999] popup-multi-container">
     <div class="popup-close-all-bar">
-      <button onclick="closeAllPopups()" class="inline-flex items-center gap-2 bg-white/95 text-gray-700 font-semibold rounded-full shadow-lg hover:bg-white transition-all" style="padding:8px 20px; font-size:13px;">
-        <i class="fas fa-times" style="font-size:12px"></i> 모두 닫기
+      <button onclick="closeAllPopups()" class="inline-flex items-center gap-3 bg-white/95 text-gray-700 font-semibold rounded-full shadow-lg hover:bg-white transition-all" style="padding:14px 36px; font-size:22px;">
+        <i class="fas fa-times" style="font-size:20px"></i> 모두 닫기
       </button>
     </div>
     <div class="popup-grid">
@@ -58,36 +58,36 @@ export function homePage(opts: {
       <div class="popup-card bg-white rounded-2xl overflow-hidden shadow-2xl"
            data-popup-id="${p.id}" id="popup-${p.id}"
            style="border:1px solid rgba(226,232,240,0.5); animation: popupSlideIn ${0.3 + i * 0.1}s ease-out;">
-        <div class="flex justify-between items-center border-b border-slate-100" style="padding:12px 16px; background:linear-gradient(135deg, rgba(248,250,252,0.95), rgba(241,245,249,0.95));">
-          <span class="font-semibold text-gray-800" style="font-size:14px; line-height:1.3;">${p.title}</span>
-          <button onclick="closeSinglePopup(${p.id})" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors" aria-label="닫기">
-            <i class="fas fa-times" style="font-size:14px;"></i>
+        <div class="flex justify-between items-center border-b border-slate-100" style="padding:20px 28px; background:linear-gradient(135deg, rgba(248,250,252,0.95), rgba(241,245,249,0.95));">
+          <span class="font-semibold text-gray-800" style="font-size:24px; line-height:1.3;">${p.title}</span>
+          <button onclick="closeSinglePopup(${p.id})" class="w-12 h-12 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors" aria-label="닫기">
+            <i class="fas fa-times" style="font-size:22px;"></i>
           </button>
         </div>
-        <div class="overflow-y-auto" style="max-height:calc(75vh - 120px); -webkit-overflow-scrolling:touch;">
+        <div class="overflow-y-auto" style="max-height:calc(80vh - 180px); -webkit-overflow-scrolling:touch;">
           ${p.popup_type === 'image' && p.image_url 
             ? `<img src="${p.image_url}" alt="${p.title}" class="w-full h-auto" loading="lazy">` 
-            : `<div style="padding:16px; font-size:14px; line-height:1.7; color:#374151;">${p.content || ''}</div>`}
+            : `<div style="padding:28px; font-size:24px; line-height:1.7; color:#374151;">${p.content || ''}</div>`}
         </div>
-        <div class="flex justify-between items-center border-t border-slate-100" style="padding:10px 16px; background:rgba(248,250,252,0.7);">
-          <label class="flex items-center gap-2 cursor-pointer select-none">
-            <input type="checkbox" id="noshow-${p.id}" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 accent-blue-600">
-            <span class="text-gray-500" style="font-size:12px;">오늘 하루 안 보기</span>
+        <div class="flex justify-between items-center border-t border-slate-100" style="padding:16px 28px; background:rgba(248,250,252,0.7);">
+          <label class="flex items-center gap-3 cursor-pointer select-none">
+            <input type="checkbox" id="noshow-${p.id}" class="w-6 h-6 rounded border-gray-300 text-blue-600 focus:ring-blue-500 accent-blue-600">
+            <span class="text-gray-500" style="font-size:20px;">오늘 하루 안 보기</span>
           </label>
-          <button onclick="closeSinglePopup(${p.id})" class="text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100 transition-colors font-medium" style="padding:6px 14px; font-size:13px;">닫기</button>
+          <button onclick="closeSinglePopup(${p.id})" class="text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100 transition-colors font-medium" style="padding:10px 24px; font-size:22px;">닫기</button>
         </div>
       </div>
       `).join('')}
     </div>
   </div>
   <style>
-    .popup-multi-container { top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(92vw, 920px); max-height: 90vh; }
-    .popup-close-all-bar { text-align: center; margin-bottom: 12px; }
-    .popup-grid { display: flex; gap: 16px; align-items: flex-start; }
-    .popup-card { flex: 1; min-width: 0; max-height: 80vh; }
+    .popup-multi-container { top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(96vw, 1840px); max-height: 92vh; }
+    .popup-close-all-bar { text-align: center; margin-bottom: 20px; }
+    .popup-grid { display: flex; gap: 28px; align-items: flex-start; }
+    .popup-card { flex: 1; min-width: 0; max-height: 85vh; }
     @media (max-width: 767px) {
-      .popup-multi-container { width: min(92vw, 420px); }
-      .popup-grid { flex-direction: column; max-height: 75vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+      .popup-multi-container { width: min(96vw, 520px); }
+      .popup-grid { flex-direction: column; max-height: 80vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
       .popup-card { flex: none; width: 100%; }
     }
     @keyframes popupSlideIn { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
