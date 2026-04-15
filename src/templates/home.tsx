@@ -46,144 +46,50 @@ export function homePage(opts: {
        POPUP SYSTEM (Mobile-Responsive Modal)
        ════════════════════════════════════════════════ -->
   ${popups.length > 0 ? `
-  <div id="popupOverlay" class="fixed inset-0 z-[9998] transition-opacity duration-300" style="background:rgba(0,0,0,0.15);" onclick="closeAllPopups()"></div>
+  <div id="popupOverlay" class="fixed inset-0 z-[9998] transition-opacity duration-300" style="background:rgba(0,0,0,0.5); backdrop-filter:blur(4px);" onclick="closeAllPopups()"></div>
   <div id="popupContainer" class="fixed z-[9999] popup-multi-container">
     <div class="popup-close-all-bar">
-      <button onclick="closeAllPopups()" class="inline-flex items-center gap-2 bg-white/95 text-gray-700 font-semibold rounded-full shadow-lg hover:bg-white transition-all" style="padding:10px 25px; font-size:15px;">
-        <i class="fas fa-times" style="font-size:14px"></i> 모두 닫기
+      <button onclick="closeAllPopups()" class="inline-flex items-center gap-2 bg-white/95 text-gray-700 font-semibold rounded-full shadow-lg hover:bg-white transition-all" style="padding:8px 20px; font-size:13px;">
+        <i class="fas fa-times" style="font-size:12px"></i> 모두 닫기
       </button>
     </div>
     <div class="popup-grid">
-      ${popups.map((p, i) => {
-        const bgCol = p.bg_color || '#ffffff';
-        const txtCol = p.text_color || '#374151';
-        const ttlCol = p.title_color || '#1f2937';
-        const ttlBg = p.title_bg_color || '';
-        const fSize = p.font_size || 17;
-        const tFSize = p.title_font_size || 17;
-        const lh = p.line_height || 1.7;
-        const pad = p.padding || 20;
-        const headerBg = ttlBg ? 'background:' + ttlBg + ';' : 'background:linear-gradient(135deg, rgba(248,250,252,0.95), rgba(241,245,249,0.95));';
-        const contentHtml = (p.popup_type === 'image' && p.image_url)
-          ? '<img src="' + p.image_url + '" alt="' + p.title.replace(/"/g, '&quot;') + '" class="w-full h-auto" loading="lazy">'
-          : '<div style="padding:' + pad + 'px; font-size:' + fSize + 'px; line-height:' + lh + '; color:' + txtCol + ';">' + (p.content || '') + '</div>';
-        return '<div class="popup-card rounded-2xl overflow-hidden shadow-2xl" data-popup-id="' + p.id + '" id="popup-' + p.id + '" style="background:' + bgCol + '; border:1px solid rgba(226,232,240,0.5); animation: popupSlideIn ' + (0.3 + i * 0.1) + 's ease-out;">'
-          + '<div class="popup-header flex justify-between items-center border-b border-slate-100" style="padding:14px 20px; ' + headerBg + '">'
-          + '<span class="font-semibold" style="font-size:' + tFSize + 'px; line-height:1.3; color:' + ttlCol + ';">' + p.title + '</span>'
-          + '<button onclick="closeSinglePopup(' + p.id + ')" class="popup-close-btn flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors" style="width:34px; height:34px;" aria-label="닫기"><i class="fas fa-times" style="font-size:15px;"></i></button>'
-          + '</div>'
-          + '<div class="popup-body overflow-y-auto" style="max-height:calc(80vh - 140px); -webkit-overflow-scrolling:touch;">' + contentHtml + '</div>'
-          + '<div class="popup-footer flex justify-between items-center border-t border-slate-100" style="padding:11px 20px; background:rgba(248,250,252,0.7);">'
-          + '<label class="flex items-center gap-2 cursor-pointer select-none"><input type="checkbox" id="noshow-' + p.id + '" class="popup-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500 accent-blue-600" style="width:18px; height:18px;"><span class="text-gray-500" style="font-size:14px;">오늘 하루 안 보기</span></label>'
-          + '<button onclick="closeSinglePopup(' + p.id + ')" class="text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100 transition-colors font-medium" style="padding:7px 17px; font-size:15px;">닫기</button>'
-          + '</div></div>';
-      }).join('')}
+      ${popups.map((p, i) => `
+      <div class="popup-card bg-white rounded-2xl overflow-hidden shadow-2xl"
+           data-popup-id="${p.id}" id="popup-${p.id}"
+           style="border:1px solid rgba(226,232,240,0.5); animation: popupSlideIn ${0.3 + i * 0.1}s ease-out;">
+        <div class="flex justify-between items-center border-b border-slate-100" style="padding:12px 16px; background:linear-gradient(135deg, rgba(248,250,252,0.95), rgba(241,245,249,0.95));">
+          <span class="font-semibold text-gray-800" style="font-size:14px; line-height:1.3;">${p.title}</span>
+          <button onclick="closeSinglePopup(${p.id})" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors" aria-label="닫기">
+            <i class="fas fa-times" style="font-size:14px;"></i>
+          </button>
+        </div>
+        <div class="overflow-y-auto" style="max-height:calc(75vh - 120px); -webkit-overflow-scrolling:touch;">
+          ${p.popup_type === 'image' && p.image_url 
+            ? `<img src="${p.image_url}" alt="${p.title}" class="w-full h-auto" loading="lazy">` 
+            : `<div style="padding:16px; font-size:14px; line-height:1.7; color:#374151;">${p.content || ''}</div>`}
+        </div>
+        <div class="flex justify-between items-center border-t border-slate-100" style="padding:10px 16px; background:rgba(248,250,252,0.7);">
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" id="noshow-${p.id}" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 accent-blue-600">
+            <span class="text-gray-500" style="font-size:12px;">오늘 하루 안 보기</span>
+          </label>
+          <button onclick="closeSinglePopup(${p.id})" class="text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100 transition-colors font-medium" style="padding:6px 14px; font-size:13px;">닫기</button>
+        </div>
+      </div>
+      `).join('')}
     </div>
   </div>
   <style>
-    /* ── PC (default) ── 30% 축소 적용 (×0.7) */
-    .popup-multi-container { top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(96vw, 1288px); max-height: 92vh; }
-    .popup-close-all-bar { text-align: center; margin-bottom: 14px; }
-    .popup-grid { display: flex; gap: 20px; align-items: flex-start; }
-    .popup-card { flex: 1; min-width: 0; max-height: 85vh; }
-
-    /* ── Tablet (768px ~ 1024px) ── */
-    @media (min-width: 768px) and (max-width: 1024px) {
-      .popup-multi-container { width: min(88vw, 406px) !important; max-height: 90vh; }
-      .popup-close-all-bar { margin-bottom: 7px; }
-      .popup-close-all-bar button { padding: 6px 15px !important; font-size: 11px !important; }
-      .popup-close-all-bar button i { font-size: 9px !important; }
-      .popup-grid { flex-direction: column; gap: 10px; max-height: 82vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-      .popup-card { flex: none; width: 100%; max-height: none; }
-      .popup-header { padding: 8px 11px !important; }
-      .popup-header span { font-size: 11px !important; }
-      .popup-close-btn { width: 25px !important; height: 25px !important; }
-      .popup-close-btn i { font-size: 11px !important; }
-      .popup-body { max-height: none !important; }
-      .popup-footer { padding: 7px 11px !important; }
-      .popup-footer span { font-size: 9px !important; }
-      .popup-checkbox { width: 13px !important; height: 13px !important; }
-      .popup-footer button:last-child { padding: 4px 10px !important; font-size: 10px !important; }
-    }
-
-    /* ── Mobile (≤767px) ── */
+    .popup-multi-container { top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(92vw, 920px); max-height: 90vh; }
+    .popup-close-all-bar { text-align: center; margin-bottom: 12px; }
+    .popup-grid { display: flex; gap: 16px; align-items: flex-start; }
+    .popup-card { flex: 1; min-width: 0; max-height: 80vh; }
     @media (max-width: 767px) {
-      .popup-multi-container { width: min(94vw, 340px) !important; max-height: 88vh; top: 48%; }
-      .popup-close-all-bar { margin-bottom: 6px; position: sticky; top: 0; z-index: 10; }
-      .popup-close-all-bar button { padding: 6px 14px !important; font-size: 11px !important; gap: 4px !important; }
-      .popup-close-all-bar button i { font-size: 9px !important; }
-      .popup-grid { flex-direction: column; gap: 8px; max-height: 80vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-      .popup-card { flex: none; width: 100%; max-height: none; border-radius: 10px !important; }
-      .popup-header { padding: 8px 10px !important; }
-      .popup-header span { font-size: 12px !important; line-height: 1.25 !important; }
-      .popup-close-btn { width: 26px !important; height: 26px !important; min-width: 26px; }
-      .popup-close-btn i { font-size: 11px !important; }
-      .popup-body { max-height: 35vh !important; }
-      .popup-footer { padding: 6px 10px !important; }
-      .popup-footer label { gap: 4px !important; }
-      .popup-footer span { font-size: 9px !important; }
-      .popup-checkbox { width: 13px !important; height: 13px !important; }
-      .popup-footer button:last-child { padding: 4px 10px !important; font-size: 10px !important; }
+      .popup-multi-container { width: min(92vw, 420px); }
+      .popup-grid { flex-direction: column; max-height: 75vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+      .popup-card { flex: none; width: 100%; }
     }
-
-    /* ── Small Mobile (≤375px) ── */
-    @media (max-width: 375px) {
-      .popup-multi-container { width: 96vw !important; }
-      .popup-header span { font-size: 11px !important; }
-      .popup-body { max-height: 28vh !important; }
-    }
-
-    /* ── 2.5K (2560px) ── ×0.7 */
-    @media (min-width: 2560px) {
-      .popup-multi-container { width: min(90vw, 1960px); }
-      .popup-grid { gap: 25px; }
-      .popup-card { border-radius: 17px !important; }
-      .popup-header { padding: 20px 25px !important; }
-      .popup-header span { font-size: 22px !important; }
-      .popup-close-btn { width: 39px !important; height: 39px !important; }
-      .popup-close-btn i { font-size: 20px !important; }
-      .popup-body { font-size: 21px !important; }
-      .popup-footer { padding: 15px 25px !important; }
-      .popup-footer span { font-size: 18px !important; }
-      .popup-checkbox { width: 20px !important; height: 20px !important; }
-      .popup-footer button:last-child { padding: 10px 22px !important; font-size: 18px !important; }
-      .popup-close-all-bar button { padding: 10px 25px !important; font-size: 17px !important; }
-    }
-
-    /* ── 4K (3840px) ── ×0.7 */
-    @media (min-width: 3840px) {
-      .popup-multi-container { width: min(88vw, 2940px); }
-      .popup-grid { gap: 34px; }
-      .popup-card { border-radius: 22px !important; }
-      .popup-header { padding: 25px 34px !important; }
-      .popup-header span { font-size: 31px !important; }
-      .popup-close-btn { width: 50px !important; height: 50px !important; }
-      .popup-close-btn i { font-size: 25px !important; }
-      .popup-body { font-size: 28px !important; }
-      .popup-footer { padding: 20px 34px !important; }
-      .popup-footer span { font-size: 24px !important; }
-      .popup-checkbox { width: 25px !important; height: 25px !important; }
-      .popup-footer button:last-child { padding: 13px 31px !important; font-size: 24px !important; }
-      .popup-close-all-bar button { padding: 13px 34px !important; font-size: 22px !important; }
-    }
-
-    /* ── 8K (7680px) ── ×0.7 */
-    @media (min-width: 7680px) {
-      .popup-multi-container { width: min(86vw, 5180px); }
-      .popup-grid { gap: 45px; }
-      .popup-card { border-radius: 34px !important; }
-      .popup-header { padding: 39px 50px !important; }
-      .popup-header span { font-size: 50px !important; }
-      .popup-close-btn { width: 73px !important; height: 73px !important; }
-      .popup-close-btn i { font-size: 39px !important; }
-      .popup-body { font-size: 45px !important; }
-      .popup-footer { padding: 31px 50px !important; }
-      .popup-footer span { font-size: 36px !important; }
-      .popup-checkbox { width: 36px !important; height: 36px !important; }
-      .popup-footer button:last-child { padding: 20px 45px !important; font-size: 36px !important; }
-      .popup-close-all-bar button { padding: 20px 50px !important; font-size: 34px !important; }
-    }
-
     @keyframes popupSlideIn { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
     @keyframes popupFadeOut { from { opacity: 1; } to { opacity: 0; transform: scale(0.95); } }
   </style>
@@ -249,58 +155,58 @@ export function homePage(opts: {
     </div>
     ` : ''}
 
-    <div class="relative" style="width:100%;padding-top:clamp(2.5rem,4.5vw,5rem); padding-bottom:clamp(2.5rem,4.5vw,5rem); padding-left:clamp(1rem,2vw,2.5rem); padding-right:clamp(1rem,2vw,2.5rem);">
-      <!-- ═══ v24: Top row — Hero text + Simulator, perfect 50:50 split ═══ -->
+    <div class="relative fluid-container" style="padding-top:clamp(2.5rem,4.5vw,5rem); padding-bottom:clamp(2.5rem,4.5vw,5rem);">
+      <!-- ═══ v32: Top row — Hero text + Contact side by side ═══ -->
       <div class="unified-hero-grid">
 
         <!-- ═══════ LEFT: Hero Text ═══════ -->
-        <div class="unified-hero-left" data-aos="fade-up" data-aos-duration="700">
+        <div class="unified-hero-left" data-aos="fade-right" data-aos-duration="700">
           <!-- Badge (2.5x enlarged) -->
           <div class="inline-flex items-center rounded-full" style="gap:8px; padding:clamp(6px,0.56vw,8px) clamp(13px,1.26vw,20px); margin-bottom:clamp(0.84rem,1.54vw,1.4rem); background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.18); backdrop-filter: blur(12px);">
             <span class="relative flex" style="height:clamp(7px,0.56vw,10px); width:clamp(7px,0.56vw,10px);">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-50"></span>
               <span class="relative inline-flex rounded-full h-full w-full bg-emerald-400"></span>
             </span>
-            <span class="text-blue-300 font-semibold tracking-wide" data-admin-edit="hero_badge_text" style="font-size:clamp(0.70rem,0.91vw,1.01rem); font-family:'Inter','Noto Sans KR',sans-serif; letter-spacing:0.04em;">${s.hero_badge_text || 'Korean Information Security Technology'}</span>
+            <span class="text-blue-300 font-semibold tracking-wide" style="font-size:clamp(0.70rem,0.91vw,1.01rem); font-family:'Inter','Noto Sans KR',sans-serif; letter-spacing:0.04em;">${s.hero_badge_text || 'Korean Information Security Technology'}</span>
           </div>
 
-          <!-- Headline — 8K Ultra-Sharp -->
-          <h1 class="text-white font-black" data-admin-edit="hero_line1" style="font-size:clamp(1.54rem, 1.12rem + 2.24vw, 3.36rem); line-height:1.1; margin-bottom:clamp(0.56rem,1.05vw,1.05rem); letter-spacing:-0.03em; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
+          <!-- Headline — 2.5x 8K Ultra-Sharp -->
+          <h1 class="text-white font-black" style="font-size:clamp(1.54rem, 1.12rem + 2.24vw, 3.36rem); line-height:1.1; margin-bottom:clamp(0.56rem,1.05vw,1.05rem); letter-spacing:-0.03em; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
             ${s.hero_line1 || '정보보안 시험·인증 전문기관'}
           </h1>
 
-          <!-- Subtitle -->
-          <p class="text-slate-300/90 font-medium" data-admin-edit="hero_line2" style="font-size:clamp(0.80rem, 0.66rem + 0.63vw, 1.22rem); line-height:1.25; margin-bottom:clamp(1.26rem,2.1vw,2.1rem); max-width:none; text-rendering:optimizeLegibility;">
+          <!-- Subtitle (2.5x) -->
+          <p class="text-slate-300/90 font-medium" style="font-size:clamp(0.80rem, 0.66rem + 0.63vw, 1.22rem); line-height:1.25; margin-bottom:clamp(1.26rem,2.1vw,2.1rem); max-width:480px; text-rendering:optimizeLegibility;">
             ${s.hero_line2 || 'IT제품 보안성 평가·인증의 원스톱 서비스, <span class="hero-gradient-text">한국정보보안기술원</span>'}
           </p>
 
-          <!-- CTA Buttons -->
-          <div class="flex flex-wrap" style="gap:clamp(0.56rem,0.84vw,0.98rem); margin-bottom:clamp(0.4rem,0.8vw,0.8rem);">
-            <a href="/support/inquiry" class="btn-glow ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" data-admin-edit="hero_btn_primary" style="gap:7px; padding:clamp(0.63rem,0.91vw,0.84rem) clamp(1.26rem,1.96vw,1.96rem); font-size:clamp(0.77rem,0.94vw,1.05rem);">
+          <!-- CTA Buttons (2.5x) -->
+          <div class="flex flex-wrap" style="gap:clamp(0.56rem,0.84vw,0.98rem); margin-bottom:clamp(1.4rem,2.45vw,2.45rem);">
+            <a href="/support/inquiry" class="btn-glow ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:7px; padding:clamp(0.63rem,0.91vw,0.84rem) clamp(1.26rem,1.96vw,1.96rem); font-size:clamp(0.77rem,0.94vw,1.05rem);">
               <i class="fas fa-paper-plane" style="font-size:clamp(0.59rem,0.70vw,0.77rem)"></i> ${s.hero_btn_primary || '온라인 상담'}
             </a>
-            <a href="#services" class="btn-ghost ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" data-admin-edit="hero_btn_secondary" style="gap:7px; padding:clamp(0.63rem,0.91vw,0.84rem) clamp(1.26rem,1.96vw,1.96rem); font-size:clamp(0.77rem,0.94vw,1.05rem);">
+            <a href="#services" class="btn-ghost ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:7px; padding:clamp(0.63rem,0.91vw,0.84rem) clamp(1.26rem,1.96vw,1.96rem); font-size:clamp(0.77rem,0.94vw,1.05rem);">
               <i class="fas fa-th-large" style="font-size:clamp(0.59rem,0.70vw,0.77rem)"></i> ${s.hero_btn_secondary || '사업분야 보기'}
             </a>
           </div>
 
-          <!-- ═══════ Hero Contact Card ═══════ -->
-          <div class="hero-contact-card" data-aos="fade-up" data-aos-delay="200" data-admin-edit="hero_contact_section">
-            <p class="text-slate-300/90 font-bold" data-admin-edit="hero_contact_label" style="font-size:clamp(0.69rem,1.05vw,1.11rem); margin-bottom:clamp(0.38rem,0.66vw,0.66rem); letter-spacing:0.01em; text-rendering:geometricPrecision;">${s.hero_contact_label || '국가 시험·인증 전문기관 정보보안 기술을 완성'}</p>
-            <div class="hero-contact-grid" data-admin-edit="hero_contact_info">
-              <div class="hero-contact-item" data-admin-edit="phone">
+          <!-- ═══════ Hero Contact Card (원본 koist.kr 스타일, 8K fluid) ═══════ -->
+          <div class="hero-contact-card" data-aos="fade-up" data-aos-delay="200">
+            <p class="text-slate-300/90 font-bold" style="font-size:clamp(0.91rem,1.40vw,1.47rem); margin-bottom:clamp(0.7rem,1.26vw,1.26rem); letter-spacing:0.01em; text-rendering:geometricPrecision;">${s.hero_contact_label || '국가 시험·인증 전문기관 정보보안 기술을 완성'}</p>
+            <div class="hero-contact-grid">
+              <div class="hero-contact-item">
                 <div class="hero-contact-icon"><i class="fas fa-phone"></i></div>
                 <span>${s.phone || '02-586-1230'}</span>
               </div>
-              <div class="hero-contact-item" data-admin-edit="fax">
+              <div class="hero-contact-item">
                 <div class="hero-contact-icon"><i class="fas fa-fax"></i></div>
                 <span>FAX: ${s.fax || '02-586-1238'}</span>
               </div>
-              <div class="hero-contact-item" data-admin-edit="email">
+              <div class="hero-contact-item">
                 <div class="hero-contact-icon"><i class="fas fa-envelope"></i></div>
                 <span>${s.email || 'koist@koist.kr'}</span>
               </div>
-              <div class="hero-contact-item" data-admin-edit="address">
+              <div class="hero-contact-item">
                 <div class="hero-contact-icon"><i class="fas fa-location-dot"></i></div>
                 <span class="hero-contact-addr">${s.address || '서울특별시 서초구 효령로 336 윤일빌딩 4층 한국정보보안기술원'}</span>
               </div>
@@ -309,8 +215,8 @@ export function homePage(opts: {
         </div>
 
         <!-- ═══════ RIGHT: Interactive Simulator Panel ═══════ -->
-        <div class="unified-hero-right" data-aos="fade-up" data-aos-duration="700" data-aos-delay="150">
-          <div class="unified-sim-panel" id="simCard" data-admin-edit="sim_panel">
+        <div class="unified-hero-right" data-aos="fade-left" data-aos-duration="700" data-aos-delay="150">
+          <div class="unified-sim-panel" id="simCard">
             <!-- Panel Header — Dark Navy -->
             <div class="unified-sim-header">
               <div class="flex items-center" style="gap:clamp(8px,0.8vw,12px);">
@@ -318,8 +224,8 @@ export function homePage(opts: {
                   <i class="fas fa-chart-bar text-blue-400" style="font-size:clamp(11px,1vw,15px)"></i>
                 </div>
                 <div style="min-width:0;">
-                  <p class="text-white font-bold" data-admin-edit="unified_panel_title" style="font-size:clamp(0.85rem,1.05vw,1.15rem); line-height:1.3; letter-spacing:-0.01em;">${s.unified_panel_title || 'KOIST와 함께라면 평가기간을 <span class="text-cyan-300">대폭 단축</span>합니다'}</p>
-                  <p class="text-slate-400/80" data-admin-edit="unified_panel_subtitle" style="font-size:clamp(0.68rem,0.80vw,0.85rem); margin-top:2px;">${s.unified_panel_subtitle || '사전준비 수준에 따라 실시간으로 기간을 산출합니다'}</p>
+                  <p class="text-white font-bold truncate" style="font-size:clamp(0.95rem,1.15vw,1.25rem); line-height:1.3; letter-spacing:-0.01em;">${s.unified_panel_title || 'KOIST와 함께라면 평가기간을 <span class="text-cyan-300">대폭 단축</span>합니다'}</p>
+                  <p class="text-slate-400/80 truncate" style="font-size:clamp(0.72rem,0.85vw,0.9rem); margin-top:2px;">${s.unified_panel_subtitle || '사전준비 수준에 따라 실시간으로 기간을 산출합니다'}</p>
                 </div>
               </div>
               <div class="hidden sm:flex items-center rounded-full shrink-0" style="gap:5px; padding:clamp(4px,0.4vw,6px) clamp(10px,1vw,16px); background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.22);">
@@ -332,10 +238,10 @@ export function homePage(opts: {
             <div class="unified-sim-body">
               <!-- Tab Bar -->
               <div class="eal-tabs flex rounded-xl overflow-hidden" style="margin-bottom:clamp(0.6rem,0.9vw,0.8rem); border:1px solid rgba(226,232,240,0.70); background: rgba(248,250,252,0.80);">
-                <button class="eal-tab active flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.6vw,8px) 0; font-size:clamp(0.68rem,0.82vw,0.82rem);" data-eal="overall" onclick="switchEAL('overall')">${s.sim_tab_overall || '\uC804\uCCB4\uD3C9\uADE0'}</button>
-                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.6vw,8px) 0; font-size:clamp(0.68rem,0.82vw,0.82rem); border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL2" onclick="switchEAL('EAL2')">${s.sim_tab_eal2 || 'EAL2'}</button>
-                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.6vw,8px) 0; font-size:clamp(0.68rem,0.82vw,0.82rem); border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL3" onclick="switchEAL('EAL3')">${s.sim_tab_eal3 || 'EAL3'}</button>
-                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.6vw,8px) 0; font-size:clamp(0.68rem,0.82vw,0.82rem); border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL4" onclick="switchEAL('EAL4')">${s.sim_tab_eal4 || 'EAL4'}</button>
+                <button class="eal-tab active flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.6vw,8px) 0; font-size:clamp(0.68rem,0.82vw,0.82rem);" data-eal="overall" onclick="switchEAL('overall')">전체평균</button>
+                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.6vw,8px) 0; font-size:clamp(0.68rem,0.82vw,0.82rem); border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL2" onclick="switchEAL('EAL2')">EAL2</button>
+                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.6vw,8px) 0; font-size:clamp(0.68rem,0.82vw,0.82rem); border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL3" onclick="switchEAL('EAL3')">EAL3</button>
+                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.6vw,8px) 0; font-size:clamp(0.68rem,0.82vw,0.82rem); border-left:1px solid rgba(226,232,240,0.70);" data-eal="EAL4" onclick="switchEAL('EAL4')">EAL4</button>
               </div>
 
               <!-- Preparation Slider — 8K Sharp -->
@@ -343,7 +249,7 @@ export function homePage(opts: {
                 <div class="flex items-center" style="gap:clamp(0.4rem,0.6vw,0.6rem)">
                   <div class="flex items-center shrink-0" style="gap:5px">
                     <i class="fas fa-clipboard-check text-emerald-500" style="font-size:clamp(10px,0.8vw,12px)"></i>
-                    <span class="font-bold text-slate-700" style="font-size:clamp(0.7rem,0.85vw,0.85rem)">${s.sim_label_prep || '사전준비'}</span>
+                    <span class="font-bold text-slate-700" style="font-size:clamp(0.7rem,0.85vw,0.85rem)">사전준비</span>
                   </div>
                   <div class="flex-1 flex items-center" style="gap:clamp(0.2rem,0.4vw,0.4rem)">
                     <span class="text-slate-400 shrink-0" style="font-size:clamp(9px,0.65vw,10px); font-weight:600;">1</span>
@@ -375,7 +281,7 @@ export function homePage(opts: {
                 <!-- CCRA bar -->
                 <div>
                   <div class="flex justify-between items-center" style="margin-bottom:4px">
-                    <span class="text-slate-500 font-semibold flex items-center" style="gap:4px; font-size:clamp(0.68rem,0.82vw,0.82rem)"><span class="inline-block rounded-full" style="width:7px; height:7px; background: linear-gradient(135deg, #94A3B8, #64748B);"></span>${s.sim_label_traditional || '전통 CCRA 평가 프로세스'}</span>
+                    <span class="text-slate-500 font-semibold flex items-center" style="gap:4px; font-size:clamp(0.68rem,0.82vw,0.82rem)"><span class="inline-block rounded-full" style="width:7px; height:7px; background: linear-gradient(135deg, #94A3B8, #64748B);"></span>전통 CCRA 평가 프로세스</span>
                     <span id="ealGeneralTotal" class="text-slate-400 font-bold" style="font-size:clamp(0.68rem,0.82vw,0.82rem)">약 24개월</span>
                   </div>
                   <div class="relative rounded-xl overflow-hidden" style="height:clamp(32px,3.2vw,44px); background: linear-gradient(90deg, #F1F5F9, #E2E8F0);">
@@ -389,7 +295,7 @@ export function homePage(opts: {
                 <!-- KOIST bar -->
                 <div>
                   <div class="flex justify-between items-center" style="margin-bottom:4px">
-                    <span class="text-accent font-bold flex items-center" style="gap:4px; font-size:clamp(0.68rem,0.82vw,0.82rem)"><span class="inline-block rounded-full" style="width:7px; height:7px; background: linear-gradient(135deg, #2563EB, #06B6D4);"></span><i class="fas fa-bolt text-yellow-500" style="font-size:clamp(7px,0.55vw,9px); margin-right:2px;"></i>${s.sim_label_koist || 'KOIST 평가 프로세스'}</span>
+                    <span class="text-accent font-bold flex items-center" style="gap:4px; font-size:clamp(0.68rem,0.82vw,0.82rem)"><span class="inline-block rounded-full" style="width:7px; height:7px; background: linear-gradient(135deg, #2563EB, #06B6D4);"></span><i class="fas fa-bolt text-yellow-500" style="font-size:clamp(7px,0.55vw,9px); margin-right:2px;"></i>KOIST 평가 프로세스</span>
                     <span id="ealKoistTotal" class="text-accent font-bold" style="font-size:clamp(0.68rem,0.82vw,0.82rem)">약 15개월</span>
                   </div>
                   <div class="relative rounded-xl overflow-hidden" style="height:clamp(32px,3.2vw,44px); background: linear-gradient(90deg, #F1F5F9, #E2E8F0);">
@@ -434,45 +340,30 @@ export function homePage(opts: {
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
     }
-    /* v35.4: 50:50 balanced hero layout — each half centered */
+    /* v35.2: left 70% text + 7cm wider, right panel shifted 8cm + extended 10cm, equal height */
     .unified-hero-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0;
+      gap: clamp(1.5rem, 2.5vw, 2.5rem);
       align-items: stretch;
-      width: 100%;
-      max-width: 100%;
-      overflow: hidden;
+      overflow: visible;
     }
     .unified-hero-left {
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      max-width: 100%;
-      width: 100%;
-      padding: 0 clamp(1rem, 2vw, 3rem);
-      overflow: hidden;
+      justify-content: space-between;
+      max-width: none;
+      width: calc(100% + 7cm);
     }
     .unified-hero-right {
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      margin-left: 0;
-      width: 100%;
-      max-width: 100%;
+      margin-left: 8cm;
+      width: calc(100% + 10cm);
       min-width: 0;
-      overflow: hidden;
-    }
-    /* Prevent AOS transforms from breaking grid layout */
-    .unified-hero-grid > [data-aos] {
-      transform: none !important;
-    }
-    .unified-hero-grid > .aos-animate {
-      transform: none !important;
     }
     
-    /* Simulator panel card — contained within right half, centered */
+    /* Simulator panel card — original height (no stretch) */
     .unified-sim-panel {
       border-radius: clamp(12px, 1.2vw, 18px);
       overflow: hidden;
@@ -482,8 +373,6 @@ export function homePage(opts: {
       text-rendering: geometricPrecision;
       display: flex;
       flex-direction: column;
-      width: 100%;
-      max-width: clamp(400px, 42vw, 860px);
     }
     .unified-sim-body {
       display: flex;
@@ -530,21 +419,15 @@ export function homePage(opts: {
     .unified-orb-2 { animation: unifiedOrb2 19s ease-in-out infinite; }
     .unified-orb-3 { animation: unifiedOrb3 13s ease-in-out infinite; }
 
-    /* ═══ Hero Contact Card (v39 — 7cm left reduction, 50% text shrink, compact) ═══ */
+    /* ═══ Hero Contact Card (v30.0 — 2.5x enlarged, 8K Ultra-Sharp, Windows/Mobile compat) ═══ */
     .hero-contact-card {
-      padding: clamp(0.53rem,0.92vw,1.04rem) clamp(0.75rem,1.20vw,1.35rem);
+      padding: clamp(0.98rem,1.75vw,1.96rem) clamp(1.26rem,2.24vw,2.45rem);
       background: rgba(255,255,255,0.03);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255,255,255,0.06);
-      border-radius: clamp(5px,0.55vw,10px);
-      max-width: none;
-      width: 100%;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      overflow: hidden;
+      border-radius: clamp(10px,1.26vw,20px);
+      max-width: 480px;
     }
     @supports not (backdrop-filter: blur(1px)) {
       .hero-contact-card { background: rgba(10,15,30,0.88); }
@@ -552,36 +435,36 @@ export function homePage(opts: {
     .hero-contact-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: clamp(0.26rem,0.41vw,0.45rem) 2cm;
+      gap: clamp(0.49rem,0.77vw,0.84rem) clamp(0.84rem,1.54vw,1.54rem);
     }
     .hero-contact-item {
       display: flex;
       align-items: center;
-      gap: clamp(6px,0.63vw,9px);
-      font-size: clamp(0.52rem,0.87vw,0.87rem);
+      gap: clamp(7px,0.84vw,11px);
+      font-size: clamp(0.70rem,1.12vw,1.15rem);
       color: rgba(220,230,245,0.92);
       white-space: nowrap;
       overflow-wrap: break-word;
-      line-height: 1.40;
+      line-height: 1.45;
       font-weight: 500;
       letter-spacing: -0.01em;
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
     }
     .hero-contact-addr {
-      white-space: nowrap;
-      line-height: 1.40;
+      white-space: normal;
+      line-height: 1.55;
     }
     .hero-contact-icon {
-      width: clamp(21px,2.00vw,30px);
-      height: clamp(21px,2.00vw,30px);
-      border-radius: clamp(4px,0.42vw,7px);
+      width: clamp(27px,2.66vw,39px);
+      height: clamp(27px,2.66vw,39px);
+      border-radius: clamp(6px,0.56vw,10px);
       display: flex;
       align-items: center;
       justify-content: center;
       background: rgba(59,130,246,0.12);
       color: rgba(96,165,250,0.90);
-      font-size: clamp(8px,0.84vw,12px);
+      font-size: clamp(10px,1.12vw,15px);
       flex-shrink: 0;
     }
 
@@ -590,77 +473,68 @@ export function homePage(opts: {
       .unified-hero-grid {
         grid-template-columns: 1fr;
         gap: clamp(1.5rem, 3vw, 2rem);
+        overflow: hidden;
       }
-      .unified-hero-left { max-width: 100%; text-align: center; width: 100%; padding: 0 clamp(0.5rem, 2vw, 1.5rem); }
-      .unified-hero-right { margin-left: 0; width: 100%; align-items: center; }
-      .unified-sim-panel { max-width: 100%; }
+      .unified-hero-left { max-width: 100%; text-align: center; width: 100%; }
+      .unified-hero-right { margin-left: 0; width: 100%; }
       .unified-hero-left .flex.flex-wrap { justify-content: center; }
       .unified-hero-left .inline-flex { margin-left: auto; margin-right: auto; }
-      .hero-contact-card { margin-left: auto; margin-right: auto; text-align: left; max-width: 94%; flex: none; }
-      .hero-contact-item { font-size: clamp(0.75rem, 2.1vw, 1.10rem); }
-      .hero-contact-icon { width: clamp(28px, 4.5vw, 38px); height: clamp(28px, 4.5vw, 38px); font-size: clamp(11px, 2.0vw, 15px); }
-      .hero-contact-grid { gap: clamp(0.26rem,0.41vw,0.45rem) 2cm; }
-      .hero-contact-addr { white-space: normal; }
+      .hero-contact-card { margin-left: auto; margin-right: auto; text-align: left; max-width: 94%; }
+      .hero-contact-item { font-size: clamp(1.0rem, 2.8vw, 1.45rem); }
+      .hero-contact-icon { width: clamp(38px, 6vw, 50px); height: clamp(38px, 6vw, 50px); font-size: clamp(14px, 2.5vw, 20px); }
     }
     /* Mobile (639px) */
     @media (max-width: 639px) {
       .unified-sim-header { flex-direction: column; align-items: flex-start; gap: 8px; }
       .unified-sim-header .hidden.sm\\:flex { display: flex !important; }
-      .hero-contact-grid { grid-template-columns: 1fr; gap: clamp(0.53rem,2.0vw,0.75rem); }
-      .hero-contact-item { white-space: normal; font-size: clamp(0.72rem, 3vw, 0.90rem); word-break: keep-all; overflow-wrap: break-word; }
-      .hero-contact-icon { width: 30px; height: 30px; font-size: 12px; border-radius: 7px; }
-      .hero-contact-card { padding: clamp(0.9rem,3vw,1.2rem) clamp(1.05rem,3.5vw,1.35rem); border-radius: 14px; }
-      .hero-contact-card p { font-size: clamp(0.80rem, 3.2vw, 0.98rem) !important; }
+      .hero-contact-grid { grid-template-columns: 1fr; gap: clamp(0.7rem,2.5vw,1rem); }
+      .hero-contact-item { white-space: normal; font-size: clamp(0.95rem, 4vw, 1.2rem); word-break: keep-all; overflow-wrap: break-word; }
+      .hero-contact-icon { width: 40px; height: 40px; font-size: 16px; border-radius: 10px; }
+      .hero-contact-card { padding: clamp(1.2rem,4vw,1.6rem) clamp(1.4rem,4.5vw,1.8rem); border-radius: 16px; }
+      .hero-contact-card p { font-size: clamp(1.05rem, 4.2vw, 1.3rem) !important; }
     }
     /* Very small mobile (375px) */
     @media (max-width: 375px) {
-      .hero-contact-item { font-size: 0.69rem; gap: 6px; }
-      .hero-contact-icon { width: 25px; height: 25px; font-size: 10px; }
+      .hero-contact-item { font-size: 0.92rem; gap: 8px; }
+      .hero-contact-icon { width: 34px; height: 34px; font-size: 14px; }
     }
 
     /* ── 2.5K (2560px) ── */
     @media (min-width: 2560px) {
-      .hero-contact-item { font-size: 1.35rem; gap: 14px; }
-      .hero-contact-icon { width: 44px; height: 44px; font-size: 18px; border-radius: 10px; }
-      .hero-contact-card { max-width: 100%; padding: 2.0rem 2.4rem; border-radius: 20px; }
-      .hero-contact-card p { font-size: 1.43rem !important; }
-      .hero-contact-grid { gap: 0.6rem 2.5cm; }
-      .unified-hero-left { padding: 0 2rem; }
-      .unified-sim-panel { max-width: clamp(500px, 40vw, 900px); }
+      .hero-contact-item { font-size: 1.8rem; gap: 18px; }
+      .hero-contact-icon { width: 58px; height: 58px; font-size: 24px; border-radius: 14px; }
+      .hero-contact-card { max-width: 900px; padding: 2.5rem 3.2rem; border-radius: 28px; }
+      .hero-contact-card p { font-size: 1.9rem !important; }
     }
 
     /* ── 4K (3840px) ── */
     @media (min-width: 3840px) {
-      .unified-hero-grid { gap: 0; }
-      .unified-hero-left { padding: 0 3rem; }
-      .unified-sim-panel { border-radius: 28px; max-width: clamp(700px, 40vw, 1200px); }
+      .unified-hero-grid { gap: 4rem; }
+      .unified-hero-left { }
+      .unified-sim-panel { border-radius: 28px; }
       .unified-sim-header { padding: 1.8rem 2.5rem; }
       .unified-sim-body { padding: 2rem 2.5rem; }
-      .hero-contact-card { max-width: 100%; padding: 2.4rem 3rem; border-radius: 22px; }
-      .hero-contact-icon { width: 57px; height: 57px; font-size: 23px; border-radius: 13px; }
-      .hero-contact-item { font-size: 1.73rem; gap: 17px; }
-      .hero-contact-grid { gap: 1.4rem 3cm; }
-      .hero-contact-card p { font-size: 1.8rem !important; }
-      /* 4K dept icon scaling */
-      .card-service-xl .rounded-lg { width: 200px !important; height: 200px !important; }
+      .hero-contact-card { max-width: 1100px; padding: 3.2rem 4rem; border-radius: 32px; }
+      .hero-contact-icon { width: 76px; height: 76px; font-size: 30px; border-radius: 18px; }
+      .hero-contact-item { font-size: 2.3rem; gap: 22px; }
+      .hero-contact-grid { gap: 1.8rem 3.5rem; }
+      .hero-contact-card p { font-size: 2.4rem !important; }
     }
 
     /* ── 8K (7680px) Ultra-Sharp ── */
     @media (min-width: 7680px) {
-      .unified-hero-grid { gap: 0; }
-      .unified-hero-left { padding: 0 5rem; }
-      .unified-sim-panel { border-radius: 56px; box-shadow: 0 24px 120px rgba(0,0,0,0.3), 0 8px 40px rgba(0,0,0,0.12); max-width: clamp(1200px, 40vw, 2400px); }
+      .unified-hero-grid { gap: 6rem; }
+      .unified-hero-left { }
+      .unified-sim-panel { border-radius: 56px; box-shadow: 0 24px 120px rgba(0,0,0,0.3), 0 8px 40px rgba(0,0,0,0.12); }
       .unified-sim-header { padding: 3rem 4rem; }
       .unified-sim-body { padding: 3.5rem 4rem; }
       .eal-tab { padding: 22px 0 !important; font-size: 1.8rem !important; }
       .prep-range::-webkit-slider-thumb { width: 60px !important; height: 60px !important; border-width: 7px !important; }
-      .hero-contact-card { max-width: 100%; padding: 3.8rem 5.0rem; border-radius: 42px; }
-      .hero-contact-icon { width: 83px; height: 83px; font-size: 33px; border-radius: 20px; }
-      .hero-contact-item { font-size: 2.7rem; gap: 24px; }
-      .hero-contact-grid { gap: 2.1rem 4.2cm; }
-      .hero-contact-card p { font-size: 2.6rem !important; }
-      /* 8K dept icon scaling */
-      .card-service-xl .rounded-lg { width: 320px !important; height: 320px !important; }
+      .hero-contact-card { max-width: 1800px; padding: 5rem 6.5rem; border-radius: 56px; }
+      .hero-contact-icon { width: 110px; height: 110px; font-size: 44px; border-radius: 26px; }
+      .hero-contact-item { font-size: 3.6rem; gap: 32px; }
+      .hero-contact-grid { gap: 2.8rem 5.5rem; }
+      .hero-contact-card p { font-size: 3.4rem !important; }
     }
 
     /* ── Touch device: disable hover transforms on mobile ── */
@@ -723,26 +597,6 @@ export function homePage(opts: {
       .notice-tab { font-size: 2.0rem; padding: 1rem 1.8rem; border-bottom-width: 4px; }
       .notice-tab-bar { border-bottom-width: 3px; }
     }
-
-    /* ── Services Section 50% enlarged — 2.5K/4K/8K scaling ── */
-    @media (min-width: 2560px) {
-      .services-badge-text { font-size: clamp(1.5rem, 1.2rem + 0.4vw, 2.0rem) !important; padding: 10px 28px !important; gap: 12px !important; }
-      .services-badge-text i { font-size: clamp(22px, 1.6vw, 30px) !important; }
-      .services-title-text { font-size: clamp(3.0rem, 2.4rem + 0.8vw, 4.2rem) !important; }
-      .services-subtitle-text { font-size: clamp(1.5rem, 1.2rem + 0.4vw, 2.0rem) !important; max-width: 56rem !important; }
-    }
-    @media (min-width: 3840px) {
-      .services-badge-text { font-size: clamp(2.2rem, 1.8rem + 0.5vw, 3.0rem) !important; padding: 14px 38px !important; gap: 16px !important; border-radius: 9999px; }
-      .services-badge-text i { font-size: clamp(28px, 2vw, 42px) !important; }
-      .services-title-text { font-size: clamp(4.2rem, 3.4rem + 1.2vw, 6.0rem) !important; }
-      .services-subtitle-text { font-size: clamp(2.0rem, 1.6rem + 0.6vw, 2.8rem) !important; max-width: 72rem !important; }
-    }
-    @media (min-width: 7680px) {
-      .services-badge-text { font-size: clamp(3.6rem, 3.0rem + 0.8vw, 5.0rem) !important; padding: 24px 60px !important; gap: 24px !important; }
-      .services-badge-text i { font-size: clamp(48px, 3.5vw, 72px) !important; }
-      .services-title-text { font-size: clamp(7.0rem, 5.6rem + 1.8vw, 10.0rem) !important; letter-spacing: -0.02em; }
-      .services-subtitle-text { font-size: clamp(3.6rem, 3.0rem + 0.8vw, 5.0rem) !important; max-width: 120rem !important; }
-    }
   </style>
 
   <!-- ════════════════════════════════════════════════════════
@@ -753,11 +607,11 @@ export function homePage(opts: {
 
     <div class="relative fluid-container">
       <div class="text-center" style="margin-bottom: clamp(0.8rem,1.5vw,1.5rem)" data-aos="fade-up">
-        <div class="inline-flex items-center rounded-full font-semibold services-badge-text" data-admin-edit="services_badge" style="gap:8px; padding:6px 18px; margin-bottom:var(--space-xs); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB; font-size: clamp(1.14rem, 0.93rem + 0.54vw, 1.68rem);">
-          <i class="fas fa-cubes" style="font-size:clamp(16px,1.35vw,24px)"></i>${s.services_badge || 'KOIST 사업분야'}
+        <div class="inline-flex items-center rounded-full font-semibold" style="gap:8px; padding:6px 18px; margin-bottom:var(--space-xs); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB; font-size: clamp(0.76rem, 0.62rem + 0.36vw, 1.12rem);">
+          <i class="fas fa-cubes" style="font-size:clamp(11px,0.9vw,16px)"></i>KOIST 사업분야
         </div>
-        <h2 class="font-bold text-primary services-title-text" data-admin-edit="services_title" style="font-size: clamp(2.16rem, 1.62rem + 1.38vw, 3.84rem); margin-bottom:var(--space-2xs); line-height:1.15;">${s.services_title || '핵심 사업분야'}</h2>
-        <p class="text-slate-500 max-w-2xl mx-auto services-subtitle-text" data-admin-edit="services_subtitle" style="font-size: clamp(1.10rem, 0.90rem + 0.52vw, 1.72rem); line-height:1.3;">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
+        <h2 class="font-bold text-primary" style="font-size: clamp(1.44rem, 1.08rem + 0.92vw, 2.56rem); margin-bottom:var(--space-2xs); line-height:1.2;">${s.services_title || '핵심 사업분야'}</h2>
+        <p class="text-slate-500 max-w-lg mx-auto" style="font-size: clamp(0.88rem, 0.72rem + 0.42vw, 1.36rem); line-height:1.25;">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
       </div>
 
       ${(() => {
@@ -816,10 +670,10 @@ export function homePage(opts: {
       <button id="accordionTrigger" onclick="toggleHomeAccordion()" class="w-full flex items-center justify-between transition-all hover:bg-blue-50/30" style="padding:clamp(0.7rem,1.1vw,1rem) clamp(0.5rem,1vw,1rem); border-radius:0; cursor:pointer; border:none; background:transparent;">
         <span class="flex items-center" style="gap:clamp(6px,0.6vw,10px);">
           <i class="fas fa-bullhorn text-accent" style="font-size:clamp(12px,1vw,16px)"></i>
-          <span class="font-bold text-primary" style="font-size:clamp(0.85rem,0.72rem+0.38vw,1.15rem);">${s.accordion_title || '공지사항 / 자료실 / 시스템문서 / 오시는길'}</span>
+          <span class="font-bold text-primary" style="font-size:clamp(0.85rem,0.72rem+0.38vw,1.15rem);">공지사항 / 자료실 / 시스템문서 / 오시는길</span>
         </span>
         <span class="flex items-center" style="gap:6px;">
-          <span class="text-slate-400 font-medium" style="font-size:clamp(0.7rem,0.6rem+0.2vw,0.85rem);">${s.accordion_expand_label || '펼쳐보기'}</span>
+          <span class="text-slate-400 font-medium" style="font-size:clamp(0.7rem,0.6rem+0.2vw,0.85rem);">펼쳐보기</span>
           <i id="accordionArrow" class="fas fa-chevron-down text-slate-400 transition-transform" style="font-size:clamp(10px,0.8vw,13px); transition:transform 0.3s ease;"></i>
         </span>
       </button>
@@ -900,7 +754,7 @@ export function homePage(opts: {
                   <i class="fas fa-building text-white" style="font-size:clamp(12px,1vw,18px)"></i>
                 </div>
                 <div>
-                  <p class="font-bold text-primary" style="font-size:clamp(0.85rem,0.75rem+0.3vw,1.1rem); line-height:1.3; margin-bottom:3px;">${s.company_name || '(주)한국정보보안기술원'}</p>
+                  <p class="font-bold text-primary" style="font-size:clamp(0.85rem,0.75rem+0.3vw,1.1rem); line-height:1.3; margin-bottom:3px;">(주)한국정보보안기술원</p>
                   <p class="text-slate-500" style="font-size:clamp(0.75rem,0.65rem+0.22vw,0.9rem); line-height:1.3;">${s.address || '서울특별시 서초구 효령로 336 윤일빌딩 4층'}</p>
                 </div>
               </div>
@@ -1169,23 +1023,67 @@ export function homePage(opts: {
             </div>
           </div>
 
-          <!-- Tab Content: 자료실 (AJAX from DB) -->
+          <!-- Tab Content: 자료실 -->
           <div class="notice-tab-content" id="tab-downloads">
             <div class="flex justify-end" style="margin-bottom:clamp(0.3rem,0.5vw,0.5rem);">
               <a href="/support/downloads" class="text-accent font-semibold hover:underline inline-flex items-center" style="gap:4px; font-size:clamp(1.0rem, 0.85rem + 0.4vw, 1.5rem);">전체보기 <i class="fas fa-chevron-right" style="font-size:clamp(9px,0.7vw,12px)"></i></a>
             </div>
-            <div id="noticeDownloadList" style="padding:clamp(1rem,1.5vw,1.5rem) 0;">
-              <p class="text-slate-400 text-center" style="font-size:clamp(0.8rem,0.7rem+0.2vw,0.95rem);"><i class="fas fa-spinner fa-spin mr-1"></i> 불러오는 중...</p>
+            <div style="padding:clamp(1rem,1.5vw,1.5rem) 0;">
+              <div class="space-y-3">
+                <a href="/support/downloads" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">
+                  <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(59,130,246,0.06);"><i class="fas fa-file-pdf text-red-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">시험·평가 신청서 양식</span>
+                    <span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">PDF · 신청서류</span>
+                  </div>
+                </a>
+                <a href="/support/downloads" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">
+                  <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(16,185,129,0.06);"><i class="fas fa-file-lines text-emerald-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">평가 절차 안내서</span>
+                    <span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">PDF · 안내자료</span>
+                  </div>
+                </a>
+                <a href="/support/downloads" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">
+                  <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(139,92,246,0.06);"><i class="fas fa-file-zipper text-purple-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">CC인증 관련 자료 모음</span>
+                    <span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">ZIP · 참고자료</span>
+                  </div>
+                </a>
+              </div>
             </div>
           </div>
 
-          <!-- Tab Content: 시스템문서 (AJAX from DB) -->
+          <!-- Tab Content: 시스템문서 -->
           <div class="notice-tab-content" id="tab-documents">
             <div class="flex justify-end" style="margin-bottom:clamp(0.3rem,0.5vw,0.5rem);">
               <a href="/support/documents" class="text-accent font-semibold hover:underline inline-flex items-center" style="gap:4px; font-size:clamp(1.0rem, 0.85rem + 0.4vw, 1.5rem);">전체보기 <i class="fas fa-chevron-right" style="font-size:clamp(9px,0.7vw,12px)"></i></a>
             </div>
-            <div id="noticeDocumentList" style="padding:clamp(1rem,1.5vw,1.5rem) 0;">
-              <p class="text-slate-400 text-center" style="font-size:clamp(0.8rem,0.7rem+0.2vw,0.95rem);"><i class="fas fa-spinner fa-spin mr-1"></i> 불러오는 중...</p>
+            <div style="padding:clamp(1rem,1.5vw,1.5rem) 0;">
+              <div class="space-y-3">
+                <a href="/support/documents" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">
+                  <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(59,130,246,0.06);"><i class="fas fa-book text-blue-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">품질경영시스템 매뉴얼</span>
+                    <span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">QMS 문서</span>
+                  </div>
+                </a>
+                <a href="/support/documents" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">
+                  <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(245,158,11,0.06);"><i class="fas fa-shield-halved text-amber-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">정보보호 관리체계 운영규정</span>
+                    <span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">ISMS 문서</span>
+                  </div>
+                </a>
+                <a href="/support/documents" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">
+                  <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(6,182,212,0.06);"><i class="fas fa-clipboard-list text-cyan-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>
+                  <div class="flex-1 min-w-0">
+                    <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">시험절차 표준운영규정</span>
+                    <span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">SOP 문서</span>
+                  </div>
+                </a>
+              </div>
             </div>
           </div>
 
@@ -1199,7 +1097,7 @@ export function homePage(opts: {
                       <i class="fas fa-building text-white" style="font-size:clamp(16px,1.4vw,24px)"></i>
                     </div>
                     <div>
-                      <p class="font-bold text-primary" style="font-size:clamp(1.2rem,1rem+0.6vw,1.9rem); line-height:1.2; margin-bottom:4px;">${s.company_name || '(주)한국정보보안기술원'}</p>
+                      <p class="font-bold text-primary" style="font-size:clamp(1.2rem,1rem+0.6vw,1.9rem); line-height:1.2; margin-bottom:4px;">(주)한국정보보안기술원</p>
                       <p class="text-slate-500" style="font-size:clamp(1.0rem,0.85rem+0.4vw,1.5rem); line-height:1.2;">${s.address || '서울특별시 서초구 효령로 336 윤일빌딩 4층'}</p>
                     </div>
                   </div>
@@ -1229,7 +1127,7 @@ export function homePage(opts: {
               <div class="rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,50px); height:clamp(36px,3vw,50px); background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(6,182,212,0.05));">
                 <i class="fas fa-chart-bar text-emerald-500" style="font-size:clamp(14px,1.2vw,22px)"></i>
               </div>
-              ${s.progress_title || '평가현황'}
+              평가현황
             </h3>
             <a href="/support/progress" class="text-accent font-semibold hover:underline inline-flex items-center" style="gap:4px; font-size:clamp(1.0rem, 0.85rem + 0.4vw, 1.5rem);">전체보기 <i class="fas fa-chevron-right" style="font-size:clamp(9px,0.7vw,12px)"></i></a>
           </div>
@@ -1258,7 +1156,7 @@ export function homePage(opts: {
           ` : ''}
 
           <div class="flex items-center justify-between rounded-lg" style="margin-bottom:var(--space-md); padding:clamp(6px,0.6vw,10px) clamp(12px,1vw,18px); background: linear-gradient(135deg, rgba(59,130,246,0.03), rgba(6,182,212,0.02)); border: 1px solid rgba(59,130,246,0.08);">
-            <span class="text-slate-500" style="font-size:clamp(0.95rem,0.8rem+0.4vw,1.4rem);"><i class="fas fa-chart-pie text-blue-400 mr-1" style="font-size:clamp(10px,0.8vw,14px)"></i>${s.progress_total_label || '총 시험·평가 실적'}</span>
+            <span class="text-slate-500" style="font-size:clamp(0.95rem,0.8rem+0.4vw,1.4rem);"><i class="fas fa-chart-pie text-blue-400 mr-1" style="font-size:clamp(10px,0.8vw,14px)"></i>총 시험·평가 실적</span>
             <span class="text-accent font-black" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem);">${totalEvals}건</span>
           </div>
 
@@ -1335,95 +1233,16 @@ export function homePage(opts: {
        ════════════════════════════════════════════════════════ -->
   <script>
   (function(){
-    var ntDataLoaded = { downloads: false, documents: false };
-    var iconMap = { pdf:'fa-file-pdf text-red-400', doc:'fa-file-word text-blue-400', docx:'fa-file-word text-blue-400', xls:'fa-file-excel text-green-400', xlsx:'fa-file-excel text-green-400', zip:'fa-file-zipper text-purple-400', hwp:'fa-file-lines text-cyan-400' };
-    var colorPalette = ['rgba(59,130,246,0.06)', 'rgba(16,185,129,0.06)', 'rgba(139,92,246,0.06)', 'rgba(245,158,11,0.06)', 'rgba(6,182,212,0.06)'];
-
-    function escH2(str) { var d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
-    function fmtSize(bytes) {
-      if (!bytes) return '';
-      var kb = bytes / 1024;
-      return kb < 1024 ? kb.toFixed(0) + ' KB' : (kb / 1024).toFixed(1) + ' MB';
-    }
-
     window.switchNoticeTab = function(tabId) {
+      // Deactivate all tabs
       document.querySelectorAll('.notice-tab').forEach(function(t) { t.classList.remove('active'); });
       document.querySelectorAll('.notice-tab-content').forEach(function(c) { c.classList.remove('active'); });
+      // Activate selected tab
       var tab = document.querySelector('.notice-tab[data-tab="' + tabId + '"]');
       var content = document.getElementById('tab-' + tabId);
       if (tab) tab.classList.add('active');
       if (content) content.classList.add('active');
-      // Lazy load downloads / documents
-      if (tabId === 'downloads' && !ntDataLoaded.downloads) loadNoticeDownloads();
-      if (tabId === 'documents' && !ntDataLoaded.documents) loadNoticeDocuments();
     };
-
-    function loadNoticeDownloads() {
-      fetch('/api/downloads').then(function(r) { return r.json(); }).then(function(res) {
-        ntDataLoaded.downloads = true;
-        var el = document.getElementById('noticeDownloadList');
-        if (!el) return;
-        if (!res.data || res.data.length === 0) {
-          el.innerHTML = '<p class="text-slate-400 text-center" style="padding:1.5rem 0; font-size:clamp(0.8rem,0.7rem+0.2vw,0.95rem);">등록된 자료가 없습니다.</p>';
-          return;
-        }
-        var html = '<div class="space-y-3">';
-        res.data.slice(0, 5).forEach(function(d, i) {
-          var ext = (d.file_name || '').split('.').pop().toLowerCase();
-          var iconCls = iconMap[ext] || 'fa-file text-slate-400';
-          var bgColor = colorPalette[i % colorPalette.length];
-          html += '<a href="/api/downloads/' + d.id + '/file" target="_blank" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">' +
-            '<div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:' + bgColor + ';"><i class="fas ' + iconCls + '" style="font-size:clamp(14px,1.2vw,20px)"></i></div>' +
-            '<div class="flex-1 min-w-0">' +
-            '<span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">' + escH2(d.title) + '</span>' +
-            '<span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">' + (ext.toUpperCase() || 'FILE') + (d.file_size ? ' · ' + fmtSize(d.file_size) : '') + ' · ' + (d.category || '일반') + '</span>' +
-            '</div></a>';
-        });
-        html += '</div>';
-        el.innerHTML = html;
-      }).catch(function() {
-        var el = document.getElementById('noticeDownloadList');
-        if (el) el.innerHTML = '<p class="text-slate-400 text-center" style="padding:1rem 0;">데이터를 불러오지 못했습니다.</p>';
-      });
-    }
-
-    function loadNoticeDocuments() {
-      // Documents are also stored as downloads with category='document'
-      fetch('/api/downloads').then(function(r) { return r.json(); }).then(function(res) {
-        ntDataLoaded.documents = true;
-        var el = document.getElementById('noticeDocumentList');
-        if (!el) return;
-        var docs = (res.data || []).filter(function(d) { return d.category === 'document' || d.category === 'system'; });
-        if (docs.length === 0) {
-          // Fallback: show static system docs
-          el.innerHTML = '<div class="space-y-3">' +
-            '<a href="/static/docs/architecture-diagram.html" target="_blank" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">' +
-            '<div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(59,130,246,0.06);"><i class="fas fa-sitemap text-blue-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>' +
-            '<div class="flex-1 min-w-0"><span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">시스템 설계서</span><span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">HTML · 시스템 아키텍처</span></div></a>' +
-            '<a href="/static/docs/development-guide.html" target="_blank" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">' +
-            '<div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:rgba(16,185,129,0.06);"><i class="fas fa-code text-emerald-400" style="font-size:clamp(14px,1.2vw,20px)"></i></div>' +
-            '<div class="flex-1 min-w-0"><span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">개발지침서</span><span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">HTML · 기술 가이드</span></div></a></div>';
-          return;
-        }
-        var html = '<div class="space-y-3">';
-        docs.slice(0, 5).forEach(function(d, i) {
-          var ext = (d.file_name || '').split('.').pop().toLowerCase();
-          var iconCls = iconMap[ext] || 'fa-book text-blue-400';
-          var bgColor = colorPalette[i % colorPalette.length];
-          html += '<a href="/api/downloads/' + d.id + '/file" target="_blank" class="flex items-center hover:bg-blue-50/30 px-2 py-2 rounded-lg transition-colors group" style="gap:clamp(8px,0.8vw,12px);">' +
-            '<div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(36px,3vw,48px); height:clamp(36px,3vw,48px); background:' + bgColor + ';"><i class="fas ' + iconCls + '" style="font-size:clamp(14px,1.2vw,20px)"></i></div>' +
-            '<div class="flex-1 min-w-0">' +
-            '<span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem); line-height:1.2;">' + escH2(d.title) + '</span>' +
-            '<span class="text-slate-400" style="font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);">' + (d.description || d.category || '문서') + '</span>' +
-            '</div></a>';
-        });
-        html += '</div>';
-        el.innerHTML = html;
-      }).catch(function() {
-        var el = document.getElementById('noticeDocumentList');
-        if (el) el.innerHTML = '<p class="text-slate-400 text-center" style="padding:1rem 0;">데이터를 불러오지 못했습니다.</p>';
-      });
-    }
   })();
   </script>
 
