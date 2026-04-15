@@ -110,8 +110,10 @@ export function layout(opts: {
       --container-pad: clamp(1rem, 0.5rem + 2vw, 2.5rem);
       --container-max: min(100% - var(--container-pad) * 2, 1320px);
 
-      /* ── GNB (v31 - taller for 2.5x logo, 2x text) ── */
-      --gnb-h: clamp(82px, 72px + 2.8vw, 118px);
+      /* ── GNB (v33 - 2-tier header: top bar + gnb bar) ── */
+      --gnb-top-h: clamp(62px, 54px + 2vw, 86px);
+      --gnb-bar-h: clamp(48px, 42px + 1.6vw, 64px);
+      --gnb-h: calc(var(--gnb-top-h) + var(--gnb-bar-h));
 
       /* ── Premium Shadow Scale (4-level) ── */
       --shadow-xs:  0 1px 2px rgba(10,15,30,0.03);
@@ -148,7 +150,9 @@ export function layout(opts: {
       :root {
         --container-max: min(100% - 5rem, 1700px);
         --text-hero: clamp(3.0rem, 2.2rem + 1.3vw, 4.5rem);
-        --gnb-h: 96px;
+        --gnb-top-h: 74px;
+        --gnb-bar-h: 56px;
+        --gnb-h: calc(var(--gnb-top-h) + var(--gnb-bar-h));
       }
     }
     /* ── 5K+ ── */
@@ -156,7 +160,9 @@ export function layout(opts: {
       :root {
         --container-max: min(100% - 8rem, 2100px);
         --text-hero: clamp(3.6rem, 2.8rem + 1.2vw, 5.2rem);
-        --gnb-h: 110px;
+        --gnb-top-h: 84px;
+        --gnb-bar-h: 62px;
+        --gnb-h: calc(var(--gnb-top-h) + var(--gnb-bar-h));
       }
     }
     /* ── 8K (7680px+) ── */
@@ -164,7 +170,9 @@ export function layout(opts: {
       :root {
         --container-max: min(100% - 14rem, 2800px);
         --text-hero: clamp(4.5rem, 3.5rem + 1.4vw, 7rem);
-        --gnb-h: 140px;
+        --gnb-top-h: 110px;
+        --gnb-bar-h: 80px;
+        --gnb-h: calc(var(--gnb-top-h) + var(--gnb-bar-h));
         --text-xs: 1.4rem;
         --text-sm: 1.65rem;
         --text-base: 1.9rem;
@@ -281,6 +289,7 @@ export function layout(opts: {
       .glass-light { background: rgba(255,255,255,0.95); border: 1px solid rgba(226,232,240,0.60); }
       .glass-card { background: rgba(255,255,255,0.98); border: 1px solid rgba(226,232,240,0.50); }
       #gnb.gnb-scrolled { background: rgba(10,15,30,0.97) !important; }
+      .gnb-nav-bar { background: linear-gradient(90deg, #0C2D6B, #1E40AF, #0C2D6B) !important; }
       .popup-overlay { background: rgba(0,0,0,0.65) !important; }
       .btn-ghost { background: rgba(255,255,255,0.08); }
       .hero-contact-card { background: rgba(10,15,30,0.90) !important; border: 1px solid rgba(255,255,255,0.10) !important; }
@@ -303,7 +312,7 @@ export function layout(opts: {
     }
     /* ═══ Hover-only interactions guard ═══ */
     @media (hover: hover) and (pointer: fine) {
-      .gnb-mega-trigger:hover { color: var(--gnb-link-hover, #FFFFFF); }
+      .gnb-mega-trigger:hover { color: #FFFFFF; text-shadow: 0 0 16px rgba(96,165,250,0.50); }
     }
     @media (hover: none) {
       .mega-menu-panel { display: none; }
@@ -380,56 +389,113 @@ export function layout(opts: {
     }
 
     /* ═══════════════════════════════════════════════
-       GNB PREMIUM (Transparent → Frosted Glass)
+       GNB PREMIUM v33 — 2-Tier Header
+       Top: Logo bar (dark navy)
+       Bottom: GNB navigation bar (gradient accent, eye-catching)
        ═══════════════════════════════════════════════ */
     #gnb {
-      transition: background 0.45s var(--ease-smooth),
-                  box-shadow 0.45s var(--ease-smooth),
-                  backdrop-filter 0.45s var(--ease-smooth);
+      transition: box-shadow 0.45s var(--ease-smooth);
     }
     #gnb.gnb-scrolled {
-      background: rgba(10,15,30,0.85) !important;
-      backdrop-filter: blur(28px) saturate(180%);
-      -webkit-backdrop-filter: blur(28px) saturate(180%);
-      box-shadow: 0 1px 0 rgba(255,255,255,0.03),
-                  0 4px 24px rgba(0,0,0,0.25),
-                  inset 0 -1px 0 rgba(255,255,255,0.02);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.30);
     }
 
-    /* GNB Link — v24 8K Ultra-Sharp (auto-fit to viewport, Windows/Mobile compat) */
+    /* ── Top bar (KOLAS + Logo + Phone) ── */
+    .gnb-top-bar {
+      height: var(--gnb-top-h);
+      background: rgba(10,15,30,0.95);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      display: flex;
+      align-items: center;
+      padding: 0 clamp(12px, 1vw, 24px);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    /* ── GNB Navigation Bar (eye-catching accent bar) ── */
+    .gnb-nav-bar {
+      height: var(--gnb-bar-h);
+      background: linear-gradient(90deg, #0C2D6B 0%, #1E40AF 25%, #1D4ED8 50%, #1E40AF 75%, #0C2D6B 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 2px solid rgba(96,165,250,0.30);
+    }
+    /* Subtle animated shimmer overlay */
+    .gnb-nav-bar::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255,255,255,0.03) 25%,
+        rgba(255,255,255,0.06) 50%,
+        rgba(255,255,255,0.03) 75%,
+        transparent 100%
+      );
+      pointer-events: none;
+    }
+    /* Bottom glow line */
+    .gnb-nav-bar::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(96,165,250,0.40), rgba(6,182,212,0.40), transparent);
+    }
+
+    /* GNB Link — v33 Full-Width Centered, 40% enlarged, high-contrast */
     .gnb-link {
-      padding: var(--gnb-link-pad-y, 0.5rem) var(--gnb-link-pad-x, clamp(0.15rem, 0.30vw, 0.40rem));
-      font-size: var(--gnb-link-font, clamp(0.88rem, 0.75rem + 0.42vw, 1.15rem));
-      font-weight: var(--gnb-link-weight, 600);
-      color: var(--gnb-link-color, rgba(220,228,240,0.92));
+      padding: 0.35rem clamp(0.2rem, 0.5vw, 0.7rem);
+      font-size: clamp(1.05rem, 0.84rem + 0.55vw, 1.38rem);
+      font-weight: 700;
+      color: #FFFFFF;
       white-space: nowrap;
-      transition: color 0.25s ease, text-shadow 0.25s ease;
-      letter-spacing: -0.02em;
+      transition: color 0.25s ease, text-shadow 0.3s ease, transform 0.25s ease;
+      letter-spacing: 0.01em;
       position: relative;
       text-rendering: geometricPrecision;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       font-feature-settings: 'kern' 1, 'liga' 1;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.20);
     }
     .gnb-link::after {
       content: '';
       position: absolute;
-      bottom: -3px; left: 50%; width: 0; height: 2.5px;
-      background: linear-gradient(90deg, #3B82F6, #06B6D4);
+      bottom: 0; left: 50%; width: 0; height: 2.5px;
+      background: linear-gradient(90deg, #60A5FA, #22D3EE, #60A5FA);
       transition: width 0.35s var(--ease-out), left 0.35s var(--ease-out);
-      border-radius: 1.5px;
+      border-radius: 2px;
+      box-shadow: 0 0 8px rgba(96,165,250,0.50);
     }
-    .gnb-link:hover { color: var(--gnb-link-hover, #FFFFFF); text-shadow: 0 0 12px rgba(59,130,246,0.25); }
-    .gnb-link:hover::after { width: 80%; left: 10%; }
-    /* 4K+ GNB scaling (v31 2x text) */
+    .gnb-link:hover {
+      color: #FFFFFF;
+      text-shadow: 0 0 16px rgba(96,165,250,0.50), 0 0 32px rgba(6,182,212,0.25);
+      transform: translateY(-1px);
+    }
+    .gnb-link:hover::after { width: 85%; left: 7.5%; }
+
+    /* GNB separator dots between items */
+    .gnb-sep {
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: rgba(148,196,255,0.35);
+      flex-shrink: 0;
+      margin: 0 clamp(2px, 0.3vw, 6px);
+    }
+
+    /* 4K+ GNB scaling */
     @media (min-width: 2560px) {
-      .gnb-link { font-size: var(--gnb-link-font, clamp(1.5rem, 1.3rem + 0.35vw, 1.95rem)); }
+      .gnb-link { font-size: clamp(1.6rem, 1.4rem + 0.35vw, 2.1rem); }
     }
     @media (min-width: 3840px) {
-      .gnb-link { font-size: var(--gnb-link-font, clamp(1.95rem, 1.6rem + 0.55vw, 2.6rem)); }
+      .gnb-link { font-size: clamp(2.1rem, 1.7rem + 0.55vw, 2.8rem); }
     }
     @media (min-width: 7680px) {
-      .gnb-link { font-size: var(--gnb-link-font, clamp(3.0rem, 2.5rem + 0.7vw, 4.2rem)); letter-spacing: -0.01em; }
+      .gnb-link { font-size: clamp(3.2rem, 2.6rem + 0.7vw, 4.5rem); letter-spacing: 0em; }
     }
 
     /* ═══════════════════════════════════════════════
@@ -577,10 +643,10 @@ export function layout(opts: {
     /* GNB link active indicator when mega menu is open */
     .gnb-mega-trigger.gnb-link-active {
       color: #FFFFFF !important;
-      text-shadow: 0 0 12px rgba(59,130,246,0.35);
+      text-shadow: 0 0 16px rgba(96,165,250,0.50), 0 0 32px rgba(6,182,212,0.25);
     }
     .gnb-mega-trigger.gnb-link-active::after {
-      width: 80%; left: 10%;
+      width: 85%; left: 7.5%;
     }
 
     /* ── Hide mega menu below lg breakpoint ── */
@@ -1034,87 +1100,76 @@ export function layout(opts: {
   <!-- Scroll Progress Bar -->
   <div id="scrollProgress"></div>
 
-  <!-- ═══════════ GNB (Premium Frosted Glass) ═══════════ -->
-  <header id="gnb" class="fixed top-0 left-0 right-0 z-50" style="${s.gnb_bg_url ? `background-image: linear-gradient(rgba(10,15,30,0.88), rgba(10,15,30,0.92)), url('${s.gnb_bg_url}'); background-size:cover; background-position:center;` : 'background: rgba(10,15,30,0.92); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);'} border-bottom: 1px solid rgba(255,255,255,0.04);">
-    <!-- v24: Full-width header, KOLAS→Logo→GNB left-aligned with 0.5cm (19px) gaps -->
-    <div style="width:100%;max-width:100%;padding:0 clamp(6px,0.4vw,10px);margin:0;">
-      <div class="flex items-center" style="height:var(--gnb-h);gap:19px;justify-content:flex-start;">
+  <!-- ═══════════ GNB v33 (2-Tier Premium Header) ═══════════ -->
+  <header id="gnb" class="fixed top-0 left-0 right-0 z-50" style="border-bottom: none;">
 
-        <!-- KOLAS Mark (FIRST — left edge, flush to left) -->
-        <div class="hidden md:flex items-center shrink-0" style="padding:0;margin:0;">
-          <img src="/static/images/kolas.png" alt="KOLAS 국제공인시험기관" style="height:clamp(54px, 48px + 1.8vw, 84px);" class="kolas-mark w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" title="KOLAS 국제공인시험기관 인정 (KTL-F-588)" data-admin-edit="kolas_image">
-        </div>
+    <!-- ══ TOP BAR: KOLAS + Logo + Phone ══ -->
+    <div class="gnb-top-bar">
+      <div style="width:100%;max-width:100%;padding:0 clamp(6px,0.4vw,10px);margin:0;">
+        <div class="flex items-center" style="height:100%;gap:19px;justify-content:flex-start;">
 
-        <!-- Logo (SECOND — 0.5cm gap from KOLAS) -->
-        <a href="/" class="flex items-center shrink-0 group" data-admin-edit="site_logo">
-          ${s.logo_url && s.logo_url.trim() !== '' && s.logo_url !== '/static/images/logo.png' ? `
-          <img src="${s.logo_url}" alt="${siteName}" style="height:clamp(64px, 54px + 2.2vw, 96px); max-width:clamp(340px, 30vw, 560px);" class="w-auto object-contain transition-transform group-hover:scale-[1.02]">
-          ` : `
-          <div class="flex items-center" style="gap: clamp(10px, 1vw, 16px)">
-            <div class="relative">
-              <div class="absolute inset-0 rounded-xl blur-md transition-all group-hover:blur-lg" style="background: linear-gradient(135deg, rgba(59,130,246,0.25), rgba(6,182,212,0.20));"></div>
-              <div class="relative rounded-xl flex items-center justify-center" style="width:clamp(56px,5.5vw,82px); height:clamp(56px,5.5vw,82px); background: linear-gradient(135deg, #2563EB, #06B6D4);">
-                <i class="fas fa-shield-halved text-white" style="font-size:clamp(26px,2.8vw,40px)"></i>
+          <!-- KOLAS Mark -->
+          <div class="hidden md:flex items-center shrink-0" style="padding:0;margin:0;">
+            <img src="/static/images/kolas.png" alt="KOLAS 국제공인시험기관" style="height:clamp(44px, 38px + 1.4vw, 68px);" class="kolas-mark w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" title="KOLAS 국제공인시험기관 인정 (KTL-F-588)" data-admin-edit="kolas_image">
+          </div>
+
+          <!-- Logo -->
+          <a href="/" class="flex items-center shrink-0 group" data-admin-edit="site_logo">
+            ${s.logo_url && s.logo_url.trim() !== '' && s.logo_url !== '/static/images/logo.png' ? `
+            <img src="${s.logo_url}" alt="${siteName}" style="height:clamp(48px, 40px + 1.6vw, 72px); max-width:clamp(280px, 24vw, 440px);" class="w-auto object-contain transition-transform group-hover:scale-[1.02]">
+            ` : `
+            <div class="flex items-center" style="gap: clamp(8px, 0.8vw, 14px)">
+              <div class="relative">
+                <div class="absolute inset-0 rounded-xl blur-md transition-all group-hover:blur-lg" style="background: linear-gradient(135deg, rgba(59,130,246,0.25), rgba(6,182,212,0.20));"></div>
+                <div class="relative rounded-xl flex items-center justify-center" style="width:clamp(42px,4.2vw,62px); height:clamp(42px,4.2vw,62px); background: linear-gradient(135deg, #2563EB, #06B6D4);">
+                  <i class="fas fa-shield-halved text-white" style="font-size:clamp(20px,2.2vw,32px)"></i>
+                </div>
+              </div>
+              <div>
+                <div class="font-bold text-white leading-tight tracking-tight" style="font-size:clamp(1.15rem, 0.95rem + 0.7vw, 1.65rem);">한국정보보안기술원</div>
+                <div class="tracking-[0.18em] font-medium" style="font-size:clamp(0.72rem, 0.60rem + 0.35vw, 1.0rem); background: linear-gradient(90deg, #94A3B8, #64748B); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">KOIST</div>
               </div>
             </div>
-            <div>
-              <div class="font-bold text-white leading-tight tracking-tight" style="font-size:clamp(1.4rem, 1.1rem + 0.9vw, 2.0rem);">한국정보보안기술원</div>
-              <div class="tracking-[0.18em] font-medium" style="font-size:clamp(0.85rem, 0.72rem + 0.42vw, 1.2rem); background: linear-gradient(90deg, #94A3B8, #64748B); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">KOIST</div>
-            </div>
+            `}
+          </a>
+
+          <!-- Right: Phone + Mobile Menu -->
+          <div class="flex items-center shrink-0" style="gap:var(--space-xs);margin-left:auto;">
+            <a href="tel:${s.phone || '02-586-1230'}" class="hidden xl:inline-flex items-center text-white font-bold rounded-lg transition-all ripple-btn" style="gap: 6px; padding: clamp(0.35rem,0.5vw,0.5rem) clamp(0.6rem,0.8vw,0.9rem); font-size: clamp(0.75rem, 0.65rem + 0.30vw, 0.92rem); background: linear-gradient(135deg, rgba(59,130,246,0.85), rgba(6,182,212,0.85)); box-shadow: 0 4px 16px rgba(59,130,246,0.25), inset 0 1px 0 rgba(255,255,255,0.12); border-radius: clamp(8px,0.6vw,12px);">
+              <i class="fas fa-phone" style="font-size:clamp(8px,0.6vw,11px)"></i>
+              <span>${s.phone || '02-586-1230'}</span>
+            </a>
+            <button id="mobileMenuBtn" class="lg:hidden p-2 text-slate-400 hover:text-white transition-colors" aria-label="메뉴 열기">
+              <i class="fas fa-bars" style="font-size:var(--text-lg)"></i>
+            </button>
           </div>
-          `}
-        </a>
+        </div>
+      </div>
+    </div>
 
-        <!-- Desktop GNB (v37 - Mega Dropdown Menu, koist.kr style) -->
-        ${(() => {
-          const gnbFontScale = parseFloat(s.gnb_font_scale || '1.5') || 1.5;
-          const gnbGapScale = parseFloat(s.gnb_gap_scale || '0.40') || 0.40;
-          const baseFontMin = 0.70;
-          const baseFontVw = 0.30;
-          const baseFontMax = 0.85;
-          const fMin = (baseFontMin * gnbFontScale).toFixed(2);
-          const fVwCoeff = (baseFontVw * gnbFontScale).toFixed(2);
-          const fMax = (baseFontMax * gnbFontScale).toFixed(2);
-          const baseVwBase = 0.60;
-          const fVwBase = (baseVwBase * gnbFontScale).toFixed(2);
-          const padXMin = (0.30 * gnbGapScale).toFixed(2);
-          const padXVw = (0.55 * gnbGapScale).toFixed(2);
-          const padXMax = (0.70 * gnbGapScale).toFixed(2);
-          const gapMin = (0.15 * gnbGapScale).toFixed(2);
-          const gapVw = (0.10 * gnbGapScale).toFixed(2);
-          const gapMax = (0.25 * gnbGapScale).toFixed(2);
-          const gnbFontWeight = s.gnb_font_weight || '600';
-          const gnbTextColor = s.gnb_text_color || 'rgba(220,228,240,0.92)';
-          const gnbHoverColor = s.gnb_hover_color || '#FFFFFF';
-          const activeDeps = deps.filter(d => d.is_active);
-          const navItems = [
-            '<a href="/about/greeting" class="gnb-link gnb-mega-trigger" data-col="about">KOIST소개</a>'
-          ].concat(
-            activeDeps.map(dept =>
-              '<a href="/services/' + dept.slug + '" class="gnb-link gnb-mega-trigger" data-col="dept-' + dept.slug + '">' + dept.name + '</a>'
-            )
-          ).concat([
-            '<a href="/support/notice" class="gnb-link gnb-mega-trigger" data-col="support">고객지원</a>'
-          ]).join('');
-          return '<style>:root{' +
-            '--gnb-link-font:clamp(' + fMin + 'rem,' + fVwBase + 'rem + ' + fVwCoeff + 'vw,' + fMax + 'rem);' +
-            '--gnb-link-pad-x:clamp(' + padXMin + 'rem,' + padXVw + 'vw,' + padXMax + 'rem);' +
-            '--gnb-nav-gap:clamp(' + gapMin + 'rem,' + gapVw + 'vw,' + gapMax + 'rem);' +
-            '--gnb-link-weight:' + gnbFontWeight + ';' +
-            '--gnb-link-color:' + gnbTextColor + ';' +
-            '--gnb-link-hover:' + gnbHoverColor + ';' +
-            '}</style>' +
-            '<nav id="gnbNav" class="hidden lg:flex items-center gnb-nav-fit" style="flex:1;margin-left:19px;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision;overflow:hidden;flex-wrap:nowrap;">' +
-            navItems +
-            '</nav>' +
-            '<style>.gnb-nav-fit{gap:clamp(0.01rem, 0.04vw, 0.06rem)!important;}.gnb-nav-fit>.gnb-link{font-size:clamp(0.72rem, 0.50rem + 0.44vw, 0.99rem)!important;padding-left:clamp(0.04rem, 0.14vw, 0.18rem)!important;padding-right:clamp(0.04rem, 0.14vw, 0.18rem)!important;letter-spacing:-0.03em!important;}</style>';
-        })()}
+    <!-- ══ GNB NAVIGATION BAR: Full-width centered, 40% enlarged ══ -->
+    <div class="gnb-nav-bar hidden lg:flex">
+      ${(() => {
+        const activeDeps = deps.filter(d => d.is_active);
+        const navLinks = [
+          '<a href="/about/greeting" class="gnb-link gnb-mega-trigger" data-col="about">KOIST소개</a>'
+        ].concat(
+          activeDeps.map(dept =>
+            '<a href="/services/' + dept.slug + '" class="gnb-link gnb-mega-trigger" data-col="dept-' + dept.slug + '">' + dept.name + '</a>'
+          )
+        ).concat([
+          '<a href="/support/notice" class="gnb-link gnb-mega-trigger" data-col="support">고객지원</a>'
+        ]);
+        // Join with separator dots
+        return navLinks.join('<span class="gnb-sep" aria-hidden="true"></span>');
+      })()}
+    </div>
 
-        <!-- Mega Dropdown Panel (v38 - 2-row adaptive) -->
-        <div id="megaMenu" class="mega-menu-panel" role="navigation" aria-label="전체 메뉴">
-          <div class="fluid-container">
-            <div class="mega-menu-grid">
-              ${(() => {
+    <!-- Mega Dropdown Panel (v38 - 2-row adaptive) -->
+    <div id="megaMenu" class="mega-menu-panel" role="navigation" aria-label="전체 메뉴">
+      <div class="fluid-container">
+        <div class="mega-menu-grid">
+          ${(() => {
                 // Split departments into 2 rows for optimal layout
                 const activeDepsWithPages = deps.filter(d => d.is_active && d.pages && d.pages.length > 0);
                 // Separate single-page depts for grouping
@@ -1189,18 +1244,6 @@ export function layout(opts: {
           </div>
         </div>
 
-        <!-- Right Actions (compact for nav space) -->
-        <div class="flex items-center shrink-0" style="gap:var(--space-xs);margin-left:auto;">
-          <a href="tel:${s.phone || '02-586-1230'}" class="hidden xl:inline-flex items-center text-white font-bold rounded-lg transition-all ripple-btn" style="gap: 6px; padding: clamp(0.4rem,0.6vw,0.6rem) clamp(0.7rem,1vw,1.1rem); font-size: clamp(0.80rem, 0.70rem + 0.35vw, 1.0rem); background: linear-gradient(135deg, rgba(59,130,246,0.85), rgba(6,182,212,0.85)); box-shadow: 0 4px 16px rgba(59,130,246,0.25), inset 0 1px 0 rgba(255,255,255,0.12); border-radius: clamp(8px,0.6vw,12px);">
-            <i class="fas fa-phone" style="font-size:clamp(9px,0.7vw,12px)"></i>
-            <span>${s.phone || '02-586-1230'}</span>
-          </a>
-          <button id="mobileMenuBtn" class="lg:hidden p-2 text-slate-400 hover:text-white transition-colors" aria-label="메뉴 열기">
-            <i class="fas fa-bars" style="font-size:var(--text-lg)"></i>
-          </button>
-        </div>
-      </div>
-    </div>
   </header>
 
   <!-- Mobile Overlay -->
@@ -1419,7 +1462,7 @@ export function layout(opts: {
 
     /* ── Mega Dropdown Menu Logic ── */
     (function() {
-      var gnbNav = document.getElementById('gnbNav');
+      var gnbNav = document.querySelector('.gnb-nav-bar');
       var mega = document.getElementById('megaMenu');
       var gnbHeader = document.getElementById('gnb');
       if (!gnbNav || !mega) return;
