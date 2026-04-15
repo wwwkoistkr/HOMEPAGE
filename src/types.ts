@@ -33,6 +33,14 @@ export type Popup = {
   end_date: string;
   is_active: number;
   sort_order: number;
+  font_size: number;
+  title_font_size: number;
+  bg_color: string;
+  title_bg_color: string;
+  text_color: string;
+  title_color: string;
+  line_height: number;
+  padding: number;
 };
 
 export type Department = {

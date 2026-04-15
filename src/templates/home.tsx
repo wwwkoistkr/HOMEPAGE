@@ -1,4 +1,4 @@
-// KOIST - Home Page Template (v35.4 - Popup equal-height layout, 1200px container, flex stretch)
+// KOIST - Home Page Template (v35.5 - Popup 10cm×12cm fixed, admin-editable, 8K responsive, image cover)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem, SimCertType } from '../types';
 
 function bgStyle(imageUrl: string | undefined, fallbackGradient: string, opacity: string = '0.85'): string {
@@ -43,57 +43,227 @@ export function homePage(opts: {
 
   return `
   <!-- ════════════════════════════════════════════════
-       POPUP SYSTEM (Mobile-Responsive Modal)
+       POPUP SYSTEM v35.5 — 10cm×12cm Fixed, Admin-Editable, 8K Responsive
        ════════════════════════════════════════════════ -->
   ${popups.length > 0 ? `
   <div id="popupOverlay" class="fixed inset-0 z-[9998] transition-opacity duration-300" style="background:rgba(0,0,0,0.5); backdrop-filter:blur(4px);" onclick="closeAllPopups()"></div>
   <div id="popupContainer" class="fixed z-[9999] popup-multi-container">
     <div class="popup-close-all-bar">
-      <button onclick="closeAllPopups()" class="inline-flex items-center gap-2 bg-white/95 text-gray-700 font-semibold rounded-full shadow-lg hover:bg-white transition-all" style="padding:8px 20px; font-size:13px;">
-        <i class="fas fa-times" style="font-size:12px"></i> 모두 닫기
+      <button onclick="closeAllPopups()" class="popup-close-all-btn" data-admin-edit="popup_close_all_text">
+        <i class="fas fa-times popup-close-all-icon"></i> 모두 닫기
       </button>
     </div>
     <div class="popup-grid">
-      ${popups.map((p, i) => `
-      <div class="popup-card bg-white rounded-2xl overflow-hidden shadow-2xl"
+      ${popups.map((p, i) => {
+        const titleBg = p.title_bg_color 
+          ? `background:${p.title_bg_color};` 
+          : `background:linear-gradient(135deg, rgba(248,250,252,0.95), rgba(241,245,249,0.95));`;
+        const titleColor = p.title_color || '#1f2937';
+        const titleFontSize = p.title_font_size || 14;
+        const bodyFontSize = p.font_size || 14;
+        const bodyTextColor = p.text_color || '#374151';
+        const bodyLineHeight = p.line_height || 1.7;
+        const bodyPadding = p.padding || 16;
+        const bodyBgColor = p.bg_color || '#ffffff';
+        
+        return `
+      <div class="popup-card"
            data-popup-id="${p.id}" id="popup-${p.id}"
-           style="border:1px solid rgba(226,232,240,0.5); animation: popupSlideIn ${0.3 + i * 0.1}s ease-out; display:flex; flex-direction:column;">
-        <div class="flex justify-between items-center border-b border-slate-100" style="padding:12px 16px; background:linear-gradient(135deg, rgba(248,250,252,0.95), rgba(241,245,249,0.95)); flex-shrink:0;">
-          <span class="font-semibold text-gray-800" style="font-size:14px; line-height:1.3;">${p.title}</span>
-          <button onclick="closeSinglePopup(${p.id})" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors" aria-label="닫기">
-            <i class="fas fa-times" style="font-size:14px;"></i>
+           style="animation: popupSlideIn ${0.3 + i * 0.1}s ease-out;">
+        <!-- HEADER — admin-editable title -->
+        <div class="popup-card-header" style="${titleBg}">
+          <span class="popup-card-title" style="color:${titleColor}; font-size:${titleFontSize}px;" data-admin-edit="popup_${p.id}_title">${p.title}</span>
+          <button onclick="closeSinglePopup(${p.id})" class="popup-card-close-btn" aria-label="닫기">
+            <i class="fas fa-times"></i>
           </button>
         </div>
-        <div class="popup-card-body" style="flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;">
+        <!-- BODY — admin-editable content/image -->
+        <div class="popup-card-body" style="background:${bodyBgColor};">
           ${p.popup_type === 'image' && p.image_url 
-            ? `<div style="flex:1; display:flex; align-items:center; justify-content:center; background:#f8fafc; padding:12px; min-height:0;"><img src="${p.image_url}" alt="${p.title}" style="max-width:100%; max-height:100%; object-fit:contain; display:block;" loading="lazy"></div>` 
-            : `<div style="padding:16px; font-size:14px; line-height:1.7; color:#374151;">${p.content || ''}</div>`}
+            ? `<div class="popup-img-wrap" data-admin-edit="popup_${p.id}_image">
+                <img src="${p.image_url}" alt="${p.title}" class="popup-img-cover" loading="lazy">
+              </div>` 
+            : `<div class="popup-html-wrap" style="font-size:${bodyFontSize}px; line-height:${bodyLineHeight}; color:${bodyTextColor}; padding:${bodyPadding}px;" data-admin-edit="popup_${p.id}_content">${p.content || ''}</div>`}
         </div>
-        <div class="flex justify-between items-center border-t border-slate-100" style="padding:10px 16px; background:rgba(248,250,252,0.7); flex-shrink:0;">
-          <label class="flex items-center gap-2 cursor-pointer select-none">
-            <input type="checkbox" id="noshow-${p.id}" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 accent-blue-600">
-            <span class="text-gray-500" style="font-size:12px;">오늘 하루 안 보기</span>
+        <!-- FOOTER -->
+        <div class="popup-card-footer">
+          <label class="popup-noshow-label">
+            <input type="checkbox" id="noshow-${p.id}" class="popup-noshow-checkbox">
+            <span class="popup-noshow-text">오늘 하루 안 보기</span>
           </label>
-          <button onclick="closeSinglePopup(${p.id})" class="text-gray-600 hover:text-gray-800 rounded-lg hover:bg-gray-100 transition-colors font-medium" style="padding:6px 14px; font-size:13px;">닫기</button>
+          <button onclick="closeSinglePopup(${p.id})" class="popup-footer-close-btn">닫기</button>
         </div>
-      </div>
-      `).join('')}
+      </div>`;
+      }).join('')}
     </div>
   </div>
   <style>
-    .popup-multi-container { top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(92vw, 1200px); max-height: 90vh; }
-    .popup-close-all-bar { text-align: center; margin-bottom: 12px; }
-    .popup-grid { display: flex; gap: 16px; align-items: stretch; }
-    .popup-card { flex: 1; min-width: 0; max-height: 80vh; display:flex; flex-direction:column; }
-    .popup-card-body { flex:1; display:flex; flex-direction:column; min-height:0; }
-    .popup-card-body > div { flex:1; display:flex; flex-direction:column; min-height:0; }
-    .popup-card-body img { flex:1; min-height:0; object-fit:contain; }
-    @media (max-width: 767px) {
-      .popup-multi-container { width: min(92vw, 420px); }
-      .popup-grid { flex-direction: column; max-height: 75vh; overflow-y: auto; -webkit-overflow-scrolling: touch; align-items: stretch; }
-      .popup-card { flex: none; width: 100%; max-height: none; }
-      .popup-card-body { flex: none; }
+    /* ═══ POPUP SYSTEM v35.5 — Base (Desktop 1920px) ═══ */
+    .popup-multi-container {
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: auto; max-width: 95vw; max-height: 95vh;
     }
+    .popup-close-all-bar { text-align: center; margin-bottom: clamp(8px, 0.6vw, 16px); }
+    .popup-close-all-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.95); color: #374151; font-weight: 600;
+      border-radius: 999px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      padding: 8px 20px; font-size: 13px; border: none; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .popup-close-all-btn:hover { background: #fff; transform: translateY(-1px); }
+    .popup-close-all-icon { font-size: 12px; }
+
+    .popup-grid {
+      display: flex; gap: clamp(10px, 0.8vw, 20px);
+      justify-content: center; align-items: stretch;
+    }
+
+    /* ═══ CARD — Fixed 10cm × 12cm ═══ */
+    .popup-card {
+      width: 10cm; height: 12cm; flex: none;
+      background: #fff; border-radius: clamp(10px, 0.8vw, 20px);
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1);
+      border: 1px solid rgba(226,232,240,0.5);
+      display: flex; flex-direction: column;
+    }
+
+    /* ═══ HEADER ═══ */
+    .popup-card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: clamp(8px, 0.6vw, 16px) clamp(10px, 0.8vw, 20px);
+      border-bottom: 1px solid rgba(226,232,240,0.5);
+      flex-shrink: 0;
+    }
+    .popup-card-title {
+      font-weight: 600; line-height: 1.3;
+      overflow: hidden; text-overflow: ellipsis;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    }
+    .popup-card-close-btn {
+      width: clamp(24px, 1.6vw, 40px); height: clamp(24px, 1.6vw, 40px);
+      display: flex; align-items: center; justify-content: center;
+      color: #9ca3af; border-radius: 8px; border: none; background: transparent;
+      cursor: pointer; transition: all 0.2s; flex-shrink: 0;
+    }
+    .popup-card-close-btn:hover { color: #4b5563; background: rgba(0,0,0,0.05); }
+    .popup-card-close-btn i { font-size: clamp(10px, 0.7vw, 16px); }
+
+    /* ═══ BODY ═══ */
+    .popup-card-body {
+      flex: 1; min-height: 0; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    /* Image popups: cover the entire body area */
+    .popup-img-wrap {
+      flex: 1; min-height: 0; overflow: hidden;
+    }
+    .popup-img-cover {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    /* HTML popups: scrollable content */
+    .popup-html-wrap {
+      flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+      min-height: 0;
+    }
+
+    /* ═══ FOOTER ═══ */
+    .popup-card-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: clamp(6px, 0.5vw, 14px) clamp(10px, 0.8vw, 20px);
+      border-top: 1px solid rgba(226,232,240,0.5);
+      background: rgba(248,250,252,0.7);
+      flex-shrink: 0;
+    }
+    .popup-noshow-label {
+      display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none;
+    }
+    .popup-noshow-checkbox {
+      width: clamp(12px, 0.8vw, 20px); height: clamp(12px, 0.8vw, 20px);
+      border-radius: 4px; accent-color: #3b82f6;
+    }
+    .popup-noshow-text { font-size: clamp(10px, 0.6vw, 15px); color: #6b7280; }
+    .popup-footer-close-btn {
+      font-size: clamp(10px, 0.65vw, 16px); color: #4b5563;
+      padding: clamp(4px, 0.3vw, 8px) clamp(10px, 0.7vw, 18px);
+      border-radius: 8px; border: none; background: transparent;
+      cursor: pointer; font-weight: 500; transition: all 0.2s;
+    }
+    .popup-footer-close-btn:hover { background: rgba(0,0,0,0.05); color: #1f2937; }
+
+    /* ═══ RESPONSIVE — Tablet (640px ~ 1023px) ═══ */
+    @media (max-width: 1023px) {
+      .popup-card { width: 8cm; height: 10cm; }
+      .popup-grid { gap: 10px; }
+    }
+
+    /* ═══ RESPONSIVE — Mobile (≤639px) ═══ */
+    @media (max-width: 639px) {
+      .popup-multi-container { max-width: 95vw; max-height: 90vh; }
+      .popup-grid {
+        flex-direction: column; align-items: center;
+        max-height: 80vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+        gap: 10px;
+      }
+      .popup-card { width: min(90vw, 10cm); height: auto; max-height: 50vh; flex: none; }
+      .popup-card-body { max-height: 30vh; }
+      .popup-close-all-btn { padding: 6px 14px; font-size: 11px; }
+    }
+
+    /* ═══ RESPONSIVE — Small Mobile (≤375px) ═══ */
+    @media (max-width: 375px) {
+      .popup-card { width: min(88vw, 9cm); max-height: 45vh; }
+    }
+
+    /* ═══ HIGH-RES — 2.5K (2560px) ═══ */
+    @media (min-width: 2560px) {
+      .popup-card { width: 12cm; height: 14.4cm; border-radius: 20px; }
+      .popup-grid { gap: 20px; }
+      .popup-card-header { padding: 14px 20px; }
+      .popup-card-title { font-size: 18px !important; }
+      .popup-card-close-btn { width: 36px; height: 36px; }
+      .popup-card-close-btn i { font-size: 15px; }
+      .popup-card-footer { padding: 12px 20px; }
+      .popup-noshow-text { font-size: 14px; }
+      .popup-noshow-checkbox { width: 18px; height: 18px; }
+      .popup-footer-close-btn { font-size: 15px; padding: 8px 18px; }
+      .popup-close-all-btn { padding: 10px 26px; font-size: 16px; }
+    }
+
+    /* ═══ HIGH-RES — 4K (3840px) ═══ */
+    @media (min-width: 3840px) {
+      .popup-card { width: 15cm; height: 18cm; border-radius: 28px; }
+      .popup-grid { gap: 28px; }
+      .popup-card-header { padding: 20px 28px; }
+      .popup-card-title { font-size: 24px !important; }
+      .popup-card-close-btn { width: 48px; height: 48px; border-radius: 12px; }
+      .popup-card-close-btn i { font-size: 20px; }
+      .popup-card-footer { padding: 16px 28px; }
+      .popup-noshow-text { font-size: 18px; }
+      .popup-noshow-checkbox { width: 22px; height: 22px; }
+      .popup-footer-close-btn { font-size: 19px; padding: 10px 24px; }
+      .popup-close-all-btn { padding: 14px 36px; font-size: 20px; }
+      .popup-close-all-icon { font-size: 16px; }
+    }
+
+    /* ═══ HIGH-RES — 8K (7680px) ═══ */
+    @media (min-width: 7680px) {
+      .popup-card { width: 20cm; height: 24cm; border-radius: 40px; }
+      .popup-grid { gap: 40px; }
+      .popup-card-header { padding: 32px 40px; border-bottom-width: 2px; }
+      .popup-card-title { font-size: 36px !important; }
+      .popup-card-close-btn { width: 64px; height: 64px; border-radius: 16px; }
+      .popup-card-close-btn i { font-size: 28px; }
+      .popup-card-footer { padding: 24px 40px; border-top-width: 2px; }
+      .popup-noshow-text { font-size: 28px; }
+      .popup-noshow-checkbox { width: 32px; height: 32px; }
+      .popup-footer-close-btn { font-size: 28px; padding: 16px 36px; border-radius: 14px; }
+      .popup-close-all-btn { padding: 20px 48px; font-size: 28px; border-radius: 999px; }
+      .popup-close-all-icon { font-size: 22px; }
+      .popup-card { box-shadow: 0 16px 64px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.1); }
+    }
+
     @keyframes popupSlideIn { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
     @keyframes popupFadeOut { from { opacity: 1; } to { opacity: 0; transform: scale(0.95); } }
   </style>
