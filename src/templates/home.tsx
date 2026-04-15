@@ -1,4 +1,4 @@
-// KOIST - Home Page Template (v35.3.1 - Hero bottom-align, 30% text reduce, Slider 3cm left shift)
+// KOIST - Home Page Template (v35.4 - Popup equal-height layout, 1200px container, flex stretch)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem, SimCertType } from '../types';
 
 function bgStyle(imageUrl: string | undefined, fallbackGradient: string, opacity: string = '0.85'): string {
@@ -57,19 +57,19 @@ export function homePage(opts: {
       ${popups.map((p, i) => `
       <div class="popup-card bg-white rounded-2xl overflow-hidden shadow-2xl"
            data-popup-id="${p.id}" id="popup-${p.id}"
-           style="border:1px solid rgba(226,232,240,0.5); animation: popupSlideIn ${0.3 + i * 0.1}s ease-out;">
-        <div class="flex justify-between items-center border-b border-slate-100" style="padding:12px 16px; background:linear-gradient(135deg, rgba(248,250,252,0.95), rgba(241,245,249,0.95));">
+           style="border:1px solid rgba(226,232,240,0.5); animation: popupSlideIn ${0.3 + i * 0.1}s ease-out; display:flex; flex-direction:column;">
+        <div class="flex justify-between items-center border-b border-slate-100" style="padding:12px 16px; background:linear-gradient(135deg, rgba(248,250,252,0.95), rgba(241,245,249,0.95)); flex-shrink:0;">
           <span class="font-semibold text-gray-800" style="font-size:14px; line-height:1.3;">${p.title}</span>
           <button onclick="closeSinglePopup(${p.id})" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors" aria-label="닫기">
             <i class="fas fa-times" style="font-size:14px;"></i>
           </button>
         </div>
-        <div class="overflow-y-auto" style="max-height:calc(75vh - 120px); -webkit-overflow-scrolling:touch;">
+        <div class="popup-card-body" style="flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;">
           ${p.popup_type === 'image' && p.image_url 
-            ? `<img src="${p.image_url}" alt="${p.title}" class="w-full h-auto" loading="lazy">` 
+            ? `<div style="flex:1; display:flex; align-items:center; justify-content:center; background:#f8fafc; padding:12px; min-height:0;"><img src="${p.image_url}" alt="${p.title}" style="max-width:100%; max-height:100%; object-fit:contain; display:block;" loading="lazy"></div>` 
             : `<div style="padding:16px; font-size:14px; line-height:1.7; color:#374151;">${p.content || ''}</div>`}
         </div>
-        <div class="flex justify-between items-center border-t border-slate-100" style="padding:10px 16px; background:rgba(248,250,252,0.7);">
+        <div class="flex justify-between items-center border-t border-slate-100" style="padding:10px 16px; background:rgba(248,250,252,0.7); flex-shrink:0;">
           <label class="flex items-center gap-2 cursor-pointer select-none">
             <input type="checkbox" id="noshow-${p.id}" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 accent-blue-600">
             <span class="text-gray-500" style="font-size:12px;">오늘 하루 안 보기</span>
@@ -81,14 +81,18 @@ export function homePage(opts: {
     </div>
   </div>
   <style>
-    .popup-multi-container { top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(92vw, 920px); max-height: 90vh; }
+    .popup-multi-container { top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(92vw, 1200px); max-height: 90vh; }
     .popup-close-all-bar { text-align: center; margin-bottom: 12px; }
-    .popup-grid { display: flex; gap: 16px; align-items: flex-start; }
-    .popup-card { flex: 1; min-width: 0; max-height: 80vh; }
+    .popup-grid { display: flex; gap: 16px; align-items: stretch; }
+    .popup-card { flex: 1; min-width: 0; max-height: 80vh; display:flex; flex-direction:column; }
+    .popup-card-body { flex:1; display:flex; flex-direction:column; min-height:0; }
+    .popup-card-body > div { flex:1; display:flex; flex-direction:column; min-height:0; }
+    .popup-card-body img { flex:1; min-height:0; object-fit:contain; }
     @media (max-width: 767px) {
       .popup-multi-container { width: min(92vw, 420px); }
-      .popup-grid { flex-direction: column; max-height: 75vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
-      .popup-card { flex: none; width: 100%; }
+      .popup-grid { flex-direction: column; max-height: 75vh; overflow-y: auto; -webkit-overflow-scrolling: touch; align-items: stretch; }
+      .popup-card { flex: none; width: 100%; max-height: none; }
+      .popup-card-body { flex: none; }
     }
     @keyframes popupSlideIn { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
     @keyframes popupFadeOut { from { opacity: 1; } to { opacity: 0; transform: scale(0.95); } }
