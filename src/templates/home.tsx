@@ -1,4 +1,4 @@
-// KOIST - Home Page Template (v35.3 - Slider 7cm left shift, 8K Ultra-Sharp, Admin-Editable)
+// KOIST - Home Page Template (v35.3.1 - Hero bottom-align, 30% text reduce, Slider 3cm left shift)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem, SimCertType } from '../types';
 
 function bgStyle(imageUrl: string | undefined, fallbackGradient: string, opacity: string = '0.85'): string {
@@ -162,37 +162,37 @@ export function homePage(opts: {
         <!-- ═══════ LEFT: Hero Text ═══════ -->
         <div class="unified-hero-left" data-aos="fade-right" data-aos-duration="700">
           <!-- Badge (8K fluid, admin-editable) -->
-          <div class="inline-flex items-center rounded-full hero-badge-pill" style="gap:clamp(6px,0.42vw,12px); padding:clamp(6px,0.42vw,12px) clamp(13px,0.94vw,32px); margin-bottom:clamp(0.84rem,1.15vw,2.24rem); background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.18); backdrop-filter: blur(12px);">
+          <div class="inline-flex items-center rounded-full hero-badge-pill" style="gap:clamp(4px,0.29vw,8px); padding:clamp(4px,0.29vw,8px) clamp(9px,0.66vw,22px); margin-bottom:clamp(0.59rem,0.81vw,1.57rem); background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.18); backdrop-filter: blur(12px);">
             <span class="relative flex" style="height:clamp(7px,0.42vw,16px); width:clamp(7px,0.42vw,16px);">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-50"></span>
               <span class="relative inline-flex rounded-full h-full w-full bg-emerald-400"></span>
             </span>
-            <span class="text-blue-300 font-semibold tracking-wide" data-admin-edit="hero_badge_text" style="font-size:clamp(0.70rem,0.73vw,3.5rem); font-family:'Inter','Noto Sans KR',sans-serif; letter-spacing:0.04em;">${s.hero_badge_text || 'Korean Information Security Technology'}</span>
+            <span class="text-blue-300 font-semibold tracking-wide" data-admin-edit="hero_badge_text" style="font-size:clamp(0.69rem,0.51vw,2.45rem); font-family:'Inter','Noto Sans KR',sans-serif; letter-spacing:0.04em;">${s.hero_badge_text || 'Korean Information Security Technology'}</span>
           </div>
 
           <!-- Headline — 8K fluid (admin-editable) -->
-          <h1 class="text-white font-black hero-headline" data-admin-edit="hero_line1" style="font-size:clamp(1.54rem, 2.19vw, 10.5rem); line-height:1.1; margin-bottom:clamp(0.56rem,0.78vw,1.68rem); letter-spacing:-0.03em; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
+          <h1 class="text-white font-black hero-headline" data-admin-edit="hero_line1" style="font-size:clamp(1.08rem, 1.53vw, 7.35rem); line-height:1.1; margin-bottom:clamp(0.39rem,0.55vw,1.18rem); letter-spacing:-0.03em; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
             ${s.hero_line1 || '정보보안 시험·인증 전문기관'}
           </h1>
 
           <!-- Subtitle — 8K fluid (admin-editable) -->
-          <p class="text-slate-300/90 font-medium hero-subtitle" data-admin-edit="hero_line2" style="font-size:clamp(0.80rem, 0.94vw, 4.5rem); line-height:1.35; margin-bottom:clamp(1.26rem,1.56vw,3.36rem); max-width:clamp(480px,35vw,1800px); text-rendering:optimizeLegibility;">
+          <p class="text-slate-300/90 font-medium hero-subtitle" data-admin-edit="hero_line2" style="font-size:clamp(0.69rem, 0.66vw, 3.15rem); line-height:1.35; margin-bottom:clamp(0.88rem,1.09vw,2.35rem); max-width:clamp(336px,24.5vw,1260px); text-rendering:optimizeLegibility;">
             ${s.hero_line2 || 'IT제품 보안성 평가·인증의 원스톱 서비스, <span class="hero-gradient-text">한국정보보안기술원</span>'}
           </p>
 
           <!-- CTA Buttons — 8K fluid (admin-editable) -->
-          <div class="flex flex-wrap" style="gap:clamp(0.56rem,0.63vw,1.56rem); margin-bottom:clamp(1.4rem,1.82vw,3.92rem);">
-            <a href="/support/inquiry" class="btn-glow ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:clamp(5px,0.42vw,14px); padding:clamp(0.63rem,0.68vw,1.34rem) clamp(1.26rem,1.46vw,3.14rem); font-size:clamp(0.77rem,0.83vw,4rem);">
-              <i class="fas fa-paper-plane" style="font-size:clamp(0.59rem,0.52vw,1.23rem)"></i> <span data-admin-edit="hero_btn_primary">${s.hero_btn_primary || '온라인 상담'}</span>
+          <div class="flex flex-wrap" style="gap:clamp(0.39rem,0.44vw,1.09rem); margin-bottom:clamp(0.98rem,1.27vw,2.74rem);">
+            <a href="/support/inquiry" class="btn-glow ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:clamp(4px,0.29vw,10px); padding:clamp(0.44rem,0.48vw,0.94rem) clamp(0.88rem,1.02vw,2.20rem); font-size:clamp(0.69rem,0.58vw,2.8rem);">
+              <i class="fas fa-paper-plane" style="font-size:clamp(0.50rem,0.36vw,0.86rem)"></i> <span data-admin-edit="hero_btn_primary">${s.hero_btn_primary || '온라인 상담'}</span>
             </a>
-            <a href="#services" class="btn-ghost ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:clamp(5px,0.42vw,14px); padding:clamp(0.63rem,0.68vw,1.34rem) clamp(1.26rem,1.46vw,3.14rem); font-size:clamp(0.77rem,0.83vw,4rem);">
-              <i class="fas fa-th-large" style="font-size:clamp(0.59rem,0.52vw,1.23rem)"></i> <span data-admin-edit="hero_btn_secondary">${s.hero_btn_secondary || '사업분야 보기'}</span>
+            <a href="#services" class="btn-ghost ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:clamp(4px,0.29vw,10px); padding:clamp(0.44rem,0.48vw,0.94rem) clamp(0.88rem,1.02vw,2.20rem); font-size:clamp(0.69rem,0.58vw,2.8rem);">
+              <i class="fas fa-th-large" style="font-size:clamp(0.50rem,0.36vw,0.86rem)"></i> <span data-admin-edit="hero_btn_secondary">${s.hero_btn_secondary || '사업분야 보기'}</span>
             </a>
           </div>
 
           <!-- ═══════ Hero Contact Card (8K fluid, admin-editable) ═══════ -->
           <div class="hero-contact-card" data-aos="fade-up" data-aos-delay="200">
-            <p class="text-slate-300/90 font-bold hero-contact-label" data-admin-edit="hero_contact_label" style="font-size:clamp(0.91rem,1.04vw,5rem); margin-bottom:clamp(0.7rem,0.94vw,2.02rem); letter-spacing:0.01em; text-rendering:geometricPrecision;">${s.hero_contact_label || '국가 시험·인증 전문기관 정보보안 기술을 완성'}</p>
+            <p class="text-slate-300/90 font-bold hero-contact-label" data-admin-edit="hero_contact_label" style="font-size:clamp(0.69rem,0.73vw,3.5rem); margin-bottom:clamp(0.49rem,0.66vw,1.41rem); letter-spacing:0.01em; text-rendering:geometricPrecision;">${s.hero_contact_label || '국가 시험·인증 전문기관 정보보안 기술을 완성'}</p>
             <div class="hero-contact-grid">
               <div class="hero-contact-item">
                 <div class="hero-contact-icon"><i class="fas fa-phone"></i></div>
@@ -333,19 +333,19 @@ export function homePage(opts: {
     </div>
   </section>
 
-  <!-- ═══════ Unified Hero + Simulator Styles — v35.3 8K Ultra-Sharp ═══════ -->
+  <!-- ═══════ Unified Hero + Simulator Styles — v35.3.1 Hero bottom-align, 30% text reduce, Slider -2cm ═══════ -->
   <style>
     .unified-hero-section {
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
     }
-    /* v35.3: Slider 7cm left shift (margin-left 8cm → 1cm), 8K fluid scaling */
+    /* v35.3.1: align-items:end, hero text ×0.7, slider margin-left:-2cm */
     .unified-hero-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: clamp(1.5rem, 2.5vw, 2.5rem);
-      align-items: stretch;
+      align-items: end;
       overflow: visible;
     }
     .unified-hero-left {
@@ -358,7 +358,7 @@ export function homePage(opts: {
     .unified-hero-right {
       display: flex;
       flex-direction: column;
-      margin-left: 1cm;
+      margin-left: -2cm;
       width: calc(100% + 10cm);
       min-width: 0;
     }
@@ -421,13 +421,13 @@ export function homePage(opts: {
 
     /* ═══ Hero Contact Card (v30.0 — 2.5x enlarged, 8K Ultra-Sharp, Windows/Mobile compat) ═══ */
     .hero-contact-card {
-      padding: clamp(0.98rem,1.75vw,1.96rem) clamp(1.26rem,2.24vw,2.45rem);
+      padding: clamp(0.69rem,1.23vw,1.37rem) clamp(0.88rem,1.57vw,1.72rem);
       background: rgba(255,255,255,0.03);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255,255,255,0.06);
-      border-radius: clamp(10px,1.26vw,20px);
-      max-width: 480px;
+      border-radius: clamp(7px,0.88vw,14px);
+      max-width: 380px;
     }
     @supports not (backdrop-filter: blur(1px)) {
       .hero-contact-card { background: rgba(10,15,30,0.88); }
@@ -435,13 +435,13 @@ export function homePage(opts: {
     .hero-contact-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: clamp(0.49rem,0.77vw,0.84rem) clamp(0.84rem,1.54vw,1.54rem);
+      gap: clamp(0.34rem,0.54vw,0.59rem) clamp(0.59rem,1.08vw,1.08rem);
     }
     .hero-contact-item {
       display: flex;
       align-items: center;
-      gap: clamp(7px,0.84vw,11px);
-      font-size: clamp(0.70rem,1.12vw,1.15rem);
+      gap: clamp(5px,0.59vw,8px);
+      font-size: clamp(0.62rem,0.78vw,0.81rem);
       color: rgba(220,230,245,0.92);
       white-space: nowrap;
       overflow-wrap: break-word;
@@ -456,15 +456,15 @@ export function homePage(opts: {
       line-height: 1.55;
     }
     .hero-contact-icon {
-      width: clamp(27px,2.66vw,39px);
-      height: clamp(27px,2.66vw,39px);
-      border-radius: clamp(6px,0.56vw,10px);
+      width: clamp(19px,1.86vw,27px);
+      height: clamp(19px,1.86vw,27px);
+      border-radius: clamp(4px,0.39vw,7px);
       display: flex;
       align-items: center;
       justify-content: center;
       background: rgba(59,130,246,0.12);
       color: rgba(96,165,250,0.90);
-      font-size: clamp(10px,1.12vw,15px);
+      font-size: clamp(7px,0.78vw,11px);
       flex-shrink: 0;
     }
 
@@ -479,13 +479,13 @@ export function homePage(opts: {
       .unified-hero-right { margin-left: 0; width: 100%; }
       .unified-hero-left .flex.flex-wrap { justify-content: center; }
       .unified-hero-left .inline-flex { margin-left: auto; margin-right: auto; }
-      .hero-contact-card { margin-left: auto; margin-right: auto; text-align: left; max-width: 94%; }
-      .hero-contact-item { font-size: clamp(1.0rem, 2.8vw, 1.45rem); }
-      .hero-contact-icon { width: clamp(38px, 6vw, 50px); height: clamp(38px, 6vw, 50px); font-size: clamp(14px, 2.5vw, 20px); }
-      /* Hero text mobile adapt */
-      .hero-headline { font-size: clamp(1.6rem, 5.5vw, 2.4rem) !important; }
-      .hero-subtitle { font-size: clamp(0.9rem, 2.8vw, 1.15rem) !important; max-width: 100% !important; }
-      .hero-badge-pill span[data-admin-edit] { font-size: clamp(0.75rem, 2.2vw, 0.95rem) !important; }
+      .hero-contact-card { margin-left: auto; margin-right: auto; text-align: left; max-width: 94%; padding: clamp(0.7rem,2.5vw,1rem) clamp(0.9rem,3vw,1.2rem); }
+      .hero-contact-item { font-size: clamp(0.70rem, 1.96vw, 1.02rem); }
+      .hero-contact-icon { width: clamp(27px, 4.2vw, 35px); height: clamp(27px, 4.2vw, 35px); font-size: clamp(10px, 1.75vw, 14px); }
+      /* Hero text mobile adapt (×0.7) */
+      .hero-headline { font-size: clamp(1.12rem, 3.85vw, 1.68rem) !important; }
+      .hero-subtitle { font-size: clamp(0.63rem, 1.96vw, 0.81rem) !important; max-width: 100% !important; }
+      .hero-badge-pill span[data-admin-edit] { font-size: clamp(0.53rem, 1.54vw, 0.67rem) !important; }
       /* Sim panel mobile adapt */
       .sim-panel-title { font-size: clamp(0.9rem, 3vw, 1.15rem) !important; }
       .sim-panel-subtitle { font-size: clamp(0.72rem, 2.2vw, 0.88rem) !important; }
@@ -495,45 +495,45 @@ export function homePage(opts: {
       .unified-sim-header { flex-direction: column; align-items: flex-start; gap: 8px; }
       .unified-sim-header .hidden.sm\\:flex { display: flex !important; }
       .hero-contact-grid { grid-template-columns: 1fr; gap: clamp(0.7rem,2.5vw,1rem); }
-      .hero-contact-item { white-space: normal; font-size: clamp(0.95rem, 4vw, 1.2rem); word-break: keep-all; overflow-wrap: break-word; }
-      .hero-contact-icon { width: 40px; height: 40px; font-size: 16px; border-radius: 10px; }
-      .hero-contact-card { padding: clamp(1.2rem,4vw,1.6rem) clamp(1.4rem,4.5vw,1.8rem); border-radius: 16px; }
-      .hero-contact-card p { font-size: clamp(1.05rem, 4.2vw, 1.3rem) !important; }
-      .hero-headline { font-size: clamp(1.4rem, 6.5vw, 2rem) !important; }
-      .hero-subtitle { font-size: clamp(0.85rem, 3.5vw, 1.05rem) !important; }
+      .hero-contact-item { white-space: normal; font-size: clamp(0.67rem, 2.8vw, 0.84rem); word-break: keep-all; overflow-wrap: break-word; }
+      .hero-contact-icon { width: 28px; height: 28px; font-size: 11px; border-radius: 7px; }
+      .hero-contact-card { padding: clamp(0.84rem,2.8vw,1.12rem) clamp(0.98rem,3.15vw,1.26rem); border-radius: 11px; }
+      .hero-contact-card p { font-size: clamp(0.74rem, 2.94vw, 0.91rem) !important; }
+      .hero-headline { font-size: clamp(0.98rem, 4.55vw, 1.4rem) !important; }
+      .hero-subtitle { font-size: clamp(0.60rem, 2.45vw, 0.74rem) !important; }
     }
     /* Very small mobile (375px) */
     @media (max-width: 375px) {
-      .hero-contact-item { font-size: 0.92rem; gap: 8px; }
-      .hero-contact-icon { width: 34px; height: 34px; font-size: 14px; }
-      .hero-headline { font-size: 1.3rem !important; }
-      .hero-subtitle { font-size: 0.82rem !important; }
+      .hero-contact-item { font-size: 0.64rem; gap: 6px; }
+      .hero-contact-icon { width: 24px; height: 24px; font-size: 10px; }
+      .hero-headline { font-size: 0.91rem !important; }
+      .hero-subtitle { font-size: 0.57rem !important; }
     }
 
-    /* ── 2.5K (2560px) — Hero + Slider Overrides ── */
+    /* ── 2.5K (2560px) — Hero + Slider Overrides (hero text ×0.7) ── */
     @media (min-width: 2560px) {
-      .hero-badge-pill span[data-admin-edit] { font-size: 1.17rem !important; }
-      .hero-headline { font-size: 3.5rem !important; }
-      .hero-subtitle { font-size: 1.5rem !important; }
+      .hero-badge-pill span[data-admin-edit] { font-size: 0.82rem !important; }
+      .hero-headline { font-size: 2.45rem !important; }
+      .hero-subtitle { font-size: 1.05rem !important; }
       .sim-panel-title { font-size: 1.67rem !important; }
       .sim-panel-subtitle { font-size: 1.17rem !important; }
-      .hero-contact-item { font-size: 1.8rem; gap: 18px; }
-      .hero-contact-icon { width: 58px; height: 58px; font-size: 24px; border-radius: 14px; }
-      .hero-contact-card { max-width: 900px; padding: 2.5rem 3.2rem; border-radius: 28px; }
-      .hero-contact-card p { font-size: 1.9rem !important; }
-      .hero-contact-label { font-size: 1.67rem !important; }
+      .hero-contact-item { font-size: 1.26rem; gap: 13px; }
+      .hero-contact-icon { width: 41px; height: 41px; font-size: 17px; border-radius: 10px; }
+      .hero-contact-card { max-width: 630px; padding: 1.75rem 2.24rem; border-radius: 20px; }
+      .hero-contact-card p { font-size: 1.33rem !important; }
+      .hero-contact-label { font-size: 1.17rem !important; }
     }
 
-    /* ── 4K (3840px) — Hero + Slider Overrides ── */
+    /* ── 4K (3840px) — Hero + Slider Overrides (hero text ×0.7) ── */
     @media (min-width: 3840px) {
       .unified-hero-grid { gap: 4rem; }
       .unified-hero-left { }
-      /* Hero text 4K overrides */
-      .hero-badge-pill { padding: 12px 32px !important; gap: 12px !important; border-width: 2px !important; }
-      .hero-badge-pill span[data-admin-edit] { font-size: 1.75rem !important; }
-      .hero-headline { font-size: 5.25rem !important; }
-      .hero-subtitle { font-size: 2.25rem !important; max-width: 960px !important; }
-      /* Sim panel 4K overrides */
+      /* Hero text 4K overrides (×0.7) */
+      .hero-badge-pill { padding: 8px 22px !important; gap: 8px !important; border-width: 2px !important; }
+      .hero-badge-pill span[data-admin-edit] { font-size: 1.23rem !important; }
+      .hero-headline { font-size: 3.68rem !important; }
+      .hero-subtitle { font-size: 1.58rem !important; max-width: 672px !important; }
+      /* Sim panel 4K overrides (unchanged) */
       .unified-sim-panel { border-radius: 28px; }
       .unified-sim-header { padding: 1.8rem 2.5rem; }
       .unified-sim-body { padding: 2rem 2.5rem; }
@@ -541,27 +541,27 @@ export function homePage(opts: {
       .sim-panel-subtitle { font-size: 1.75rem !important; }
       .eal-tab { padding: 14px 0 !important; font-size: 1.75rem !important; }
       .prep-range::-webkit-slider-thumb { width: 44px !important; height: 44px !important; border-width: 5px !important; }
-      .hero-contact-card { max-width: 1100px; padding: 3.2rem 4rem; border-radius: 32px; border-width: 2px !important; }
-      .hero-contact-icon { width: 76px; height: 76px; font-size: 30px; border-radius: 18px; }
-      .hero-contact-item { font-size: 2.3rem; gap: 22px; }
-      .hero-contact-grid { gap: 1.8rem 3.5rem; }
-      .hero-contact-card p { font-size: 2.4rem !important; }
-      .hero-contact-label { font-size: 2.5rem !important; }
-      /* Bar chart 4K overrides */
+      .hero-contact-card { max-width: 770px; padding: 2.24rem 2.8rem; border-radius: 22px; border-width: 2px !important; }
+      .hero-contact-icon { width: 53px; height: 53px; font-size: 21px; border-radius: 13px; }
+      .hero-contact-item { font-size: 1.61rem; gap: 15px; }
+      .hero-contact-grid { gap: 1.26rem 2.45rem; }
+      .hero-contact-card p { font-size: 1.68rem !important; }
+      .hero-contact-label { font-size: 1.75rem !important; }
+      /* Bar chart 4K overrides (unchanged) */
       .bar-chart-container { gap: 1.12rem !important; }
       .eal-bar span { font-size: 1.6rem !important; }
     }
 
-    /* ── 8K (7680px) Ultra-Sharp — Full Hero + Slider Overrides ── */
+    /* ── 8K (7680px) Ultra-Sharp — Full Hero + Slider Overrides (hero text ×0.7) ── */
     @media (min-width: 7680px) {
       .unified-hero-grid { gap: 6rem; }
       .unified-hero-left { }
-      /* Hero text 8K overrides */
-      .hero-badge-pill { padding: 24px 64px !important; gap: 24px !important; margin-bottom: 4.5rem !important; border-width: 4px !important; border-radius: 80px !important; }
-      .hero-badge-pill span[data-admin-edit] { font-size: 3.5rem !important; }
-      .hero-headline { font-size: 10.5rem !important; margin-bottom: 3.4rem !important; }
-      .hero-subtitle { font-size: 4.5rem !important; margin-bottom: 6.7rem !important; max-width: 1800px !important; line-height: 1.4 !important; }
-      /* Sim panel 8K overrides */
+      /* Hero text 8K overrides (×0.7) */
+      .hero-badge-pill { padding: 17px 45px !important; gap: 17px !important; margin-bottom: 3.15rem !important; border-width: 3px !important; border-radius: 56px !important; }
+      .hero-badge-pill span[data-admin-edit] { font-size: 2.45rem !important; }
+      .hero-headline { font-size: 7.35rem !important; margin-bottom: 2.38rem !important; }
+      .hero-subtitle { font-size: 3.15rem !important; margin-bottom: 4.69rem !important; max-width: 1260px !important; line-height: 1.4 !important; }
+      /* Sim panel 8K overrides (unchanged) */
       .unified-sim-panel { border-radius: 56px; box-shadow: 0 24px 120px rgba(0,0,0,0.3), 0 8px 40px rgba(0,0,0,0.12); }
       .unified-sim-header { padding: 3rem 4rem; }
       .unified-sim-body { padding: 3.5rem 4rem; }
@@ -569,13 +569,13 @@ export function homePage(opts: {
       .sim-panel-subtitle { font-size: 3.5rem !important; }
       .eal-tab { padding: 28px 0 !important; font-size: 3.5rem !important; }
       .prep-range::-webkit-slider-thumb { width: 88px !important; height: 88px !important; border-width: 10px !important; }
-      .hero-contact-card { max-width: 1800px; padding: 5rem 6.5rem; border-radius: 56px; border-width: 4px !important; }
-      .hero-contact-icon { width: 110px; height: 110px; font-size: 44px; border-radius: 26px; }
-      .hero-contact-item { font-size: 3.6rem; gap: 32px; }
-      .hero-contact-grid { gap: 2.8rem 5.5rem; }
-      .hero-contact-card p { font-size: 3.4rem !important; }
-      .hero-contact-label { font-size: 5rem !important; }
-      /* Bar chart 8K overrides */
+      .hero-contact-card { max-width: 1260px; padding: 3.5rem 4.55rem; border-radius: 39px; border-width: 3px !important; }
+      .hero-contact-icon { width: 77px; height: 77px; font-size: 31px; border-radius: 18px; }
+      .hero-contact-item { font-size: 2.52rem; gap: 22px; }
+      .hero-contact-grid { gap: 1.96rem 3.85rem; }
+      .hero-contact-card p { font-size: 2.38rem !important; }
+      .hero-contact-label { font-size: 3.5rem !important; }
+      /* Bar chart 8K overrides (unchanged) */
       .bar-chart-container { gap: 2.24rem !important; }
       .eal-bar span { font-size: 3.25rem !important; }
     }
