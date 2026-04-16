@@ -1109,7 +1109,7 @@ export function layout(opts: {
         <div class="flex items-center" style="height:100%;gap:19px;justify-content:flex-start;">
 
           <!-- KOLAS Mark -->
-          <div class="hidden md:flex items-center shrink-0" style="padding:0;margin:0;">
+          <div class="hidden md:flex items-center shrink-0" style="padding:0;margin:0 0 0 4cm;">
             <img src="/static/images/kolas.png" alt="KOLAS 국제공인시험기관" style="height:clamp(44px, 38px + 1.4vw, 68px);" class="kolas-mark w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" title="KOLAS 국제공인시험기관 인정 (KTL-F-588)" data-admin-edit="kolas_image">
           </div>
 
