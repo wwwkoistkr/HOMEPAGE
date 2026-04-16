@@ -1644,8 +1644,10 @@ export function layout(opts: {
   ` : ''}
 
   <!-- ═══════════════════════════════════════════════════════════
-       ADMIN INLINE EDITING MODE (v24)
-       로그인한 관리자가 홈페이지에서 직접 텍스트/이미지/박스 편집
+       ADMIN INLINE EDITING MODE (v25)
+       P0-1: 팝업 인라인 편집 → popups 테이블 직접 저장
+       P1-1: HTML 포함 텍스트 innerHTML 보존 저장
+       P1-2: 저장 완료 후 "새로고침 필요" 안내
        ═══════════════════════════════════════════════════════════ -->
   <script>
   (function() {
@@ -1656,6 +1658,9 @@ export function layout(opts: {
     var isAdminMode = false;
     var editableElements = [];
     var pendingChanges = {};
+
+    // Keys that contain HTML and should preserve it (use innerHTML instead of innerText)
+    var htmlKeys = ['hero_line1', 'hero_line2', 'unified_panel_title', 'unified_panel_subtitle'];
 
     // Create admin toolbar
     var toolbar = document.createElement('div');
@@ -1719,6 +1724,18 @@ export function layout(opts: {
       }
     };
 
+    // Check if key is for popup data (popup_{id}_title, popup_{id}_content, popup_{id}_image)
+    function parsePopupKey(key) {
+      var m = key.match(/^popup_(\d+)_(title|content|image)$/);
+      if (m) return { id: m[1], field: m[2] };
+      return null;
+    }
+
+    // Check if key is a HTML-preserving key
+    function isHtmlKey(key) {
+      return htmlKeys.indexOf(key) !== -1;
+    }
+
     function activateEditables() {
       findEditables();
       editableElements.forEach(function(el) {
@@ -1747,9 +1764,16 @@ export function layout(opts: {
         el.style.position = 'relative';
         el.appendChild(label);
 
-        // Listen for changes
+        // Listen for changes — P1-1: use innerHTML for HTML keys, innerText for plain text
         el.addEventListener('input', function() {
-          pendingChanges[key] = el.innerText.trim();
+          if (isHtmlKey(key)) {
+            // Strip admin-edit-labels before capturing innerHTML
+            var clone = el.cloneNode(true);
+            clone.querySelectorAll('.admin-edit-label').forEach(function(l) { l.remove(); });
+            pendingChanges[key] = clone.innerHTML.trim();
+          } else {
+            pendingChanges[key] = el.innerText.trim();
+          }
           updateChangeCount();
         });
 
@@ -1788,8 +1812,8 @@ export function layout(opts: {
     function getEditLabel(key) {
       var labels = {
         'hero_badge_text': '배지 텍스트',
-        'hero_line1': '메인 제목',
-        'hero_line2': '부제목',
+        'hero_line1': '메인 제목 (HTML)',
+        'hero_line2': '부제목 (HTML)',
         'hero_btn_primary': '메인 버튼',
         'hero_btn_secondary': '보조 버튼',
         'hero_contact_label': '연락처 제목',
@@ -1799,15 +1823,35 @@ export function layout(opts: {
         'fax': 'FAX',
         'email': '이메일',
         'address': '주소',
-        'unified_panel_title': '시뮬레이터 제목',
+        'unified_panel_title': '시뮬레이터 제목 (HTML)',
         'unified_panel_subtitle': '시뮬레이터 부제',
+        'unified_reduction_default': '기본 단축률',
+        'unified_reduction_label': '단축률 라벨',
+        'sim_tab_overall': '탭: 전체평균',
+        'sim_tab_eal2': '탭: EAL2',
+        'sim_tab_eal3': '탭: EAL3',
+        'sim_tab_eal4': '탭: EAL4',
+        'sim_label_prep': '사전준비 라벨',
+        'sim_slider_level1': '슬라이더: 미흡',
+        'sim_slider_level2': '슬라이더: 보통',
+        'sim_slider_level3': '슬라이더: 양호',
+        'sim_slider_level4': '슬라이더: 우수',
+        'sim_label_traditional': '전통 프로세스 라벨',
+        'sim_label_koist': 'KOIST 프로세스 라벨',
         'sim_panel': '시뮬레이터 패널',
         'services_badge': '서비스 배지',
         'services_title': '서비스 제목',
         'services_subtitle': '서비스 부제',
         'site_logo': '사이트 로고',
         'kolas_image': 'KOLAS 마크',
+        'popup_close_all_text': '팝업 닫기 버튼',
       };
+      // Dynamic popup labels
+      var popupInfo = parsePopupKey(key);
+      if (popupInfo) {
+        var fieldNames = { title: '제목', content: '내용', image: '이미지' };
+        return '팝업#' + popupInfo.id + ' ' + (fieldNames[popupInfo.field] || popupInfo.field);
+      }
       return labels[key] || key;
     }
 
@@ -1815,6 +1859,32 @@ export function layout(opts: {
       var cnt = Object.keys(pendingChanges).length;
       var el = document.getElementById('adminChangeCnt');
       if (el) el.textContent = cnt;
+    }
+
+    // P0-1: Save popup changes to popups table, others to site_settings
+    async function saveOneChange(key, value) {
+      var popupInfo = parsePopupKey(key);
+      if (popupInfo) {
+        // Route popup edits to PUT /api/admin/popups/:id
+        var body = {};
+        if (popupInfo.field === 'title') body.title = value;
+        else if (popupInfo.field === 'content') body.content = value;
+        else if (popupInfo.field === 'image') body.image_url = value;
+        var res = await fetch('/api/admin/popups/' + popupInfo.id, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify(body)
+        });
+        return res.ok;
+      } else {
+        // Default: save to site_settings
+        var res = await fetch('/api/admin/settings/' + key, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ value: value })
+        });
+        return res.ok;
+      }
     }
 
     // Save changes via API
@@ -1834,15 +1904,8 @@ export function layout(opts: {
         var key = keys[i];
         var value = pendingChanges[key];
         try {
-          var res = await fetch('/api/admin/settings/' + key, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + token
-            },
-            body: JSON.stringify({ value: value })
-          });
-          if (!res.ok) errors.push(key);
+          var ok = await saveOneChange(key, value);
+          if (!ok) errors.push(key);
         } catch (e) {
           errors.push(key);
         }
@@ -1853,9 +1916,13 @@ export function layout(opts: {
         saveBtn.innerHTML = '<i class="fas fa-check" style="margin-right:4px;"></i>저장완료!';
         pendingChanges = {};
         updateChangeCount();
+        // P1-2: Show refresh notice
         setTimeout(function() {
           saveBtn.innerHTML = '<i class="fas fa-save" style="margin-right:4px;"></i>저장';
-        }, 2000);
+          if (confirm('저장 완료! 변경사항을 확인하려면 페이지를 새로고침해야 합니다.\n\n지금 새로고침 하시겠습니까?')) {
+            location.reload();
+          }
+        }, 800);
         // Update original content
         editableElements.forEach(function(el) {
           el.dataset.adminOriginal = el.innerHTML;

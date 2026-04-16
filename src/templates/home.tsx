@@ -1,4 +1,4 @@
-// KOIST - Home Page Template (v35.5.4 - Popup #1 text+30%, #2 13cm×14.5cm, #3 13cm×6cm, 8K responsive)
+// KOIST - Home Page Template (v35.6.0 - P0-2: sim_cert_types→ealData 연동, P1-3: popup_close_all_text SSR)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem, SimCertType } from '../types';
 
 function bgStyle(imageUrl: string | undefined, fallbackGradient: string, opacity: string = '0.85'): string {
@@ -24,6 +24,62 @@ export function homePage(opts: {
   const progress = opts.progressItems.slice(0, 5);
   const catCounts = opts.progressCategoryCounts || [];
   const heroOpacity = s.hero_overlay_opacity || '0.85';
+  const simTypes = opts.simCertTypes || [];
+
+  // P0-2: Build ealData from sim_cert_types (weeks→months conversion)
+  // Mapping: cc-eal2→EAL2, cc-eal3→EAL3, cc-eal4→EAL4, overall→weighted average
+  const W2M = 4.33; // weeks per month
+  function simTypeToEal(st: SimCertType) {
+    const tradMinM = Math.round(st.traditional_min_weeks / W2M * 10) / 10;
+    const tradMaxM = Math.round(st.traditional_max_weeks / W2M * 10) / 10;
+    const koistMinM = Math.round(st.koist_min_weeks / W2M * 10) / 10;
+    const koistMaxM = Math.round(st.koist_max_weeks / W2M * 10) / 10;
+    // Split traditional into prep (55%) + eval (45%) based on industry norms
+    const gPrep = Math.round(tradMaxM * 0.55 * 10) / 10;
+    const gEval = Math.round(tradMaxM * 0.45 * 10) / 10;
+    // KOIST: min=high prep effort → shorter, max=low prep effort → longer
+    // Split koist total into prep (40%) + eval (60%)
+    const kPrepMin = Math.round(koistMinM * 0.40 * 10) / 10;
+    const kEvalMin = Math.round(koistMinM * 0.60 * 10) / 10;
+    const kPrepMax = Math.round(koistMaxM * 0.40 * 10) / 10;
+    const kEvalMax = Math.round(koistMaxM * 0.60 * 10) / 10;
+    return { gPrep, gEval, kPrepMin, kEvalMin, kPrepMax, kEvalMax };
+  }
+
+  const eal2Type = simTypes.find(t => t.slug === 'cc-eal2');
+  const eal3Type = simTypes.find(t => t.slug === 'cc-eal3');
+  const eal4Type = simTypes.find(t => t.slug === 'cc-eal4');
+
+  // Build ealData entries from sim_cert_types with eval_* fallback
+  function buildEalEntry(st: SimCertType | undefined, prefix: string) {
+    if (st) {
+      const d = simTypeToEal(st);
+      return `{ general:{prep:${d.gPrep},eval:${d.gEval}}, koist:{prepMin:${d.kPrepMin},prepMax:${d.kPrepMax},evalMin:${d.kEvalMin},evalMax:${d.kEvalMax}} }`;
+    }
+    // Fallback to eval_* settings
+    const gp = s[`eval_${prefix}_general_prep`] || '12';
+    const ge = s[`eval_${prefix}_general_eval`] || '12';
+    const kph = s[`eval_${prefix}_koist_prep_high`] || '4';
+    const kpl = s[`eval_${prefix}_koist_prep_low`] || '9';
+    const keh = s[`eval_${prefix}_koist_eval_high`] || '7';
+    const kel = s[`eval_${prefix}_koist_eval_low`] || '11';
+    return `{ general:{prep:${gp},eval:${ge}}, koist:{prepMin:${kph},prepMax:${kpl},evalMin:${keh},evalMax:${kel}} }`;
+  }
+
+  // overall = weighted average of EAL2/3/4
+  function buildOverallEntry() {
+    if (eal2Type && eal3Type && eal4Type) {
+      const types = [eal2Type, eal3Type, eal4Type].map(simTypeToEal);
+      const avg = (vals: number[]) => Math.round(vals.reduce((a,b) => a+b, 0) / vals.length * 10) / 10;
+      return `{ general:{prep:${avg(types.map(t=>t.gPrep))},eval:${avg(types.map(t=>t.gEval))}}, koist:{prepMin:${avg(types.map(t=>t.kPrepMin))},prepMax:${avg(types.map(t=>t.kPrepMax))},evalMin:${avg(types.map(t=>t.kEvalMin))},evalMax:${avg(types.map(t=>t.kEvalMax))}} }`;
+    }
+    return buildEalEntry(undefined, 'overall');
+  }
+
+  const ealDataOverall = buildOverallEntry();
+  const ealDataEAL2 = buildEalEntry(eal2Type, 'eal2');
+  const ealDataEAL3 = buildEalEntry(eal3Type, 'eal3');
+  const ealDataEAL4 = buildEalEntry(eal4Type, 'eal4');
 
   const catMeta: Record<string, {icon: string; color: string}> = {
     'CC평가':       { icon: 'fa-shield-halved', color: '#3B82F6' },
@@ -50,7 +106,7 @@ export function homePage(opts: {
   <div id="popupContainer" class="fixed z-[9999] popup-multi-container">
     <div class="popup-close-all-bar">
       <button onclick="closeAllPopups()" class="popup-close-all-btn" data-admin-edit="popup_close_all_text">
-        <i class="fas fa-times popup-close-all-icon"></i> 모두 닫기
+        <i class="fas fa-times popup-close-all-icon"></i> ${s.popup_close_all_text || '모두 닫기'}
       </button>
     </div>
     <div class="popup-grid">
@@ -1551,35 +1607,12 @@ export function homePage(opts: {
       observer.observe(bars[0].closest('.bar-chart-container') || bars[0]);
     }
 
+    // P0-2: ealData now generated from sim_cert_types (weeks→months) with eval_* fallback
     var ealData = {
-      overall: {
-        general: { prep: ${s.eval_overall_general_prep || '12'}, eval: ${s.eval_overall_general_eval || '12'} },
-        koist: {
-          prepMin: ${s.eval_overall_koist_prep_high || '4'},  prepMax: ${s.eval_overall_koist_prep_low || '9'},
-          evalMin: ${s.eval_overall_koist_eval_high || '7'},  evalMax: ${s.eval_overall_koist_eval_low || '11'}
-        }
-      },
-      EAL2: {
-        general: { prep: ${s.eval_eal2_general_prep || '8'}, eval: ${s.eval_eal2_general_eval || '6'} },
-        koist: {
-          prepMin: ${s.eval_eal2_koist_prep_high || '2'},  prepMax: ${s.eval_eal2_koist_prep_low || '6'},
-          evalMin: ${s.eval_eal2_koist_eval_high || '3'},  evalMax: ${s.eval_eal2_koist_eval_low || '5'}
-        }
-      },
-      EAL3: {
-        general: { prep: ${s.eval_eal3_general_prep || '10'}, eval: ${s.eval_eal3_general_eval || '8'} },
-        koist: {
-          prepMin: ${s.eval_eal3_koist_prep_high || '4'},  prepMax: ${s.eval_eal3_koist_prep_low || '8'},
-          evalMin: ${s.eval_eal3_koist_eval_high || '4'},  evalMax: ${s.eval_eal3_koist_eval_low || '7'}
-        }
-      },
-      EAL4: {
-        general: { prep: ${s.eval_eal4_general_prep || '14'}, eval: ${s.eval_eal4_general_eval || '12'} },
-        koist: {
-          prepMin: ${s.eval_eal4_koist_prep_high || '5'},  prepMax: ${s.eval_eal4_koist_prep_low || '11'},
-          evalMin: ${s.eval_eal4_koist_eval_high || '5'},  evalMax: ${s.eval_eal4_koist_eval_low || '10'}
-        }
-      }
+      overall: ${ealDataOverall},
+      EAL2: ${ealDataEAL2},
+      EAL3: ${ealDataEAL3},
+      EAL4: ${ealDataEAL4}
     };
 
     var currentEAL = 'overall';
