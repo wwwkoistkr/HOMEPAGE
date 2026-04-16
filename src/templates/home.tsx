@@ -1,4 +1,4 @@
-// KOIST - Home Page Template (v35.5 - Popup 10cm×12cm fixed, admin-editable, 8K responsive, image cover)
+// KOIST - Home Page Template (v35.5.1 - Popup 13cm×16cm, text+20%, image fill, footer overlay, 8K responsive)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem, SimCertType } from '../types';
 
 function bgStyle(imageUrl: string | undefined, fallbackGradient: string, opacity: string = '0.85'): string {
@@ -43,7 +43,7 @@ export function homePage(opts: {
 
   return `
   <!-- ════════════════════════════════════════════════
-       POPUP SYSTEM v35.5 — 10cm×12cm Fixed, Admin-Editable, 8K Responsive
+       POPUP SYSTEM v35.5.1 — 13cm×16cm Fixed, Footer Overlay, Admin-Editable, 8K Responsive
        ════════════════════════════════════════════════ -->
   ${popups.length > 0 ? `
   <div id="popupOverlay" class="fixed inset-0 z-[9998] transition-opacity duration-300" style="background:rgba(0,0,0,0.5); backdrop-filter:blur(4px);" onclick="closeAllPopups()"></div>
@@ -78,27 +78,27 @@ export function homePage(opts: {
           </button>
         </div>
         <!-- BODY — admin-editable content/image -->
-        <div class="popup-card-body" style="background:${bodyBgColor};">
+        <div class="popup-card-body ${p.popup_type === 'image' ? 'popup-card-body--image' : ''}" style="background:${bodyBgColor};">
           ${p.popup_type === 'image' && p.image_url 
             ? `<div class="popup-img-wrap" data-admin-edit="popup_${p.id}_image">
                 <img src="${p.image_url}" alt="${p.title}" class="popup-img-cover" loading="lazy">
               </div>` 
             : `<div class="popup-html-wrap" style="font-size:${bodyFontSize}px; line-height:${bodyLineHeight}; color:${bodyTextColor}; padding:${bodyPadding}px;" data-admin-edit="popup_${p.id}_content">${p.content || ''}</div>`}
-        </div>
-        <!-- FOOTER -->
-        <div class="popup-card-footer">
-          <label class="popup-noshow-label">
-            <input type="checkbox" id="noshow-${p.id}" class="popup-noshow-checkbox">
-            <span class="popup-noshow-text">오늘 하루 안 보기</span>
-          </label>
-          <button onclick="closeSinglePopup(${p.id})" class="popup-footer-close-btn">닫기</button>
+          <!-- FOOTER (overlaid on image popups) -->
+          <div class="popup-card-footer ${p.popup_type === 'image' ? 'popup-card-footer--overlay' : ''}">
+            <label class="popup-noshow-label">
+              <input type="checkbox" id="noshow-${p.id}" class="popup-noshow-checkbox">
+              <span class="popup-noshow-text">오늘 하루 안 보기</span>
+            </label>
+            <button onclick="closeSinglePopup(${p.id})" class="popup-footer-close-btn">닫기</button>
+          </div>
         </div>
       </div>`;
       }).join('')}
     </div>
   </div>
   <style>
-    /* ═══ POPUP SYSTEM v35.5 — Base (Desktop 1920px) ═══ */
+    /* ═══ POPUP SYSTEM v35.5.1 — Base (Desktop 1920px) ═══ */
     .popup-multi-container {
       top: 50%; left: 50%; transform: translate(-50%, -50%);
       width: auto; max-width: 95vw; max-height: 95vh;
@@ -119,9 +119,9 @@ export function homePage(opts: {
       justify-content: center; align-items: stretch;
     }
 
-    /* ═══ CARD — Fixed 10cm × 12cm ═══ */
+    /* ═══ CARD — Fixed 13cm × 16cm ═══ */
     .popup-card {
-      width: 10cm; height: 12cm; flex: none;
+      width: 13cm; height: 16cm; flex: none;
       background: #fff; border-radius: clamp(10px, 0.8vw, 20px);
       overflow: hidden;
       box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1);
@@ -154,10 +154,16 @@ export function homePage(opts: {
     .popup-card-body {
       flex: 1; min-height: 0; overflow: hidden;
       display: flex; flex-direction: column;
+      position: relative;
+    }
+    /* Image popup body: allow footer overlay */
+    .popup-card-body--image {
+      position: relative;
     }
     /* Image popups: cover the entire body area */
     .popup-img-wrap {
       flex: 1; min-height: 0; overflow: hidden;
+      position: absolute; inset: 0;
     }
     .popup-img-cover {
       width: 100%; height: 100%; object-fit: cover; display: block;
@@ -176,6 +182,17 @@ export function homePage(opts: {
       background: rgba(248,250,252,0.7);
       flex-shrink: 0;
     }
+    /* Footer overlay for image popups — sits on top of image, no white gap */
+    .popup-card-footer--overlay {
+      position: absolute; bottom: 0; left: 0; right: 0; z-index: 2;
+      border-top: none;
+      background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 60%, transparent 100%);
+      padding: clamp(10px, 0.8vw, 18px) clamp(10px, 0.8vw, 20px) clamp(8px, 0.6vw, 14px);
+    }
+    .popup-card-footer--overlay .popup-noshow-text { color: rgba(255,255,255,0.85); }
+    .popup-card-footer--overlay .popup-noshow-checkbox { accent-color: #60a5fa; }
+    .popup-card-footer--overlay .popup-footer-close-btn { color: rgba(255,255,255,0.90); }
+    .popup-card-footer--overlay .popup-footer-close-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
     .popup-noshow-label {
       display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none;
     }
@@ -194,7 +211,7 @@ export function homePage(opts: {
 
     /* ═══ RESPONSIVE — Tablet (640px ~ 1023px) ═══ */
     @media (max-width: 1023px) {
-      .popup-card { width: 8cm; height: 10cm; }
+      .popup-card { width: 10cm; height: 13cm; }
       .popup-grid { gap: 10px; }
     }
 
@@ -206,61 +223,65 @@ export function homePage(opts: {
         max-height: 80vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
         gap: 10px;
       }
-      .popup-card { width: min(90vw, 10cm); height: auto; max-height: 50vh; flex: none; }
-      .popup-card-body { max-height: 30vh; }
+      .popup-card { width: min(90vw, 13cm); height: auto; max-height: 55vh; flex: none; }
+      .popup-card-body { max-height: 35vh; }
       .popup-close-all-btn { padding: 6px 14px; font-size: 11px; }
+      .popup-img-wrap { position: relative; inset: auto; flex: 1; }
+      .popup-card-footer--overlay { position: relative; bottom: auto; background: rgba(248,250,252,0.85); }
+      .popup-card-footer--overlay .popup-noshow-text { color: #6b7280; }
+      .popup-card-footer--overlay .popup-footer-close-btn { color: #4b5563; }
     }
 
     /* ═══ RESPONSIVE — Small Mobile (≤375px) ═══ */
     @media (max-width: 375px) {
-      .popup-card { width: min(88vw, 9cm); max-height: 45vh; }
+      .popup-card { width: min(88vw, 11cm); max-height: 50vh; }
     }
 
     /* ═══ HIGH-RES — 2.5K (2560px) ═══ */
     @media (min-width: 2560px) {
-      .popup-card { width: 12cm; height: 14.4cm; border-radius: 20px; }
-      .popup-grid { gap: 20px; }
-      .popup-card-header { padding: 14px 20px; }
-      .popup-card-title { font-size: 18px !important; }
-      .popup-card-close-btn { width: 36px; height: 36px; }
-      .popup-card-close-btn i { font-size: 15px; }
-      .popup-card-footer { padding: 12px 20px; }
-      .popup-noshow-text { font-size: 14px; }
-      .popup-noshow-checkbox { width: 18px; height: 18px; }
-      .popup-footer-close-btn { font-size: 15px; padding: 8px 18px; }
-      .popup-close-all-btn { padding: 10px 26px; font-size: 16px; }
+      .popup-card { width: 15.6cm; height: 19.2cm; border-radius: 22px; }
+      .popup-grid { gap: 22px; }
+      .popup-card-header { padding: 16px 22px; }
+      .popup-card-title { font-size: 19px !important; }
+      .popup-card-close-btn { width: 38px; height: 38px; }
+      .popup-card-close-btn i { font-size: 16px; }
+      .popup-card-footer { padding: 14px 22px; }
+      .popup-noshow-text { font-size: 15px; }
+      .popup-noshow-checkbox { width: 19px; height: 19px; }
+      .popup-footer-close-btn { font-size: 16px; padding: 8px 20px; }
+      .popup-close-all-btn { padding: 12px 28px; font-size: 17px; }
     }
 
     /* ═══ HIGH-RES — 4K (3840px) ═══ */
     @media (min-width: 3840px) {
-      .popup-card { width: 15cm; height: 18cm; border-radius: 28px; }
-      .popup-grid { gap: 28px; }
-      .popup-card-header { padding: 20px 28px; }
-      .popup-card-title { font-size: 24px !important; }
-      .popup-card-close-btn { width: 48px; height: 48px; border-radius: 12px; }
-      .popup-card-close-btn i { font-size: 20px; }
-      .popup-card-footer { padding: 16px 28px; }
-      .popup-noshow-text { font-size: 18px; }
-      .popup-noshow-checkbox { width: 22px; height: 22px; }
-      .popup-footer-close-btn { font-size: 19px; padding: 10px 24px; }
-      .popup-close-all-btn { padding: 14px 36px; font-size: 20px; }
-      .popup-close-all-icon { font-size: 16px; }
+      .popup-card { width: 19.5cm; height: 24cm; border-radius: 32px; }
+      .popup-grid { gap: 32px; }
+      .popup-card-header { padding: 22px 30px; }
+      .popup-card-title { font-size: 26px !important; }
+      .popup-card-close-btn { width: 52px; height: 52px; border-radius: 14px; }
+      .popup-card-close-btn i { font-size: 22px; }
+      .popup-card-footer { padding: 18px 30px; }
+      .popup-noshow-text { font-size: 20px; }
+      .popup-noshow-checkbox { width: 24px; height: 24px; }
+      .popup-footer-close-btn { font-size: 21px; padding: 12px 26px; }
+      .popup-close-all-btn { padding: 16px 40px; font-size: 22px; }
+      .popup-close-all-icon { font-size: 18px; }
     }
 
     /* ═══ HIGH-RES — 8K (7680px) ═══ */
     @media (min-width: 7680px) {
-      .popup-card { width: 20cm; height: 24cm; border-radius: 40px; }
-      .popup-grid { gap: 40px; }
-      .popup-card-header { padding: 32px 40px; border-bottom-width: 2px; }
-      .popup-card-title { font-size: 36px !important; }
-      .popup-card-close-btn { width: 64px; height: 64px; border-radius: 16px; }
-      .popup-card-close-btn i { font-size: 28px; }
-      .popup-card-footer { padding: 24px 40px; border-top-width: 2px; }
-      .popup-noshow-text { font-size: 28px; }
-      .popup-noshow-checkbox { width: 32px; height: 32px; }
-      .popup-footer-close-btn { font-size: 28px; padding: 16px 36px; border-radius: 14px; }
-      .popup-close-all-btn { padding: 20px 48px; font-size: 28px; border-radius: 999px; }
-      .popup-close-all-icon { font-size: 22px; }
+      .popup-card { width: 26cm; height: 32cm; border-radius: 48px; }
+      .popup-grid { gap: 48px; }
+      .popup-card-header { padding: 36px 44px; border-bottom-width: 2px; }
+      .popup-card-title { font-size: 40px !important; }
+      .popup-card-close-btn { width: 72px; height: 72px; border-radius: 18px; }
+      .popup-card-close-btn i { font-size: 32px; }
+      .popup-card-footer { padding: 28px 44px; border-top-width: 2px; }
+      .popup-noshow-text { font-size: 30px; }
+      .popup-noshow-checkbox { width: 36px; height: 36px; }
+      .popup-footer-close-btn { font-size: 30px; padding: 18px 40px; border-radius: 16px; }
+      .popup-close-all-btn { padding: 22px 52px; font-size: 30px; border-radius: 999px; }
+      .popup-close-all-icon { font-size: 24px; }
       .popup-card { box-shadow: 0 16px 64px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.1); }
     }
 
