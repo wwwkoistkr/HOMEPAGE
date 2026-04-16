@@ -1,4 +1,4 @@
-// KOIST - Home Page Template (v35.5.2 - Popup 13cm×auto, text+40%, image fit, close btn, 8K responsive)
+// KOIST - Home Page Template (v35.5.3 - Popup #1 text+30%, #2/#3 card fits image size, 8K responsive)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem, SimCertType } from '../types';
 
 function bgStyle(imageUrl: string | undefined, fallbackGradient: string, opacity: string = '0.85'): string {
@@ -43,7 +43,7 @@ export function homePage(opts: {
 
   return `
   <!-- ════════════════════════════════════════════════
-       POPUP SYSTEM v35.5.2 — 13cm width, auto height, image fit, close btn, 8K Responsive
+       POPUP SYSTEM v35.5.3 — HTML popup 13cm fixed, Image popup auto (fits image), 8K Responsive
        ════════════════════════════════════════════════ -->
   ${popups.length > 0 ? `
   <div id="popupOverlay" class="fixed inset-0 z-[9998] transition-opacity duration-300" style="background:rgba(0,0,0,0.5); backdrop-filter:blur(4px);" onclick="closeAllPopups()"></div>
@@ -67,7 +67,7 @@ export function homePage(opts: {
         const bodyBgColor = p.bg_color || '#ffffff';
         
         return `
-      <div class="popup-card"
+      <div class="popup-card${p.popup_type === 'image' ? ' popup-card--imgtype' : ''}"
            data-popup-id="${p.id}" id="popup-${p.id}"
            style="animation: popupSlideIn ${0.3 + i * 0.1}s ease-out;">
         <!-- HEADER — admin-editable title -->
@@ -106,7 +106,7 @@ export function homePage(opts: {
     </div>
   </div>
   <style>
-    /* ═══ POPUP SYSTEM v35.5.2 — Base (Desktop 1920px) ═══ */
+    /* ═══ POPUP SYSTEM v35.5.3 — Base (Desktop 1920px) ═══ */
     .popup-multi-container {
       top: 50%; left: 50%; transform: translate(-50%, -50%);
       width: auto; max-width: 95vw; max-height: 95vh;
@@ -127,7 +127,7 @@ export function homePage(opts: {
       justify-content: center; align-items: stretch;
     }
 
-    /* ═══ CARD — Width 13cm, height varies ═══ */
+    /* ═══ CARD — HTML popup: 13cm fixed, Image popup: auto (fits image) ═══ */
     .popup-card {
       width: 13cm; flex: none;
       background: #fff; border-radius: clamp(10px, 0.8vw, 20px);
@@ -135,6 +135,10 @@ export function homePage(opts: {
       box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1);
       border: 1px solid rgba(226,232,240,0.5);
       display: flex; flex-direction: column;
+    }
+    /* Image-type popup: width auto, shrinks to image natural width */
+    .popup-card--imgtype {
+      width: auto; max-width: 95vw;
     }
 
     /* ═══ HEADER ═══ */
@@ -227,6 +231,7 @@ export function homePage(opts: {
     /* ═══ RESPONSIVE — Tablet (640px ~ 1023px) ═══ */
     @media (max-width: 1023px) {
       .popup-card { width: 10cm; }
+      .popup-card--imgtype { width: auto; max-width: 90vw; }
       .popup-grid { gap: 10px; }
     }
 
@@ -239,6 +244,7 @@ export function homePage(opts: {
         gap: 10px;
       }
       .popup-card { width: min(90vw, 13cm); max-height: 55vh; flex: none; }
+      .popup-card--imgtype { width: auto; max-width: 90vw; }
       .popup-card-body { max-height: 35vh; overflow-y: auto; }
       .popup-close-all-btn { padding: 6px 14px; font-size: 11px; }
     }
@@ -246,11 +252,13 @@ export function homePage(opts: {
     /* ═══ RESPONSIVE — Small Mobile (≤375px) ═══ */
     @media (max-width: 375px) {
       .popup-card { width: min(88vw, 11cm); max-height: 50vh; }
+      .popup-card--imgtype { width: auto; max-width: 88vw; }
     }
 
     /* ═══ HIGH-RES — 2.5K (2560px) ═══ */
     @media (min-width: 2560px) {
       .popup-card { width: 15.6cm; border-radius: 22px; }
+      .popup-card--imgtype { width: auto; max-width: 95vw; }
       .popup-grid { gap: 22px; }
       .popup-card-header { padding: 16px 22px; }
       .popup-card-title { font-size: 19px !important; }
@@ -268,6 +276,7 @@ export function homePage(opts: {
     /* ═══ HIGH-RES — 4K (3840px) ═══ */
     @media (min-width: 3840px) {
       .popup-card { width: 19.5cm; border-radius: 32px; }
+      .popup-card--imgtype { width: auto; max-width: 95vw; }
       .popup-grid { gap: 32px; }
       .popup-card-header { padding: 22px 30px; }
       .popup-card-title { font-size: 26px !important; }
@@ -286,6 +295,7 @@ export function homePage(opts: {
     /* ═══ HIGH-RES — 8K (7680px) ═══ */
     @media (min-width: 7680px) {
       .popup-card { width: 26cm; border-radius: 48px; }
+      .popup-card--imgtype { width: auto; max-width: 95vw; }
       .popup-grid { gap: 48px; }
       .popup-card-header { padding: 36px 44px; border-bottom-width: 2px; }
       .popup-card-title { font-size: 40px !important; }
