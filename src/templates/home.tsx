@@ -652,8 +652,8 @@ export function homePage(opts: {
     .unified-hero-right {
       display: flex;
       flex-direction: column;
-      margin-left: -2cm;
-      width: calc(100% + 10cm);
+      margin-left: -6cm;
+      width: calc(100% + 14cm);
       min-width: 0;
     }
     
