@@ -174,6 +174,19 @@ export function homePage(opts: {
     .popup-card-body--image {
       flex: none; overflow: hidden;
     }
+    /* When card has fixed cm size: body fills remaining space */
+    .popup-card--sized .popup-card-body--image {
+      flex: 1; min-height: 0;
+      display: flex; flex-direction: column;
+    }
+    .popup-card--sized .popup-img-wrap--fit {
+      flex: 1; min-height: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .popup-card--sized .popup-img-fit {
+      width: 100%; height: 100%;
+      object-fit: contain; display: block;
+    }
     /* Image popups: image fills width, keeps aspect ratio */
     .popup-img-wrap--fit {
       line-height: 0; /* remove inline gap */
