@@ -575,7 +575,7 @@ export function homePage(opts: {
                 <!-- CCRA bar -->
                 <div>
                   <div class="flex justify-between items-center" style="margin-bottom:clamp(3px,0.21vw,6px)">
-                    <span class="text-slate-500 font-semibold flex items-center" style="gap:clamp(3px,0.21vw,6px); font-size:clamp(0.68rem,0.73vw,3.5rem)"><span class="inline-block rounded-full" style="width:clamp(5px,0.36vw,10px); height:clamp(5px,0.36vw,10px); background: linear-gradient(135deg, #94A3B8, #64748B);"></span><span data-admin-edit="sim_label_traditional">${s.sim_label_traditional || 'CCRA 권고 일수'}</span></span>
+                    <span class="text-slate-500 font-semibold flex items-center" style="gap:clamp(3px,0.21vw,6px); font-size:clamp(0.68rem,0.73vw,3.5rem)"><span class="inline-block rounded-full" style="width:clamp(5px,0.36vw,10px); height:clamp(5px,0.36vw,10px); background: linear-gradient(135deg, #94A3B8, #64748B);"></span><span data-admin-edit="sim_label_traditional">${s.sim_label_traditional || 'CCRA평가일수'}</span></span>
                     <span id="ealGeneralTotal" class="text-slate-400 font-bold" style="font-size:clamp(0.68rem,0.73vw,3.5rem)">약 24개월</span>
                   </div>
                   <div class="relative rounded-xl overflow-hidden" style="height:clamp(32px,2.34vw,72px); background: linear-gradient(90deg, #F1F5F9, #E2E8F0);">

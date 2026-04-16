@@ -1836,7 +1836,7 @@ export function layout(opts: {
         'sim_slider_level2': '슬라이더: 보통',
         'sim_slider_level3': '슬라이더: 양호',
         'sim_slider_level4': '슬라이더: 우수',
-        'sim_label_traditional': 'CCRA 권고 일수 라벨',
+        'sim_label_traditional': 'CCRA평가일수 라벨',
         'sim_label_koist': 'KOIST 프로세스 라벨',
         'sim_panel': '시뮬레이터 패널',
         'services_badge': '서비스 배지',

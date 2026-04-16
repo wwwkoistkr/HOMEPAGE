@@ -22,7 +22,7 @@
         <div>
           <p class="font-medium mb-1">AI 인증 소요시간 시뮬레이터 데이터</p>
           <p class="text-xs text-cyan-600">홈페이지 상단 AI 시뮬레이터 히어로 배너에 표시되는 인증유형별 기간 데이터를 관리합니다.</p>
-          <p class="text-xs text-cyan-600 mt-1"><strong>전통(CCRA)</strong>: 일반 프로세스의 최소~최대 기간(주) / <strong>KOIST</strong>: KOIST 프로세스의 최소~최대 기간(주)</p>
+          <p class="text-xs text-cyan-600 mt-1"><strong>CCRA평가일수</strong>: 일반 프로세스의 최소~최대 기간(주) / <strong>KOIST</strong>: KOIST 프로세스의 최소~최대 기간(주)</p>
         </div>
       </div>
     </div>
@@ -56,7 +56,7 @@
                   ${!item.is_active ? '<span class="text-[10px] bg-red-100 text-red-600 rounded-full px-2 py-0.5 font-medium">비활성</span>' : ''}
                 </div>
                 <div class="flex items-center gap-3 mt-0.5">
-                  <span class="text-xs text-gray-400">전통 ${item.traditional_min_weeks}~${item.traditional_max_weeks}주</span>
+                  <span class="text-xs text-gray-400">CCRA평가일수 ${item.traditional_min_weeks}~${item.traditional_max_weeks}주</span>
                   <span class="text-xs font-bold" style="color:${item.color}">KOIST ${item.koist_min_weeks}~${item.koist_max_weeks}주</span>
                   <span class="text-xs bg-blue-50 text-blue-600 rounded-full px-2 py-0.5 font-bold">-${pct}%</span>
                 </div>
@@ -113,7 +113,7 @@
           </div>
           <div class="border rounded-xl p-3 bg-gray-50/50">
             <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 block">
-              <i class="fas fa-building text-gray-400 mr-1"></i>전통 CCRA 기간 (주)
+              <i class="fas fa-building text-gray-400 mr-1"></i>CCRA평가일수 기간 (주)
             </label>
             <div class="grid grid-cols-2 gap-3">
               <div>

@@ -100,7 +100,7 @@
           <div>
             <p class="font-medium mb-1">평가기간 시뮬레이터 데이터 관리</p>
             <p class="text-xs text-cyan-600">홈페이지의 "사전준비 슬라이더(1~100)"로 시뮬레이션되는 평가기간의 범위를 설정합니다.</p>
-            <p class="text-xs text-cyan-600 mt-1"><strong>전통 CCRA</strong>: 고정된 일반 평가 프로세스 기간 (준비/평가)</p>
+            <p class="text-xs text-cyan-600 mt-1"><strong>CCRA평가일수</strong>: 고정된 일반 평가 프로세스 기간 (준비/평가)</p>
             <p class="text-xs text-cyan-600"><strong>KOIST 최소(사전준비100%)</strong>: 충분히 준비된 경우 최단 기간</p>
             <p class="text-xs text-cyan-600"><strong>KOIST 최대(사전준비1%)</strong>: 준비 부족시 최장 기간</p>
             <p class="text-xs text-cyan-600 mt-1">슬라이더가 1~100 사이를 이동하면 최소~최대 범위에서 선형 보간(interpolation)하여 기간이 자동 계산됩니다.</p>
@@ -131,7 +131,7 @@
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div class="rounded-lg p-3" style="background: rgba(0,0,0,0.03); border:1px solid rgba(0,0,0,0.06);">
-              <div class="text-xs text-gray-500 mb-1">전통 CCRA</div>
+              <div class="text-xs text-gray-500 mb-1">CCRA평가일수</div>
               <div class="flex items-baseline gap-1">
                 <span id="previewCcraTotal" class="text-lg font-black text-gray-700">24</span>
                 <span class="text-xs text-gray-400">개월</span>
@@ -169,20 +169,20 @@
           <span class="font-bold text-gray-800">${eal.label}</span>
         </div>
         <div class="p-4 space-y-4">
-          <!-- 전통 CCRA 프로세스 (고정값) -->
+          <!-- CCRA평가일수 (고정값) -->
           <div>
             <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 block">
-              <i class="fas fa-building text-gray-400 mr-1"></i>전통 CCRA 평가 프로세스 (고정)
+              <i class="fas fa-building text-gray-400 mr-1"></i>CCRA평가일수 (고정)
             </label>
             <div class="grid grid-cols-2 gap-3">
               <div>
                 <label class="text-xs text-gray-500 mb-1 block">준비기간 (개월)</label>
-                <input type="number" data-key="eval_${eal.key}_general_prep" value="${gPrep}" min="0" max="60" step="0.5"
+                <input type="number" data-key="eval_${eal.key}_general_prep" value="${gPrep}" min="0" max="60" step="1"
                   class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 eval-input" id="input_eval_${eal.key}_general_prep" onchange="updateAdminPreview()">
               </div>
               <div>
                 <label class="text-xs text-gray-500 mb-1 block">평가기간 (개월)</label>
-                <input type="number" data-key="eval_${eal.key}_general_eval" value="${gEval}" min="0" max="60" step="0.5"
+                <input type="number" data-key="eval_${eal.key}_general_eval" value="${gEval}" min="0" max="60" step="1"
                   class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 eval-input" id="input_eval_${eal.key}_general_eval" onchange="updateAdminPreview()">
               </div>
             </div>
@@ -205,13 +205,13 @@
                 <div class="flex-1 grid grid-cols-2 gap-2">
                   <div class="flex items-center gap-1">
                     <span class="text-xs text-gray-400 shrink-0 w-6">준비</span>
-                    <input type="number" data-key="eval_${eal.key}_koist_prep_high" value="${kPrepMin}" min="0" max="60" step="0.5"
+                    <input type="number" data-key="eval_${eal.key}_koist_prep_high" value="${kPrepMin}" min="0" max="60" step="1"
                       class="w-full px-2 py-1.5 border rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500/30 eval-input" id="input_eval_${eal.key}_koist_prep_high" onchange="updateAdminPreview()">
                     <span class="text-xs text-gray-400">월</span>
                   </div>
                   <div class="flex items-center gap-1">
                     <span class="text-xs text-gray-400 shrink-0 w-6">평가</span>
-                    <input type="number" data-key="eval_${eal.key}_koist_eval_high" value="${kEvalMin}" min="0" max="60" step="0.5"
+                    <input type="number" data-key="eval_${eal.key}_koist_eval_high" value="${kEvalMin}" min="0" max="60" step="1"
                       class="w-full px-2 py-1.5 border rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500/30 eval-input" id="input_eval_${eal.key}_koist_eval_high" onchange="updateAdminPreview()">
                     <span class="text-xs text-gray-400">월</span>
                   </div>
@@ -229,13 +229,13 @@
                 <div class="flex-1 grid grid-cols-2 gap-2">
                   <div class="flex items-center gap-1">
                     <span class="text-xs text-gray-400 shrink-0 w-6">준비</span>
-                    <input type="number" data-key="eval_${eal.key}_koist_prep_low" value="${kPrepMax}" min="0" max="60" step="0.5"
+                    <input type="number" data-key="eval_${eal.key}_koist_prep_low" value="${kPrepMax}" min="0" max="60" step="1"
                       class="w-full px-2 py-1.5 border rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500/30 eval-input" id="input_eval_${eal.key}_koist_prep_low" onchange="updateAdminPreview()">
                     <span class="text-xs text-gray-400">월</span>
                   </div>
                   <div class="flex items-center gap-1">
                     <span class="text-xs text-gray-400 shrink-0 w-6">평가</span>
-                    <input type="number" data-key="eval_${eal.key}_koist_eval_low" value="${kEvalMax}" min="0" max="60" step="0.5"
+                    <input type="number" data-key="eval_${eal.key}_koist_eval_low" value="${kEvalMax}" min="0" max="60" step="1"
                       class="w-full px-2 py-1.5 border rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500/30 eval-input" id="input_eval_${eal.key}_koist_eval_low" onchange="updateAdminPreview()">
                     <span class="text-xs text-gray-400">월</span>
                   </div>
@@ -263,7 +263,7 @@
           html += `
           <div class="flex items-center gap-2">
             <label class="text-xs text-gray-400 w-48 shrink-0">${s.description || s.key}</label>
-            <input type="number" data-key="${s.key}" value="${s.value}" min="0" max="60" step="0.5"
+            <input type="number" data-key="${s.key}" value="${s.value}" min="0" max="60" step="1"
               class="w-24 px-2 py-1 border rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500/30" id="input_${s.key}">
             <span class="text-xs text-gray-400">개월</span>
           </div>`;
@@ -592,13 +592,13 @@
 
     // t=0 at prepVal=100 (best), t=1 at prepVal=1 (worst)
     const t = 1 - (prepVal - 1) / 99;
-    const kPrep = Math.round((kPrepMin + (kPrepMax - kPrepMin) * t) * 10) / 10;
-    const kEval = Math.round((kEvalMin + (kEvalMax - kEvalMin) * t) * 10) / 10;
-    const kTotal = Math.round((kPrep + kEval) * 10) / 10;
+    const kPrep = Math.round(kPrepMin + (kPrepMax - kPrepMin) * t);
+    const kEval = Math.round(kEvalMin + (kEvalMax - kEvalMin) * t);
+    const kTotal = kPrep + kEval;
     const reduction = gTotal > 0 ? Math.round((1 - kTotal / gTotal) * 100) : 0;
-    const saving = Math.round((gTotal - kTotal) * 10) / 10;
+    const saving = Math.round(gTotal - kTotal);
 
-    function fmt(v) { return v === Math.floor(v) ? v.toString() : v.toFixed(1); }
+    function fmt(v) { return Math.round(v).toString(); }
 
     document.getElementById('previewCcraTotal').textContent = fmt(gTotal);
     document.getElementById('previewCcraPrep').textContent = fmt(gPrep);
