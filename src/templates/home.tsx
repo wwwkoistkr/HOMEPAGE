@@ -1,4 +1,4 @@
-// KOIST - Home Page Template (v35.5.3 - Popup #1 text+30%, #2/#3 card fits image size, 8K responsive)
+// KOIST - Home Page Template (v35.5.4 - Popup #1 text+30%, #2 13cm×14.5cm, #3 13cm×6cm, 8K responsive)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem, SimCertType } from '../types';
 
 function bgStyle(imageUrl: string | undefined, fallbackGradient: string, opacity: string = '0.85'): string {
@@ -43,7 +43,7 @@ export function homePage(opts: {
 
   return `
   <!-- ════════════════════════════════════════════════
-       POPUP SYSTEM v35.5.3 — HTML popup 13cm fixed, Image popup auto (fits image), 8K Responsive
+       POPUP SYSTEM v35.5.4 — HTML popup 13cm, Image popup per-card cm size, 8K Responsive
        ════════════════════════════════════════════════ -->
   ${popups.length > 0 ? `
   <div id="popupOverlay" class="fixed inset-0 z-[9998] transition-opacity duration-300" style="background:rgba(0,0,0,0.5); backdrop-filter:blur(4px);" onclick="closeAllPopups()"></div>
@@ -65,11 +65,14 @@ export function homePage(opts: {
         const bodyLineHeight = p.line_height || 1.7;
         const bodyPadding = p.padding || 16;
         const bodyBgColor = p.bg_color || '#ffffff';
+        const cardW = p.card_width_cm;
+        const cardH = p.card_height_cm;
+        const imgCardStyle = (cardW && cardH) ? `width:${cardW}cm; height:${cardH}cm;` : '';
         
         return `
       <div class="popup-card${p.popup_type === 'image' ? ' popup-card--imgtype' : ''}"
            data-popup-id="${p.id}" id="popup-${p.id}"
-           style="animation: popupSlideIn ${0.3 + i * 0.1}s ease-out;">
+           style="animation: popupSlideIn ${0.3 + i * 0.1}s ease-out; ${imgCardStyle}">
         <!-- HEADER — admin-editable title -->
         <div class="popup-card-header" style="${titleBg}">
           <span class="popup-card-title" style="color:${titleColor}; font-size:${titleFontSize}px;" data-admin-edit="popup_${p.id}_title">${p.title}</span>
@@ -106,7 +109,7 @@ export function homePage(opts: {
     </div>
   </div>
   <style>
-    /* ═══ POPUP SYSTEM v35.5.3 — Base (Desktop 1920px) ═══ */
+    /* ═══ POPUP SYSTEM v35.5.4 — Base (Desktop 1920px) ═══ */
     .popup-multi-container {
       top: 50%; left: 50%; transform: translate(-50%, -50%);
       width: auto; max-width: 95vw; max-height: 95vh;
@@ -136,9 +139,9 @@ export function homePage(opts: {
       border: 1px solid rgba(226,232,240,0.5);
       display: flex; flex-direction: column;
     }
-    /* Image-type popup: width auto, shrinks to image natural width */
+    /* Image-type popup: per-card size from DB (card_width_cm/card_height_cm) */
     .popup-card--imgtype {
-      width: auto; max-width: 95vw;
+      max-width: 95vw;
     }
 
     /* ═══ HEADER ═══ */
@@ -231,7 +234,7 @@ export function homePage(opts: {
     /* ═══ RESPONSIVE — Tablet (640px ~ 1023px) ═══ */
     @media (max-width: 1023px) {
       .popup-card { width: 10cm; }
-      .popup-card--imgtype { width: auto; max-width: 90vw; }
+      .popup-card--imgtype { max-width: 90vw; }
       .popup-grid { gap: 10px; }
     }
 
@@ -244,7 +247,7 @@ export function homePage(opts: {
         gap: 10px;
       }
       .popup-card { width: min(90vw, 13cm); max-height: 55vh; flex: none; }
-      .popup-card--imgtype { width: auto; max-width: 90vw; }
+      .popup-card--imgtype { width: min(90vw, 13cm); max-width: 90vw; height: auto !important; }
       .popup-card-body { max-height: 35vh; overflow-y: auto; }
       .popup-close-all-btn { padding: 6px 14px; font-size: 11px; }
     }
@@ -252,13 +255,13 @@ export function homePage(opts: {
     /* ═══ RESPONSIVE — Small Mobile (≤375px) ═══ */
     @media (max-width: 375px) {
       .popup-card { width: min(88vw, 11cm); max-height: 50vh; }
-      .popup-card--imgtype { width: auto; max-width: 88vw; }
+      .popup-card--imgtype { width: min(88vw, 11cm); max-width: 88vw; height: auto !important; }
     }
 
     /* ═══ HIGH-RES — 2.5K (2560px) ═══ */
     @media (min-width: 2560px) {
       .popup-card { width: 15.6cm; border-radius: 22px; }
-      .popup-card--imgtype { width: auto; max-width: 95vw; }
+      .popup-card--imgtype { max-width: 95vw; }
       .popup-grid { gap: 22px; }
       .popup-card-header { padding: 16px 22px; }
       .popup-card-title { font-size: 19px !important; }
@@ -276,7 +279,7 @@ export function homePage(opts: {
     /* ═══ HIGH-RES — 4K (3840px) ═══ */
     @media (min-width: 3840px) {
       .popup-card { width: 19.5cm; border-radius: 32px; }
-      .popup-card--imgtype { width: auto; max-width: 95vw; }
+      .popup-card--imgtype { max-width: 95vw; }
       .popup-grid { gap: 32px; }
       .popup-card-header { padding: 22px 30px; }
       .popup-card-title { font-size: 26px !important; }
@@ -295,7 +298,7 @@ export function homePage(opts: {
     /* ═══ HIGH-RES — 8K (7680px) ═══ */
     @media (min-width: 7680px) {
       .popup-card { width: 26cm; border-radius: 48px; }
-      .popup-card--imgtype { width: auto; max-width: 95vw; }
+      .popup-card--imgtype { max-width: 95vw; }
       .popup-grid { gap: 48px; }
       .popup-card-header { padding: 36px 44px; border-bottom-width: 2px; }
       .popup-card-title { font-size: 40px !important; }

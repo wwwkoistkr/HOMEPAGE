@@ -41,6 +41,8 @@ export type Popup = {
   title_color: string;
   line_height: number;
   padding: number;
+  card_width_cm: number | null;
+  card_height_cm: number | null;
 };
 
 export type Department = {
