@@ -30,19 +30,19 @@ export function homePage(opts: {
   // Mapping: cc-eal2→EAL2, cc-eal3→EAL3, cc-eal4→EAL4, overall→weighted average
   const W2M = 4.33; // weeks per month
   function simTypeToEal(st: SimCertType) {
-    const tradMinM = Math.round(st.traditional_min_weeks / W2M * 10) / 10;
-    const tradMaxM = Math.round(st.traditional_max_weeks / W2M * 10) / 10;
-    const koistMinM = Math.round(st.koist_min_weeks / W2M * 10) / 10;
-    const koistMaxM = Math.round(st.koist_max_weeks / W2M * 10) / 10;
+    const tradMinM = Math.round(st.traditional_min_weeks / W2M);
+    const tradMaxM = Math.round(st.traditional_max_weeks / W2M);
+    const koistMinM = Math.round(st.koist_min_weeks / W2M);
+    const koistMaxM = Math.round(st.koist_max_weeks / W2M);
     // Split traditional into prep (55%) + eval (45%) based on industry norms
-    const gPrep = Math.round(tradMaxM * 0.55 * 10) / 10;
-    const gEval = Math.round(tradMaxM * 0.45 * 10) / 10;
+    const gPrep = Math.round(tradMaxM * 0.55);
+    const gEval = Math.round(tradMaxM * 0.45);
     // KOIST: min=high prep effort → shorter, max=low prep effort → longer
     // Split koist total into prep (40%) + eval (60%)
-    const kPrepMin = Math.round(koistMinM * 0.40 * 10) / 10;
-    const kEvalMin = Math.round(koistMinM * 0.60 * 10) / 10;
-    const kPrepMax = Math.round(koistMaxM * 0.40 * 10) / 10;
-    const kEvalMax = Math.round(koistMaxM * 0.60 * 10) / 10;
+    const kPrepMin = Math.round(koistMinM * 0.40);
+    const kEvalMin = Math.round(koistMinM * 0.60);
+    const kPrepMax = Math.round(koistMaxM * 0.40);
+    const kEvalMax = Math.round(koistMaxM * 0.60);
     return { gPrep, gEval, kPrepMin, kEvalMin, kPrepMax, kEvalMax };
   }
 
@@ -70,7 +70,7 @@ export function homePage(opts: {
   function buildOverallEntry() {
     if (eal2Type && eal3Type && eal4Type) {
       const types = [eal2Type, eal3Type, eal4Type].map(simTypeToEal);
-      const avg = (vals: number[]) => Math.round(vals.reduce((a,b) => a+b, 0) / vals.length * 10) / 10;
+      const avg = (vals: number[]) => Math.round(vals.reduce((a,b) => a+b, 0) / vals.length);
       return `{ general:{prep:${avg(types.map(t=>t.gPrep))},eval:${avg(types.map(t=>t.gEval))}}, koist:{prepMin:${avg(types.map(t=>t.kPrepMin))},prepMax:${avg(types.map(t=>t.kPrepMax))},evalMin:${avg(types.map(t=>t.kEvalMin))},evalMax:${avg(types.map(t=>t.kEvalMax))}} }`;
     }
     return buildEalEntry(undefined, 'overall');
@@ -575,7 +575,7 @@ export function homePage(opts: {
                 <!-- CCRA bar -->
                 <div>
                   <div class="flex justify-between items-center" style="margin-bottom:clamp(3px,0.21vw,6px)">
-                    <span class="text-slate-500 font-semibold flex items-center" style="gap:clamp(3px,0.21vw,6px); font-size:clamp(0.68rem,0.73vw,3.5rem)"><span class="inline-block rounded-full" style="width:clamp(5px,0.36vw,10px); height:clamp(5px,0.36vw,10px); background: linear-gradient(135deg, #94A3B8, #64748B);"></span><span data-admin-edit="sim_label_traditional">${s.sim_label_traditional || '전통 CCRA 평가 프로세스'}</span></span>
+                    <span class="text-slate-500 font-semibold flex items-center" style="gap:clamp(3px,0.21vw,6px); font-size:clamp(0.68rem,0.73vw,3.5rem)"><span class="inline-block rounded-full" style="width:clamp(5px,0.36vw,10px); height:clamp(5px,0.36vw,10px); background: linear-gradient(135deg, #94A3B8, #64748B);"></span><span data-admin-edit="sim_label_traditional">${s.sim_label_traditional || 'CCRA 권고 일수'}</span></span>
                     <span id="ealGeneralTotal" class="text-slate-400 font-bold" style="font-size:clamp(0.68rem,0.73vw,3.5rem)">약 24개월</span>
                   </div>
                   <div class="relative rounded-xl overflow-hidden" style="height:clamp(32px,2.34vw,72px); background: linear-gradient(90deg, #F1F5F9, #E2E8F0);">
@@ -653,7 +653,7 @@ export function homePage(opts: {
       display: flex;
       flex-direction: column;
       margin-left: -6cm;
-      width: calc(100% + 14cm);
+      width: calc(100% + 9cm);
       min-width: 0;
     }
     
@@ -1624,21 +1624,21 @@ export function homePage(opts: {
       var d = ealData[level];
       if (!d) return null;
       var t = 1 - (prepVal - 1) / 99;
-      var kPrep = Math.round(lerp(d.koist.prepMin, d.koist.prepMax, t) * 10) / 10;
-      var kEval = Math.round(lerp(d.koist.evalMin, d.koist.evalMax, t) * 10) / 10;
+      var kPrep = Math.round(lerp(d.koist.prepMin, d.koist.prepMax, t));
+      var kEval = Math.round(lerp(d.koist.evalMin, d.koist.evalMax, t));
       var g = d.general;
       var gTotal = g.prep + g.eval;
-      var kTotal = Math.round((kPrep + kEval) * 10) / 10;
+      var kTotal = kPrep + kEval;
       return {
         general: { prep: g.prep, eval: g.eval, total: gTotal },
         koist: { prep: kPrep, eval: kEval, total: kTotal },
         maxBar: gTotal,
         reduction: gTotal > 0 ? Math.round((1 - kTotal / gTotal) * 100) : 0,
-        saving: Math.round((gTotal - kTotal) * 10) / 10
+        saving: gTotal - kTotal
       };
     }
 
-    function fmtM(v) { return v === Math.floor(v) ? v.toString() : v.toFixed(1); }
+    function fmtM(v) { return Math.round(v).toString(); }
 
     function getColor(prepVal) {
       if (prepVal <= 25) return '#EF4444';
@@ -1661,11 +1661,11 @@ export function homePage(opts: {
         gBar.style.background = 'linear-gradient(90deg, #F59E0B 0%, #F59E0B ' + gPrepPct + '%, #94A3B8 ' + gPrepPct + '%, #94A3B8 100%)';
       }
       var gTotal = document.getElementById('ealGeneralTotal');
-      if (gTotal) gTotal.textContent = '약 ' + d.general.total + '개월';
+      if (gTotal) gTotal.textContent = '약 ' + Math.round(d.general.total) + '개월';
       var gPrep = document.getElementById('ealGeneralPrep');
-      if (gPrep) gPrep.textContent = '준비 ' + d.general.prep + '개월';
+      if (gPrep) gPrep.textContent = '준비 ' + Math.round(d.general.prep) + '개월';
       var gEval = document.getElementById('ealGeneralEval');
-      if (gEval) gEval.textContent = '평가 ' + d.general.eval + '개월';
+      if (gEval) gEval.textContent = '평가 ' + Math.round(d.general.eval) + '개월';
 
       var kWidthPct = d.maxBar > 0 ? Math.round((d.koist.total / d.maxBar) * 100) : 50;
       var kPrepPct = d.koist.total > 0 ? Math.round((d.koist.prep / d.koist.total) * 100) : 50;
