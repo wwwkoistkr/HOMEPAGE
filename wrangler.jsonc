@@ -10,12 +10,13 @@
       "database_name": "koist-website-db",
       "database_id": "91f1eb2f-e9fa-45e8-8bea-4958ce74727a"
     }
+  ],
+  // R2 버킷 - Cloudflare 대시보드에서 'koist-images' 버킷을 생성해야 파일 업로드가 동작합니다
+  // 버킷 미생성 시에도 URL 등록 방식으로 이미지 관리 가능
+  "r2_buckets": [
+    {
+      "binding": "R2",
+      "bucket_name": "koist-images"
+    }
   ]
-  // R2 버킷 - Cloudflare 대시보드에서 'koist-images' 버킷 생성 후 아래 주석 해제
-  // "r2_buckets": [
-  //   {
-  //     "binding": "R2",
-  //     "bucket_name": "koist-images"
-  //   }
-  // ]
 }

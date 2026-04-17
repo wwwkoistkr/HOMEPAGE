@@ -49,6 +49,12 @@
       +(dept?.image_url ? '<img src="'+dept.image_url+'" class="w-10 h-10 rounded-lg object-cover border">' : '')+'</div></div>'
       +'<div class="mb-3"><label class="block text-xs font-medium text-gray-500 mb-1"><i class="fas fa-panorama mr-1"></i>헤더 배경 이미지 URL (비워두면 기본 그라데이션 사용)</label>'
       +'<input id="dHeaderBg" value="'+(dept?.header_bg_url||'')+'" placeholder="/api/images/background/... 또는 외부 URL" class="w-full px-3 py-2 border rounded-lg text-sm"></div>'
+      +'<div class="mb-3 border-t pt-3 mt-3"><label class="block text-xs font-semibold text-blue-600 mb-2"><i class="fas fa-phone-volume mr-1"></i>담당자 연락처 (비워두면 대표번호 표시)</label>'
+      +'<div class="grid grid-cols-3 gap-3">'
+      +'<div><label class="block text-xs text-gray-400 mb-1">담당부서</label><input id="dContactDept" value="'+(dept?.contact_dept||'')+'" placeholder="예: 평가1팀" class="w-full px-3 py-2 border rounded-lg text-sm"></div>'
+      +'<div><label class="block text-xs text-gray-400 mb-1">담당자명</label><input id="dContactName" value="'+(dept?.contact_name||'')+'" placeholder="예: 홍길동 팀장" class="w-full px-3 py-2 border rounded-lg text-sm"></div>'
+      +'<div><label class="block text-xs text-gray-400 mb-1">전화번호</label><input id="dContactPhone" value="'+(dept?.contact_phone||'')+'" placeholder="예: 02-1234-5678" class="w-full px-3 py-2 border rounded-lg text-sm"></div>'
+      +'</div></div>'
       +'<div class="flex gap-2">'
       +'<button onclick="saveDept('+(dept?.id||'null')+')" class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm">저장</button>'
       +'<button onclick="document.getElementById(\'deptFormArea\').classList.add(\'hidden\')" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm">취소</button>'
@@ -79,7 +85,10 @@
       color: document.getElementById('dColor').value,
       sort_order: parseInt(document.getElementById('dOrder').value)||0,
       image_url: document.getElementById('dImageUrl').value,
-      header_bg_url: document.getElementById('dHeaderBg').value
+      header_bg_url: document.getElementById('dHeaderBg').value,
+      contact_dept: (document.getElementById('dContactDept').value||'').trim(),
+      contact_name: (document.getElementById('dContactName').value||'').trim(),
+      contact_phone: (document.getElementById('dContactPhone').value||'').trim()
     };
     if(id) await apiCall('/api/admin/departments/'+id, 'PUT', body);
     else await apiCall('/api/admin/departments', 'POST', body);
@@ -174,6 +183,8 @@
       +'<div id="pEditor-'+deptId+'" contenteditable="true" class="w-full px-3 py-2 border rounded-b text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500/30" style="min-height:150px; max-height:400px; overflow-y:auto; line-height:1.7;">'+(page?.content||'')+'</div>'
       // Hidden textarea for source view toggle
       +'<textarea id="pContent-'+deptId+'" rows="6" class="w-full px-2 py-1.5 border rounded text-sm mb-2 font-mono hidden" style="min-height:150px;">'+(page?.content||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</textarea>'
+      +'<div class="mt-2 mb-2"><label class="block text-xs font-medium text-gray-500 mb-1"><i class="fas fa-panorama mr-1"></i>페이지 배경 이미지 URL (비워두면 상위 사업분야 배경 사용)</label>'
+      +'<input id="pHeaderBg-'+deptId+'" value="'+(page?.header_bg_url||'')+'" placeholder="/api/images/background/... 또는 외부 URL" class="w-full px-2 py-1.5 border rounded text-sm"></div>'
       +'<div class="flex gap-2 mt-2">'
       +'<button onclick="savePage('+deptId+','+(page?.id||'null')+')" class="bg-green-500 text-white px-3 py-1.5 rounded text-xs">저장</button>'
       +'<button onclick="document.getElementById(\'pageForm-'+deptId+'\').classList.add(\'hidden\')" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded text-xs">취소</button>'
@@ -201,7 +212,8 @@
       title: document.getElementById('pTitle-'+deptId).value,
       slug: document.getElementById('pSlug-'+deptId).value,
       content: content,
-      sort_order: parseInt(document.getElementById('pOrder-'+deptId).value)||0
+      sort_order: parseInt(document.getElementById('pOrder-'+deptId).value)||0,
+      header_bg_url: (document.getElementById('pHeaderBg-'+deptId).value||'').trim()
     };
     if(pageId) await apiCall('/api/admin/dep-pages/'+pageId, 'PUT', body);
     else await apiCall('/api/admin/departments/'+deptId+'/pages', 'POST', body);

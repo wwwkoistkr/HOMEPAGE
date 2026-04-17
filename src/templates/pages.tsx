@@ -59,7 +59,7 @@ function statusBadge(status: string) {
 /* ────────────── Service Detail Page ────────────── */
 export function servicePage(dept: Department, pages: DepPage[], currentPage: DepPage | null, settings: SettingsMap) {
   const s = settings;
-  const headerBg = dept.header_bg_url || s.page_header_bg_url || '';
+  const headerBg = (currentPage as any)?.header_bg_url || dept.header_bg_url || s.page_header_bg_url || '';
 
   return `
   ${pageHeader({
@@ -113,11 +113,11 @@ export function servicePage(dept: Department, pages: DepPage[], currentPage: Dep
             <div class="relative flex flex-col sm:flex-row items-center justify-between" style="gap:var(--space-md)">
               <div>
                 <h3 class="font-bold text-white f-text-sm">${dept.name}에 대해 궁금하신 점이 있으신가요?</h3>
-                <p class="text-slate-400/80 f-text-xs" style="margin-top:3px">전문 상담원이 친절하게 안내해 드립니다.</p>
+                <p class="text-slate-400/80 f-text-xs" style="margin-top:3px">${(dept as any).contact_dept || (dept as any).contact_name ? `${(dept as any).contact_dept ? `담당부서: ${(dept as any).contact_dept}` : ''}${(dept as any).contact_dept && (dept as any).contact_name ? ' | ' : ''}${(dept as any).contact_name ? `담당자: ${(dept as any).contact_name}` : ''}` : '전문 상담원이 친절하게 안내해 드립니다.'}</p>
               </div>
               <div class="flex shrink-0" style="gap:var(--space-sm)">
-                <a href="tel:${s.phone || '02-586-1230'}" class="btn-primary f-text-xs ripple-btn" style="padding:var(--space-sm) var(--space-md)">
-                  <i class="fas fa-phone" style="font-size:10px"></i> ${s.phone || '02-586-1230'}
+                <a href="tel:${(dept as any).contact_phone || s.phone || '02-586-1230'}" class="btn-primary f-text-xs ripple-btn" style="padding:var(--space-sm) var(--space-md)">
+                  <i class="fas fa-phone" style="font-size:10px"></i> ${(dept as any).contact_phone || s.phone || '02-586-1230'}
                 </a>
                 <a href="/support/inquiry" class="btn-ghost f-text-xs" style="padding:var(--space-sm) var(--space-md)">
                   <i class="fas fa-envelope" style="font-size:10px"></i> 상담문의

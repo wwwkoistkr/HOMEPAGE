@@ -95,15 +95,15 @@ admin.get('/departments', async (c) => {
 });
 
 admin.post('/departments', async (c) => {
-  const { name, slug, description, icon, color, sort_order, image_url, header_bg_url } = await c.req.json();
-  await c.env.DB.prepare('INSERT INTO departments (name, slug, description, icon, color, sort_order, image_url, header_bg_url) VALUES (?,?,?,?,?,?,?,?)').bind(name, slug, description || '', icon || 'fa-shield-halved', color || '#3B82F6', sort_order || 0, image_url || '', header_bg_url || '').run();
+  const { name, slug, description, icon, color, sort_order, image_url, header_bg_url, contact_dept, contact_name, contact_phone } = await c.req.json();
+  await c.env.DB.prepare('INSERT INTO departments (name, slug, description, icon, color, sort_order, image_url, header_bg_url, contact_dept, contact_name, contact_phone) VALUES (?,?,?,?,?,?,?,?,?,?,?)').bind(name, slug, description || '', icon || 'fa-shield-halved', color || '#3B82F6', sort_order || 0, image_url || '', header_bg_url || '', contact_dept || '', contact_name || '', contact_phone || '').run();
   return c.json({ success: true });
 });
 
 admin.put('/departments/:id', async (c) => {
   const id = c.req.param('id');
   const body = await c.req.json();
-  const fields = ['name', 'slug', 'description', 'icon', 'color', 'sort_order', 'is_active', 'image_url', 'header_bg_url'];
+  const fields = ['name', 'slug', 'description', 'icon', 'color', 'sort_order', 'is_active', 'image_url', 'header_bg_url', 'contact_dept', 'contact_name', 'contact_phone'];
   const updates: string[] = [];
   const values: any[] = [];
   for (const f of fields) { if (body[f] !== undefined) { updates.push(`${f} = ?`); values.push(body[f]); } }
@@ -136,7 +136,7 @@ admin.post('/departments/:id/pages', async (c) => {
 admin.put('/dep-pages/:id', async (c) => {
   const id = c.req.param('id');
   const body = await c.req.json();
-  const fields = ['title', 'slug', 'content', 'sort_order', 'is_active', 'meta_description'];
+  const fields = ['title', 'slug', 'content', 'sort_order', 'is_active', 'meta_description', 'header_bg_url'];
   const updates: string[] = [];
   const values: any[] = [];
   for (const f of fields) { if (body[f] !== undefined) { updates.push(`${f} = ?`); values.push(body[f]); } }
