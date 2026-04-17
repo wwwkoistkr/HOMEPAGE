@@ -11,14 +11,10 @@
       "database_id": "91f1eb2f-e9fa-45e8-8bea-4958ce74727a"
     }
   ],
-  // R2 버킷 - Cloudflare 대시보드에서 R2 서비스 활성화 후 'koist-images' 버킷 생성 필요
-  // R2 활성화 전에도 URL 등록 방식으로 이미지 관리 가능
-  // 활성화 방법: Cloudflare 대시보드 → R2 Object Storage → 활성화 → 버킷 'koist-images' 생성
-  // 이후 아래 주석 해제하고 재배포
-  // "r2_buckets": [
-  //   {
-  //     "binding": "R2",
-  //     "bucket_name": "koist-images"
-  //   }
-  // ]
+  "r2_buckets": [
+    {
+      "binding": "R2",
+      "bucket_name": "koist-images"
+    }
+  ]
 }

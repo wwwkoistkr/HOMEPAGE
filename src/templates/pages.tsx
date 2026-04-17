@@ -12,6 +12,7 @@ function pageHeader(opts: {
   breadcrumbs?: { label: string; href?: string }[];
   settings: SettingsMap;
   bgUrl?: string;
+  contactInfo?: { dept?: string; name?: string; phone?: string };
 }) {
   const s = opts.settings;
   const bg = opts.bgUrl || s.page_header_bg_url || '';
@@ -31,14 +32,28 @@ function pageHeader(opts: {
           ${b.href ? `<a href="${b.href}" class="hover:text-white/90 transition-colors">${b.label}</a>` : `<span class="text-white/90 font-medium">${b.label}</span>`}
         `).join('')}
       </nav>` : ''}
-      <div class="flex items-center" style="gap:var(--space-sm)">
-        <div class="rounded-lg flex items-center justify-center shrink-0" style="width:clamp(38px,3.2vw,46px); height:clamp(38px,3.2vw,46px); background: linear-gradient(135deg, ${opts.iconColor}20, ${opts.iconColor}10); border: 1px solid ${opts.iconColor}15;">
-          <i class="fas ${opts.icon}" style="color:${opts.iconColor}; font-size:var(--text-lg)"></i>
+      <div class="flex items-center justify-between flex-wrap" style="gap:var(--space-sm)">
+        <div class="flex items-center" style="gap:var(--space-sm)">
+          <div class="rounded-lg flex items-center justify-center shrink-0" style="width:clamp(38px,3.2vw,46px); height:clamp(38px,3.2vw,46px); background: linear-gradient(135deg, ${opts.iconColor}20, ${opts.iconColor}10); border: 1px solid ${opts.iconColor}15;">
+            <i class="fas ${opts.icon}" style="color:${opts.iconColor}; font-size:var(--text-lg)"></i>
+          </div>
+          <div>
+            <h1 class="text-white font-bold f-text-xl tracking-tight">${opts.title}</h1>
+            ${opts.subtitle ? `<p class="text-slate-400/80 f-text-xs" style="margin-top:3px">${opts.subtitle}</p>` : ''}
+          </div>
         </div>
-        <div>
-          <h1 class="text-white font-bold f-text-xl tracking-tight">${opts.title}</h1>
-          ${opts.subtitle ? `<p class="text-slate-400/80 f-text-xs" style="margin-top:3px">${opts.subtitle}</p>` : ''}
-        </div>
+        ${opts.contactInfo && (opts.contactInfo.dept || opts.contactInfo.name || opts.contactInfo.phone) ? `
+        <div class="hidden sm:flex items-center shrink-0 rounded-lg" style="gap:clamp(8px,1vw,14px); padding:clamp(6px,0.6vw,10px) clamp(10px,1.2vw,18px); background:rgba(255,255,255,0.06); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.08);">
+          <div class="rounded-md flex items-center justify-center shrink-0" style="width:30px;height:30px;background:linear-gradient(135deg,rgba(59,130,246,0.20),rgba(6,182,212,0.15));">
+            <i class="fas fa-headset text-blue-400" style="font-size:13px"></i>
+          </div>
+          <div style="line-height:1.4">
+            <div class="text-slate-300 f-text-xs" style="white-space:nowrap">
+              ${opts.contactInfo.dept ? `<span>${opts.contactInfo.dept}</span>` : ''}${opts.contactInfo.dept && opts.contactInfo.name ? '<span class="text-slate-500 mx-1">|</span>' : ''}${opts.contactInfo.name ? `<span>${opts.contactInfo.name}</span>` : ''}
+            </div>
+            ${opts.contactInfo.phone ? `<a href="tel:${opts.contactInfo.phone}" class="text-blue-400 font-semibold f-text-xs hover:text-blue-300 transition-colors" style="white-space:nowrap"><i class="fas fa-phone" style="font-size:9px;margin-right:3px"></i>${opts.contactInfo.phone}</a>` : ''}
+          </div>
+        </div>` : ''}
       </div>
     </div>
   </section>`;
@@ -74,6 +89,11 @@ export function servicePage(dept: Department, pages: DepPage[], currentPage: Dep
     ],
     settings: s,
     bgUrl: headerBg,
+    contactInfo: {
+      dept: (dept as any).contact_dept || '',
+      name: (dept as any).contact_name || '',
+      phone: (dept as any).contact_phone || '',
+    },
   })}
 
   <!-- Content -->
