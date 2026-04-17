@@ -43,15 +43,15 @@ function pageHeader(opts: {
           </div>
         </div>
         ${opts.contactInfo && (opts.contactInfo.dept || opts.contactInfo.name || opts.contactInfo.phone) ? `
-        <div class="hidden sm:flex items-center shrink-0 rounded-lg" style="gap:clamp(8px,1vw,14px); padding:clamp(6px,0.6vw,10px) clamp(10px,1.2vw,18px); background:rgba(255,255,255,0.06); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.08);">
-          <div class="rounded-md flex items-center justify-center shrink-0" style="width:30px;height:30px;background:linear-gradient(135deg,rgba(59,130,246,0.20),rgba(6,182,212,0.15));">
-            <i class="fas fa-headset text-blue-400" style="font-size:13px"></i>
+        <div class="hidden sm:flex items-center shrink-0 rounded-xl" style="gap:clamp(14px,1.8vw,24px); padding:clamp(12px,1.2vw,20px) clamp(20px,2.4vw,36px); background:rgba(255,255,255,0.07); backdrop-filter:blur(12px); border:1.5px solid rgba(255,255,255,0.12); box-shadow:0 4px 24px rgba(0,0,0,0.15); -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;">
+          <div class="rounded-lg flex items-center justify-center shrink-0" style="width:clamp(48px,5vw,60px);height:clamp(48px,5vw,60px);background:linear-gradient(135deg,rgba(59,130,246,0.25),rgba(6,182,212,0.20));">
+            <i class="fas fa-headset text-blue-400" style="font-size:clamp(22px,2.4vw,28px)"></i>
           </div>
-          <div style="line-height:1.4">
-            <div class="text-slate-300 f-text-xs" style="white-space:nowrap">
-              ${opts.contactInfo.dept ? `<span>${opts.contactInfo.dept}</span>` : ''}${opts.contactInfo.dept && opts.contactInfo.name ? '<span class="text-slate-500 mx-1">|</span>' : ''}${opts.contactInfo.name ? `<span>${opts.contactInfo.name}</span>` : ''}
+          <div style="line-height:1.5">
+            <div class="text-slate-200 font-bold" style="white-space:nowrap; font-size:clamp(0.85rem,0.9vw,1.05rem); letter-spacing:0.02em;">
+              ${opts.contactInfo.dept ? `<span>${opts.contactInfo.dept}</span>` : ''}${opts.contactInfo.dept && opts.contactInfo.name ? '<span class="text-slate-500 mx-2">|</span>' : ''}${opts.contactInfo.name ? `<span>${opts.contactInfo.name}</span>` : ''}
             </div>
-            ${opts.contactInfo.phone ? `<a href="tel:${opts.contactInfo.phone}" class="text-blue-400 font-semibold f-text-xs hover:text-blue-300 transition-colors" style="white-space:nowrap"><i class="fas fa-phone" style="font-size:9px;margin-right:3px"></i>${opts.contactInfo.phone}</a>` : ''}
+            ${opts.contactInfo.phone ? `<a href="tel:${opts.contactInfo.phone}" class="text-blue-400 font-extrabold hover:text-blue-300 transition-colors" style="white-space:nowrap; font-size:clamp(1.05rem,1.2vw,1.35rem); letter-spacing:0.03em;"><i class="fas fa-phone" style="font-size:clamp(13px,1.1vw,16px);margin-right:6px"></i>${opts.contactInfo.phone}</a>` : ''}
           </div>
         </div>` : ''}
       </div>

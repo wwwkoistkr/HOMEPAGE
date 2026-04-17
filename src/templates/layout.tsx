@@ -1134,7 +1134,7 @@ export function layout(opts: {
           </a>
 
           <!-- Right: Phone + Mobile Menu -->
-          <div class="flex items-center shrink-0" style="gap:var(--space-xs);margin-left:auto;margin-right:10cm;">
+          <div class="flex items-center shrink-0" style="gap:var(--space-xs);margin-left:auto;margin-right:15cm;">
             <a href="tel:${s.phone || '02-586-1230'}" class="hidden xl:inline-flex items-center text-white font-bold rounded-lg transition-all ripple-btn" style="gap: 6px; padding: clamp(0.35rem,0.5vw,0.5rem) clamp(0.6rem,0.8vw,0.9rem); font-size: clamp(0.75rem, 0.65rem + 0.30vw, 0.92rem); background: linear-gradient(135deg, rgba(59,130,246,0.85), rgba(6,182,212,0.85)); box-shadow: 0 4px 16px rgba(59,130,246,0.25), inset 0 1px 0 rgba(255,255,255,0.12); border-radius: clamp(8px,0.6vw,12px);">
               <i class="fas fa-phone" style="font-size:clamp(8px,0.6vw,11px)"></i>
               <span>${s.phone || '02-586-1230'}</span>
