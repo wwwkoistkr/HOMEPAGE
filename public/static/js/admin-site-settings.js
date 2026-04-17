@@ -114,9 +114,24 @@
     items.forEach(s => {
       const isImageUrl = s.key.includes('bg_url') || s.key === 'logo_url';
       const isOpacity = s.key.includes('opacity');
+      const isGradientColor = s.key.startsWith('hero_gradient_color');
 
+      // Hero gradient color picker
+      if (isGradientColor) {
+        const colorNum = s.key.replace('hero_gradient_color', '');
+        const stops = {1:'0%', 2:'25%', 3:'45%', 4:'70%', 5:'100%'};
+        html += `
+        <div class="flex items-center gap-3 p-3 rounded-lg border border-pink-100 bg-pink-50/30">
+          <input type="color" data-key="${s.key}" value="${s.value || '#070B14'}" id="input_${s.key}"
+            class="w-10 h-10 rounded-lg border-2 border-gray-200 cursor-pointer" style="padding:1px;"
+            oninput="updateGradientPreview()">
+          <div class="flex-1 min-w-0">
+            <label class="text-sm font-medium text-gray-700">${s.description || '색상 '+colorNum}</label>
+            <div class="text-xs text-gray-400">위치: ${stops[colorNum] || ''} | <span id="colorVal_${s.key}" class="font-mono">${s.value || '#070B14'}</span></div>
+          </div>
+        </div>`;
       // Hero compact 2-line text fields (HTML allowed)
-      if (s.key === 'hero_line1' || s.key === 'hero_line2') {
+      } else if (s.key === 'hero_line1' || s.key === 'hero_line2') {
         const lineLabel = s.key === 'hero_line1' ? '히어로 첫번째 줄' : '히어로 두번째 줄';
         const lineHint = s.key === 'hero_line2' ? '<span class="text-xs text-blue-400 ml-1">(HTML 가능: &lt;span class=&quot;hero-gradient-text&quot;&gt;...&lt;/span&gt;)</span>' : '';
         html += `
@@ -450,4 +465,50 @@
       window.updateAdminPreview();
     }
   }, 100);
+
+  // ========= Gradient Preview =========
+  window.updateGradientPreview = function() {
+    var colors = [];
+    for (var i = 1; i <= 5; i++) {
+      var el = document.getElementById('input_hero_gradient_color' + i);
+      if (el) {
+        colors.push(el.value);
+        var valEl = document.getElementById('colorVal_hero_gradient_color' + i);
+        if (valEl) valEl.textContent = el.value;
+      }
+    }
+    var previewEl = document.getElementById('gradientPreviewBar');
+    if (previewEl && colors.length === 5) {
+      previewEl.style.background = 'linear-gradient(135deg, '+colors[0]+' 0%, '+colors[1]+' 25%, '+colors[2]+' 45%, '+colors[3]+' 70%, '+colors[4]+' 100%)';
+    }
+  };
+
+  // Add gradient preview bar after color inputs
+  setTimeout(function() {
+    var c1 = document.getElementById('input_hero_gradient_color1');
+    if (c1) {
+      var parentDiv = c1.closest('.space-y-4');
+      if (parentDiv) {
+        // find the last gradient color input wrapper
+        var allGradInputs = parentDiv.querySelectorAll('[id^="input_hero_gradient_color"]');
+        var lastInput = allGradInputs[allGradInputs.length - 1];
+        if (lastInput) {
+          var wrapper = lastInput.closest('.flex.items-center');
+          if (wrapper) {
+            var previewDiv = document.createElement('div');
+            previewDiv.className = 'rounded-xl overflow-hidden border border-pink-200';
+            previewDiv.style.cssText = 'margin-top:8px;';
+            var c = [];
+            for (var i = 1; i <= 5; i++) {
+              var el = document.getElementById('input_hero_gradient_color' + i);
+              c.push(el ? el.value : '#070B14');
+            }
+            previewDiv.innerHTML = '<div class="px-3 py-1.5 bg-pink-50 flex items-center justify-between"><span class="text-xs font-medium text-pink-600"><i class="fas fa-eye mr-1"></i>히어로 배경 미리보기</span><span class="text-xs text-gray-400">저장하면 홈페이지에 반영됩니다</span></div>'
+              + '<div id="gradientPreviewBar" style="height:60px;background:linear-gradient(135deg,'+c[0]+' 0%,'+c[1]+' 25%,'+c[2]+' 45%,'+c[3]+' 70%,'+c[4]+' 100%);"></div>';
+            wrapper.parentNode.insertBefore(previewDiv, wrapper.nextSibling);
+          }
+        }
+      }
+    }
+  }, 150);
 })();

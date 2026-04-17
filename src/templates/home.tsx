@@ -434,7 +434,7 @@ export function homePage(opts: {
        상단: 히어로 텍스트 (배지 + 대제목 + 부제 + CTA 버튼 + 연락처)
        하단: 인터랙티브 시뮬레이터 패널 (70% 폭, 시험평가~고객지원 정렬)
        ════════════════════════════════════════════════════════════════════════ -->
-  <section class="unified-hero-section relative" style="overflow: visible; ${bgStyle(s.hero_bg_url, 'linear-gradient(135deg, #070B14 0%, #0A1128 20%, #0F1E3D 45%, #162D5A 70%, #1A3A6E 100%)', heroOpacity)}">
+  <section class="unified-hero-section relative" style="overflow: visible; ${bgStyle(s.hero_bg_url, `linear-gradient(135deg, ${s.hero_gradient_color1 || '#070B14'} 0%, ${s.hero_gradient_color2 || '#0A1128'} 25%, ${s.hero_gradient_color3 || '#0F1E3D'} 45%, ${s.hero_gradient_color4 || '#162D5A'} 70%, ${s.hero_gradient_color5 || '#1A3A6E'} 100%)`, heroOpacity)}">
     <!-- 8K Animated background layers -->
     ${!s.hero_bg_url ? `
     <div class="absolute inset-0 pointer-events-none" style="overflow:hidden; will-change:transform; -webkit-backface-visibility:hidden; transform:translateZ(0);">
