@@ -1,6 +1,7 @@
 // KOIST - Public API Routes
 import { Hono } from 'hono';
 import type { Bindings, Variables } from '../types';
+import { inquiryRateLimiter } from '../middleware/rate-limit';
 
 const api = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -99,8 +100,8 @@ api.get('/downloads/:id/file', async (c) => {
   return c.redirect(dl.file_url, 302);
 });
 
-// POST /api/inquiries
-api.post('/inquiries', async (c) => {
+// POST /api/inquiries (rate limited: 3 requests per hour)
+api.post('/inquiries', inquiryRateLimiter, async (c) => {
   const db = c.env.DB;
   try {
     const body = await c.req.json();

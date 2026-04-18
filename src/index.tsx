@@ -3,8 +3,12 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import type { Bindings, Variables, Department, DepartmentWithPages, Popup, Notice, ProgressItem, DepPage, FAQ, AboutPage, SimCertType } from './types';
 import { getSettings, getDepartmentsWithPages } from './utils/db';
-import { hashPassword, generateSalt } from './utils/crypto';
-import { authMiddleware } from './middleware/auth';
+import { verifyPassword, createJWT } from './utils/crypto';
+import { authMiddleware, getJwtSecret } from './middleware/auth';
+import { sanitizeHtml, escapeHtml } from './utils/sanitize';
+import { csrfCookieMiddleware, csrfValidationMiddleware } from './middleware/csrf';
+import { loginRateLimiter, inquiryRateLimiter } from './middleware/rate-limit';
+import { secureHeaders } from 'hono/secure-headers';
 
 import publicApi from './routes/api';
 import adminApi from './routes/admin';
@@ -16,63 +20,81 @@ import { servicePage, noticeListPage, noticeDetailPage, faqPage, inquiryPage, pr
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
+// ===== Security Headers =====
+app.use('*', secureHeaders({
+  contentSecurityPolicy: {
+    defaultSrc: ["'self'"],
+    scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.tailwindcss.com", "https://cdn.jsdelivr.net", "https://unpkg.com"],
+    styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
+    imgSrc: ["'self'", "data:", "https:", "blob:"],
+    fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdn.jsdelivr.net"],
+    connectSrc: ["'self'"],
+    frameSrc: ["'none'"],
+    objectSrc: ["'none'"],
+    baseUri: ["'self'"],
+    formAction: ["'self'"],
+  },
+  xFrameOptions: 'DENY',
+  referrerPolicy: 'strict-origin-when-cross-origin',
+  permissionsPolicy: {
+    camera: [],
+    microphone: [],
+    geolocation: [],
+  },
+}));
+
 // CORS for API
 app.use('/api/*', cors());
 
-// ===== DB Seed / Init Route (protected - requires special header in production) =====
-app.get('/api/init-db', async (c) => {
-  const db = c.env.DB;
-  // Check if admin already exists
-  const existing = await db.prepare('SELECT id FROM admin_users WHERE username = ?').bind('admin').first();
-  if (existing) return c.json({ message: 'Already initialized' });
-
-  // Create admin user with default password: admin1234
-  const salt = await generateSalt();
-  const hash = await hashPassword('admin1234', salt);
-  await db.prepare(
-    'INSERT INTO admin_users (username, password_hash, salt, must_change_password) VALUES (?, ?, ?, 0)'
-  ).bind('admin', hash, salt).run();
-
-  return c.json({ success: true, message: 'Admin user created (admin/admin1234).' });
-});
+// NOTE: /api/init-db removed (security hardening). Use scripts/init-admin.cjs instead.
 
 // ===== Public API Routes =====
 app.route('/api', publicApi);
 
 // ===== Admin API Routes =====
-// Login doesn't need auth middleware
-app.post('/api/admin/login', async (c) => {
+// Login doesn't need auth middleware but needs rate limiting
+app.post('/api/admin/login', loginRateLimiter, async (c) => {
   const db = c.env.DB;
-  const { username, password } = await c.req.json();
-  
-  // Auto-create admin user if none exists (safety net)
-  const adminCount = await db.prepare('SELECT COUNT(*) as cnt FROM admin_users').first<{cnt: number}>();
-  if (!adminCount || adminCount.cnt === 0) {
-    const salt = await generateSalt();
-    const hash = await hashPassword('admin1234', salt);
-    await db.prepare(
-      'INSERT INTO admin_users (username, password_hash, salt, must_change_password) VALUES (?, ?, ?, 0)'
-    ).bind('admin', hash, salt).run();
-  }
-  
-  const user = await db.prepare('SELECT * FROM admin_users WHERE username = ?').bind(username).first<{
+  let body: { username?: string; password?: string };
+  try { body = await c.req.json(); } catch { return c.json({ error: '잘못된 요청입니다.' }, 400); }
+  const { username, password } = body;
+  if (!username || !password) return c.json({ error: '아이디 또는 비밀번호가 올바르지 않습니다.' }, 401);
+
+  const user = await db.prepare(
+    'SELECT id, username, password_hash, salt, must_change_password FROM admin_users WHERE username = ?'
+  ).bind(username).first<{
     id: number; username: string; password_hash: string; salt: string; must_change_password: number;
   }>();
   if (!user) return c.json({ error: '아이디 또는 비밀번호가 올바르지 않습니다.' }, 401);
-  
-  const { verifyPassword: vp, createJWT: cj } = await import('./utils/crypto');
-  const { getJwtSecret } = await import('./middleware/auth');
-  const valid = await vp(password, user.salt, user.password_hash);
+
+  const valid = await verifyPassword(password, user.salt, user.password_hash);
   if (!valid) return c.json({ error: '아이디 또는 비밀번호가 올바르지 않습니다.' }, 401);
-  
+
+  let secret: string;
+  try { secret = getJwtSecret(c.env); } catch { return c.json({ error: 'Server misconfigured' }, 500); }
+
   await db.prepare('UPDATE admin_users SET last_login = CURRENT_TIMESTAMP WHERE id = ?').bind(user.id).run();
-  const secret = getJwtSecret(c.env);
-  const token = await cj({ id: user.id, username: user.username }, secret);
-  return c.json({ success: true, token, must_change_password: user.must_change_password === 1 });
+  const token = await createJWT({ id: user.id, username: user.username }, secret);
+
+  // Set HttpOnly secure cookie
+  const isSecure = c.req.url.startsWith('https');
+  const cookieFlags = `Path=/; HttpOnly; SameSite=Lax; Max-Age=86400${isSecure ? '; Secure' : ''}`;
+  c.header('Set-Cookie', `koist_token=${token}; ${cookieFlags}`);
+
+  return c.json({ success: true, must_change_password: user.must_change_password === 1 });
 });
 
-// All other admin API routes require auth
+// Logout — expire cookie
+app.post('/api/admin/logout', (c) => {
+  const isSecure = c.req.url.startsWith('https');
+  const cookieFlags = `Path=/; HttpOnly; SameSite=Lax; Max-Age=0${isSecure ? '; Secure' : ''}`;
+  c.header('Set-Cookie', `koist_token=; ${cookieFlags}`);
+  return c.json({ success: true });
+});
+
+// All other admin API routes require auth + CSRF
 app.use('/api/admin/*', authMiddleware);
+app.use('/api/admin/*', csrfValidationMiddleware);
 app.route('/api/admin', adminApi);
 
 // ===== Page Routes =====
@@ -421,7 +443,7 @@ app.get('/about/:page', async (c) => {
     <section class="f-section-y" style="background: var(--grad-surface);">
       <div class="fluid-container" style="max-width:1000px;">
         <div class="bg-white rounded-2xl border border-gray-100 p-[clamp(1.5rem,3.5vw,3rem)]" style="box-shadow: 0 4px 24px rgba(0,0,0,0.04);">
-          ${contentBody || `<div class="text-center py-12 text-gray-400"><i class="fas fa-edit text-3xl mb-3 block text-gray-300"></i><p class="font-medium">&ldquo;${title}&rdquo; 페이지 콘텐츠를 관리자 모드에서 등록해 주세요.</p><a href="/admin/about" class="inline-flex items-center gap-2 mt-4 text-blue-600 font-semibold text-sm hover:underline"><i class="fas fa-external-link-alt text-xs"></i>관리자 페이지로 이동</a></div>`}
+          ${contentBody ? sanitizeHtml(contentBody) : `<div class="text-center py-12 text-gray-400"><i class="fas fa-edit text-3xl mb-3 block text-gray-300"></i><p class="font-medium">&ldquo;${escapeHtml(title)}&rdquo; 페이지 콘텐츠를 관리자 모드에서 등록해 주세요.</p><a href="/admin/about" class="inline-flex items-center gap-2 mt-4 text-blue-600 font-semibold text-sm hover:underline"><i class="fas fa-external-link-alt text-xs"></i>관리자 페이지로 이동</a></div>`}
         </div>
       </div>
     </section>`;
@@ -430,11 +452,11 @@ app.get('/about/:page', async (c) => {
 });
 
 // ===== Admin Page Routes =====
-app.get('/admin', (c) => c.html(adminLoginPage()));
+app.get('/admin', csrfCookieMiddleware, (c) => c.html(adminLoginPage()));
 
-app.get('/admin/change-password', (c) => c.html(changePasswordPage(true)));
+app.get('/admin/change-password', csrfCookieMiddleware, (c) => c.html(changePasswordPage(true)));
 
-app.get('/admin/dashboard', authMiddleware, async (c) => {
+app.get('/admin/dashboard', authMiddleware, csrfCookieMiddleware, async (c) => {
   const db = c.env.DB;
   const settings = await getSettings(db);
   const [notices, departments, popups, inquiries, downloads, faqs] = await Promise.all([
@@ -461,7 +483,7 @@ app.get('/admin/dashboard', authMiddleware, async (c) => {
 // Admin CRUD pages
 const adminPages = ['site-settings', 'departments', 'popups', 'notices', 'progress', 'downloads', 'faqs', 'inquiries', 'images', 'about', 'sim-cert-types'];
 for (const page of adminPages) {
-  app.get(`/admin/${page}`, authMiddleware, async (c) => {
+  app.get(`/admin/${page}`, authMiddleware, csrfCookieMiddleware, async (c) => {
     const db = c.env.DB;
     const settings = await getSettings(db);
     const jsFile = page === 'about' ? 'admin-about' : page === 'sim-cert-types' ? 'admin-sim-cert-types' : `admin-${page}`;
@@ -470,6 +492,7 @@ for (const page of adminPages) {
       <div id="admin-content" class="bg-white rounded-xl border border-gray-100 p-6">
         <p class="text-gray-400"><i class="fas fa-spinner fa-spin mr-1"></i> 데이터를 불러오는 중...</p>
       </div>
+      <script src="/static/js/admin-fetch.js"></script>
       <script src="/static/js/${jsFile}.js"></script>
     `;
     return c.html(adminDashboardPage(content, page, settings.logo_url || ''));

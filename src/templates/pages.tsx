@@ -1,5 +1,6 @@
 // KOIST - Service & Content Page Templates (v7.0 - Ultra Premium 4K/8K HiDPI)
 import type { SettingsMap, Department, DepPage, Notice, FAQ, ProgressItem } from '../types';
+import { sanitizeHtml, escapeHtml } from '../utils/sanitize';
 
 /* ══════════════════════════════════════════════════════════
    SHARED: Premium Page Header Component
@@ -123,7 +124,7 @@ export function servicePage(dept: Department, pages: DepPage[], currentPage: Dep
         <div class="flex-1 min-w-0">
           <div class="bg-white rounded-xl border border-slate-200/60" style="padding:clamp(1.25rem, 2.5vw, 2.25rem); box-shadow: var(--shadow-sm);">
             <div class="prose prose-slate max-w-none prose-headings:text-primary prose-p:text-slate-600 prose-li:text-slate-600 prose-a:text-accent" style="font-size:var(--text-sm)">
-              ${currentPage ? currentPage.content : (pages.length > 0 ? pages[0].content : '<p class="text-slate-400">콘텐츠가 준비 중입니다.</p>')}
+              ${currentPage ? sanitizeHtml(currentPage.content) : (pages.length > 0 ? sanitizeHtml(pages[0].content) : '<p class="text-slate-400">콘텐츠가 준비 중입니다.</p>')}
             </div>
           </div>
 
@@ -180,7 +181,7 @@ export function noticeListPage(notices: Notice[], page: number, total: number, p
             ${notices.map((n, i) => `
             <tr class="border-t border-slate-100/70 hover:bg-blue-50/30 transition-colors">
               <td class="text-slate-400 f-text-xs" style="padding:var(--space-sm) var(--space-md)">${n.is_pinned ? '<span class="inline-flex items-center justify-center bg-red-500 text-white rounded font-bold" style="width:18px;height:18px;font-size:9px">N</span>' : (total - (page - 1) * perPage - i)}</td>
-              <td style="padding:var(--space-sm) var(--space-md)"><a href="/support/notice/${n.id}" class="text-slate-800 hover:text-accent transition-colors font-medium f-text-sm">${n.title}</a></td>
+              <td style="padding:var(--space-sm) var(--space-md)"><a href="/support/notice/${n.id}" class="text-slate-800 hover:text-accent transition-colors font-medium f-text-sm">${escapeHtml(n.title)}</a></td>
               <td class="text-center text-slate-400 hidden sm:table-cell f-text-xs" style="padding:var(--space-sm) var(--space-md)">${n.views}</td>
               <td class="text-center text-slate-400 f-text-xs" style="padding:var(--space-sm) var(--space-md)">${n.created_at?.split('T')[0] || ''}</td>
             </tr>
@@ -220,7 +221,7 @@ export function noticeDetailPage(notice: Notice, settings: SettingsMap = {}) {
   <section style="padding:var(--space-xl) 0; background: var(--grad-surface);">
     <div class="fluid-container" style="max-width:min(900px, 100% - var(--container-pad) * 2)">
       <div class="bg-white rounded-xl border border-slate-200/60" style="padding:clamp(1.25rem, 2.5vw, 2.25rem); box-shadow: var(--shadow-sm);">
-        <div class="prose prose-slate max-w-none prose-headings:text-primary" style="font-size:var(--text-sm)">${notice.content}</div>
+        <div class="prose prose-slate max-w-none prose-headings:text-primary" style="font-size:var(--text-sm)">${sanitizeHtml(notice.content)}</div>
       </div>
       <div class="text-center" style="margin-top:var(--space-md)">
         <a href="/support/notice" class="btn-primary f-text-sm ripple-btn" style="padding:var(--space-sm) var(--space-lg)"><i class="fas fa-list f-text-xs"></i> 목록</a>
@@ -248,12 +249,12 @@ export function faqPage(faqs: FAQ[], settings: SettingsMap = {}) {
         <button onclick="toggleFaq(${i})" class="w-full flex items-center justify-between text-left hover:bg-slate-50/50 transition-colors" style="padding:clamp(0.85rem, 1.5vw, 1.3rem)">
           <span class="font-medium text-slate-800 flex items-center f-text-sm" style="gap:var(--space-sm)">
             <span class="rounded-full flex items-center justify-center shrink-0 font-bold f-text-xs" style="width:clamp(22px,2vw,26px); height:clamp(22px,2vw,26px); background: linear-gradient(135deg, rgba(59,130,246,0.10), rgba(6,182,212,0.08)); color: #2563EB;">Q</span>
-            ${f.question}
+            ${escapeHtml(f.question)}
           </span>
           <i class="fas fa-chevron-down text-slate-400 transition-transform duration-300 ml-3 shrink-0 f-text-xs" id="faq-icon-${i}"></i>
         </button>
         <div id="faq-body-${i}" class="hidden" style="padding:0 clamp(0.85rem, 1.5vw, 1.3rem) clamp(0.85rem, 1.5vw, 1.3rem)">
-          <div class="text-slate-600 leading-relaxed f-text-sm" style="padding-left:calc(clamp(22px,2vw,26px) + var(--space-sm)); border-left: 2px solid rgba(59,130,246,0.12); padding-top: 2px; padding-bottom: 2px; margin-left: 0;">${f.answer}</div>
+          <div class="text-slate-600 leading-relaxed f-text-sm" style="padding-left:calc(clamp(22px,2vw,26px) + var(--space-sm)); border-left: 2px solid rgba(59,130,246,0.12); padding-top: 2px; padding-bottom: 2px; margin-left: 0;">${sanitizeHtml(f.answer)}</div>
         </div>
       </div>
       `).join('')}
@@ -681,7 +682,7 @@ export function downloadsPage(downloads: { id: number; title: string; descriptio
             <i class="fas fa-file-lines text-purple-500 f-text-sm"></i>
           </div>
           <div class="min-w-0">
-            <h3 class="font-medium text-slate-800 truncate f-text-sm group-hover:text-accent transition-colors">${d.title}</h3>
+            <h3 class="font-medium text-slate-800 truncate f-text-sm group-hover:text-accent transition-colors">${escapeHtml(d.title)}</h3>
             <p class="text-slate-400 f-text-xs" style="margin-top:2px">${d.file_name || ''} · ${d.created_at?.split('T')[0] || ''} · 다운로드 ${d.download_count}회</p>
           </div>
         </div>

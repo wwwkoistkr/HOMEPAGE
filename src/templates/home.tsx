@@ -1,5 +1,6 @@
 // KOIST - Home Page Template (v36.1.0 - R1~R7: 8K PC+Mobile HiDPI, Video R2, A11y, Modern Design)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem, SimCertType } from '../types';
+import { sanitizeHtml, escapeHtml } from '../utils/sanitize';
 
 function bgStyle(imageUrl: string | undefined, fallbackGradient: string, opacity: string = '0.85'): string {
   if (imageUrl && imageUrl.trim() !== '') {
@@ -151,7 +152,7 @@ export function homePage(opts: {
         </div>` 
           : `<!-- HTML POPUP: scrollable content with full footer -->
         <div class="popup-card-body" style="background:${bodyBgColor};">
-          <div class="popup-html-wrap" style="font-size:${bodyFontSize}px; line-height:${bodyLineHeight}; color:${bodyTextColor}; padding:${bodyPadding}px;" data-admin-edit="popup_${p.id}_content">${p.content || ''}</div>
+          <div class="popup-html-wrap" style="font-size:${bodyFontSize}px; line-height:${bodyLineHeight}; color:${bodyTextColor}; padding:${bodyPadding}px;" data-admin-edit="popup_${p.id}_content">${sanitizeHtml(p.content || '')}</div>
         </div>
         <div class="popup-card-footer">
           <label class="popup-noshow-label">
@@ -1024,8 +1025,8 @@ export function homePage(opts: {
           <div class="rounded-lg flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg mx-auto" style="width:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); height:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); background: linear-gradient(135deg, ${dept.color}15, ${dept.color}08); margin-bottom:clamp(0.4rem,0.6vw,0.6rem);">
             <i class="fas ${dept.icon}" style="color:${dept.color}; font-size:clamp(1.2rem,2vw,1.8rem)"></i>
           </div>`}
-          <h3 class="font-bold text-primary group-hover:text-accent transition-colors text-center" style="font-size:clamp(${fMin}rem,${fVw}vw,${fMax}rem); margin-bottom:2px; line-height:1.15; letter-spacing:-0.02em;">${dept.name}</h3>
-          <p class="text-slate-500 text-center line-clamp-2" style="font-size:clamp(${descFontMin}rem,${descFontVw}vw,${descFontMax}rem); line-height:1.2;">${dept.description || ''}</p>
+          <h3 class="font-bold text-primary group-hover:text-accent transition-colors text-center" style="font-size:clamp(${fMin}rem,${fVw}vw,${fMax}rem); margin-bottom:2px; line-height:1.15; letter-spacing:-0.02em;">${escapeHtml(dept.name)}</h3>
+          <p class="text-slate-500 text-center line-clamp-2" style="font-size:clamp(${descFontMin}rem,${descFontVw}vw,${descFontMax}rem); line-height:1.2;">${escapeHtml(dept.description || '')}</p>
           <div class="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-1 group-hover:translate-x-0">
             <i class="fas fa-arrow-right text-accent/50" style="font-size:12px"></i>
           </div>

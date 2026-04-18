@@ -3,7 +3,9 @@
 export type Bindings = {
   DB: D1Database;
   R2: R2Bucket;
-  JWT_SECRET?: string;
+  JWT_SECRET: string;
+  RATE_LIMIT_KV?: KVNamespace;
+  IMAGE_MAX_BYTES?: string;
 };
 
 export type Variables = {

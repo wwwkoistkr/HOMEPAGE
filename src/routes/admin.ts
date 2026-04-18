@@ -33,10 +33,16 @@ admin.post('/change-password', async (c) => {
     'UPDATE admin_users SET password_hash = ?, salt = ?, must_change_password = 0, updated_at = CURRENT_TIMESTAMP WHERE id = ?'
   ).bind(newHash, newSalt, user.id).run();
 
-  const secret = getJwtSecret(c.env);
+  const secret = (() => { try { return getJwtSecret(c.env); } catch { return null; } })();
+  if (!secret) return c.json({ error: 'Server misconfigured' }, 500);
   const token = await createJWT({ id: adminUser.id, username: adminUser.username }, secret);
 
-  return c.json({ success: true, token, message: '비밀번호가 변경되었습니다.' });
+  // Refresh HttpOnly cookie with new token
+  const isSecure = c.req.url.startsWith('https');
+  const cookieFlags = `Path=/; HttpOnly; SameSite=Lax; Max-Age=86400${isSecure ? '; Secure' : ''}`;
+  c.header('Set-Cookie', `koist_token=${token}; ${cookieFlags}`);
+
+  return c.json({ success: true, message: '비밀번호가 변경되었습니다.' });
 });
 
 // ---- Site Settings ----
@@ -370,6 +376,7 @@ admin.get('/images/r2-status', async (c) => {
 admin.post('/images', async (c) => {
   try {
     const contentType = c.req.header('content-type') || '';
+    const maxBytes = parseInt(c.env.IMAGE_MAX_BYTES || '5242880', 10); // Default 5 MB
     
     if (contentType.includes('multipart/form-data')) {
       const formData = await c.req.formData();
@@ -379,27 +386,36 @@ admin.post('/images', async (c) => {
 
       if (!file) return c.json({ error: '파일을 선택해주세요.' }, 400);
 
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
-      if (!allowedTypes.includes(file.type)) {
-        return c.json({ error: '지원하지 않는 파일 형식입니다. (JPG, PNG, GIF, WebP, SVG만 가능)' }, 400);
+      // Disallow SVG by default (XSS vector)
+      if (file.type === 'image/svg+xml') {
+        return c.json({ error: 'SVG 파일은 보안상 업로드할 수 없습니다.' }, 400);
       }
 
-      if (file.size > 5 * 1024 * 1024) {
-        return c.json({ error: '파일 크기는 5MB 이하만 가능합니다.' }, 400);
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        return c.json({ error: '지원하지 않는 파일 형식입니다. (JPG, PNG, GIF, WebP만 가능)' }, 400);
+      }
+
+      if (file.size > maxBytes) {
+        return c.json({ error: `파일 크기는 ${Math.round(maxBytes / 1024 / 1024)}MB 이하만 가능합니다.` }, 400);
+      }
+
+      // Validate magic bytes
+      const arrayBuffer = await file.arrayBuffer();
+      const header = new Uint8Array(arrayBuffer.slice(0, 32));
+      const magicValid = validateMagicBytes(header, file.type);
+      if (!magicValid) {
+        return c.json({ error: '파일 내용이 확장자와 일치하지 않습니다.' }, 400);
       }
 
       const timestamp = Date.now();
-      const ext = file.name.split('.').pop() || 'jpg';
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
       const safeName = `${category}/${timestamp}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
       
       if (hasR2(c.env)) {
-        // Upload to R2
-        const arrayBuffer = await file.arrayBuffer();
         await c.env.R2.put(safeName, arrayBuffer, {
           httpMetadata: { contentType: file.type },
         });
-      } else {
-        // R2 not available — save metadata only (URL-based mode)
       }
 
       await c.env.DB.prepare(
@@ -418,7 +434,12 @@ admin.post('/images', async (c) => {
       const { url, category, alt_text } = await c.req.json();
       if (!url) return c.json({ error: 'URL을 입력해주세요.' }, 400);
 
-      const safeName = url; // Use the URL itself as the key
+      // Validate external URL
+      if (!isValidExternalUrl(url)) {
+        return c.json({ error: '유효하지 않은 URL입니다. HTTPS URL만 허용됩니다.' }, 400);
+      }
+
+      const safeName = url;
       await c.env.DB.prepare(
         'INSERT INTO images (file_name, original_name, r2_key, mime_type, file_size, category, alt_text) VALUES (?,?,?,?,?,?,?)'
       ).bind(safeName, url.split('/').pop() || 'image', safeName, 'image/external', 0, category || 'general', alt_text || '').run();
@@ -450,5 +471,58 @@ admin.delete('/images/:id', async (c) => {
   await c.env.DB.prepare('DELETE FROM images WHERE id = ?').bind(id).run();
   return c.json({ success: true });
 });
+
+// ── Upload Validation Helpers ──
+
+/** Validate file magic bytes against claimed MIME type */
+function validateMagicBytes(header: Uint8Array, mimeType: string): boolean {
+  const signatures: Record<string, number[][]> = {
+    'image/jpeg': [[0xFF, 0xD8, 0xFF]],
+    'image/png': [[0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]],
+    'image/gif': [[0x47, 0x49, 0x46, 0x38, 0x37, 0x61], [0x47, 0x49, 0x46, 0x38, 0x39, 0x61]], // GIF87a, GIF89a
+    'image/webp': [[0x52, 0x49, 0x46, 0x46]], // RIFF (then WEBP at offset 8)
+  };
+
+  const sigs = signatures[mimeType];
+  if (!sigs) return false;
+
+  return sigs.some(sig => sig.every((byte, i) => header[i] === byte));
+}
+
+/** Validate external image URL: must be HTTPS, no loopback/private IPs */
+function isValidExternalUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'https:') return false;
+
+    const hostname = parsed.hostname.toLowerCase();
+
+    // Block loopback
+    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1' || hostname === '[::1]') return false;
+
+    // Block private IP ranges
+    if (/^(10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|169\.254\.)/.test(hostname)) return false;
+
+    // Block link-local
+    if (hostname.startsWith('fe80:')) return false;
+
+    // Block internal hostnames
+    if (hostname.endsWith('.local') || hostname.endsWith('.internal') || hostname.endsWith('.corp')) return false;
+
+    // Whitelist file extensions (optional — image URLs may not always have extensions)
+    const path = parsed.pathname.toLowerCase();
+    const allowedExts = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.avif', '.bmp'];
+    const hasExt = allowedExts.some(ext => path.endsWith(ext));
+    // Allow if extension matches or if it's a CDN/API URL without extension
+    if (path.includes('.') && !hasExt) {
+      const ext = path.split('.').pop();
+      if (ext && ext.length <= 5 && !allowedExts.some(e => e.slice(1) === ext)) return false;
+    }
+
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export default admin;

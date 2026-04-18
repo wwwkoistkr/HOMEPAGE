@@ -69,6 +69,7 @@ export function adminLoginPage(error?: string) {
         const res = await fetch('/api/admin/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
           body: JSON.stringify({
             username: document.getElementById('username').value,
             password: document.getElementById('password').value,
@@ -76,7 +77,7 @@ export function adminLoginPage(error?: string) {
         });
         const data = await res.json();
         if (data.success) {
-          document.cookie = 'koist_token=' + data.token + ';path=/;max-age=86400;SameSite=Strict';
+          // Cookie is set by server (HttpOnly) — no client-side cookie needed
           if (data.must_change_password) {
             window.location.href = '/admin/change-password';
           } else {
@@ -155,15 +156,15 @@ export function changePasswordPage(forced = false) {
       btn.disabled = true;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 변경 중...';
       try {
-        const token = document.cookie.match(/koist_token=([^;]*)/)?.[1];
         const res = await fetch('/api/admin/change-password', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
           body: JSON.stringify({ current_password: document.getElementById('currentPw').value, new_password: newPw }),
         });
         const data = await res.json();
         if (data.success) {
-          if (data.token) document.cookie = 'koist_token=' + data.token + ';path=/;max-age=86400;SameSite=Strict';
+          // Cookie refreshed by server
           msg.className = 'mt-4 px-4 py-3 rounded-lg text-sm bg-green-500/10 border border-green-500/20 text-green-300';
           msg.textContent = '비밀번호가 변경되었습니다. 대시보드로 이동합니다...';
           msg.classList.remove('hidden');
@@ -222,18 +223,21 @@ export function adminDashboardPage(content: string, activeMenu = 'dashboard', lo
   </style>
   <script>
     // === Admin Utility Functions (must load before page scripts) ===
-    function logout() {
-      document.cookie = 'koist_token=;path=/;max-age=0';
-      window.location.href = '/';
+    async function logout() {
+      await fetch('/api/admin/logout', { method: 'POST', credentials: 'same-origin' });
+      window.location.href = '/admin';
     }
     function getToken() {
-      return document.cookie.match(/koist_token=([^;]*)/)?.[1] || '';
+      // Token is in HttpOnly cookie — not accessible from JS
+      // This function kept for backward compatibility; API calls use credentials: 'same-origin'
+      return '';
     }
     async function apiCall(url, method = 'GET', body = null) {
       try {
         const opts = {
           method,
-          headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
         };
         if (body) opts.body = JSON.stringify(body);
         const res = await fetch(url, opts);

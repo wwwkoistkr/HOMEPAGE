@@ -16,5 +16,11 @@
       "binding": "R2",
       "bucket_name": "koist-images"
     }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "RATE_LIMIT_KV",
+      "id": "PLACEHOLDER_CREATE_VIA_WRANGLER"
+    }
   ]
 }

@@ -3,13 +3,31 @@ import { createMiddleware } from 'hono/factory';
 import type { Bindings, Variables } from '../types';
 import { verifyJWT } from '../utils/crypto';
 
-const JWT_SECRET_DEFAULT = 'koist-jwt-secret-change-in-production-2026';
+/**
+ * Retrieve JWT secret from environment.
+ * Throws if JWT_SECRET is missing or shorter than 32 characters.
+ */
+export function getJwtSecret(env: Bindings): string {
+  const secret = env.JWT_SECRET;
+  if (!secret || secret.length < 32) {
+    throw new Error('JWT_SECRET is missing or too short (min 32 chars). Set via `wrangler secret put JWT_SECRET` or .dev.vars');
+  }
+  return secret;
+}
 
 export const authMiddleware = createMiddleware<{
   Bindings: Bindings;
   Variables: Variables;
 }>(async (c, next) => {
-  const secret = c.env.JWT_SECRET || JWT_SECRET_DEFAULT;
+  let secret: string;
+  try {
+    secret = getJwtSecret(c.env);
+  } catch {
+    if (c.req.path.startsWith('/api/')) {
+      return c.json({ error: 'Server misconfigured' }, 500);
+    }
+    return c.text('Server misconfigured: JWT_SECRET not set', 500);
+  }
 
   // Check cookie first, then Authorization header
   const cookieToken = getCookie(c.req.raw, 'koist_token');
@@ -17,7 +35,6 @@ export const authMiddleware = createMiddleware<{
   const token = cookieToken || (authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null);
 
   if (!token) {
-    // API 요청이면 401, 페이지 요청이면 로그인 리다이렉트
     if (c.req.path.startsWith('/api/')) {
       return c.json({ error: 'Unauthorized' }, 401);
     }
@@ -45,8 +62,4 @@ function getCookie(req: Request, name: string): string | null {
   if (!cookie) return null;
   const match = cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
   return match ? decodeURIComponent(match[1]) : null;
-}
-
-export function getJwtSecret(env: Bindings): string {
-  return env.JWT_SECRET || JWT_SECRET_DEFAULT;
 }
