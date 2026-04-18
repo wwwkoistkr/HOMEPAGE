@@ -15,7 +15,7 @@ import adminApi from './routes/admin';
 
 import { layout } from './templates/layout';
 import { homePage } from './templates/home';
-import { adminLoginPage, changePasswordPage, adminDashboardPage, adminDashboardContent } from './templates/admin/index';
+import { adminLoginPage, changePasswordContent, adminDashboardPage, adminDashboardContent } from './templates/admin/index';
 import { servicePage, noticeListPage, noticeDetailPage, faqPage, inquiryPage, progressPage, serviceProgressContent, downloadsPage } from './templates/pages';
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -454,7 +454,12 @@ app.get('/about/:page', async (c) => {
 // ===== Admin Page Routes =====
 app.get('/admin', csrfCookieMiddleware, (c) => c.html(adminLoginPage()));
 
-app.get('/admin/change-password', csrfCookieMiddleware, (c) => c.html(changePasswordPage(true)));
+app.get('/admin/change-password', authMiddleware, csrfCookieMiddleware, async (c) => {
+  const db = c.env.DB;
+  const settings = await getSettings(db);
+  const content = changePasswordContent();
+  return c.html(adminDashboardPage(content, 'account', settings.logo_url || ''));
+});
 
 app.get('/admin/dashboard', authMiddleware, csrfCookieMiddleware, async (c) => {
   const db = c.env.DB;

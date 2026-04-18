@@ -78,11 +78,8 @@ export function adminLoginPage(error?: string) {
         const data = await res.json();
         if (data.success) {
           // Cookie is set by server (HttpOnly) — no client-side cookie needed
-          if (data.must_change_password) {
-            window.location.href = '/admin/change-password';
-          } else {
-            window.location.href = '/admin/dashboard';
-          }
+          // Always redirect to dashboard — password change is optional via account menu
+          window.location.href = '/admin/dashboard';
         } else {
           errDiv.textContent = data.error || '로그인에 실패했습니다.';
           errDiv.classList.remove('hidden');
@@ -99,93 +96,88 @@ export function adminLoginPage(error?: string) {
 </html>`;
 }
 
-export function changePasswordPage(forced = false) {
-  return `<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>비밀번호 변경 - KOIST 관리자</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css" rel="stylesheet">
-  <style>* { font-family: 'Noto Sans KR', sans-serif; }</style>
-</head>
-<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
-  <div class="w-full max-w-md">
-    <div class="text-center mb-8">
-      <div class="inline-flex items-center justify-center w-16 h-16 bg-yellow-500/20 rounded-2xl mb-4">
-        <i class="fas fa-key text-yellow-400 text-3xl"></i>
+export function changePasswordContent() {
+  return `
+    <h1 class="text-2xl font-bold text-gray-800 mb-6"><i class="fas fa-user-shield text-blue-500 mr-2"></i>계정 관리</h1>
+    <div class="bg-white rounded-xl border border-gray-100 p-6">
+      <div class="max-w-lg">
+        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
+          <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+            <i class="fas fa-key text-blue-500 text-lg"></i>
+          </div>
+          <div>
+            <h2 class="font-bold text-gray-800">비밀번호 변경</h2>
+            <p class="text-gray-400 text-sm">새로운 비밀번호를 설정하세요 (6자 이상)</p>
+          </div>
+        </div>
+        
+        <form id="changePwForm">
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-medium mb-1.5">현재 비밀번호</label>
+            <input type="password" id="currentPw" required autocomplete="current-password"
+              class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" placeholder="현재 비밀번호 입력">
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-medium mb-1.5">새 비밀번호</label>
+            <input type="password" id="newPw" required minlength="6" autocomplete="new-password"
+              class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" placeholder="6자 이상 입력">
+          </div>
+          <div class="mb-6">
+            <label class="block text-gray-700 text-sm font-medium mb-1.5">새 비밀번호 확인</label>
+            <input type="password" id="confirmPw" required autocomplete="new-password"
+              class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" placeholder="새 비밀번호 재입력">
+          </div>
+          <button type="submit" id="changeBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-2">
+            <i class="fas fa-check"></i> 비밀번호 변경
+          </button>
+          <div id="msg" class="hidden mt-4 px-4 py-3 rounded-lg text-sm"></div>
+        </form>
       </div>
-      <h1 class="text-2xl font-bold text-white">비밀번호 변경</h1>
-      ${forced ? '<p class="text-yellow-400 text-sm mt-2"><i class="fas fa-exclamation-triangle mr-1"></i>보안을 위해 초기 비밀번호를 반드시 변경해야 합니다.</p>' : '<p class="text-slate-400 text-sm mt-1">새로운 비밀번호를 설정하세요</p>'}
     </div>
-    
-    <form id="changePwForm" class="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-8">
-      <div class="mb-5">
-        <label class="block text-slate-300 text-sm font-medium mb-2">현재 비밀번호</label>
-        <input type="password" id="currentPw" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors" placeholder="현재 비밀번호">
-      </div>
-      <div class="mb-5">
-        <label class="block text-slate-300 text-sm font-medium mb-2">새 비밀번호</label>
-        <input type="password" id="newPw" required minlength="6" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors" placeholder="6자 이상 입력">
-      </div>
-      <div class="mb-6">
-        <label class="block text-slate-300 text-sm font-medium mb-2">새 비밀번호 확인</label>
-        <input type="password" id="confirmPw" required class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors" placeholder="새 비밀번호 재입력">
-      </div>
-      <button type="submit" id="changeBtn" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-3 rounded-xl font-medium transition-colors">
-        <i class="fas fa-check mr-1"></i> 비밀번호 변경
-      </button>
-      <div id="msg" class="hidden mt-4 px-4 py-3 rounded-lg text-sm"></div>
-    </form>
-  </div>
-  <script>
-    document.getElementById('changePwForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const msg = document.getElementById('msg');
-      const newPw = document.getElementById('newPw').value;
-      const confirmPw = document.getElementById('confirmPw').value;
-      if (newPw !== confirmPw) {
-        msg.className = 'mt-4 px-4 py-3 rounded-lg text-sm bg-red-500/10 border border-red-500/20 text-red-300';
-        msg.textContent = '새 비밀번호가 일치하지 않습니다.';
-        msg.classList.remove('hidden');
-        return;
-      }
-      const btn = document.getElementById('changeBtn');
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 변경 중...';
-      try {
-        const csrfToken = (document.cookie.match(/(?:^|;\\s*)koist_csrf=([^;]*)/) || [])[1] || '';
-        const res = await fetch('/api/admin/change-password', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
-          credentials: 'same-origin',
-          body: JSON.stringify({ current_password: document.getElementById('currentPw').value, new_password: newPw }),
-        });
-        const data = await res.json();
-        if (data.success) {
-          // Cookie refreshed by server
-          msg.className = 'mt-4 px-4 py-3 rounded-lg text-sm bg-green-500/10 border border-green-500/20 text-green-300';
-          msg.textContent = '비밀번호가 변경되었습니다. 대시보드로 이동합니다...';
+    <script>
+      document.getElementById('changePwForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const msg = document.getElementById('msg');
+        const newPw = document.getElementById('newPw').value;
+        const confirmPw = document.getElementById('confirmPw').value;
+        if (newPw !== confirmPw) {
+          msg.className = 'mt-4 px-4 py-3 rounded-lg text-sm bg-red-50 border border-red-200 text-red-600';
+          msg.textContent = '새 비밀번호가 일치하지 않습니다.';
           msg.classList.remove('hidden');
-          setTimeout(() => window.location.href = '/admin/dashboard', 1500);
-        } else {
-          msg.className = 'mt-4 px-4 py-3 rounded-lg text-sm bg-red-500/10 border border-red-500/20 text-red-300';
-          msg.textContent = data.error || '변경에 실패했습니다.';
+          return;
+        }
+        const btn = document.getElementById('changeBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 변경 중...';
+        try {
+          const csrfToken = (document.cookie.match(/(?:^|;\\s*)koist_csrf=([^;]*)/) || [])[1] || '';
+          const res = await fetch('/api/admin/change-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+            credentials: 'same-origin',
+            body: JSON.stringify({ current_password: document.getElementById('currentPw').value, new_password: newPw }),
+          });
+          const data = await res.json();
+          if (data.success) {
+            msg.className = 'mt-4 px-4 py-3 rounded-lg text-sm bg-green-50 border border-green-200 text-green-700';
+            msg.textContent = '비밀번호가 성공적으로 변경되었습니다.';
+            msg.classList.remove('hidden');
+            document.getElementById('changePwForm').reset();
+          } else {
+            msg.className = 'mt-4 px-4 py-3 rounded-lg text-sm bg-red-50 border border-red-200 text-red-600';
+            msg.textContent = data.error || '변경에 실패했습니다.';
+            msg.classList.remove('hidden');
+          }
+        } catch (err) {
+          msg.className = 'mt-4 px-4 py-3 rounded-lg text-sm bg-red-50 border border-red-200 text-red-600';
+          msg.textContent = '서버 연결 실패';
           msg.classList.remove('hidden');
         }
-      } catch (err) {
-        msg.className = 'mt-4 px-4 py-3 rounded-lg text-sm bg-red-500/10 border border-red-500/20 text-red-300';
-        msg.textContent = '서버 연결 실패';
-        msg.classList.remove('hidden');
-      }
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-check mr-1"></i> 비밀번호 변경';
-    });
-  </script>
-</body>
-</html>`;
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check"></i> 비밀번호 변경';
+      });
+    </script>
+  `;
 }
 
 export function adminDashboardPage(content: string, activeMenu = 'dashboard', logoUrl = '') {
@@ -226,7 +218,7 @@ export function adminDashboardPage(content: string, activeMenu = 'dashboard', lo
     // === Admin Utility Functions (must load before page scripts) ===
     async function logout() {
       await fetch('/api/admin/logout', { method: 'POST', credentials: 'same-origin' });
-      window.location.href = '/admin';
+      window.location.href = '/';
     }
     function getToken() {
       // Token is in HttpOnly cookie — not accessible from JS
