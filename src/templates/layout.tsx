@@ -717,10 +717,16 @@ export function layout(opts: {
         '</button>' +
         '<div style="flex:1;"></div>' +
         '<a href="/admin/dashboard" style="color:#94A3B8;font-size:12px;text-decoration:none;display:flex;align-items:center;gap:4px;"><i class="fas fa-cog"></i>대시보드</a>' +
-        '<a href="/" onclick="document.cookie=\'koist_token=;path=/;max-age=0\'" style="color:#EF4444;font-size:12px;text-decoration:none;display:flex;align-items:center;gap:4px;margin-left:8px;"><i class="fas fa-sign-out-alt"></i>로그아웃</a>' +
+        '<a href="/" onclick="adminLogout()" style="color:#EF4444;font-size:12px;text-decoration:none;display:flex;align-items:center;gap:4px;margin-left:8px;"><i class="fas fa-sign-out-alt"></i>로그아웃</a>' +
       '</div>';
     document.body.appendChild(toolbar);
     document.body.style.paddingBottom = '48px';
+
+    // Admin inline-edit logout (clears cookie and redirects)
+    window.adminLogout = function() {
+      document.cookie = 'koist_token=;path=/;max-age=0';
+      fetch('/api/admin/logout', { method: 'POST', credentials: 'same-origin' }).catch(function(){});
+    };
 
     // Find all editable elements
     function findEditables() {

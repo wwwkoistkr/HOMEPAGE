@@ -156,9 +156,10 @@ export function changePasswordPage(forced = false) {
       btn.disabled = true;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 변경 중...';
       try {
+        const csrfToken = (document.cookie.match(/(?:^|;\\s*)koist_csrf=([^;]*)/) || [])[1] || '';
         const res = await fetch('/api/admin/change-password', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
           credentials: 'same-origin',
           body: JSON.stringify({ current_password: document.getElementById('currentPw').value, new_password: newPw }),
         });
