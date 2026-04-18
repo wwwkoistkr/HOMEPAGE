@@ -18,6 +18,7 @@
   const categories = {
     general: { label: '일반 설정', icon: 'fa-cog', color: 'blue' },
     contact: { label: '연락처', icon: 'fa-phone', color: 'green' },
+    hero: { label: '히어로 배경 (비디오/이미지)', icon: 'fa-film', color: 'violet' },
     theme: { label: '디자인', icon: 'fa-palette', color: 'purple' },
     background: { label: '배경 이미지', icon: 'fa-image', color: 'pink' },
     content: { label: '홈페이지 텍스트', icon: 'fa-font', color: 'orange' },
@@ -115,9 +116,56 @@
       const isImageUrl = s.key.includes('bg_url') || s.key === 'logo_url';
       const isOpacity = s.key.includes('opacity');
       const isGradientColor = s.key.startsWith('hero_gradient_color');
+      const isHeroVideo = s.key === 'hero_video_url';
+      const isHeroPoster = s.key === 'hero_video_poster';
+      const isVideoOpacity = s.key === 'hero_video_opacity';
 
+      // R5: Hero video URL — dedicated field with video preview
+      if (isHeroVideo) {
+        html += `
+        <div class="p-5 bg-violet-50/50 border border-violet-200 rounded-xl">
+          <label class="block text-sm font-bold text-violet-700 mb-3"><i class="fas fa-video mr-2"></i>${s.description || '히어로 배경 비디오 URL'}</label>
+          <div class="flex flex-col gap-3">
+            <div class="flex gap-2">
+              <input type="text" data-key="${s.key}" value="${(s.value || '').replace(/"/g, '&quot;')}" id="input_${s.key}"
+                placeholder="https://...mp4 또는 R2 URL" class="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-500">
+              <button type="button" onclick="document.getElementById('preview_video_hero').src=document.getElementById('input_hero_video_url').value;document.getElementById('preview_video_hero').style.display='block';document.getElementById('preview_video_hero').play();" class="px-3 py-2 bg-violet-100 hover:bg-violet-200 text-violet-700 rounded-lg text-sm font-medium transition-colors">
+                <i class="fas fa-play mr-1"></i>미리보기
+              </button>
+            </div>
+            <video id="preview_video_hero" src="${s.value || ''}" muted loop playsinline
+              class="w-full max-h-40 rounded-lg object-cover border border-gray-200 bg-black" style="display:${s.value ? 'block' : 'none'}"></video>
+            <p class="text-xs text-gray-400"><i class="fas fa-info-circle mr-1 text-violet-400"></i>MP4 형식 권장. R2 스토리지 또는 외부 URL 사용. 비워두면 기존 그라디언트/이미지 배경을 사용합니다.</p>
+          </div>
+        </div>`;
+      // R5: Hero video poster image
+      } else if (isHeroPoster) {
+        html += `
+        <div class="p-4 bg-violet-50/30 border border-violet-100 rounded-xl">
+          <label class="block text-sm font-bold text-violet-700 mb-2"><i class="fas fa-image mr-2"></i>${s.description || '비디오 포스터 이미지'}</label>
+          <div class="flex gap-2">
+            <input type="text" data-key="${s.key}" value="${(s.value || '').replace(/"/g, '&quot;')}" id="input_${s.key}"
+              placeholder="비디오 로딩 전 표시할 이미지 URL" class="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/30">
+            <button type="button" onclick="openImagePicker('${s.key}')" class="px-3 py-2 bg-violet-100 hover:bg-violet-200 text-violet-700 rounded-lg text-sm font-medium transition-colors">
+              <i class="fas fa-folder-open mr-1"></i>선택
+            </button>
+          </div>
+          <p class="text-xs text-gray-400 mt-1"><i class="fas fa-info-circle mr-1"></i>비디오 로딩 중 또는 모바일(배터리 절약)에서 표시될 대체 이미지</p>
+        </div>`;
+      // R5: Hero video overlay opacity
+      } else if (isVideoOpacity) {
+        html += `
+        <div class="p-4 bg-violet-50/30 border border-violet-100 rounded-xl">
+          <label class="block text-sm font-bold text-violet-700 mb-2"><i class="fas fa-adjust mr-2"></i>${s.description || '비디오 오버레이 불투명도'}</label>
+          <div class="flex items-center gap-3">
+            <input type="range" min="0" max="1" step="0.05" data-key="${s.key}" value="${s.value || '0.3'}" id="input_${s.key}"
+              class="flex-1" oninput="document.getElementById('video_opacity_val').textContent=this.value">
+            <span id="video_opacity_val" class="text-sm font-mono text-violet-600 w-10 text-center">${s.value || '0.3'}</span>
+          </div>
+          <p class="text-xs text-gray-400 mt-1"><i class="fas fa-info-circle mr-1"></i>0.0 = 완전 투명, 1.0 = 완전 불투명. 권장: 0.3~0.7</p>
+        </div>`;
       // Hero gradient color picker
-      if (isGradientColor) {
+      } else if (isGradientColor) {
         const colorNum = s.key.replace('hero_gradient_color', '');
         const stops = {1:'0%', 2:'25%', 3:'45%', 4:'70%', 5:'100%'};
         html += `

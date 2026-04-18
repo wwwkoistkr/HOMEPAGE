@@ -1,4 +1,4 @@
-// KOIST - Main Layout Template (v32.0 - 2x Text, Half Line-Height, Tab Menu, 8K Ultra-Sharp)
+// KOIST - Main Layout Template (v36.1 - 8K PC+Mobile HiDPI, R2 A11y Focus Trap, R5 Video Admin UI, R7 DPR 2x/3x/4x)
 import type { SettingsMap, DepartmentWithPages } from '../types';
 
 export function layout(opts: {
@@ -40,6 +40,18 @@ export function layout(opts: {
   <script>
     tailwind.config = {
       theme: {
+        screens: {
+          'xs': '375px',
+          'sm': '640px',
+          'md': '768px',
+          'lg': '1024px',
+          'xl': '1280px',
+          '2xl': '1536px',
+          '3xl': '1920px',
+          '4k': '2560px',
+          '5k': '3840px',
+          '8k': '7680px',
+        },
         extend: {
           colors: {
             primary:  { DEFAULT: '#0A0F1E', light: '#141B2D', lighter: '#1E293B', mid: '#1A2640', soft: '#334155' },
@@ -143,6 +155,116 @@ export function layout(opts: {
       --grad-glass-dark: linear-gradient(135deg, rgba(15,23,42,0.90), rgba(15,23,42,0.96));
       --grad-surface: linear-gradient(180deg, #F0F4F8 0%, #F8FAFC 50%, #FFFFFF 100%);
       --grad-card-shine: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%, rgba(255,255,255,0.02) 100%);
+    }
+
+    /* ── R2: Reduced Motion (WCAG 2.1 Level AAA) ── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .animate-float-slow, .animate-float-medium, .animate-pulse-glow,
+      .animate-gradient, .animate-glow-pulse, .animate-border-glow {
+        animation: none !important;
+      }
+      .unified-orb-1, .unified-orb-2, .unified-orb-3 { animation: none !important; }
+    }
+
+    /* ── R2: Skip-to-Content Link ── */
+    .skip-to-content {
+      position: absolute;
+      top: -100%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10000;
+      padding: 12px 24px;
+      background: #2563EB;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border-radius: 0 0 8px 8px;
+      transition: top 0.2s ease;
+      text-decoration: none;
+    }
+    .skip-to-content:focus {
+      top: 0;
+      outline: 3px solid #60A5FA;
+      outline-offset: 2px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       R7: HiDPI / Retina / Mobile 8K — Ultra-sharp rendering
+       ─ DPR 2x: Standard Retina (most phones, tablets)
+       ─ DPR 3x: iPhone Pro, Samsung Galaxy S/Note, Pixel
+       ─ DPR 4x: Future 8K mobile panels, foldables
+       ═══════════════════════════════════════════════════════════ */
+
+    /* ── DPR 2x: Retina baseline ── */
+    @media (min-resolution: 2dppx), (-webkit-min-device-pixel-ratio: 2) {
+      img {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+      }
+      .kolas-mark, .footer-logo, .site-logo-img {
+        image-rendering: high-quality;
+        image-rendering: -webkit-optimize-contrast;
+      }
+      /* Thinner borders for cleaner appearance on HiDPI */
+      .card-premium, .card-service, .card-service-xl, .glass-card {
+        border-width: 0.5px;
+      }
+    }
+
+    /* ── DPR 3x: iPhone Pro / Galaxy S series ── */
+    @media (min-resolution: 3dppx), (-webkit-min-device-pixel-ratio: 3) {
+      :root {
+        --shadow-xs: 0 0.5px 1px rgba(10,15,30,0.03);
+        --shadow-sm: 0 1px 4px rgba(10,15,30,0.04), 0 0.5px 1px rgba(10,15,30,0.02);
+      }
+      /* Ultra-thin hairline borders */
+      .gnb-nav-bar::after { height: 0.5px; }
+      .mega-menu-row + .mega-menu-row { border-top-width: 0.5px; }
+      .mega-menu-column { border-right-width: 0.5px; }
+      /* Sharper text on 3x */
+      body {
+        -webkit-font-smoothing: subpixel-antialiased;
+        text-rendering: geometricPrecision;
+      }
+    }
+
+    /* ── DPR 4x: Future 8K mobile / high-end foldables ── */
+    @media (min-resolution: 4dppx), (-webkit-min-device-pixel-ratio: 4) {
+      :root {
+        --shadow-xs: 0 0.25px 0.5px rgba(10,15,30,0.025);
+        --shadow-sm: 0 0.5px 2px rgba(10,15,30,0.035), 0 0.25px 0.5px rgba(10,15,30,0.015);
+        --shadow-md: 0 2px 8px rgba(10,15,30,0.05), 0 1px 2px rgba(10,15,30,0.015);
+      }
+      img {
+        image-rendering: high-quality;
+      }
+      /* Even thinner borders for 4x DPR */
+      .card-premium, .card-service, .glass-card { border-width: 0.25px; }
+    }
+
+    /* ── Mobile HiDPI + small screen combo: phone-specific tuning ── */
+    @media (max-width: 640px) and (min-resolution: 2dppx) {
+      /* Slightly larger touch targets for tiny pixels */
+      .gnb-link { min-height: 52px; }
+      /* Ensure readable font sizes don't get too small on HiDPI phones */
+      .f-text-xs { font-size: max(var(--text-xs), 0.8rem); }
+      .f-text-sm { font-size: max(var(--text-sm), 0.9rem); }
+      /* Hero badge needs extra readability on small HiDPI */
+      .hero-badge-pill span { font-size: max(0.72rem, 11px) !important; }
+    }
+
+    /* ── Tablet HiDPI (768–1024px, DPR 2x+) ── */
+    @media (min-width: 768px) and (max-width: 1024px) and (min-resolution: 2dppx) {
+      :root {
+        --container-pad: clamp(1.5rem, 3vw, 3rem);
+      }
+      .gnb-link { font-size: clamp(1.05rem, 0.9rem + 0.4vw, 1.25rem); }
     }
 
     /* ── 4K Ultra-wide ── */
@@ -751,10 +873,11 @@ export function layout(opts: {
        ═══════════════════════════════════════════════ */
     .mobile-menu {
       transform: translateX(100%);
-      transition: transform 0.4s var(--ease-out);
+      transition: transform 0.45s cubic-bezier(0.32, 0.72, 0, 1);
+      will-change: transform;
     }
     .mobile-menu.active { transform: translateX(0); }
-    .mobile-overlay { opacity: 0; visibility: hidden; transition: all 0.4s ease; }
+    .mobile-overlay { opacity: 0; visibility: hidden; transition: opacity 0.35s ease, visibility 0.35s ease; }
     .mobile-overlay.active { opacity: 1; visibility: visible; }
 
     /* ═══════════════════════════════════════════════
@@ -1097,11 +1220,14 @@ export function layout(opts: {
 </head>
 <body class="bg-surface text-slate-700 antialiased">
 
+  <!-- R2: Skip-to-Content (WCAG 2.4.1) -->
+  <a href="#main-content" class="skip-to-content">본문 바로가기</a>
+
   <!-- Scroll Progress Bar -->
   <div id="scrollProgress"></div>
 
   <!-- ═══════════ GNB v33 (2-Tier Premium Header) ═══════════ -->
-  <header id="gnb" class="fixed top-0 left-0 right-0 z-50" style="border-bottom: none;">
+  <header id="gnb" class="fixed top-0 left-0 right-0 z-50" role="banner" style="border-bottom: none;">
 
     <!-- ══ TOP BAR: KOLAS + Logo + Phone ══ -->
     <div class="gnb-top-bar">
@@ -1110,13 +1236,13 @@ export function layout(opts: {
 
           <!-- KOLAS Mark -->
           <div class="hidden md:flex items-center shrink-0" style="padding:0;margin:0 0 0 5cm;">
-            <img src="/static/images/kolas.png" alt="KOLAS 국제공인시험기관" style="height:clamp(44px, 38px + 1.4vw, 68px);" class="kolas-mark w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" title="KOLAS 국제공인시험기관 인정 (KTL-F-588)" data-admin-edit="kolas_image">
+            <img src="/static/images/kolas.png" alt="KOLAS 국제공인시험기관" loading="lazy" decoding="async" sizes="(min-width: 7680px) 220px, (min-width: 3840px) 140px, (min-width: 2560px) 110px, (max-width: 767px) 0px, 68px" style="height:clamp(44px, 38px + 1.4vw, 68px);" class="kolas-mark w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" title="KOLAS 국제공인시험기관 인정 (KTL-F-588)" data-admin-edit="kolas_image">
           </div>
 
           <!-- Logo -->
           <a href="/" class="flex items-center shrink-0 group" data-admin-edit="site_logo">
             ${s.logo_url && s.logo_url.trim() !== '' && s.logo_url !== '/static/images/logo.png' ? `
-            <img src="${s.logo_url}" alt="${siteName}" style="height:clamp(48px, 40px + 1.6vw, 72px); max-width:clamp(280px, 24vw, 440px);" class="w-auto object-contain transition-transform group-hover:scale-[1.02]">
+            <img src="${s.logo_url}" alt="${siteName}" style="height:clamp(48px, 40px + 1.6vw, 72px); max-width:clamp(280px, 24vw, 440px);" sizes="(min-width: 7680px) 440px, (min-width: 3840px) 360px, (min-width: 2560px) 320px, (max-width: 640px) 200px, 300px" class="site-logo-img w-auto object-contain transition-transform group-hover:scale-[1.02]">
             ` : `
             <div class="flex items-center" style="gap: clamp(8px, 0.8vw, 14px)">
               <div class="relative">
@@ -1249,8 +1375,8 @@ export function layout(opts: {
   <!-- Mobile Overlay -->
   <div id="mobileOverlay" class="mobile-overlay fixed inset-0 bg-black/60 z-[60] backdrop-blur-sm" onclick="closeMobileMenu()"></div>
 
-  <!-- Mobile Slide-out Menu -->
-  <div id="mobileMenu" class="mobile-menu fixed top-0 right-0 bottom-0 w-[min(85vw,380px)] bg-white z-[70] overflow-y-auto" style="box-shadow: -8px 0 48px rgba(0,0,0,0.18);">
+  <!-- Mobile Slide-out Menu (R4: Right slide panel with smooth backdrop) -->
+  <div id="mobileMenu" class="mobile-menu fixed top-0 right-0 bottom-0 w-[min(85vw,380px)] bg-white z-[70] overflow-y-auto" role="dialog" aria-modal="true" aria-label="모바일 메뉴" style="box-shadow: -8px 0 48px rgba(0,0,0,0.18);">
     <div class="flex justify-between items-center border-b border-slate-100" style="padding: var(--space-md) var(--space-lg)">
       <div class="flex items-center" style="gap: var(--space-sm)">
         <div class="rounded-lg flex items-center justify-center" style="width:30px; height:30px; background: linear-gradient(135deg, #2563EB, #06B6D4);">
@@ -1326,12 +1452,12 @@ export function layout(opts: {
   </div>
 
   <!-- ═══════════ Content ═══════════ -->
-  <main style="padding-top:var(--gnb-h)">
+  <main id="main-content" role="main" style="padding-top:var(--gnb-h)">
     ${opts.content}
   </main>
 
   <!-- ═══════════ Footer (Premium Layered) ═══════════ -->
-  <footer class="text-gray-400 mt-auto relative overflow-hidden" style="${s.footer_bg_url ? `background-image: linear-gradient(rgba(10,15,30,0.95), rgba(7,11,22,0.98)), url('${s.footer_bg_url}'); background-size:cover; background-position:center;` : 'background: linear-gradient(180deg, #0C1120 0%, #080D18 50%, #060A14 100%);'}">
+  <footer role="contentinfo" class="text-gray-400 mt-auto relative overflow-hidden" style="${s.footer_bg_url ? `background-image: linear-gradient(rgba(10,15,30,0.95), rgba(7,11,22,0.98)), url('${s.footer_bg_url}'); background-size:cover; background-position:center;` : 'background: linear-gradient(180deg, #0C1120 0%, #080D18 50%, #060A14 100%);'}">
     <!-- Top accent line -->
     <div style="height: 2px; background: linear-gradient(90deg, transparent 5%, #2563EB 25%, #06B6D4 50%, #3B82F6 75%, transparent 95%); opacity: 0.8;"></div>
 
@@ -1346,7 +1472,7 @@ export function layout(opts: {
         <div class="md:col-span-5">
           <div style="margin-bottom: var(--space-lg)">
             <div class="inline-flex items-center rounded-xl" style="padding: var(--space-sm) var(--space-md); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);">
-              <img src="/static/images/logo-horizontal.png" alt="${siteName}" style="height:clamp(32px, 26px + 0.9vw, 48px)" class="footer-logo w-auto object-contain opacity-90">
+              <img src="/static/images/logo-horizontal.png" alt="${siteName}" loading="lazy" decoding="async" sizes="(min-width: 7680px) 120px, (min-width: 3840px) 80px, (min-width: 2560px) 64px, 48px" style="height:clamp(32px, 26px + 0.9vw, 48px)" class="footer-logo w-auto object-contain opacity-90">
             </div>
           </div>
           <p class="f-text-lg leading-relaxed text-gray-500 max-w-lg" style="margin-bottom: var(--space-md)">${s.site_slogan || '최상의 시험·인증 서비스로 정보보안 기술을 완성'}</p>
@@ -1420,7 +1546,7 @@ export function layout(opts: {
   <!-- ═══════════ Scripts ═══════════ -->
   <!-- AOS -->
   <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-  <script>AOS.init({ duration: 650, once: true, offset: 40, easing: 'ease-out-cubic' });</script>
+  <script>AOS.init({ duration: 700, once: true, offset: 50, easing: 'ease-out-cubic', anchorPlacement: 'top-bottom', disable: function() { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } });</script>
 
   <script>
     /* ── Mobile Menu ── */
@@ -1428,13 +1554,46 @@ export function layout(opts: {
       document.getElementById('mobileMenu').classList.add('active');
       document.getElementById('mobileOverlay').classList.add('active');
       document.body.style.overflow = 'hidden';
+      // R2: Focus first interactive element in menu
+      setTimeout(function() {
+        var closeBtn = document.querySelector('#mobileMenu button[onclick*="closeMobileMenu"]');
+        if (closeBtn) closeBtn.focus();
+      }, 100);
     }
     function closeMobileMenu() {
       document.getElementById('mobileMenu').classList.remove('active');
       document.getElementById('mobileOverlay').classList.remove('active');
       document.body.style.overflow = '';
+      // R2: Return focus to menu trigger
+      var btn = document.getElementById('mobileMenuBtn');
+      if (btn) btn.focus();
     }
     document.getElementById('mobileMenuBtn')?.addEventListener('click', openMobileMenu);
+    // R2: Close mobile menu on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && document.getElementById('mobileMenu')?.classList.contains('active')) {
+        closeMobileMenu();
+      }
+    });
+
+    // R2: Focus trap for mobile menu (WCAG 2.4.3 — Focus Order)
+    (function() {
+      var mobileMenu = document.getElementById('mobileMenu');
+      if (!mobileMenu) return;
+      mobileMenu.addEventListener('keydown', function(e) {
+        if (e.key !== 'Tab') return;
+        if (!mobileMenu.classList.contains('active')) return;
+        var focusable = mobileMenu.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])');
+        if (focusable.length === 0) return;
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+        } else {
+          if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      });
+    })();
 
     /* ── GNB Scroll Effect ── */
     (function() {

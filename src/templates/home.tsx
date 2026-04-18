@@ -1,4 +1,4 @@
-// KOIST - Home Page Template (v35.6.0 - P0-2: sim_cert_types→ealData 연동, P1-3: popup_close_all_text SSR)
+// KOIST - Home Page Template (v36.1.0 - R1~R7: 8K PC+Mobile HiDPI, Video R2, A11y, Modern Design)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem, SimCertType } from '../types';
 
 function bgStyle(imageUrl: string | undefined, fallbackGradient: string, opacity: string = '0.85'): string {
@@ -430,13 +430,25 @@ export function homePage(opts: {
   ` : ''}
 
   <!-- ════════════════════════════════════════════════════════════════════════
-       UNIFIED HERO + SIMULATOR — v32 8K ULTRA-SHARP
+       UNIFIED HERO + SIMULATOR — v36.0 8K ULTRA-SHARP + Video R2 Background
        상단: 히어로 텍스트 (배지 + 대제목 + 부제 + CTA 버튼 + 연락처)
        하단: 인터랙티브 시뮬레이터 패널 (70% 폭, 시험평가~고객지원 정렬)
+       R5: Video background served from R2 Storage (MP4)
        ════════════════════════════════════════════════════════════════════════ -->
-  <section class="unified-hero-section relative" style="overflow: visible; ${bgStyle(s.hero_bg_url, `linear-gradient(135deg, ${s.hero_gradient_color1 || '#070B14'} 0%, ${s.hero_gradient_color2 || '#0A1128'} 25%, ${s.hero_gradient_color3 || '#0F1E3D'} 45%, ${s.hero_gradient_color4 || '#162D5A'} 70%, ${s.hero_gradient_color5 || '#1A3A6E'} 100%)`, heroOpacity)}">
+  <section class="unified-hero-section relative" role="region" aria-label="히어로 배너" style="overflow: visible; ${s.hero_video_url ? `background: linear-gradient(135deg, ${s.hero_gradient_color1 || '#070B14'} 0%, ${s.hero_gradient_color2 || '#0A1128'} 25%, ${s.hero_gradient_color3 || '#0F1E3D'} 45%, ${s.hero_gradient_color4 || '#162D5A'} 70%, ${s.hero_gradient_color5 || '#1A3A6E'} 100%);` : bgStyle(s.hero_bg_url, `linear-gradient(135deg, ${s.hero_gradient_color1 || '#070B14'} 0%, ${s.hero_gradient_color2 || '#0A1128'} 25%, ${s.hero_gradient_color3 || '#0F1E3D'} 45%, ${s.hero_gradient_color4 || '#162D5A'} 70%, ${s.hero_gradient_color5 || '#1A3A6E'} 100%)`, heroOpacity)}">
+    <!-- R5: Video Background from R2 Storage -->
+    ${s.hero_video_url ? `
+    <div class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+      <video class="hero-video-bg" autoplay muted loop playsinline preload="auto"
+        ${s.hero_video_poster ? `poster="${s.hero_video_poster}"` : ''}
+        style="position:absolute; top:50%; left:50%; min-width:100%; min-height:100%; width:auto; height:auto; transform:translate(-50%,-50%); object-fit:cover;">
+        <source src="${s.hero_video_url}" type="video/mp4">
+      </video>
+      <div class="absolute inset-0" style="background:rgba(10,15,30,${s.hero_video_opacity || '0.65'}); backdrop-filter:blur(1px);"></div>
+    </div>
+    ` : ''}
     <!-- 8K Animated background layers -->
-    ${!s.hero_bg_url ? `
+    ${!s.hero_bg_url && !s.hero_video_url ? `
     <div class="absolute inset-0 pointer-events-none" style="overflow:hidden; will-change:transform; -webkit-backface-visibility:hidden; transform:translateZ(0);">
       <div class="absolute unified-orb-1" style="top:-8%; right:-5%; width:clamp(300px,42vw,750px); height:clamp(300px,42vw,750px); background: radial-gradient(circle, rgba(59,130,246,0.10) 0%, rgba(37,99,235,0.04) 40%, transparent 65%); border-radius:50%; filter:blur(60px);"></div>
       <div class="absolute unified-orb-2" style="bottom:-12%; left:-8%; width:clamp(250px,35vw,600px); height:clamp(250px,35vw,600px); background: radial-gradient(circle, rgba(6,182,212,0.07) 0%, rgba(34,211,238,0.03) 40%, transparent 65%); border-radius:50%; filter:blur(50px);"></div>
@@ -627,8 +639,22 @@ export function homePage(opts: {
     </div>
   </section>
 
-  <!-- ═══════ Unified Hero + Simulator Styles — v35.3.1 Hero bottom-align, 30% text reduce, Slider -2cm ═══════ -->
+  <!-- ═══════ Unified Hero + Simulator Styles — v36.0 Video R2, 8K Mobile, Modern ═══════ -->
   <style>
+    /* R5: Hero Video Background */
+    .hero-video-bg {
+      will-change: transform;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-video-bg { display: none; }
+    }
+    /* R5: Pause video on mobile to save battery */
+    @media (hover: none) and (pointer: coarse) and (max-width: 768px) {
+      .hero-video-bg { display: none; }
+    }
+
     .unified-hero-section {
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -874,6 +900,19 @@ export function homePage(opts: {
       .eal-bar span { font-size: 3.25rem !important; }
     }
 
+    /* ── R7: Mobile HiDPI — Hero + Simulator tuning for DPR 2x+/3x+ small screens ── */
+    @media (max-width: 640px) and (min-resolution: 2dppx) {
+      .unified-sim-panel { border-radius: 12px; }
+      .hero-contact-card { border-radius: 12px; border-width: 0.5px !important; }
+      .hero-contact-icon { border-radius: 8px; }
+      .eal-tab { border-radius: 6px; }
+    }
+    @media (max-width: 640px) and (min-resolution: 3dppx) {
+      /* Ultra-thin borders on 3x DPR phones */
+      .unified-sim-panel, .hero-contact-card { border-width: 0.33px !important; }
+      .card-premium, .card-service { border-width: 0.33px; }
+    }
+
     /* ── Touch device: disable hover transforms on mobile ── */
     @media (hover: none) and (pointer: coarse) {
       .card-service-xl:hover { transform: none; box-shadow: var(--shadow-xs); }
@@ -939,7 +978,7 @@ export function homePage(opts: {
   <!-- ════════════════════════════════════════════════════════
        SERVICES SECTION (v32 - 2x Text Enlarged, Premium Bento Grid)
        ════════════════════════════════════════════════════════ -->
-  <section id="services" class="relative overflow-hidden" style="background: #FFFFFF; padding: clamp(1.5rem,2.5vw,2.5rem) 0;">
+  <section id="services" class="relative overflow-hidden" role="region" aria-label="사업분야" style="background: #FFFFFF; padding: clamp(1.5rem,2.5vw,2.5rem) 0;">
     <div class="absolute inset-0 opacity-[0.012]" style="background-image: radial-gradient(circle at 1px 1px, rgba(15,23,42,0.15) 1px, transparent 0); background-size: 32px 32px;"></div>
 
     <div class="relative fluid-container">
@@ -980,7 +1019,7 @@ export function homePage(opts: {
         <a href="/services/${dept.slug}" class="card-service-xl group block relative" style="--card-accent:${dept.color}; padding:clamp(${padMin}rem, ${padVw}vw, ${padMax}rem);" data-aos="fade-up" data-aos-delay="${Math.min(i * 20, 180)}">
           ${dept.image_url ? `
           <div class="rounded-lg overflow-hidden transition-all duration-500 group-hover:scale-105 group-hover:shadow-lg mx-auto" style="width:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); height:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); margin-bottom:clamp(0.4rem,0.6vw,0.6rem); border: 1.5px solid ${dept.color}20; box-shadow: 0 1px 8px ${dept.color}10;">
-            <img src="${dept.image_url}" alt="${dept.name}" class="w-full h-full object-cover" loading="lazy" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
+            <img src="${dept.image_url}" alt="${dept.name}" class="w-full h-full object-cover" loading="lazy" decoding="async" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
           </div>` : `
           <div class="rounded-lg flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg mx-auto" style="width:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); height:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); background: linear-gradient(135deg, ${dept.color}15, ${dept.color}08); margin-bottom:clamp(0.4rem,0.6vw,0.6rem);">
             <i class="fas ${dept.icon}" style="color:${dept.color}; font-size:clamp(1.2rem,2vw,1.8rem)"></i>
