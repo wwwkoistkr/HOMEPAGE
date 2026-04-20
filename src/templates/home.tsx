@@ -491,7 +491,7 @@ export function homePage(opts: {
 
           <!-- v36: Headline removed, Subtitle upgraded to h1 (×2 size, hero position) -->
           <h1 class="text-white font-bold hero-subtitle-promoted" data-admin-edit="hero_line2" style="font-size:clamp(1.38rem, 1.32vw, 6.3rem); line-height:1.25; margin-bottom:clamp(0.88rem,1.09vw,2.35rem); max-width:clamp(672px,49vw,2520px); letter-spacing:-0.02em; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
-            ${s.hero_line2 || 'IT제품 보안성 평가·인증의 원스톱 서비스, <span class="hero-gradient-text">한국정보보안기술원</span>'}
+            ${s.hero_line2 || 'IT제품 보안성 평가·인증의 원스톱 서비스'}
           </h1>
 
           <!-- CTA Buttons — 8K fluid (v38.1 font ×1.4) -->
