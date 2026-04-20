@@ -467,25 +467,25 @@ export function progressPage(items: ProgressItem[], page: number = 1, total: num
       <!-- Data Table -->
       <div class="bg-white rounded-xl border border-slate-200/60 overflow-hidden" style="box-shadow: var(--shadow-sm);">
         <div class="overflow-x-auto">
-          <table class="w-full" style="table-layout:fixed; min-width:640px;">
+          <table class="w-full" style="table-layout:fixed; min-width:680px;">
             <colgroup>
-              <col style="width:48px">
-              ${!categoryFilter ? '<col style="width:90px">' : ''}
+              <col style="width:52px">
+              ${!categoryFilter ? '<col style="width:100px">' : ''}
               <col style="width:auto">
-              <col style="width:80px">
-              <col style="width:78px" class="hidden sm:table-column">
-              <col style="width:78px" class="hidden md:table-column">
-              <col style="width:88px">
+              <col style="width:90px">
+              <col style="width:88px" class="hidden sm:table-column">
+              <col style="width:88px" class="hidden md:table-column">
+              <col style="width:96px">
             </colgroup>
             <thead>
               <tr style="background: linear-gradient(135deg, #0F172A, #1E293B);">
-                <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:10px 8px">번호</th>
-                ${!categoryFilter ? '<th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:10px 6px">사업분류</th>' : ''}
-                <th class="text-left text-slate-300 f-text-xs font-semibold" style="padding:10px 10px">제품명</th>
-                <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:10px 6px">${categoryFilter ? meta.col2 : '등급'}</th>
-                <th class="text-center text-slate-300 f-text-xs font-semibold hidden sm:table-cell" style="padding:10px 6px">${categoryFilter ? meta.col3 : '구분'}</th>
-                <th class="text-center text-slate-300 f-text-xs font-semibold hidden md:table-cell" style="padding:10px 6px">${categoryFilter ? meta.col4 : '유형'}</th>
-                <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:10px 8px">진행상태</th>
+                <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:11px 10px">번호</th>
+                ${!categoryFilter ? '<th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:11px 10px">사업분류</th>' : ''}
+                <th class="text-left text-slate-300 f-text-xs font-semibold" style="padding:11px 14px">제품명</th>
+                <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:11px 10px">${categoryFilter ? meta.col2 : '등급'}</th>
+                <th class="text-center text-slate-300 f-text-xs font-semibold hidden sm:table-cell" style="padding:11px 10px">${categoryFilter ? meta.col3 : '구분'}</th>
+                <th class="text-center text-slate-300 f-text-xs font-semibold hidden md:table-cell" style="padding:11px 10px">${categoryFilter ? meta.col4 : '유형'}</th>
+                <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:11px 10px">진행상태</th>
               </tr>
             </thead>
             <tbody>
@@ -493,13 +493,13 @@ export function progressPage(items: ProgressItem[], page: number = 1, total: num
                 const cm = getCatMeta(p.category);
                 return `
               <tr class="border-t border-slate-100/70 hover:bg-blue-50/25 transition-colors" style="border-left:3px solid transparent;">
-                <td class="text-center text-slate-400 f-text-xs" style="padding:9px 8px">${startNum - i}</td>
-                ${!categoryFilter ? `<td class="text-center" style="padding:9px 6px"><span class="inline-flex items-center gap-1 rounded-full f-text-xs font-medium" style="padding:2px 8px; background:${cm.color}10; color:${cm.color}; white-space:nowrap;"><i class="fas ${cm.icon}" style="font-size:8px"></i>${p.category}</span></td>` : ''}
-                <td style="padding:9px 10px"><span class="font-medium text-slate-800 f-text-sm truncate block">${p.product_name}</span></td>
-                <td class="text-center" style="padding:9px 6px"><span class="inline-block bg-slate-100 text-slate-700 rounded font-mono font-medium f-text-xs" style="padding:2px 8px; white-space:nowrap">${p.assurance_level || '-'}</span></td>
-                <td class="text-center text-slate-600 hidden sm:table-cell f-text-xs" style="padding:9px 6px; white-space:nowrap">${p.cert_type || '-'}</td>
-                <td class="text-center text-slate-600 hidden md:table-cell f-text-xs" style="padding:9px 6px; white-space:nowrap">${p.eval_type || '-'}</td>
-                <td class="text-center" style="padding:9px 8px">${statusBadge(p.status)}</td>
+                <td class="text-center text-slate-400 f-text-xs" style="padding:10px 10px">${startNum - i}</td>
+                ${!categoryFilter ? `<td class="text-center" style="padding:10px 10px"><span class="inline-flex items-center gap-1 rounded-full f-text-xs font-medium" style="padding:2px 8px; background:${cm.color}10; color:${cm.color}; white-space:nowrap;"><i class="fas ${cm.icon}" style="font-size:8px"></i>${p.category}</span></td>` : ''}
+                <td style="padding:10px 14px"><span class="font-medium text-slate-800 f-text-sm truncate block" style="max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.product_name}</span></td>
+                <td class="text-center" style="padding:10px 10px"><span class="inline-block bg-slate-100 text-slate-700 rounded font-mono font-medium f-text-xs" style="padding:2px 8px; white-space:nowrap">${p.assurance_level || '-'}</span></td>
+                <td class="text-center text-slate-600 hidden sm:table-cell f-text-xs" style="padding:10px 10px; white-space:nowrap">${p.cert_type || '-'}</td>
+                <td class="text-center text-slate-600 hidden md:table-cell f-text-xs" style="padding:10px 10px; white-space:nowrap">${p.eval_type || '-'}</td>
+                <td class="text-center" style="padding:10px 10px">${statusBadge(p.status)}</td>
               </tr>`;
               }).join('')}
               ${items.length === 0 ? `<tr><td colspan="${categoryFilter ? 6 : 7}" class="text-center text-slate-400 f-text-sm" style="padding:var(--space-2xl) 0">
@@ -596,38 +596,38 @@ export function serviceProgressContent(items: ProgressItem[], page: number = 1, 
     <!-- Table -->
     <div class="rounded-lg border border-slate-200/60 overflow-hidden" style="box-shadow: var(--shadow-xs);">
       <div class="overflow-x-auto">
-        <table class="w-full" style="table-layout:fixed; min-width:640px;">
+        <table class="w-full" style="table-layout:fixed; min-width:680px;">
           <colgroup>
-            <col style="width:48px">
+            <col style="width:52px">
             <col style="width:auto">
-            <col style="width:80px">
-            <col style="width:78px" class="hidden sm:table-column">
-            <col style="width:78px" class="hidden md:table-column">
-            <col style="width:88px">
+            <col style="width:90px">
+            <col style="width:88px" class="hidden sm:table-column">
+            <col style="width:88px" class="hidden md:table-column">
+            <col style="width:96px">
           </colgroup>
           <thead>
             <tr style="background: linear-gradient(135deg, #0F172A, #1E293B);">
-              <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:10px 8px">번호</th>
-              <th class="text-left text-slate-300 f-text-xs font-semibold" style="padding:10px 10px">제품명</th>
-              <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:10px 6px">${categoryFilter ? meta.col2 : '등급'}</th>
-              <th class="text-center text-slate-300 f-text-xs font-semibold hidden sm:table-cell" style="padding:10px 6px">${categoryFilter ? meta.col3 : '구분'}</th>
-              <th class="text-center text-slate-300 f-text-xs font-semibold hidden md:table-cell" style="padding:10px 6px">${categoryFilter ? meta.col4 : '유형'}</th>
-              <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:10px 8px">진행상태</th>
+              <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:11px 10px">번호</th>
+              <th class="text-left text-slate-300 f-text-xs font-semibold" style="padding:11px 14px">제품명</th>
+              <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:11px 10px">${categoryFilter ? meta.col2 : '등급'}</th>
+              <th class="text-center text-slate-300 f-text-xs font-semibold hidden sm:table-cell" style="padding:11px 10px">${categoryFilter ? meta.col3 : '구분'}</th>
+              <th class="text-center text-slate-300 f-text-xs font-semibold hidden md:table-cell" style="padding:11px 10px">${categoryFilter ? meta.col4 : '유형'}</th>
+              <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:11px 10px">진행상태</th>
             </tr>
           </thead>
           <tbody>
             ${items.map((p, i) => `
             <tr class="border-t border-slate-100/70 hover:bg-blue-50/25 transition-colors">
-              <td class="text-center text-slate-400 f-text-xs" style="padding:9px 8px">${startNum - i}</td>
-              <td style="padding:9px 10px">
-                <span class="font-medium text-slate-800 f-text-sm truncate block">${p.product_name}</span>
+              <td class="text-center text-slate-400 f-text-xs" style="padding:10px 10px">${startNum - i}</td>
+              <td style="padding:10px 14px">
+                <span class="font-medium text-slate-800 f-text-sm truncate block" style="max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.product_name}</span>
               </td>
-              <td class="text-center" style="padding:9px 6px">
-                <span class="inline-block bg-slate-100 text-slate-700 rounded font-mono font-medium f-text-xs" style="padding:2px 8px">${p.assurance_level || '-'}</span>
+              <td class="text-center" style="padding:10px 10px">
+                <span class="inline-block bg-slate-100 text-slate-700 rounded font-mono font-medium f-text-xs" style="padding:2px 8px; white-space:nowrap">${p.assurance_level || '-'}</span>
               </td>
-              <td class="text-center text-slate-600 hidden sm:table-cell f-text-xs" style="padding:9px 6px">${p.cert_type || '-'}</td>
-              <td class="text-center text-slate-600 hidden md:table-cell f-text-xs" style="padding:9px 6px">${p.eval_type || '-'}</td>
-              <td class="text-center" style="padding:9px 8px">
+              <td class="text-center text-slate-600 hidden sm:table-cell f-text-xs" style="padding:10px 10px; white-space:nowrap">${p.cert_type || '-'}</td>
+              <td class="text-center text-slate-600 hidden md:table-cell f-text-xs" style="padding:10px 10px; white-space:nowrap">${p.eval_type || '-'}</td>
+              <td class="text-center" style="padding:10px 10px">
                 ${statusBadge(p.status)}
               </td>
             </tr>
