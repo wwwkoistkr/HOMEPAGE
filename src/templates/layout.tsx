@@ -1,6 +1,7 @@
-// KOIST - Main Layout Template (v37.0 - Security Hardening + Partials Refactor)
+// KOIST - Main Layout Template (v39.0 - XSS Hardening)
 import type { SettingsMap, DepartmentWithPages } from '../types';
 import { layoutCSS } from './partials/layout-css';
+import { escapeHtml, escapeAttr, safeUrl } from '../utils/db';
 
 export function layout(opts: {
   title?: string;
@@ -12,8 +13,20 @@ export function layout(opts: {
 }) {
   const s = opts.settings;
   const siteName = s.site_name || '(주)한국정보보안기술원';
+  const siteNameEsc = escapeAttr(siteName);
   const pageTitle = opts.title ? `${opts.title} - ${siteName}` : siteName;
+  const pageTitleEsc = escapeHtml(pageTitle);
+  const pageTitleAttr = escapeAttr(pageTitle);
   const deps = opts.departments || [];
+
+  // v39.0: 전화번호 링크는 숫자/하이픈만 허용 (tel: URL 인젝션 방지)
+  const phoneRaw = s.phone || '02-586-1230';
+  const phoneDisplay = escapeHtml(phoneRaw);
+  const phoneTelAttr = escapeAttr(phoneRaw.replace(/[^0-9+\-]/g, ''));
+  const faxDisplay = escapeHtml(s.fax || '02-586-1238');
+  const emailRaw = s.email || 'koist@koist.kr';
+  const emailDisplay = escapeHtml(emailRaw);
+  const emailMailtoAttr = escapeAttr(emailRaw.replace(/[<>"'`\s]/g, ''));
 
   return `<!DOCTYPE html>
 <html lang="ko">
@@ -26,14 +39,14 @@ export function layout(opts: {
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="msapplication-TileColor" content="#0A0F1E">
   <meta name="color-scheme" content="dark light">
-  <meta name="description" content="${s.meta_description || ''}">
-  <meta name="keywords" content="${s.meta_keywords || ''}">
+  <meta name="description" content="${escapeAttr(s.meta_description || '')}">
+  <meta name="keywords" content="${escapeAttr(s.meta_keywords || '')}">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="${pageTitle}">
-  <meta property="og:description" content="${s.meta_description || ''}">
+  <meta property="og:title" content="${pageTitleAttr}">
+  <meta property="og:description" content="${escapeAttr(s.meta_description || '')}">
   <meta property="og:url" content="https://koist.kr">
-  ${s.naver_verification ? `<meta name="naver-site-verification" content="${s.naver_verification}">` : ''}
-  <title>${pageTitle}</title>
+  ${s.naver_verification ? `<meta name="naver-site-verification" content="${escapeAttr(s.naver_verification)}">` : ''}
+  <title>${pageTitleEsc}</title>
   <link rel="icon" type="image/png" href="/static/images/logo-circle.png">
 
   <!-- Tailwind CSS -->
@@ -111,13 +124,13 @@ export function layout(opts: {
 
           <!-- KOLAS Mark -->
           <div class="hidden md:flex items-center shrink-0" style="padding:0;margin:0 0 0 5cm;">
-            <img src="${s.kolas_image_url || '/static/images/kolas.png'}" alt="KOLAS 국제공인시험기관" loading="lazy" decoding="async" sizes="(min-width: 7680px) 110px, (min-width: 3840px) 70px, (min-width: 2560px) 55px, (max-width: 767px) 0px, 34px" style="height:clamp(22px, 19px + 0.7vw, 34px);" class="kolas-mark w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" title="KOLAS 국제공인시험기관 인정 (KTL-F-588)" data-admin-edit="kolas_image">
+            <img src="${safeUrl(s.kolas_image_url) || '/static/images/kolas.png'}" alt="KOLAS 국제공인시험기관" loading="lazy" decoding="async" sizes="(min-width: 7680px) 110px, (min-width: 3840px) 70px, (min-width: 2560px) 55px, (max-width: 767px) 0px, 34px" style="height:clamp(22px, 19px + 0.7vw, 34px);" class="kolas-mark w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" title="KOLAS 국제공인시험기관 인정 (KTL-F-588)" data-admin-edit="kolas_image">
           </div>
 
           <!-- Logo -->
           <a href="/" class="flex items-center shrink-0 group" data-admin-edit="site_logo">
             ${s.logo_url && s.logo_url.trim() !== '' && s.logo_url !== '/static/images/logo.png' ? `
-            <img src="${s.logo_url}" alt="${siteName}" style="height:clamp(33.6px, 28px + 1.12vw, 50.4px); max-width:clamp(196px, 16.8vw, 308px);" sizes="(min-width: 7680px) 308px, (min-width: 3840px) 252px, (min-width: 2560px) 224px, (max-width: 640px) 140px, 210px" class="site-logo-img w-auto object-contain transition-transform group-hover:scale-[1.02]">
+            <img src="${safeUrl(s.logo_url)}" alt="${siteNameEsc}" style="height:clamp(33.6px, 28px + 1.12vw, 50.4px); max-width:clamp(196px, 16.8vw, 308px);" sizes="(min-width: 7680px) 308px, (min-width: 3840px) 252px, (min-width: 2560px) 224px, (max-width: 640px) 140px, 210px" class="site-logo-img w-auto object-contain transition-transform group-hover:scale-[1.02]">
             ` : `
             <div class="flex items-center" style="gap: clamp(8px, 0.8vw, 14px)">
               <div class="relative">
@@ -127,8 +140,8 @@ export function layout(opts: {
                 </div>
               </div>
               <div>
-                <div class="font-bold text-white leading-tight tracking-tight" style="font-size:clamp(1.15rem, 0.95rem + 0.7vw, 1.65rem);">${s.site_name || '한국정보보안기술원'}</div>
-                <div class="tracking-[0.18em] font-medium" style="font-size:clamp(0.72rem, 0.60rem + 0.35vw, 1.0rem); background: linear-gradient(90deg, #94A3B8, #64748B); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">${s.site_slogan || 'KOIST'}</div>
+                <div class="font-bold text-white leading-tight tracking-tight" style="font-size:clamp(1.15rem, 0.95rem + 0.7vw, 1.65rem);">${escapeHtml(s.site_name || '한국정보보안기술원')}</div>
+                <div class="tracking-[0.18em] font-medium" style="font-size:clamp(0.72rem, 0.60rem + 0.35vw, 1.0rem); background: linear-gradient(90deg, #94A3B8, #64748B); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">${escapeHtml(s.site_slogan || 'KOIST')}</div>
               </div>
             </div>
             `}
@@ -136,9 +149,9 @@ export function layout(opts: {
 
           <!-- Right: Phone + Mobile Menu -->
           <div class="flex items-center shrink-0" style="gap:var(--space-xs);margin-left:auto;margin-right:15cm;">
-            <a href="tel:${s.phone || '02-586-1230'}" class="hidden xl:inline-flex items-center text-white font-bold rounded-lg transition-all ripple-btn" style="gap: 6px; padding: clamp(0.35rem,0.5vw,0.5rem) clamp(0.6rem,0.8vw,0.9rem); font-size: clamp(0.75rem, 0.65rem + 0.30vw, 0.92rem); background: linear-gradient(135deg, rgba(59,130,246,0.85), rgba(6,182,212,0.85)); box-shadow: 0 4px 16px rgba(59,130,246,0.25), inset 0 1px 0 rgba(255,255,255,0.12); border-radius: clamp(8px,0.6vw,12px);">
+            <a href="tel:${phoneTelAttr}" class="hidden xl:inline-flex items-center text-white font-bold rounded-lg transition-all ripple-btn" style="gap: 6px; padding: clamp(0.35rem,0.5vw,0.5rem) clamp(0.6rem,0.8vw,0.9rem); font-size: clamp(0.75rem, 0.65rem + 0.30vw, 0.92rem); background: linear-gradient(135deg, rgba(59,130,246,0.85), rgba(6,182,212,0.85)); box-shadow: 0 4px 16px rgba(59,130,246,0.25), inset 0 1px 0 rgba(255,255,255,0.12); border-radius: clamp(8px,0.6vw,12px);">
               <i class="fas fa-phone" style="font-size:clamp(8px,0.6vw,11px)"></i>
-              <span>${s.phone || '02-586-1230'}</span>
+              <span>${phoneDisplay}</span>
             </a>
             <button id="mobileMenuBtn" class="lg:hidden p-2 text-slate-400 hover:text-white transition-colors" aria-label="메뉴 열기">
               <i class="fas fa-bars" style="font-size:var(--text-lg)"></i>
@@ -156,7 +169,7 @@ export function layout(opts: {
           '<a href="/about/greeting" class="gnb-link gnb-mega-trigger" data-col="about">KOIST소개</a>'
         ].concat(
           activeDeps.map(dept =>
-            '<a href="/services/' + dept.slug + '" class="gnb-link gnb-mega-trigger" data-col="dept-' + dept.slug + '">' + dept.name + '</a>'
+            '<a href="/services/' + encodeURIComponent(dept.slug) + '" class="gnb-link gnb-mega-trigger" data-col="dept-' + escapeAttr(dept.slug) + '">' + escapeHtml(dept.name) + '</a>'
           )
         ).concat([
           '<a href="/support/notice" class="gnb-link gnb-mega-trigger" data-col="support">고객지원</a>'
@@ -196,9 +209,11 @@ export function layout(opts: {
                 // Row 1 departments
                 row1Deps.forEach(dept => {
                   const wideCls = dept.name.length >= 7 ? ' mega-col-wide' : '';
-                  html += '<div class="mega-menu-column' + wideCls + '" data-col="dept-' + dept.slug + '">';
-                  html += '<h3 class="mega-menu-heading"><a href="/services/' + dept.slug + '">' + dept.name + '</a></h3>';
-                  html += '<ul>' + dept.pages.map(p => '<li><a href="/services/' + dept.slug + '/' + p.slug + '">' + p.title + '</a></li>').join('') + '</ul>';
+                  const dSlug = encodeURIComponent(dept.slug);
+                  const dSlugAttr = escapeAttr(dept.slug);
+                  html += '<div class="mega-menu-column' + wideCls + '" data-col="dept-' + dSlugAttr + '">';
+                  html += '<h3 class="mega-menu-heading"><a href="/services/' + dSlug + '">' + escapeHtml(dept.name) + '</a></h3>';
+                  html += '<ul>' + dept.pages.map(p => '<li><a href="/services/' + dSlug + '/' + encodeURIComponent(p.slug) + '">' + escapeHtml(p.title) + '</a></li>').join('') + '</ul>';
                   html += '</div>';
                 });
                 html += '</div>';
@@ -208,22 +223,25 @@ export function layout(opts: {
                 // Row 2 multi-page departments
                 row2Deps.forEach(dept => {
                   const wideCls = dept.name.length >= 7 || dept.pages.some(p => p.title.length >= 8) ? ' mega-col-wide' : '';
-                  html += '<div class="mega-menu-column' + wideCls + '" data-col="dept-' + dept.slug + '">';
-                  html += '<h3 class="mega-menu-heading"><a href="/services/' + dept.slug + '">' + dept.name + '</a></h3>';
-                  html += '<ul>' + dept.pages.map(p => '<li><a href="/services/' + dept.slug + '/' + p.slug + '">' + p.title + '</a></li>').join('') + '</ul>';
+                  const dSlug = encodeURIComponent(dept.slug);
+                  const dSlugAttr = escapeAttr(dept.slug);
+                  html += '<div class="mega-menu-column' + wideCls + '" data-col="dept-' + dSlugAttr + '">';
+                  html += '<h3 class="mega-menu-heading"><a href="/services/' + dSlug + '">' + escapeHtml(dept.name) + '</a></h3>';
+                  html += '<ul>' + dept.pages.map(p => '<li><a href="/services/' + dSlug + '/' + encodeURIComponent(p.slug) + '">' + escapeHtml(p.title) + '</a></li>').join('') + '</ul>';
                   html += '</div>';
                 });
                 // Grouped single-page departments
                 if (singlePageDeps.length > 0) {
-                  const alsoCols = singlePageDeps.slice(1).map(d => 'dept-' + d.slug).join(',');
+                  const alsoCols = singlePageDeps.slice(1).map(d => 'dept-' + escapeAttr(d.slug)).join(',');
                   const alsoAttr = alsoCols ? ' data-col-also="' + alsoCols + '"' : '';
-                  html += '<div class="mega-menu-column mega-col-wide" data-col="dept-' + singlePageDeps[0].slug + '"' + alsoAttr + '>';
+                  html += '<div class="mega-menu-column mega-col-wide" data-col="dept-' + escapeAttr(singlePageDeps[0].slug) + '"' + alsoAttr + '>';
                   html += '<h3 class="mega-menu-heading">기타 서비스</h3>';
                   singlePageDeps.forEach((dept, idx) => {
+                    const dSlug = encodeURIComponent(dept.slug);
                     if (idx > 0) html += '<div class="mega-sub-group">';
                     else html += '<div>';
-                    html += '<div class="mega-sub-group-title"><a href="/services/' + dept.slug + '">' + dept.name + '</a></div>';
-                    html += '<ul>' + dept.pages.map(p => '<li><a href="/services/' + dept.slug + '/' + p.slug + '">' + p.title + '</a></li>').join('') + '</ul>';
+                    html += '<div class="mega-sub-group-title"><a href="/services/' + dSlug + '">' + escapeHtml(dept.name) + '</a></div>';
+                    html += '<ul>' + dept.pages.map(p => '<li><a href="/services/' + dSlug + '/' + encodeURIComponent(p.slug) + '">' + escapeHtml(p.title) + '</a></li>').join('') + '</ul>';
                     html += '</div>';
                   });
                   html += '</div>';
@@ -263,11 +281,11 @@ export function layout(opts: {
     </div>
     <div style="padding: var(--space-md) var(--space-md)">
       <!-- Phone CTA -->
-      <a href="tel:${s.phone || '02-586-1230'}" class="flex items-center rounded-xl mb-4" style="gap: var(--space-sm); padding: var(--space-md); background: linear-gradient(135deg, rgba(59,130,246,0.05), rgba(6,182,212,0.05)); border: 1px solid rgba(59,130,246,0.08);">
+      <a href="tel:${phoneTelAttr}" class="flex items-center rounded-xl mb-4" style="gap: var(--space-sm); padding: var(--space-md); background: linear-gradient(135deg, rgba(59,130,246,0.05), rgba(6,182,212,0.05)); border: 1px solid rgba(59,130,246,0.08);">
         <div class="text-white rounded-full flex items-center justify-center shrink-0" style="width:38px; height:38px; background: linear-gradient(135deg, #2563EB, #06B6D4);"><i class="fas fa-phone f-text-xs"></i></div>
         <div>
           <div class="f-text-xs text-gray-500 font-medium">상담문의</div>
-          <div class="f-text-base font-bold text-accent tracking-tight">${s.phone || '02-586-1230'}</div>
+          <div class="f-text-base font-bold text-accent tracking-tight">${phoneDisplay}</div>
         </div>
       </a>
       <!-- Dept Links with sub-page accordion -->
@@ -290,31 +308,38 @@ export function layout(opts: {
             <a href="/about/location" class="block px-3 py-1.5 text-gray-500 hover:text-blue-600 f-text-xs rounded transition-colors" onclick="closeMobileMenu()">오시는길</a>
           </div>
         </div>
-        ${deps.filter(d => d.is_active).map(dept => `
+        ${deps.filter(d => d.is_active).map(dept => {
+          // v39.0: color(hex)\uc640 icon(fa class)\ub294 \uc5c4\uaca9\ud55c \ud654\uc774\ud2b8\ub9ac\uc2a4\ud2b8\ub85c \uc815\uaddc\ud654
+          const safeColor = /^#[0-9a-fA-F]{3,8}$/.test(dept.color || '') ? dept.color : '#3B82F6';
+          const safeIcon = /^fa-[a-z0-9\-]+$/i.test(dept.icon || '') ? dept.icon : 'fa-building';
+          const dSlug = encodeURIComponent(dept.slug);
+          const dName = escapeHtml(dept.name);
+          return `
         <div class="mobile-acc">
           ${dept.pages && dept.pages.length > 0 ? `
           <button class="mobile-acc-btn flex items-center justify-between w-full px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-all" onclick="toggleMobileAcc(this)">
             <span class="flex items-center" style="gap: var(--space-sm)">
-              <div class="rounded-md flex items-center justify-center shrink-0" style="width:28px; height:28px; background:${dept.color}08">
-                <i class="fas ${dept.icon}" style="color:${dept.color}; font-size: var(--text-xs)"></i>
+              <div class="rounded-md flex items-center justify-center shrink-0" style="width:28px; height:28px; background:${safeColor}08">
+                <i class="fas ${safeIcon}" style="color:${safeColor}; font-size: var(--text-xs)"></i>
               </div>
-              <span class="f-text-sm font-medium">${dept.name}</span>
+              <span class="f-text-sm font-medium">${dName}</span>
             </span>
             <i class="fas fa-chevron-down text-gray-400 transition-transform" style="font-size:10px"></i>
           </button>
           <div class="mobile-acc-sub hidden pl-10 space-y-0.5 pb-1">
-            ${dept.pages.map(p => `<a href="/services/${dept.slug}/${p.slug}" class="block px-3 py-1.5 text-gray-500 hover:text-blue-600 f-text-xs rounded transition-colors" onclick="closeMobileMenu()">${p.title}</a>`).join('')}
+            ${dept.pages.map(p => `<a href="/services/${dSlug}/${encodeURIComponent(p.slug)}" class="block px-3 py-1.5 text-gray-500 hover:text-blue-600 f-text-xs rounded transition-colors" onclick="closeMobileMenu()">${escapeHtml(p.title)}</a>`).join('')}
           </div>
           ` : `
-          <a href="/services/${dept.slug}" class="flex items-center px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-all" style="gap: var(--space-sm)" onclick="closeMobileMenu()">
-            <div class="rounded-md flex items-center justify-center shrink-0" style="width:28px; height:28px; background:${dept.color}08">
-              <i class="fas ${dept.icon}" style="color:${dept.color}; font-size: var(--text-xs)"></i>
+          <a href="/services/${dSlug}" class="flex items-center px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-all" style="gap: var(--space-sm)" onclick="closeMobileMenu()">
+            <div class="rounded-md flex items-center justify-center shrink-0" style="width:28px; height:28px; background:${safeColor}08">
+              <i class="fas ${safeIcon}" style="color:${safeColor}; font-size: var(--text-xs)"></i>
             </div>
-            <span class="f-text-sm font-medium">${dept.name}</span>
+            <span class="f-text-sm font-medium">${dName}</span>
           </a>
           `}
         </div>
-        `).join('')}
+        `;
+        }).join('')}
       </div>
       <div class="border-t border-slate-100 my-3 pt-3 space-y-0.5">
         <a href="/support/notice"    class="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg f-text-sm transition-colors" onclick="closeMobileMenu()"><i class="fas fa-bullhorn w-5 text-center text-gray-400 f-text-xs"></i>공지사항</a>
@@ -332,7 +357,15 @@ export function layout(opts: {
   </main>
 
   <!-- ═══════════ Footer (Premium Layered) ═══════════ -->
-  <footer role="contentinfo" class="text-gray-400 mt-auto relative overflow-hidden" style="${s.footer_bg_url ? `background-image: linear-gradient(rgba(10,15,30,0.95), rgba(7,11,22,0.98)), url('${s.footer_bg_url}'); background-size:cover; background-position:center;` : 'background: linear-gradient(180deg, #0C1120 0%, #080D18 50%, #060A14 100%);'}">
+  ${(() => {
+    // v39.0: footer_bg_url CSS \uc778\uc81d\uc158 \ubc29\uc9c0 - URL \uc548\uc5d0 \uc8fc\uc11d/\uc138\ubbf8\ucf5c\ub860/\ub530\uc634\ud45c \uac00 \uc788\uc73c\uba74 \uac70\ubd80
+    const bgUrl = s.footer_bg_url || '';
+    const safeBgUrl = bgUrl && !/[<>"'`\\\n\r]/.test(bgUrl) && !/\*\/|\/\*/.test(bgUrl) ? bgUrl : '';
+    const footerBg = safeBgUrl
+      ? `background-image: linear-gradient(rgba(10,15,30,0.95), rgba(7,11,22,0.98)), url('${escapeAttr(safeBgUrl)}'); background-size:cover; background-position:center;`
+      : 'background: linear-gradient(180deg, #0C1120 0%, #080D18 50%, #060A14 100%);';
+    return `<footer role="contentinfo" class="text-gray-400 mt-auto relative overflow-hidden" style="${footerBg}">`;
+  })()}
     <!-- Top accent line -->
     <div style="height: 2px; background: linear-gradient(90deg, transparent 5%, #2563EB 25%, #06B6D4 50%, #3B82F6 75%, transparent 95%); opacity: 0.8;"></div>
 
@@ -347,26 +380,26 @@ export function layout(opts: {
         <div class="md:col-span-5">
           <div style="margin-bottom: var(--space-lg)">
             <div class="inline-flex items-center rounded-xl" style="padding: var(--space-sm) var(--space-md); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);">
-              <img src="/static/images/logo-horizontal.png" alt="${siteName}" loading="lazy" decoding="async" sizes="(min-width: 7680px) 120px, (min-width: 3840px) 80px, (min-width: 2560px) 64px, 48px" style="height:clamp(32px, 26px + 0.9vw, 48px)" class="footer-logo w-auto object-contain opacity-90">
+              <img src="/static/images/logo-horizontal.png" alt="${siteNameEsc}" loading="lazy" decoding="async" sizes="(min-width: 7680px) 120px, (min-width: 3840px) 80px, (min-width: 2560px) 64px, 48px" style="height:clamp(32px, 26px + 0.9vw, 48px)" class="footer-logo w-auto object-contain opacity-90">
             </div>
           </div>
-          <p class="f-text-lg leading-relaxed text-gray-500 max-w-lg" style="margin-bottom: var(--space-md)">${s.site_slogan || '최상의 시험·인증 서비스로 정보보안 기술을 완성'}</p>
+          <p class="f-text-lg leading-relaxed text-gray-500 max-w-lg" style="margin-bottom: var(--space-md)">${escapeHtml(s.site_slogan || '최상의 시험·인증 서비스로 정보보안 기술을 완성')}</p>
           <div class="space-y-3.5 f-text-lg">
             <div class="flex items-center" style="gap: var(--space-sm)">
               <div class="shrink-0 rounded-md flex items-center justify-center" style="width:clamp(34px,2.8vw,46px); height:clamp(34px,2.8vw,46px); background: rgba(59,130,246,0.10);"><i class="fas fa-phone text-accent/60" style="font-size:clamp(13px,1.2vw,18px)"></i></div>
-              <span class="text-gray-400">${s.phone || '02-586-1230'}</span>
+              <span class="text-gray-400">${phoneDisplay}</span>
             </div>
             <div class="flex items-center" style="gap: var(--space-sm)">
               <div class="shrink-0 rounded-md flex items-center justify-center" style="width:clamp(34px,2.8vw,46px); height:clamp(34px,2.8vw,46px); background: rgba(59,130,246,0.10);"><i class="fas fa-fax text-accent/60" style="font-size:clamp(13px,1.2vw,18px)"></i></div>
-              <span class="text-gray-400">FAX: ${s.fax || '02-586-1238'}</span>
+              <span class="text-gray-400">FAX: ${faxDisplay}</span>
             </div>
             <div class="flex items-center" style="gap: var(--space-sm)">
               <div class="shrink-0 rounded-md flex items-center justify-center" style="width:clamp(34px,2.8vw,46px); height:clamp(34px,2.8vw,46px); background: rgba(59,130,246,0.10);"><i class="fas fa-envelope text-accent/60" style="font-size:clamp(13px,1.2vw,18px)"></i></div>
-              <a href="mailto:${s.email || 'koist@koist.kr'}" class="hover:text-white transition-colors text-gray-400">${s.email || 'koist@koist.kr'}</a>
+              <a href="mailto:${emailMailtoAttr}" class="hover:text-white transition-colors text-gray-400">${emailDisplay}</a>
             </div>
             <div class="flex items-start" style="gap: var(--space-sm)">
               <div class="shrink-0 rounded-md flex items-center justify-center mt-0.5" style="width:clamp(34px,2.8vw,46px); height:clamp(34px,2.8vw,46px); background: rgba(59,130,246,0.10);"><i class="fas fa-location-dot text-accent/60" style="font-size:clamp(13px,1.2vw,18px)"></i></div>
-              <span class="text-gray-400" style="overflow-wrap:break-word; word-break:keep-all;">${s.address || ''}</span>
+              <span class="text-gray-400" style="overflow-wrap:break-word; word-break:keep-all;">${escapeHtml(s.address || '')}</span>
             </div>
           </div>
         </div>
@@ -375,7 +408,7 @@ export function layout(opts: {
         <div class="md:col-span-3">
           <h4 class="text-white/90 font-bold f-text-base tracking-wide" style="margin-bottom: var(--space-md)">사업분야</h4>
           <ul class="space-y-3 f-text-base">
-            ${deps.filter(d => d.is_active).slice(0, 6).map(d => `<li><a href="/services/${d.slug}" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>${d.name}</a></li>`).join('')}
+            ${deps.filter(d => d.is_active).slice(0, 6).map(d => `<li><a href="/services/${encodeURIComponent(d.slug)}" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>${escapeHtml(d.name)}</a></li>`).join('')}
           </ul>
         </div>
 
@@ -394,7 +427,7 @@ export function layout(opts: {
         <div class="md:col-span-2">
           <div class="rounded-xl" style="padding: var(--space-md); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
             <p class="f-text-sm text-gray-600 font-medium" style="margin-bottom: 8px">빠른 상담 전화</p>
-            <a href="tel:${s.phone || '02-586-1230'}" class="font-black tracking-tight hover:opacity-80 transition-opacity block" style="font-size: var(--text-2xl); background: linear-gradient(135deg, #FFFFFF, #93C5FD); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${s.phone || '02-586-1230'}</a>
+            <a href="tel:${phoneTelAttr}" class="font-black tracking-tight hover:opacity-80 transition-opacity block" style="font-size: var(--text-2xl); background: linear-gradient(135deg, #FFFFFF, #93C5FD); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">${phoneDisplay}</a>
           </div>
           <div class="mt-4 space-y-2.5 f-text-sm">
             <a href="/support/faq" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>FAQ</a>
@@ -406,7 +439,7 @@ export function layout(opts: {
 
       <!-- Bottom bar -->
       <div class="flex flex-col sm:flex-row justify-between items-center" style="margin-top: var(--space-xl); padding-top: var(--space-lg); border-top: 1px solid rgba(255,255,255,0.04); gap: var(--space-sm);">
-        <p class="f-text-sm text-slate-600">&copy; ${new Date().getFullYear()} ${siteName}. All rights reserved.</p>
+        <p class="f-text-sm text-slate-600">&copy; ${new Date().getFullYear()} ${escapeHtml(siteName)}. All rights reserved.</p>
         <div class="flex items-center f-text-sm text-slate-600" style="gap:var(--space-sm)">
           <a href="/about/greeting" class="hover:text-white transition-colors">KOIST 소개</a>
           <span class="text-slate-700">|</span>
@@ -666,16 +699,23 @@ export function layout(opts: {
     })();
   </script>
 
-  ${s.google_analytics_id ? `
-  <script async src="https://www.googletagmanager.com/gtag/js?id=${s.google_analytics_id}"></script>
+  ${(() => {
+    // v39.0: GA ID\ub294 \uc5c4\uaca9\ud55c \ud615\uc2dd \uac80\uc99d (G-, AW-, UA-, GT- \ud504\ub9ac\ud53d\uc2a4 + \uc601\uc22b\uc790/\ud558\uc774\ud508/\uc1ec\ub85c\ub9cc)
+    const ga = s.google_analytics_id || '';
+    const gc = s.google_conversion_id || '';
+    const gaValid = /^(G-|AW-|UA-|GT-)[A-Z0-9\-]+$/i.test(ga);
+    const gcValid = /^(G-|AW-|UA-|GT-)[A-Z0-9\-\/]+$/i.test(gc);
+    if (!gaValid) return '';
+    return `
+  <script async src="https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(ga)}"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', '${s.google_analytics_id}');
-    ${s.google_conversion_id ? `gtag('event', 'conversion', {'send_to': '${s.google_conversion_id}'});` : ''}
-  </script>
-  ` : ''}
+    gtag('config', ${JSON.stringify(ga)});
+    ${gcValid ? `gtag('event', 'conversion', {'send_to': ${JSON.stringify(gc)}});` : ''}
+  </script>`;
+  })()}
 
   <!-- ═══════════════════════════════════════════════════════════
        ADMIN INLINE EDITING MODE (v25)

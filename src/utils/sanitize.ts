@@ -140,22 +140,95 @@ function isAttrAllowed(name: string, allowed: Set<string>): boolean {
   return false;
 }
 
-function escapeAttr(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-}
-
 /**
  * Escape all HTML (for user-generated text that should NOT contain any HTML)
+ * v39.0: null/undefined/\uc22b\uc790/\uac1d\uccb4 \uc548\uc804 \ucc98\ub9ac
  */
-export function escapeHtml(str: string): string {
-  return str
+export function escapeHtml(str: unknown): string {
+  if (str === null || str === undefined) return '';
+  const s = typeof str === 'string' ? str : String(str);
+  return s
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+/**
+ * v39.0: HTML \uc18d\uc131(attribute) \uc804\uc6a9 \uc774\uc2a4\ucf00\uc774\ud504
+ * \ubc31\ud2f1(`), \uacf5\ubc31 \ub4f1 \uc18d\uc131 \ud0c8\ucd9c \ubb38\uc790\ub3c4 \ucc28\ub2e8
+ */
+export function escapeAttr(str: unknown): string {
+  if (str === null || str === undefined) return '';
+  const s = typeof str === 'string' ? str : String(str);
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+    .replace(/`/g, '&#096;');
+}
+
+/**
+ * v39.0: URL \uc774\uc2a4\ucf00\uc774\ud504 + \uc704\ud5d8 \ud504\ub85c\ud1a0\ucf5c \ucc28\ub2e8
+ */
+export function safeUrl(url: unknown): string {
+  if (url === null || url === undefined) return '';
+  const s = (typeof url === 'string' ? url : String(url)).trim();
+  if (!s) return '';
+  const normalized = s.toLowerCase().replace(/[\s\u0000-\u001f\u007f]/g, '');
+  if (
+    normalized.startsWith('javascript:') ||
+    normalized.startsWith('vbscript:') ||
+    normalized.startsWith('data:text/html') ||
+    normalized.startsWith('data:text/javascript') ||
+    normalized.startsWith('data:application/javascript')
+  ) {
+    return '';
+  }
+  return escapeAttr(s);
+}
+
+/**
+ * v39.0: CSS \uac12 \uc548\uc804 \ucc98\ub9ac - CSS \uc778\uc81d\uc158 \ubc29\uc9c0
+ */
+export function safeCss(value: unknown): string {
+  if (value === null || value === undefined) return '';
+  const s = typeof value === 'string' ? value : String(value);
+  return s
+    .replace(/[<>"'`\\]/g, '')
+    .replace(/[{}]/g, '')
+    .replace(/\/\*/g, '')
+    .replace(/\*\//g, '')
+    .replace(/expression\s*\(/gi, '')
+    .replace(/javascript\s*:/gi, '')
+    .replace(/url\s*\(/gi, '')
+    .replace(/@import/gi, '')
+    .replace(/@charset/gi, '')
+    .trim();
+}
+
+/**
+ * v39.0: \uc9dc\ub978 CSS \uc0c9\uc0c1 \uac12 \ud5c8\uc6a9 (hex, rgb(), rgba(), \ubbf8\ub9ac \uc815\uc758\ub41c \uc774\ub984 \ub4f1)
+ */
+export function safeColor(value: unknown): string {
+  if (value === null || value === undefined) return '';
+  const s = (typeof value === 'string' ? value : String(value)).trim();
+  // hex(#abc, #aabbcc, #aabbccdd), rgb(), rgba(), hsl(), hsla(), \ub2e8\uc21c \uc0c9\uc774\ub984
+  if (/^#[0-9a-fA-F]{3,8}$/.test(s)) return s;
+  if (/^rgba?\(\s*[\d.,\s%]+\s*\)$/.test(s)) return s;
+  if (/^hsla?\(\s*[\d.,\s%deg]+\s*\)$/.test(s)) return s;
+  if (/^[a-zA-Z]+$/.test(s) && s.length < 30) return s;
+  return '';
+}
+
+/**
+ * v39.0: FontAwesome icon class \uac80\uc99d (fa-\ud504\ub9ac\ud53d\uc2a4 + \uc601\uc22b\uc790/\ud558\uc774\ud508)
+ */
+export function safeFaIcon(value: unknown): string {
+  if (value === null || value === undefined) return '';
+  const s = (typeof value === 'string' ? value : String(value)).trim();
+  return /^fa-[a-z0-9\-]+$/i.test(s) ? s : '';
 }

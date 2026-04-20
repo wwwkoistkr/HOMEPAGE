@@ -1,10 +1,33 @@
-// KOIST - Home Page Template (v36.1.0 - R1~R7: 8K PC+Mobile HiDPI, Video R2, A11y, Modern Design)
+// KOIST - Home Page Template (v39.0 - XSS Hardening)
 import type { SettingsMap, Department, Popup, Notice, ProgressItem, SimCertType } from '../types';
-import { sanitizeHtml, escapeHtml } from '../utils/sanitize';
+import { sanitizeHtml, escapeHtml, escapeAttr, safeUrl, safeColor, safeFaIcon } from '../utils/sanitize';
+
+// v39.0: CSS용 opacity 숫자 검증 (0.0 ~ 1.0)
+function safeOpacity(value: unknown, fallback: string = '0.85'): string {
+  if (value === null || value === undefined) return fallback;
+  const s = String(value).trim();
+  if (/^(0(\.\d+)?|1(\.0+)?)$/.test(s)) return s;
+  return fallback;
+}
+
+// v39.0: 시간 데이터(숫자 또는 숫자문자열) 검증
+function safeNum(value: unknown, fallback: number = 0): string {
+  if (value === null || value === undefined) return String(fallback);
+  const s = String(value).trim();
+  if (/^-?\d+(\.\d+)?$/.test(s)) return s;
+  return String(fallback);
+}
 
 function bgStyle(imageUrl: string | undefined, fallbackGradient: string, opacity: string = '0.85'): string {
+  // v39.0: URL 검증 및 CSS 인젝션 방지
   if (imageUrl && imageUrl.trim() !== '') {
-    return `background-image: linear-gradient(rgba(10,15,30,${opacity}), rgba(10,15,30,${opacity})), url('${imageUrl}'); background-size:cover; background-position:center;`;
+    // URL에 따옴표나 줄바꿈 등 CSS 탈출 문자가 있으면 이미지 사용 거부
+    if (/[<>"'`\\\n\r]/.test(imageUrl) || /\/\*|\*\//.test(imageUrl)) {
+      return `background: ${fallbackGradient};`;
+    }
+    const op = safeOpacity(opacity, '0.85');
+    const safeImg = escapeAttr(imageUrl);
+    return `background-image: linear-gradient(rgba(10,15,30,${op}), rgba(10,15,30,${op})), url('${safeImg}'); background-size:cover; background-position:center;`;
   }
   return `background: ${fallbackGradient};`;
 }
@@ -107,59 +130,65 @@ export function homePage(opts: {
   <div id="popupContainer" class="fixed z-[9999] popup-multi-container">
     <div class="popup-close-all-bar">
       <button onclick="closeAllPopups()" class="popup-close-all-btn" data-admin-edit="popup_close_all_text">
-        <i class="fas fa-times popup-close-all-icon"></i> ${s.popup_close_all_text || '모두 닫기'}
+        <i class="fas fa-times popup-close-all-icon"></i> ${escapeHtml(s.popup_close_all_text || '모두 닫기')}
       </button>
     </div>
     <div class="popup-grid">
       ${popups.map((p, i) => {
-        const titleBg = p.title_bg_color 
-          ? `background:${p.title_bg_color};` 
+        // v39.0: \ubaa8\ub4e0 \uc0ac\uc6a9\uc790 \uc785\ub825 \uac12\uc5d0 \ub300\ud55c \uac80\uc99d \ubc0f \uc774\uc2a4\ucf00\uc774\ud504
+        const titleBgRaw = safeColor(p.title_bg_color);
+        const titleBg = titleBgRaw
+          ? `background:${titleBgRaw};`
           : `background:linear-gradient(135deg, rgba(248,250,252,0.95), rgba(241,245,249,0.95));`;
-        const titleColor = p.title_color || '#1f2937';
-        const titleFontSize = p.title_font_size || 14;
-        const bodyFontSize = p.font_size || 14;
-        const bodyTextColor = p.text_color || '#374151';
-        const bodyLineHeight = p.line_height || 1.7;
-        const bodyPadding = p.padding || 16;
-        const bodyBgColor = p.bg_color || '#ffffff';
-        const cardW = p.card_width_cm;
-        const cardH = p.card_height_cm;
+        const titleColor = safeColor(p.title_color) || '#1f2937';
+        const titleFontSize = /^\d+(\.\d+)?$/.test(String(p.title_font_size || '')) ? p.title_font_size : 14;
+        const bodyFontSize = /^\d+(\.\d+)?$/.test(String(p.font_size || '')) ? p.font_size : 14;
+        const bodyTextColor = safeColor(p.text_color) || '#374151';
+        const bodyLineHeight = /^\d+(\.\d+)?$/.test(String(p.line_height || '')) ? p.line_height : 1.7;
+        const bodyPadding = /^\d+(\.\d+)?$/.test(String(p.padding || '')) ? p.padding : 16;
+        const bodyBgColor = safeColor(p.bg_color) || '#ffffff';
+        const cardW = /^\d+(\.\d+)?$/.test(String(p.card_width_cm || '')) ? p.card_width_cm : null;
+        const cardH = /^\d+(\.\d+)?$/.test(String(p.card_height_cm || '')) ? p.card_height_cm : null;
         const imgCardStyle = (cardW && cardH) ? `width:${cardW}cm; height:${cardH}cm;` : '';
-        
+        const pidSafe = Number.isInteger(p.id) ? p.id : 0;
+        const pTitleEsc = escapeHtml(p.title);
+        const pTitleAttr = escapeAttr(p.title);
+        const pImgSrc = safeUrl(p.image_url);
+
         return `
       <div class="popup-card${p.popup_type === 'image' ? ' popup-card--imgtype' : ''}"
-           data-popup-id="${p.id}" id="popup-${p.id}"
+           data-popup-id="${pidSafe}" id="popup-${pidSafe}"
            style="animation: popupSlideIn ${0.3 + i * 0.1}s ease-out; ${imgCardStyle}">
-        <!-- HEADER — admin-editable title -->
+        <!-- HEADER - admin-editable title -->
         <div class="popup-card-header" style="${titleBg}">
-          <span class="popup-card-title" style="color:${titleColor}; font-size:${titleFontSize}px;" data-admin-edit="popup_${p.id}_title">${p.title}</span>
-          <button onclick="closeSinglePopup(${p.id})" class="popup-card-close-btn" aria-label="닫기">
+          <span class="popup-card-title" style="color:${titleColor}; font-size:${titleFontSize}px;" data-admin-edit="popup_${pidSafe}_title">${pTitleEsc}</span>
+          <button onclick="closeSinglePopup(${pidSafe})" class="popup-card-close-btn" aria-label="\ub2eb\uae30">
             <i class="fas fa-times"></i>
           </button>
         </div>
-        <!-- BODY — admin-editable content/image -->
-        ${p.popup_type === 'image' && p.image_url 
-          ? `<!-- IMAGE POPUP: image fills width, card height = auto -->
+        <!-- BODY - admin-editable content/image -->
+        ${p.popup_type === 'image' && pImgSrc
+          ? `<!-- IMAGE POPUP -->
         <div class="popup-card-body popup-card-body--image" style="background:${bodyBgColor};">
-          <div class="popup-img-wrap popup-img-wrap--fit" data-admin-edit="popup_${p.id}_image">
-            <img src="${p.image_url}" alt="${p.title}" class="popup-img-fit" loading="lazy">
+          <div class="popup-img-wrap popup-img-wrap--fit" data-admin-edit="popup_${pidSafe}_image">
+            <img src="${pImgSrc}" alt="${pTitleAttr}" class="popup-img-fit" loading="lazy">
           </div>
         </div>
         <div class="popup-card-imgfooter">
-          <button onclick="closeSinglePopup(${p.id})" class="popup-imgfooter-close-btn">
-            <i class="fas fa-times" style="font-size:0.75em; margin-right:4px;"></i>닫기
+          <button onclick="closeSinglePopup(${pidSafe})" class="popup-imgfooter-close-btn">
+            <i class="fas fa-times" style="font-size:0.75em; margin-right:4px;"></i>\ub2eb\uae30
           </button>
-        </div>` 
+        </div>`
           : `<!-- HTML POPUP: scrollable content with full footer -->
         <div class="popup-card-body" style="background:${bodyBgColor};">
-          <div class="popup-html-wrap" style="font-size:${bodyFontSize}px; line-height:${bodyLineHeight}; color:${bodyTextColor}; padding:${bodyPadding}px;" data-admin-edit="popup_${p.id}_content">${sanitizeHtml(p.content || '')}</div>
+          <div class="popup-html-wrap" style="font-size:${bodyFontSize}px; line-height:${bodyLineHeight}; color:${bodyTextColor}; padding:${bodyPadding}px;" data-admin-edit="popup_${pidSafe}_content">${sanitizeHtml(p.content || '')}</div>
         </div>
         <div class="popup-card-footer">
           <label class="popup-noshow-label">
-            <input type="checkbox" id="noshow-${p.id}" class="popup-noshow-checkbox">
-            <span class="popup-noshow-text">오늘 하루 안 보기</span>
+            <input type="checkbox" id="noshow-${pidSafe}" class="popup-noshow-checkbox">
+            <span class="popup-noshow-text">\uc624\ub298 \ud558\ub8e8 \uc548 \ubcf4\uae30</span>
           </label>
-          <button onclick="closeSinglePopup(${p.id})" class="popup-footer-close-btn">닫기</button>
+          <button onclick="closeSinglePopup(${pidSafe})" class="popup-footer-close-btn">\ub2eb\uae30</button>
         </div>`}
       </div>`;
       }).join('')}
@@ -436,33 +465,48 @@ export function homePage(opts: {
        하단: 인터랙티브 시뮬레이터 패널 (70% 폭, 시험평가~고객지원 정렬)
        R5: Video background served from R2 Storage (MP4)
        ════════════════════════════════════════════════════════════════════════ -->
-  <section class="unified-hero-section relative" role="region" aria-label="히어로 배너" style="overflow: visible; ${s.hero_video_url ? `background: linear-gradient(135deg, ${s.hero_gradient_color1 || '#070B14'} 0%, ${s.hero_gradient_color2 || '#0A1128'} 25%, ${s.hero_gradient_color3 || '#0F1E3D'} 45%, ${s.hero_gradient_color4 || '#162D5A'} 70%, ${s.hero_gradient_color5 || '#1A3A6E'} 100%);` : bgStyle(s.hero_bg_url, `linear-gradient(135deg, ${s.hero_gradient_color1 || '#070B14'} 0%, ${s.hero_gradient_color2 || '#0A1128'} 25%, ${s.hero_gradient_color3 || '#0F1E3D'} 45%, ${s.hero_gradient_color4 || '#162D5A'} 70%, ${s.hero_gradient_color5 || '#1A3A6E'} 100%)`, heroOpacity)}">
-    <!-- R5+R7: Video Background with Responsive Poster Fallback -->
-    ${s.hero_video_url ? `
-    <div class="absolute inset-0 overflow-hidden pointer-events-none hero-video-container" aria-hidden="true"
-      ${(() => {
-        // Set background-image on container for mobile fallback (when video display:none)
-        const mobilePoster = s.hero_video_poster_mobile || s.hero_video_poster_fhd || s.hero_video_poster || '';
-        return mobilePoster ? `style="background-image:url('${mobilePoster}'); background-size:cover; background-position:center;"` : '';
-      })()}>
-      <!-- R7: Responsive poster <picture> — visible on mobile (video hidden), hidden on desktop (video shows) -->
-      ${(s.hero_video_poster_mobile || s.hero_video_poster_fhd || s.hero_video_poster_4k || s.hero_video_poster) ? `
+  ${(() => {
+    // v39.0: 각 color\uac12\uc744 안전하게 검증 (hex\ub9cc 허용)
+    const c1 = safeColor(s.hero_gradient_color1) || '#070B14';
+    const c2 = safeColor(s.hero_gradient_color2) || '#0A1128';
+    const c3 = safeColor(s.hero_gradient_color3) || '#0F1E3D';
+    const c4 = safeColor(s.hero_gradient_color4) || '#162D5A';
+    const c5 = safeColor(s.hero_gradient_color5) || '#1A3A6E';
+    const gradientCss = `linear-gradient(135deg, ${c1} 0%, ${c2} 25%, ${c3} 45%, ${c4} 70%, ${c5} 100%)`;
+    // v39.0: hero_video_url 검증 - 아무런 탈출 문자 없이 깨끗한 URL만 허용
+    const rawVideoUrl = s.hero_video_url || '';
+    const isValidVideoUrl = rawVideoUrl && !/[<>"'`\s\\\n\r]/.test(rawVideoUrl);
+    const videoUrlAttr = isValidVideoUrl ? escapeAttr(rawVideoUrl) : '';
+    const heroStyle = isValidVideoUrl
+      ? `background: ${gradientCss};`
+      : bgStyle(s.hero_bg_url, gradientCss, heroOpacity);
+    return `<section class="unified-hero-section relative" role="region" aria-label="히어로 배너" style="overflow: visible; ${heroStyle}">
+    ${isValidVideoUrl ? (() => {
+      // v39.0: 포스터 URL들도 각각 검증
+      const pMobile = s.hero_video_poster_mobile && !/[<>"'`\s\\\n\r]/.test(s.hero_video_poster_mobile) ? escapeAttr(s.hero_video_poster_mobile) : '';
+      const pFhd = s.hero_video_poster_fhd && !/[<>"'`\s\\\n\r]/.test(s.hero_video_poster_fhd) ? escapeAttr(s.hero_video_poster_fhd) : '';
+      const p4k = s.hero_video_poster_4k && !/[<>"'`\s\\\n\r]/.test(s.hero_video_poster_4k) ? escapeAttr(s.hero_video_poster_4k) : '';
+      const pDefault = s.hero_video_poster && !/[<>"'`\s\\\n\r]/.test(s.hero_video_poster) ? escapeAttr(s.hero_video_poster) : '';
+      const mobileBg = pMobile || pFhd || pDefault;
+      const mainImg = pFhd || pDefault || p4k || pMobile;
+      const vOpacity = safeOpacity(s.hero_video_opacity, '0.65');
+      return `
+    <div class="absolute inset-0 overflow-hidden pointer-events-none hero-video-container" aria-hidden="true"${mobileBg ? ` style="background-image:url('${mobileBg}'); background-size:cover; background-position:center;"` : ''}>
+      ${(pMobile || pFhd || p4k || pDefault) ? `
       <picture class="hero-poster-picture">
-        ${s.hero_video_poster_mobile ? `<source media="(max-width: 768px)" srcset="${s.hero_video_poster_mobile}">` : ''}
-        ${s.hero_video_poster_fhd ? `<source media="(max-width: 1920px)" srcset="${s.hero_video_poster_fhd}">` : ''}
-        ${s.hero_video_poster_4k ? `<source media="(min-width: 1921px)" srcset="${s.hero_video_poster_4k}">` : ''}
-        <img src="${s.hero_video_poster_fhd || s.hero_video_poster || s.hero_video_poster_4k || s.hero_video_poster_mobile}" 
-          alt="KOIST Hero Background" class="hero-poster-img" loading="eager" decoding="async">
+        ${pMobile ? `<source media="(max-width: 768px)" srcset="${pMobile}">` : ''}
+        ${pFhd ? `<source media="(max-width: 1920px)" srcset="${pFhd}">` : ''}
+        ${p4k ? `<source media="(min-width: 1921px)" srcset="${p4k}">` : ''}
+        <img src="${mainImg}" alt="KOIST Hero Background" class="hero-poster-img" loading="eager" decoding="async">
       </picture>
       ` : ''}
-      <video class="hero-video-bg" autoplay muted loop playsinline preload="auto"
-        ${s.hero_video_poster ? `poster="${s.hero_video_poster}"` : ''}
-        style="position:absolute; top:50%; left:50%; min-width:100%; min-height:100%; width:auto; height:auto; transform:translate(-50%,-50%); object-fit:cover;">
-        <source src="${s.hero_video_url}" type="video/mp4">
+      <video class="hero-video-bg" autoplay muted loop playsinline preload="auto"${pDefault ? ` poster="${pDefault}"` : ''} style="position:absolute; top:50%; left:50%; min-width:100%; min-height:100%; width:auto; height:auto; transform:translate(-50%,-50%); object-fit:cover;">
+        <source src="${videoUrlAttr}" type="video/mp4">
       </video>
-      <div class="absolute inset-0" style="background:rgba(10,15,30,${s.hero_video_opacity || '0.65'}); backdrop-filter:blur(1px);"></div>
-    </div>
-    ` : ''}
+      <div class="absolute inset-0" style="background:rgba(10,15,30,${vOpacity}); backdrop-filter:blur(1px);"></div>
+    </div>`;
+    })() : ''}`;
+  })()}
     <!-- 8K Animated background layers -->
     ${!s.hero_bg_url && !s.hero_video_url ? `
     <div class="absolute inset-0 pointer-events-none" style="overflow:hidden; will-change:transform; -webkit-backface-visibility:hidden; transform:translateZ(0);">
@@ -485,44 +529,45 @@ export function homePage(opts: {
         <div class="unified-hero-left" data-aos="fade-right" data-aos-duration="700">
           <!-- Badge (v38.1 — KOIST logo + text ×3→60% shrink, 8K fluid) -->
           <div class="inline-flex items-center rounded-full hero-badge-pill" style="gap:clamp(6px,0.44vw,14px); padding:clamp(6px,0.44vw,12px) clamp(14px,1.02vw,36px); margin-bottom:clamp(0.59rem,0.81vw,1.57rem); background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.18); backdrop-filter: blur(12px);">
-            <img src="${s.hero_badge_logo_url || '/static/images/koist-circle-logo.png'}" alt="KOIST" loading="eager" style="height:clamp(20px,1.47vw,56px); width:clamp(20px,1.47vw,56px); border-radius:50%; object-fit:contain; flex-shrink:0;">
-            <span class="text-blue-300 font-semibold tracking-wide" data-admin-edit="hero_badge_text" style="font-size:clamp(1.242rem,0.918vw,4.41rem); font-family:'Inter','Noto Sans KR',sans-serif; letter-spacing:0.04em;">${s.hero_badge_text || 'Korean Information Security Technology'}</span>
+            <img src="${safeUrl(s.hero_badge_logo_url) || '/static/images/koist-circle-logo.png'}" alt="KOIST" loading="eager" style="height:clamp(20px,1.47vw,56px); width:clamp(20px,1.47vw,56px); border-radius:50%; object-fit:contain; flex-shrink:0;">
+            <span class="text-blue-300 font-semibold tracking-wide" data-admin-edit="hero_badge_text" style="font-size:clamp(1.242rem,0.918vw,4.41rem); font-family:'Inter','Noto Sans KR',sans-serif; letter-spacing:0.04em;">${escapeHtml(s.hero_badge_text || 'Korean Information Security Technology')}</span>
           </div>
 
           <!-- v36: Headline removed, Subtitle upgraded to h1 (×2 size, hero position) -->
+          <!-- v39.0: hero_line2\ub294 HTML \ud5c8\uc6a9 \ud0a4 (admin \uc778\ub77c\uc778 \ud3b8\uc9d1) \ub610\ub294 sanitizeHtml \uc801\uc6a9 -->
           <h1 class="text-white font-bold hero-subtitle-promoted" data-admin-edit="hero_line2" style="font-size:clamp(1.38rem, 1.32vw, 6.3rem); line-height:1.25; margin-bottom:clamp(0.88rem,1.09vw,2.35rem); max-width:clamp(672px,49vw,2520px); letter-spacing:-0.02em; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
-            ${s.hero_line2 || 'IT제품 보안성 평가·인증의 원스톱 서비스'}
+            ${s.hero_line2 ? sanitizeHtml(s.hero_line2) : 'IT제품 보안성 평가·인증의 원스톱 서비스'}
           </h1>
 
           <!-- CTA Buttons — 8K fluid (v38.1 font ×1.4) -->
           <div class="flex flex-wrap" style="gap:clamp(0.39rem,0.44vw,1.09rem); margin-bottom:clamp(0.98rem,1.27vw,2.74rem);">
-            <a href="${s.hero_btn_primary_url || '/support/inquiry'}" class="btn-glow ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:clamp(4px,0.29vw,10px); padding:clamp(0.44rem,0.48vw,0.94rem) clamp(calc(0.88rem + 1.2cm),calc(1.02vw + 1.2cm),calc(2.20rem + 1.2cm)); font-size:clamp(0.966rem,0.812vw,3.92rem);">
-              <i class="fas ${s.hero_btn_primary_icon || 'fa-paper-plane'}" style="font-size:clamp(0.50rem,0.36vw,0.86rem)"></i> <span data-admin-edit="hero_btn_primary">${s.hero_btn_primary || '온라인 상담'}</span>
+            <a href="${safeUrl(s.hero_btn_primary_url) || '/support/inquiry'}" class="btn-glow ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:clamp(4px,0.29vw,10px); padding:clamp(0.44rem,0.48vw,0.94rem) clamp(calc(0.88rem + 1.2cm),calc(1.02vw + 1.2cm),calc(2.20rem + 1.2cm)); font-size:clamp(0.966rem,0.812vw,3.92rem);">
+              <i class="fas ${safeFaIcon(s.hero_btn_primary_icon) || 'fa-paper-plane'}" style="font-size:clamp(0.50rem,0.36vw,0.86rem)"></i> <span data-admin-edit="hero_btn_primary">${escapeHtml(s.hero_btn_primary || '온라인 상담')}</span>
             </a>
-            <a href="${s.hero_btn_secondary_url || '#services'}" class="btn-ghost ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:clamp(4px,0.29vw,10px); padding:clamp(0.44rem,0.48vw,0.94rem) clamp(calc(0.88rem + 1.2cm),calc(1.02vw + 1.2cm),calc(2.20rem + 1.2cm)); font-size:clamp(0.966rem,0.812vw,3.92rem);">
-              <i class="fas ${s.hero_btn_secondary_icon || 'fa-th-large'}" style="font-size:clamp(0.50rem,0.36vw,0.86rem)"></i> <span data-admin-edit="hero_btn_secondary">${s.hero_btn_secondary || '사업분야 보기'}</span>
+            <a href="${safeUrl(s.hero_btn_secondary_url) || '#services'}" class="btn-ghost ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:clamp(4px,0.29vw,10px); padding:clamp(0.44rem,0.48vw,0.94rem) clamp(calc(0.88rem + 1.2cm),calc(1.02vw + 1.2cm),calc(2.20rem + 1.2cm)); font-size:clamp(0.966rem,0.812vw,3.92rem);">
+              <i class="fas ${safeFaIcon(s.hero_btn_secondary_icon) || 'fa-th-large'}" style="font-size:clamp(0.50rem,0.36vw,0.86rem)"></i> <span data-admin-edit="hero_btn_secondary">${escapeHtml(s.hero_btn_secondary || '사업분야 보기')}</span>
             </a>
           </div>
 
           <!-- ═══════ Hero Contact Card (8K fluid, admin-editable) ═══════ -->
           <div class="hero-contact-card" data-aos="fade-up" data-aos-delay="200">
-            <p class="text-slate-300/90 font-bold hero-contact-label" data-admin-edit="hero_contact_label" style="font-size:clamp(0.69rem,0.73vw,3.5rem); margin-bottom:clamp(0.49rem,0.66vw,1.41rem); letter-spacing:0.01em; text-rendering:geometricPrecision;">${s.hero_contact_label || '국가 시험·인증 전문기관 정보보안 기술을 완성'}</p>
+            <p class="text-slate-300/90 font-bold hero-contact-label" data-admin-edit="hero_contact_label" style="font-size:clamp(0.69rem,0.73vw,3.5rem); margin-bottom:clamp(0.49rem,0.66vw,1.41rem); letter-spacing:0.01em; text-rendering:geometricPrecision;">${escapeHtml(s.hero_contact_label || '국가 시험·인증 전문기관 정보보안 기술을 완성')}</p>
             <div class="hero-contact-grid">
               <div class="hero-contact-item">
                 <div class="hero-contact-icon"><i class="fas fa-phone"></i></div>
-                <span data-admin-edit="phone">${s.phone || '02-586-1230'}</span>
+                <span data-admin-edit="phone">${escapeHtml(s.phone || '02-586-1230')}</span>
               </div>
               <div class="hero-contact-item">
                 <div class="hero-contact-icon"><i class="fas fa-fax"></i></div>
-                <span>FAX: <span data-admin-edit="fax">${s.fax || '02-586-1238'}</span></span>
+                <span>FAX: <span data-admin-edit="fax">${escapeHtml(s.fax || '02-586-1238')}</span></span>
               </div>
               <div class="hero-contact-item">
                 <div class="hero-contact-icon"><i class="fas fa-envelope"></i></div>
-                <span data-admin-edit="email">${s.email || 'koist@koist.kr'}</span>
+                <span data-admin-edit="email">${escapeHtml(s.email || 'koist@koist.kr')}</span>
               </div>
               <div class="hero-contact-item">
                 <div class="hero-contact-icon"><i class="fas fa-location-dot"></i></div>
-                <span class="hero-contact-addr" data-admin-edit="address">${s.address || '서울특별시 서초구 효령로 336 윤일빌딩 4층 한국정보보안기술원'}</span>
+                <span class="hero-contact-addr" data-admin-edit="address">${escapeHtml(s.address || '서울특별시 서초구 효령로 336 윤일빌딩 4층 한국정보보안기술원')}</span>
               </div>
             </div>
           </div>
@@ -538,13 +583,13 @@ export function homePage(opts: {
                   <i class="fas fa-chart-bar text-blue-400" style="font-size:clamp(11px,0.73vw,22px)"></i>
                 </div>
                 <div style="min-width:0;">
-                  <p class="text-white font-bold truncate sim-panel-title" data-admin-edit="unified_panel_title" style="font-size:clamp(0.95rem,1.04vw,5rem); line-height:1.3; letter-spacing:-0.01em;">${s.unified_panel_title || 'KOIST와 함께라면 평가기간을 <span class="text-cyan-300">대폭 단축</span>합니다'}</p>
-                  <p class="text-slate-400/80 truncate sim-panel-subtitle" data-admin-edit="unified_panel_subtitle" style="font-size:clamp(0.72rem,0.73vw,3.5rem); margin-top:2px;">${s.unified_panel_subtitle || '사전준비 수준에 따라 실시간으로 기간을 산출합니다'}</p>
+                  <p class="text-white font-bold truncate sim-panel-title" data-admin-edit="unified_panel_title" style="font-size:clamp(0.95rem,1.04vw,5rem); line-height:1.3; letter-spacing:-0.01em;">${s.unified_panel_title ? sanitizeHtml(s.unified_panel_title) : 'KOIST와 함께라면 평가기간을 <span class="text-cyan-300">대폭 단축</span>합니다'}</p>
+                  <p class="text-slate-400/80 truncate sim-panel-subtitle" data-admin-edit="unified_panel_subtitle" style="font-size:clamp(0.72rem,0.73vw,3.5rem); margin-top:2px;">${s.unified_panel_subtitle ? sanitizeHtml(s.unified_panel_subtitle) : '사전준비 수준에 따라 실시간으로 기간을 산출합니다'}</p>
                 </div>
               </div>
               <div class="hidden sm:flex items-center rounded-full shrink-0" style="gap:clamp(3px,0.26vw,8px); padding:clamp(4px,0.31vw,10px) clamp(10px,0.73vw,24px); background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.22);">
                 <span class="text-white font-black" style="font-size:clamp(0.85rem,0.78vw,3.5rem)" id="headerReductionPct" data-admin-edit="unified_reduction_default">${defaultReduction}%</span>
-                <span class="text-blue-300/90 font-medium" style="font-size:clamp(0.58rem,0.52vw,2.2rem)" data-admin-edit="unified_reduction_label">${s.unified_reduction_label || '평균 단축'}</span>
+                <span class="text-blue-300/90 font-medium" style="font-size:clamp(0.58rem,0.52vw,2.2rem)" data-admin-edit="unified_reduction_label">${escapeHtml(s.unified_reduction_label || '평균 단축')}</span>
               </div>
             </div>
 
@@ -552,10 +597,10 @@ export function homePage(opts: {
             <div class="unified-sim-body">
               <!-- Tab Bar (8K fluid, admin-editable) -->
               <div class="eal-tabs flex rounded-xl overflow-hidden" style="margin-bottom:clamp(0.6rem,0.68vw,1.28rem); border:clamp(1px,0.05vw,4px) solid rgba(226,232,240,0.70); background: rgba(248,250,252,0.80);">
-                <button class="eal-tab active flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.47vw,12px) 0; font-size:clamp(0.68rem,0.73vw,3.5rem);" data-eal="overall" onclick="switchEAL('overall')" data-admin-edit="sim_tab_overall">${s.sim_tab_overall || '전체평균'}</button>
-                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.47vw,12px) 0; font-size:clamp(0.68rem,0.73vw,3.5rem); border-left:clamp(1px,0.05vw,4px) solid rgba(226,232,240,0.70);" data-eal="EAL2" onclick="switchEAL('EAL2')" data-admin-edit="sim_tab_eal2">${s.sim_tab_eal2 || 'EAL2'}</button>
-                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.47vw,12px) 0; font-size:clamp(0.68rem,0.73vw,3.5rem); border-left:clamp(1px,0.05vw,4px) solid rgba(226,232,240,0.70);" data-eal="EAL3" onclick="switchEAL('EAL3')" data-admin-edit="sim_tab_eal3">${s.sim_tab_eal3 || 'EAL3'}</button>
-                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.47vw,12px) 0; font-size:clamp(0.68rem,0.73vw,3.5rem); border-left:clamp(1px,0.05vw,4px) solid rgba(226,232,240,0.70);" data-eal="EAL4" onclick="switchEAL('EAL4')" data-admin-edit="sim_tab_eal4">${s.sim_tab_eal4 || 'EAL4'}</button>
+                <button class="eal-tab active flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.47vw,12px) 0; font-size:clamp(0.68rem,0.73vw,3.5rem);" data-eal="overall" onclick="switchEAL('overall')" data-admin-edit="sim_tab_overall">${escapeHtml(s.sim_tab_overall || '전체평균')}</button>
+                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.47vw,12px) 0; font-size:clamp(0.68rem,0.73vw,3.5rem); border-left:clamp(1px,0.05vw,4px) solid rgba(226,232,240,0.70);" data-eal="EAL2" onclick="switchEAL('EAL2')" data-admin-edit="sim_tab_eal2">${escapeHtml(s.sim_tab_eal2 || 'EAL2')}</button>
+                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.47vw,12px) 0; font-size:clamp(0.68rem,0.73vw,3.5rem); border-left:clamp(1px,0.05vw,4px) solid rgba(226,232,240,0.70);" data-eal="EAL3" onclick="switchEAL('EAL3')" data-admin-edit="sim_tab_eal3">${escapeHtml(s.sim_tab_eal3 || 'EAL3')}</button>
+                <button class="eal-tab flex-1 text-center font-bold transition-all" style="padding:clamp(6px,0.47vw,12px) 0; font-size:clamp(0.68rem,0.73vw,3.5rem); border-left:clamp(1px,0.05vw,4px) solid rgba(226,232,240,0.70);" data-eal="EAL4" onclick="switchEAL('EAL4')" data-admin-edit="sim_tab_eal4">${escapeHtml(s.sim_tab_eal4 || 'EAL4')}</button>
               </div>
 
               <!-- Preparation Slider — 8K Ultra-Sharp (admin-editable) -->
@@ -563,7 +608,7 @@ export function homePage(opts: {
                 <div class="flex items-center" style="gap:clamp(0.4rem,0.47vw,0.96rem)">
                   <div class="flex items-center shrink-0" style="gap:clamp(3px,0.26vw,8px)">
                     <i class="fas fa-clipboard-check text-emerald-500" style="font-size:clamp(10px,0.63vw,20px)"></i>
-                    <span class="font-bold text-slate-700" data-admin-edit="sim_label_prep" style="font-size:clamp(0.7rem,0.73vw,3.5rem)">${s.sim_label_prep || '사전준비'}</span>
+                    <span class="font-bold text-slate-700" data-admin-edit="sim_label_prep" style="font-size:clamp(0.7rem,0.73vw,3.5rem)">${escapeHtml(s.sim_label_prep || '사전준비')}</span>
                   </div>
                   <div class="flex-1 flex items-center" style="gap:clamp(0.2rem,0.31vw,0.64rem)">
                     <span class="text-slate-400 shrink-0" style="font-size:clamp(9px,0.52vw,16px); font-weight:600;">1</span>
@@ -583,10 +628,10 @@ export function homePage(opts: {
                 </div>
                 <!-- Level guide dots (admin-editable) -->
                 <div class="flex items-center justify-between" style="margin-top:clamp(3px,0.21vw,8px); padding:0 0 0 clamp(65px,5.73vw,140px);">
-                  <div class="flex items-center" style="gap:clamp(2px,0.16vw,4px)"><span class="inline-block rounded-full" style="width:clamp(4px,0.31vw,8px); height:clamp(4px,0.31vw,8px); background:#EF4444;"></span><span class="text-slate-400 font-medium" data-admin-edit="sim_slider_level1" style="font-size:clamp(8px,0.63vw,3rem)">${s.sim_slider_level1 || '미흡'}</span></div>
-                  <div class="flex items-center" style="gap:clamp(2px,0.16vw,4px)"><span class="inline-block rounded-full" style="width:clamp(4px,0.31vw,8px); height:clamp(4px,0.31vw,8px); background:#F59E0B;"></span><span class="text-slate-400 font-medium" data-admin-edit="sim_slider_level2" style="font-size:clamp(8px,0.63vw,3rem)">${s.sim_slider_level2 || '보통'}</span></div>
-                  <div class="flex items-center" style="gap:clamp(2px,0.16vw,4px)"><span class="inline-block rounded-full" style="width:clamp(4px,0.31vw,8px); height:clamp(4px,0.31vw,8px); background:#10B981;"></span><span class="text-slate-400 font-medium" data-admin-edit="sim_slider_level3" style="font-size:clamp(8px,0.63vw,3rem)">${s.sim_slider_level3 || '양호'}</span></div>
-                  <div class="flex items-center" style="gap:clamp(2px,0.16vw,4px)"><span class="inline-block rounded-full" style="width:clamp(4px,0.31vw,8px); height:clamp(4px,0.31vw,8px); background:#3B82F6;"></span><span class="text-slate-400 font-medium" data-admin-edit="sim_slider_level4" style="font-size:clamp(8px,0.63vw,3rem)">${s.sim_slider_level4 || '우수'}</span></div>
+                  <div class="flex items-center" style="gap:clamp(2px,0.16vw,4px)"><span class="inline-block rounded-full" style="width:clamp(4px,0.31vw,8px); height:clamp(4px,0.31vw,8px); background:#EF4444;"></span><span class="text-slate-400 font-medium" data-admin-edit="sim_slider_level1" style="font-size:clamp(8px,0.63vw,3rem)">${escapeHtml(s.sim_slider_level1 || '미흡')}</span></div>
+                  <div class="flex items-center" style="gap:clamp(2px,0.16vw,4px)"><span class="inline-block rounded-full" style="width:clamp(4px,0.31vw,8px); height:clamp(4px,0.31vw,8px); background:#F59E0B;"></span><span class="text-slate-400 font-medium" data-admin-edit="sim_slider_level2" style="font-size:clamp(8px,0.63vw,3rem)">${escapeHtml(s.sim_slider_level2 || '보통')}</span></div>
+                  <div class="flex items-center" style="gap:clamp(2px,0.16vw,4px)"><span class="inline-block rounded-full" style="width:clamp(4px,0.31vw,8px); height:clamp(4px,0.31vw,8px); background:#10B981;"></span><span class="text-slate-400 font-medium" data-admin-edit="sim_slider_level3" style="font-size:clamp(8px,0.63vw,3rem)">${escapeHtml(s.sim_slider_level3 || '양호')}</span></div>
+                  <div class="flex items-center" style="gap:clamp(2px,0.16vw,4px)"><span class="inline-block rounded-full" style="width:clamp(4px,0.31vw,8px); height:clamp(4px,0.31vw,8px); background:#3B82F6;"></span><span class="text-slate-400 font-medium" data-admin-edit="sim_slider_level4" style="font-size:clamp(8px,0.63vw,3rem)">${escapeHtml(s.sim_slider_level4 || '우수')}</span></div>
                 </div>
               </div>
 
@@ -595,7 +640,7 @@ export function homePage(opts: {
                 <!-- CCRA bar -->
                 <div>
                   <div class="flex justify-between items-center" style="margin-bottom:clamp(3px,0.21vw,6px)">
-                    <span class="text-slate-500 font-semibold flex items-center" style="gap:clamp(3px,0.21vw,6px); font-size:clamp(0.68rem,0.73vw,3.5rem)"><span class="inline-block rounded-full" style="width:clamp(5px,0.36vw,10px); height:clamp(5px,0.36vw,10px); background: linear-gradient(135deg, #94A3B8, #64748B);"></span><span data-admin-edit="sim_label_traditional">${s.sim_label_traditional || 'CCRA평가일수'}</span></span>
+                    <span class="text-slate-500 font-semibold flex items-center" style="gap:clamp(3px,0.21vw,6px); font-size:clamp(0.68rem,0.73vw,3.5rem)"><span class="inline-block rounded-full" style="width:clamp(5px,0.36vw,10px); height:clamp(5px,0.36vw,10px); background: linear-gradient(135deg, #94A3B8, #64748B);"></span><span data-admin-edit="sim_label_traditional">${escapeHtml(s.sim_label_traditional || 'CCRA평가일수')}</span></span>
                     <span id="ealGeneralTotal" class="text-slate-400 font-bold" style="font-size:clamp(0.68rem,0.73vw,3.5rem)">약 24개월</span>
                   </div>
                   <div class="relative rounded-xl overflow-hidden" style="height:clamp(32px,2.34vw,72px); background: linear-gradient(90deg, #F1F5F9, #E2E8F0);">
@@ -609,7 +654,7 @@ export function homePage(opts: {
                 <!-- KOIST bar -->
                 <div>
                   <div class="flex justify-between items-center" style="margin-bottom:clamp(3px,0.21vw,6px)">
-                    <span class="text-accent font-bold flex items-center" style="gap:clamp(3px,0.21vw,6px); font-size:clamp(0.68rem,0.73vw,3.5rem)"><span class="inline-block rounded-full" style="width:clamp(5px,0.36vw,10px); height:clamp(5px,0.36vw,10px); background: linear-gradient(135deg, #2563EB, #06B6D4);"></span><i class="fas fa-bolt text-yellow-500" style="font-size:clamp(7px,0.42vw,14px); margin-right:2px;"></i><span data-admin-edit="sim_label_koist">${s.sim_label_koist || 'KOIST 평가 프로세스'}</span></span>
+                    <span class="text-accent font-bold flex items-center" style="gap:clamp(3px,0.21vw,6px); font-size:clamp(0.68rem,0.73vw,3.5rem)"><span class="inline-block rounded-full" style="width:clamp(5px,0.36vw,10px); height:clamp(5px,0.36vw,10px); background: linear-gradient(135deg, #2563EB, #06B6D4);"></span><i class="fas fa-bolt text-yellow-500" style="font-size:clamp(7px,0.42vw,14px); margin-right:2px;"></i><span data-admin-edit="sim_label_koist">${escapeHtml(s.sim_label_koist || 'KOIST 평가 프로세스')}</span></span>
                     <span id="ealKoistTotal" class="text-accent font-bold" style="font-size:clamp(0.68rem,0.73vw,3.5rem)">약 15개월</span>
                   </div>
                   <div class="relative rounded-xl overflow-hidden" style="height:clamp(32px,2.34vw,72px); background: linear-gradient(90deg, #F1F5F9, #E2E8F0);">
@@ -1028,8 +1073,8 @@ export function homePage(opts: {
         <div class="inline-flex items-center rounded-full font-semibold" style="gap:8px; padding:6px 18px; margin-bottom:var(--space-xs); background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(6,182,212,0.04)); border: 1px solid rgba(59,130,246,0.10); color: #2563EB; font-size: clamp(0.76rem, 0.62rem + 0.36vw, 1.12rem);">
           <i class="fas fa-cubes" style="font-size:clamp(11px,0.9vw,16px)"></i>KOIST 사업분야
         </div>
-        <h2 class="font-bold text-primary" style="font-size: clamp(1.44rem, 1.08rem + 0.92vw, 2.56rem); margin-bottom:var(--space-2xs); line-height:1.2;">${s.services_title || '핵심 사업분야'}</h2>
-        <p class="text-slate-500 max-w-lg mx-auto" style="font-size: clamp(0.88rem, 0.72rem + 0.42vw, 1.36rem); line-height:1.25;">${s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요'}</p>
+        <h2 class="font-bold text-primary" style="font-size: clamp(1.44rem, 1.08rem + 0.92vw, 2.56rem); margin-bottom:var(--space-2xs); line-height:1.2;">${escapeHtml(s.services_title || '핵심 사업분야')}</h2>
+        <p class="text-slate-500 max-w-lg mx-auto" style="font-size: clamp(0.88rem, 0.72rem + 0.42vw, 1.36rem); line-height:1.25;">${escapeHtml(s.services_subtitle || 'KOIST의 전문 시험·평가 서비스를 한눈에 확인하세요')}</p>
       </div>
 
       ${(() => {
@@ -1057,14 +1102,21 @@ export function homePage(opts: {
         const descFontMax = (0.70 * fontScale).toFixed(2);
         return `
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-${gridCols}" style="gap:clamp(${gapMin}rem, ${gapVw}vw, ${gapMax}rem)">
-        ${deps.map((dept, i) => `
-        <a href="/services/${dept.slug}" class="card-service-xl group block relative" style="--card-accent:${dept.color}; padding:clamp(${padMin}rem, ${padVw}vw, ${padMax}rem);" data-aos="fade-up" data-aos-delay="${Math.min(i * 20, 180)}">
-          ${dept.image_url ? `
-          <div class="rounded-lg overflow-hidden transition-all duration-500 group-hover:scale-105 group-hover:shadow-lg mx-auto" style="width:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); height:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); margin-bottom:clamp(0.4rem,0.6vw,0.6rem); border: 1.5px solid ${dept.color}20; box-shadow: 0 1px 8px ${dept.color}10;">
-            <img src="${dept.image_url}" alt="${dept.name}" class="w-full h-full object-cover" loading="lazy" decoding="async" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
+        ${deps.map((dept, i) => {
+          // v39.0: department \ud544\ub4dc XSS \ubc29\uc5b4
+          const dSlug = encodeURIComponent(dept.slug);
+          const dColor = safeColor(dept.color) || '#3B82F6';
+          const dIcon = safeFaIcon(dept.icon) || 'fa-building';
+          const dImg = safeUrl(dept.image_url);
+          const dNameAttr = escapeAttr(dept.name);
+          return `
+        <a href="/services/${dSlug}" class="card-service-xl group block relative" style="--card-accent:${dColor}; padding:clamp(${padMin}rem, ${padVw}vw, ${padMax}rem);" data-aos="fade-up" data-aos-delay="${Math.min(i * 20, 180)}">
+          ${dImg ? `
+          <div class="rounded-lg overflow-hidden transition-all duration-500 group-hover:scale-105 group-hover:shadow-lg mx-auto" style="width:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); height:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); margin-bottom:clamp(0.4rem,0.6vw,0.6rem); border: 1.5px solid ${dColor}20; box-shadow: 0 1px 8px ${dColor}10;">
+            <img src="${dImg}" alt="${dNameAttr}" class="w-full h-full object-cover" loading="lazy" decoding="async" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;">
           </div>` : `
-          <div class="rounded-lg flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg mx-auto" style="width:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); height:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); background: linear-gradient(135deg, ${dept.color}15, ${dept.color}08); margin-bottom:clamp(0.4rem,0.6vw,0.6rem);">
-            <i class="fas ${dept.icon}" style="color:${dept.color}; font-size:clamp(1.2rem,2vw,1.8rem)"></i>
+          <div class="rounded-lg flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg mx-auto" style="width:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); height:clamp(${iconW}px,${iconVw}vw,${iconWMax}px); background: linear-gradient(135deg, ${dColor}15, ${dColor}08); margin-bottom:clamp(0.4rem,0.6vw,0.6rem);">
+            <i class="fas ${dIcon}" style="color:${dColor}; font-size:clamp(1.2rem,2vw,1.8rem)"></i>
           </div>`}
           <h3 class="font-bold text-primary group-hover:text-accent transition-colors text-center" style="font-size:clamp(${fMin}rem,${fVw}vw,${fMax}rem); margin-bottom:2px; line-height:1.15; letter-spacing:-0.02em;">${escapeHtml(dept.name)}</h3>
           <p class="text-slate-500 text-center line-clamp-2" style="font-size:clamp(${descFontMin}rem,${descFontVw}vw,${descFontMax}rem); line-height:1.2;">${escapeHtml(dept.description || '')}</p>
@@ -1072,7 +1124,8 @@ export function homePage(opts: {
             <i class="fas fa-arrow-right text-accent/50" style="font-size:12px"></i>
           </div>
         </a>
-        `).join('')}
+        `;
+        }).join('')}
       </div>`;
       })()}
     </div>
@@ -1173,17 +1226,17 @@ export function homePage(opts: {
                 </div>
                 <div>
                   <p class="font-bold text-primary" style="font-size:clamp(0.85rem,0.75rem+0.3vw,1.1rem); line-height:1.3; margin-bottom:3px;">(주)한국정보보안기술원</p>
-                  <p class="text-slate-500" style="font-size:clamp(0.75rem,0.65rem+0.22vw,0.9rem); line-height:1.3;">${s.address || '서울특별시 서초구 효령로 336 윤일빌딩 4층'}</p>
+                  <p class="text-slate-500" style="font-size:clamp(0.75rem,0.65rem+0.22vw,0.9rem); line-height:1.3;">${escapeHtml(s.address || '서울특별시 서초구 효령로 336 윤일빌딩 4층')}</p>
                 </div>
               </div>
               <div class="grid grid-cols-1 sm:grid-cols-2" style="gap:clamp(0.3rem,0.5vw,0.5rem);">
                 <div class="flex items-center" style="gap:5px;">
                   <i class="fas fa-phone text-accent" style="font-size:clamp(9px,0.7vw,12px)"></i>
-                  <span class="text-slate-600" style="font-size:clamp(0.75rem,0.65rem+0.22vw,0.9rem);">${s.phone || '02-586-1230'}</span>
+                  <span class="text-slate-600" style="font-size:clamp(0.75rem,0.65rem+0.22vw,0.9rem);">${escapeHtml(s.phone || '02-586-1230')}</span>
                 </div>
                 <div class="flex items-center" style="gap:5px;">
                   <i class="fas fa-fax text-accent" style="font-size:clamp(9px,0.7vw,12px)"></i>
-                  <span class="text-slate-600" style="font-size:clamp(0.75rem,0.65rem+0.22vw,0.9rem);">FAX: ${s.fax || '02-586-1238'}</span>
+                  <span class="text-slate-600" style="font-size:clamp(0.75rem,0.65rem+0.22vw,0.9rem);">FAX: ${escapeHtml(s.fax || '02-586-1238')}</span>
                 </div>
               </div>
               <a href="/about/location" class="inline-flex items-center font-semibold text-accent hover:underline" style="gap:4px; margin-top:clamp(0.5rem,0.7vw,0.7rem); font-size:clamp(0.75rem,0.65rem+0.22vw,0.9rem);">
@@ -1431,13 +1484,18 @@ export function homePage(opts: {
               <a href="/support/notice" class="text-accent font-semibold hover:underline inline-flex items-center" style="gap:4px; font-size:clamp(1.0rem, 0.85rem + 0.4vw, 1.5rem);">더보기 <i class="fas fa-chevron-right" style="font-size:clamp(9px,0.7vw,12px)"></i></a>
             </div>
             <div class="divide-y divide-slate-100/80">
-              ${notices.length > 0 ? notices.map(n => `
-              <a href="/support/notice/${n.id}" class="flex items-center hover:bg-blue-50/30 -mx-2 px-2 rounded-lg transition-colors group" style="gap:var(--space-sm); padding: clamp(0.4rem,0.6vw,0.6rem) 0;">
+              ${notices.length > 0 ? notices.map(n => {
+                // v39.0: notice DB \ud544\ub4dc XSS \ubc29\uc5b4
+                const nId = Number.isInteger(n.id) ? n.id : 0;
+                const nTitle = escapeHtml(n.title);
+                const nDate = n.created_at && /^\d{4}-\d{2}-\d{2}/.test(n.created_at) ? n.created_at.split('T')[0] : '';
+                return `
+              <a href="/support/notice/${nId}" class="flex items-center hover:bg-blue-50/30 -mx-2 px-2 rounded-lg transition-colors group" style="gap:var(--space-sm); padding: clamp(0.4rem,0.6vw,0.6rem) 0;">
                 ${n.is_pinned ? '<span class="shrink-0 bg-red-500 text-white rounded flex items-center justify-center font-bold" style="width:clamp(22px,1.8vw,30px); height:clamp(22px,1.8vw,30px); font-size:clamp(9px,0.7vw,13px); box-shadow: 0 2px 6px rgba(239,68,68,0.25);">N</span>' : '<span class="shrink-0 rounded-full bg-slate-300/80" style="width:clamp(6px,0.5vw,8px); height:clamp(6px,0.5vw,8px);"></span>'}
-                <span class="flex-1 text-slate-700 truncate group-hover:text-accent transition-colors" style="font-size:clamp(1.1rem, 0.9rem + 0.5vw, 1.7rem); line-height:1.2;">${n.title}</span>
-                <span class="shrink-0 text-slate-400/70 tabular-nums" style="font-size:clamp(0.95rem, 0.8rem + 0.4vw, 1.4rem);">${n.created_at ? n.created_at.split('T')[0] : ''}</span>
-              </a>
-              `).join('') : '<p class="text-slate-400 text-center" style="padding:var(--space-xl) 0; font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem);"><i class="fas fa-inbox text-slate-300 block" style="font-size:clamp(1.4rem,1.2vw,2rem);margin-bottom:8px"></i>등록된 공지사항이 없습니다.</p>'}
+                <span class="flex-1 text-slate-700 truncate group-hover:text-accent transition-colors" style="font-size:clamp(1.1rem, 0.9rem + 0.5vw, 1.7rem); line-height:1.2;">${nTitle}</span>
+                <span class="shrink-0 text-slate-400/70 tabular-nums" style="font-size:clamp(0.95rem, 0.8rem + 0.4vw, 1.4rem);">${nDate}</span>
+              </a>`;
+              }).join('') : '<p class="text-slate-400 text-center" style="padding:var(--space-xl) 0; font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem);"><i class="fas fa-inbox text-slate-300 block" style="font-size:clamp(1.4rem,1.2vw,2rem);margin-bottom:8px"></i>등록된 공지사항이 없습니다.</p>'}
             </div>
           </div>
 
@@ -1516,17 +1574,17 @@ export function homePage(opts: {
                     </div>
                     <div>
                       <p class="font-bold text-primary" style="font-size:clamp(1.2rem,1rem+0.6vw,1.9rem); line-height:1.2; margin-bottom:4px;">(주)한국정보보안기술원</p>
-                      <p class="text-slate-500" style="font-size:clamp(1.0rem,0.85rem+0.4vw,1.5rem); line-height:1.2;">${s.address || '서울특별시 서초구 효령로 336 윤일빌딩 4층'}</p>
+                      <p class="text-slate-500" style="font-size:clamp(1.0rem,0.85rem+0.4vw,1.5rem); line-height:1.2;">${escapeHtml(s.address || '서울특별시 서초구 효령로 336 윤일빌딩 4층')}</p>
                     </div>
                   </div>
                   <div class="grid grid-cols-1 sm:grid-cols-2" style="gap:clamp(0.4rem,0.6vw,0.6rem);">
                     <div class="flex items-center" style="gap:6px;">
                       <i class="fas fa-phone text-accent" style="font-size:clamp(10px,0.8vw,14px)"></i>
-                      <span class="text-slate-600" style="font-size:clamp(1.0rem,0.85rem+0.4vw,1.5rem);">${s.phone || '02-586-1230'}</span>
+                      <span class="text-slate-600" style="font-size:clamp(1.0rem,0.85rem+0.4vw,1.5rem);">${escapeHtml(s.phone || '02-586-1230')}</span>
                     </div>
                     <div class="flex items-center" style="gap:6px;">
                       <i class="fas fa-fax text-accent" style="font-size:clamp(10px,0.8vw,14px)"></i>
-                      <span class="text-slate-600" style="font-size:clamp(1.0rem,0.85rem+0.4vw,1.5rem);">FAX: ${s.fax || '02-586-1238'}</span>
+                      <span class="text-slate-600" style="font-size:clamp(1.0rem,0.85rem+0.4vw,1.5rem);">FAX: ${escapeHtml(s.fax || '02-586-1238')}</span>
                     </div>
                   </div>
                 </div>
@@ -1589,20 +1647,27 @@ export function homePage(opts: {
               </thead>
               <tbody>
                 ${progress.length > 0 ? progress.map(p => {
+                  // v39.0: progress_items DB \ud544\ub4dc XSS \ubc29\uc5b4 \ubc0f color/icon \uac80\uc99d
                   const m = catMeta[p.category] || { icon: 'fa-circle', color: '#64748B' };
+                  const pIcon = /^fa-[a-z0-9\-]+$/i.test(m.icon) ? m.icon : 'fa-circle';
+                  const pColor = /^#[0-9a-fA-F]{3,8}$/.test(m.color) ? m.color : '#64748B';
+                  const prodName = escapeHtml(p.product_name);
+                  const catShort = (p.category && p.category.length > 5) ? p.category.substring(0,5) + '..' : (p.category || '');
+                  const catEsc = escapeHtml(catShort);
+                  const statusEsc = escapeHtml(p.status);
                   return `
                 <tr class="border-b border-slate-50/80 hover:bg-slate-50/40 transition-colors">
-                  <td class="text-slate-700 font-medium" style="padding:clamp(6px,0.6vw,10px) 6px clamp(6px,0.6vw,10px) 0; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:clamp(1.0rem,0.85rem+0.4vw,1.5rem);">${p.product_name}</td>
+                  <td class="text-slate-700 font-medium" style="padding:clamp(6px,0.6vw,10px) 6px clamp(6px,0.6vw,10px) 0; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:clamp(1.0rem,0.85rem+0.4vw,1.5rem);">${prodName}</td>
                   <td class="hidden sm:table-cell text-center" style="padding:clamp(6px,0.6vw,10px) 6px">
-                    <span class="inline-flex items-center gap-1 rounded-full" style="padding:2px 10px; background:${m.color}10; color:${m.color}; white-space:nowrap; font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);"><i class="fas ${m.icon}" style="font-size:clamp(8px,0.65vw,12px)"></i>${p.category.length > 5 ? p.category.substring(0,5) + '..' : p.category}</span>
+                    <span class="inline-flex items-center gap-1 rounded-full" style="padding:2px 10px; background:${pColor}10; color:${pColor}; white-space:nowrap; font-size:clamp(0.85rem,0.7rem+0.3vw,1.2rem);"><i class="fas ${pIcon}" style="font-size:clamp(8px,0.65vw,12px)"></i>${catEsc}</span>
                   </td>
                   <td style="padding:clamp(6px,0.6vw,10px) 0 clamp(6px,0.6vw,10px) 6px; text-align:right;">
-                    <span class="badge-status ${(p.status === '평가완료' || p.status === '발급완료') ? 'badge-complete' : (p.status === '평가진행' || p.status === '시험진행') ? 'badge-progress' : 'badge-received'}" style="font-size:clamp(0.9rem,0.75rem+0.35vw,1.3rem);">
-                      <span class="badge-dot"></span>${p.status}
+                    <span class="badge-status ${(p.status === '\ud3c9\uac00\uc644\ub8cc' || p.status === '\ubc1c\uae09\uc644\ub8cc') ? 'badge-complete' : (p.status === '\ud3c9\uac00\uc9c4\ud589' || p.status === '\uc2dc\ud5d8\uc9c4\ud589') ? 'badge-progress' : 'badge-received'}" style="font-size:clamp(0.9rem,0.75rem+0.35vw,1.3rem);">
+                      <span class="badge-dot"></span>${statusEsc}
                     </span>
                   </td>
                 </tr>`;
-                }).join('') : '<tr><td colspan="3" class="text-center text-slate-400" style="padding:var(--space-xl) 0; font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem);"><i class="fas fa-chart-line text-slate-300 block" style="font-size:clamp(1.4rem,1.2vw,2rem);margin-bottom:8px"></i>등록된 현황이 없습니다.</td></tr>'}
+                }).join('') : '<tr><td colspan="3" class="text-center text-slate-400" style="padding:var(--space-xl) 0; font-size:clamp(1.1rem,0.9rem+0.5vw,1.7rem);"><i class="fas fa-chart-line text-slate-300 block" style="font-size:clamp(1.4rem,1.2vw,2rem);margin-bottom:8px"></i>\ub4f1\ub85d\ub41c \ud604\ud669\uc774 \uc5c6\uc2b5\ub2c8\ub2e4.</td></tr>'}
               </tbody>
             </table>
           </div>
@@ -1624,15 +1689,15 @@ export function homePage(opts: {
 
     <div class="relative fluid-container text-center" data-aos="fade-up" data-aos-duration="700">
       <div class="inline-flex items-center rounded-full f-text-xs font-semibold" style="gap:6px; padding:5px 14px; margin-bottom:var(--space-sm); background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.15); color: #93C5FD;">
-        <i class="fas fa-headset" style="font-size:9px"></i>${s.cta_subtitle || '전문 상담 안내'}
+        <i class="fas fa-headset" style="font-size:9px"></i>${escapeHtml(s.cta_subtitle || '전문 상담 안내')}
       </div>
 
-      <h2 class="text-white font-bold f-text-2xl" style="margin-bottom:var(--space-sm)">${s.cta_title || '정보보안 시험·인증이 필요하신가요?'}</h2>
-      <p class="text-blue-200/60 max-w-xl mx-auto f-text-base" style="margin-bottom:clamp(1.5rem,2.5vw,2.5rem)">${s.cta_description || '전문 상담원이 빠르고 정확하게 안내해 드립니다'}</p>
+      <h2 class="text-white font-bold f-text-2xl" style="margin-bottom:var(--space-sm)">${escapeHtml(s.cta_title || '정보보안 시험·인증이 필요하신가요?')}</h2>
+      <p class="text-blue-200/60 max-w-xl mx-auto f-text-base" style="margin-bottom:clamp(1.5rem,2.5vw,2.5rem)">${escapeHtml(s.cta_description || '전문 상담원이 빠르고 정확하게 안내해 드립니다')}</p>
 
       <div class="flex flex-wrap justify-center" style="gap:var(--space-sm)">
-        <a href="tel:${s.phone || '02-586-1230'}" class="inline-flex items-center bg-white text-primary rounded-lg font-bold transition-all f-text-sm ripple-btn hover:shadow-xl hover:-translate-y-0.5" style="gap:var(--space-xs); padding:var(--space-sm) clamp(1.2rem,2vw,1.8rem); box-shadow: 0 4px 16px rgba(255,255,255,0.12), 0 1px 4px rgba(255,255,255,0.08);">
-          <i class="fas fa-phone f-text-xs"></i> ${s.phone || '02-586-1230'}
+        <a href="tel:${escapeAttr((s.phone || '02-586-1230').replace(/[^0-9+\-]/g, ''))}" class="inline-flex items-center bg-white text-primary rounded-lg font-bold transition-all f-text-sm ripple-btn hover:shadow-xl hover:-translate-y-0.5" style="gap:var(--space-xs); padding:var(--space-sm) clamp(1.2rem,2vw,1.8rem); box-shadow: 0 4px 16px rgba(255,255,255,0.12), 0 1px 4px rgba(255,255,255,0.08);">
+          <i class="fas fa-phone f-text-xs"></i> ${escapeHtml(s.phone || '02-586-1230')}
         </a>
         <a href="/support/inquiry" class="btn-glow f-text-sm ripple-btn" style="padding:var(--space-sm) clamp(1.2rem,2vw,1.8rem);">
           <i class="fas fa-envelope f-text-xs"></i> 온라인 상담
@@ -1642,7 +1707,7 @@ export function homePage(opts: {
   </section>
 
   <!-- Mobile Fixed Phone -->
-  <a href="tel:${s.phone || '02-586-1230'}" class="sm:hidden fixed bottom-5 right-5 z-50 text-white rounded-full flex items-center justify-center transition-all active:scale-95 hover:scale-105" style="width:clamp(48px,5.5vw,56px); height:clamp(48px,5.5vw,56px); font-size:var(--text-lg); background: linear-gradient(135deg, #2563EB, #06B6D4); box-shadow: 0 4px 20px rgba(37,99,235,0.35), 0 2px 8px rgba(37,99,235,0.20);" aria-label="전화하기">
+  <a href="tel:${escapeAttr((s.phone || '02-586-1230').replace(/[^0-9+\-]/g, ''))}" class="sm:hidden fixed bottom-5 right-5 z-50 text-white rounded-full flex items-center justify-center transition-all active:scale-95 hover:scale-105" style="width:clamp(48px,5.5vw,56px); height:clamp(48px,5.5vw,56px); font-size:var(--text-lg); background: linear-gradient(135deg, #2563EB, #06B6D4); box-shadow: 0 4px 20px rgba(37,99,235,0.35), 0 2px 8px rgba(37,99,235,0.20);" aria-label="전화하기">
     <i class="fas fa-phone"></i>
   </a>
 

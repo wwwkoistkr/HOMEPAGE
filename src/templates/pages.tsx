@@ -1,6 +1,6 @@
 // KOIST - Service & Content Page Templates (v7.0 - Ultra Premium 4K/8K HiDPI)
 import type { SettingsMap, Department, DepPage, Notice, FAQ, ProgressItem } from '../types';
-import { sanitizeHtml, escapeHtml } from '../utils/sanitize';
+import { sanitizeHtml, escapeHtml, escapeAttr, safeUrl, safeColor, safeFaIcon } from '../utils/sanitize';
 
 /* ══════════════════════════════════════════════════════════
    SHARED: Premium Page Header Component
@@ -30,7 +30,7 @@ function pageHeader(opts: {
       <nav class="flex items-center flex-wrap text-slate-400 f-text-xs" style="gap:6px; margin-bottom:var(--space-sm)">
         ${opts.breadcrumbs.map((b, i) => `
           ${i > 0 ? '<i class="fas fa-chevron-right text-[7px] text-slate-600/60"></i>' : ''}
-          ${b.href ? `<a href="${b.href}" class="hover:text-white/90 transition-colors">${b.label}</a>` : `<span class="text-white/90 font-medium">${b.label}</span>`}
+          ${b.href ? `<a href="${escapeAttr(b.href)}" class="hover:text-white/90 transition-colors">${b.label}</a>` : `<span class="text-white/90 font-medium">${b.label}</span>`}
         `).join('')}
       </nav>` : ''}
       <div class="flex items-center justify-between flex-wrap" style="gap:var(--space-sm)">
@@ -79,21 +79,21 @@ export function servicePage(dept: Department, pages: DepPage[], currentPage: Dep
 
   return `
   ${pageHeader({
-    title: currentPage ? currentPage.title : dept.name,
-    subtitle: dept.description || '',
-    icon: dept.icon,
-    iconColor: dept.color,
+    title: escapeHtml(currentPage ? currentPage.title : dept.name),
+    subtitle: escapeHtml(dept.description || ''),
+    icon: safeFaIcon(dept.icon) || 'fa-folder',
+    iconColor: safeColor(dept.color) || '#3B82F6',
     breadcrumbs: [
       { label: '홈', href: '/' },
-      { label: dept.name, href: '/services/' + dept.slug },
-      ...(currentPage ? [{ label: currentPage.title }] : [])
+      { label: escapeHtml(dept.name), href: '/services/' + encodeURIComponent(dept.slug) },
+      ...(currentPage ? [{ label: escapeHtml(currentPage.title) }] : [])
     ],
     settings: s,
     bgUrl: headerBg,
     contactInfo: {
-      dept: (dept as any).contact_dept || '',
-      name: (dept as any).contact_name || '',
-      phone: (dept as any).contact_phone || '',
+      dept: escapeHtml((dept as any).contact_dept || ''),
+      name: escapeHtml((dept as any).contact_name || ''),
+      phone: escapeHtml((dept as any).contact_phone || ''),
     },
   })}
 
@@ -106,13 +106,13 @@ export function servicePage(dept: Department, pages: DepPage[], currentPage: Dep
         ${pages.length > 1 ? `
         <aside class="shrink-0" style="width:clamp(180px, 15vw, 224px)">
           <div class="bg-white rounded-xl border border-slate-200/60 overflow-hidden sticky" style="top:calc(var(--gnb-h) + var(--space-sm)); box-shadow: var(--shadow-sm);">
-            <div class="font-semibold text-white f-text-sm" style="padding:var(--space-sm) var(--space-md); background: linear-gradient(135deg, #0F172A, #1E293B);">${dept.name}</div>
+            <div class="font-semibold text-white f-text-sm" style="padding:var(--space-sm) var(--space-md); background: linear-gradient(135deg, #0F172A, #1E293B);">${escapeHtml(dept.name)}</div>
             <nav style="padding:var(--space-xs)">
               ${pages.filter(p => p.is_active).map(p => `
-              <a href="/services/${dept.slug}/${p.slug}" 
+              <a href="/services/${encodeURIComponent(dept.slug)}/${encodeURIComponent(p.slug)}" 
                  class="block rounded-lg transition-all f-text-sm ${currentPage?.id === p.id ? 'font-semibold' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}"
                  style="padding:var(--space-sm) var(--space-md); ${currentPage?.id === p.id ? `background: rgba(59,130,246,0.06); color: #2563EB; border-left: 3px solid #2563EB; padding-left: calc(var(--space-md) - 3px);` : ''}">
-                ${p.title}
+                ${escapeHtml(p.title)}
               </a>
               `).join('')}
             </nav>
@@ -133,8 +133,8 @@ export function servicePage(dept: Department, pages: DepPage[], currentPage: Dep
             <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 20px 20px;"></div>
             <div class="relative flex flex-col sm:flex-row items-center justify-between" style="gap:var(--space-md)">
               <div>
-                <h3 class="font-bold text-white f-text-sm">${dept.name}에 대해 궁금하신 점이 있으신가요?</h3>
-                <p class="text-slate-400/80 f-text-xs" style="margin-top:3px">${(dept as any).contact_dept || (dept as any).contact_name ? `${(dept as any).contact_dept ? `담당부서: ${(dept as any).contact_dept}` : ''}${(dept as any).contact_dept && (dept as any).contact_name ? ' | ' : ''}${(dept as any).contact_name ? `담당자: ${(dept as any).contact_name}` : ''}` : '전문 상담원이 친절하게 안내해 드립니다.'}</p>
+                <h3 class="font-bold text-white f-text-sm">${escapeHtml(dept.name)}에 대해 궁금하신 점이 있으신가요?</h3>
+                <p class="text-slate-400/80 f-text-xs" style="margin-top:3px">${(dept as any).contact_dept || (dept as any).contact_name ? `${(dept as any).contact_dept ? `담당부서: ${escapeHtml((dept as any).contact_dept)}` : ''}${(dept as any).contact_dept && (dept as any).contact_name ? ' | ' : ''}${(dept as any).contact_name ? `담당자: ${escapeHtml((dept as any).contact_name)}` : ''}` : '전문 상담원이 친절하게 안내해 드립니다.'}</p>
               </div>
               <div class="flex shrink-0" style="gap:var(--space-sm)">
                 <a href="tel:${(dept as any).contact_phone || s.phone || '02-586-1230'}" class="btn-primary f-text-xs ripple-btn" style="padding:var(--space-sm) var(--space-md)">
@@ -181,9 +181,9 @@ export function noticeListPage(notices: Notice[], page: number, total: number, p
             ${notices.map((n, i) => `
             <tr class="border-t border-slate-100/70 hover:bg-blue-50/30 transition-colors">
               <td class="text-slate-400 f-text-xs" style="padding:var(--space-sm) var(--space-md)">${n.is_pinned ? '<span class="inline-flex items-center justify-center bg-red-500 text-white rounded font-bold" style="width:18px;height:18px;font-size:9px">N</span>' : (total - (page - 1) * perPage - i)}</td>
-              <td style="padding:var(--space-sm) var(--space-md)"><a href="/support/notice/${n.id}" class="text-slate-800 hover:text-accent transition-colors font-medium f-text-sm">${escapeHtml(n.title)}</a></td>
-              <td class="text-center text-slate-400 hidden sm:table-cell f-text-xs" style="padding:var(--space-sm) var(--space-md)">${n.views}</td>
-              <td class="text-center text-slate-400 f-text-xs" style="padding:var(--space-sm) var(--space-md)">${n.created_at?.split('T')[0] || ''}</td>
+              <td style="padding:var(--space-sm) var(--space-md)"><a href="/support/notice/${parseInt(String(n.id), 10) || 0}" class="text-slate-800 hover:text-accent transition-colors font-medium f-text-sm">${escapeHtml(n.title)}</a></td>
+              <td class="text-center text-slate-400 hidden sm:table-cell f-text-xs" style="padding:var(--space-sm) var(--space-md)">${escapeHtml(String(n.views ?? 0))}</td>
+              <td class="text-center text-slate-400 f-text-xs" style="padding:var(--space-sm) var(--space-md)">${escapeHtml((n.created_at || '').split('T')[0] || '')}</td>
             </tr>
             `).join('')}
             ${notices.length === 0 ? '<tr><td colspan="4" class="text-center text-slate-400 f-text-sm" style="padding:var(--space-2xl) 0"><i class="fas fa-inbox text-slate-300 block" style="font-size:1.5rem;margin-bottom:var(--space-sm)"></i>등록된 공지사항이 없습니다.</td></tr>' : ''}
@@ -206,8 +206,8 @@ export function noticeDetailPage(notice: Notice, settings: SettingsMap = {}) {
   const s = settings;
   return `
   ${pageHeader({
-    title: notice.title,
-    subtitle: (notice.created_at?.split('T')[0] || '') + ' · 조회수 ' + notice.views,
+    title: escapeHtml(notice.title),
+    subtitle: escapeHtml((notice.created_at?.split('T')[0] || '') + ' · 조회수 ' + (notice.views ?? 0)),
     icon: 'fa-bullhorn',
     iconColor: '#60A5FA',
     breadcrumbs: [
@@ -290,7 +290,7 @@ export function inquiryPage(settings: SettingsMap) {
         <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:36px; height:36px; background: linear-gradient(135deg, rgba(59,130,246,0.10), rgba(6,182,212,0.08));">
           <i class="fas fa-info-circle text-accent f-text-sm"></i>
         </div>
-        <p class="text-slate-600 f-text-sm">빠른 상담은 <strong class="text-accent">${s.phone || '02-586-1230'}</strong>으로 연락주시면 더욱 빠르게 안내받으실 수 있습니다.</p>
+        <p class="text-slate-600 f-text-sm">빠른 상담은 <strong class="text-accent">${escapeHtml(s.phone || '02-586-1230')}</strong>으로 연락주시면 더욱 빠르게 안내받으실 수 있습니다.</p>
       </div>
 
       <form id="inquiryForm" class="bg-white rounded-xl border border-slate-200/60" style="padding:clamp(1.25rem, 2.5vw, 2.25rem); box-shadow: var(--shadow-sm);">
@@ -398,6 +398,16 @@ export function progressPage(items: ProgressItem[], page: number = 1, total: num
   const meta = getCatMeta(categoryFilter);
   const grandTotal = categoryCounts.reduce((sum, c) => sum + c.cnt, 0);
 
+  // v39.0: Reflected XSS 방어 - 사용자 입력값 HTML/Attr 이스케이프
+  const searchEsc = escapeHtml(search);
+  const searchAttr = escapeAttr(search);
+  const categoryFilterEsc = escapeHtml(categoryFilter);
+  const categoryFilterAttr = escapeAttr(categoryFilter);
+  const statusFilterEsc = escapeHtml(statusFilter);
+  // meta는 코드에서 정의된 객체이므로 color/icon도 이중 검증
+  const metaIconSafe = safeFaIcon(meta.icon) || 'fa-circle';
+  const metaColorSafe = safeColor(meta.color) || '#34D399';
+
   function pageUrl(p: number) {
     const params = new URLSearchParams();
     params.set('page', String(p));
@@ -415,10 +425,10 @@ export function progressPage(items: ProgressItem[], page: number = 1, total: num
 
   return `
   ${pageHeader({
-    title: categoryFilter ? categoryFilter + ' 현황' : '평가·시험·인증 현황',
+    title: categoryFilter ? categoryFilterEsc + ' 현황' : '평가·시험·인증 현황',
     subtitle: '총 ' + total + '건의 현황' + (categoryFilter ? '' : ' (전체 사업)'),
-    icon: categoryFilter ? meta.icon : 'fa-chart-bar',
-    iconColor: categoryFilter ? meta.color : '#34D399',
+    icon: categoryFilter ? metaIconSafe : 'fa-chart-bar',
+    iconColor: categoryFilter ? metaColorSafe : '#34D399',
     settings: s,
   })}
 
@@ -428,14 +438,18 @@ export function progressPage(items: ProgressItem[], page: number = 1, total: num
       <!-- Category Tabs -->
       <div class="bg-white rounded-xl border border-slate-200/60 overflow-hidden" style="margin-bottom:var(--space-md); box-shadow: var(--shadow-xs);">
         <div class="flex items-center overflow-x-auto" style="gap:0; -webkit-overflow-scrolling:touch; scrollbar-width:none;">
-          <a href="${catUrl('')}" class="shrink-0 flex items-center transition-all f-text-xs font-medium border-b-2 ${!categoryFilter ? 'text-blue-600 border-blue-500 bg-blue-50/60' : 'text-slate-500 border-transparent hover:text-slate-700 hover:bg-slate-50'}" style="padding:12px 16px; gap:6px; white-space:nowrap;">
+          <a href="${escapeAttr(catUrl(''))}" class="shrink-0 flex items-center transition-all f-text-xs font-medium border-b-2 ${!categoryFilter ? 'text-blue-600 border-blue-500 bg-blue-50/60' : 'text-slate-500 border-transparent hover:text-slate-700 hover:bg-slate-50'}" style="padding:12px 16px; gap:6px; white-space:nowrap;">
             <i class="fas fa-layer-group" style="font-size:11px"></i> 전체 <span class="text-slate-400 font-normal">${grandTotal}</span>
           </a>
           ${categoryCounts.map(cc => {
             const m = getCatMeta(cc.category);
             const active = categoryFilter === cc.category;
-            return `<a href="${catUrl(cc.category)}" class="shrink-0 flex items-center transition-all f-text-xs font-medium border-b-2 ${active ? 'border-blue-500 bg-blue-50/60' : 'text-slate-500 border-transparent hover:text-slate-700 hover:bg-slate-50'}" style="padding:12px 16px; gap:6px; white-space:nowrap; ${active ? `color:${m.color};` : ''}">
-              <i class="fas ${m.icon}" style="font-size:11px; ${active ? `color:${m.color}` : ''}"></i> ${cc.category} <span class="text-slate-400 font-normal">${cc.cnt}</span>
+            const mColor = safeColor(m.color) || '#3B82F6';
+            const mIcon = safeFaIcon(m.icon) || 'fa-circle';
+            const ccCategoryEsc = escapeHtml(cc.category);
+            const ccCntEsc = escapeHtml(String(cc.cnt ?? 0));
+            return `<a href="${escapeAttr(catUrl(cc.category))}" class="shrink-0 flex items-center transition-all f-text-xs font-medium border-b-2 ${active ? 'border-blue-500 bg-blue-50/60' : 'text-slate-500 border-transparent hover:text-slate-700 hover:bg-slate-50'}" style="padding:12px 16px; gap:6px; white-space:nowrap; ${active ? `color:${mColor};` : ''}">
+              <i class="fas ${mIcon}" style="font-size:11px; ${active ? `color:${mColor}` : ''}"></i> ${ccCategoryEsc} <span class="text-slate-400 font-normal">${ccCntEsc}</span>
             </a>`;
           }).join('')}
         </div>
@@ -443,7 +457,7 @@ export function progressPage(items: ProgressItem[], page: number = 1, total: num
 
       <!-- Search & Filter Bar -->
       <form method="GET" action="/support/progress" class="bg-white rounded-xl border border-slate-200/60" style="padding:var(--space-md); margin-bottom:var(--space-md); box-shadow: var(--shadow-xs);">
-        ${categoryFilter ? `<input type="hidden" name="category" value="${categoryFilter}">` : ''}
+        ${categoryFilter ? `<input type="hidden" name="category" value="${categoryFilterAttr}">` : ''}
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center" style="gap:var(--space-sm)">
           <select name="status" class="input-premium" style="width:auto; min-width:140px; padding-right:2rem;" onchange="this.form.submit()">
             <option value="">전체 상태</option>
@@ -455,12 +469,12 @@ export function progressPage(items: ProgressItem[], page: number = 1, total: num
             <option value="시험접수" ${statusFilter === '시험접수' ? 'selected' : ''}>시험접수</option>
           </select>
           <div class="flex-1 relative">
-            <input type="text" name="q" value="${search}" placeholder="제품명 검색..." class="input-premium" style="padding-right:2.5rem">
+            <input type="text" name="q" value="${searchAttr}" placeholder="제품명 검색..." class="input-premium" style="padding-right:2.5rem">
             <button type="submit" class="absolute right-0 top-0 bottom-0 text-slate-400 hover:text-accent transition-colors" style="padding:0 var(--space-md)">
               <i class="fas fa-search f-text-sm"></i>
             </button>
           </div>
-          ${search || statusFilter ? `<a href="${catUrl(categoryFilter)}" class="shrink-0 text-slate-500 hover:text-red-500 transition-colors f-text-xs flex items-center" style="padding:var(--space-sm)"><i class="fas fa-times mr-1"></i>필터 초기화</a>` : ''}
+          ${search || statusFilter ? `<a href="${escapeAttr(catUrl(categoryFilter))}" class="shrink-0 text-slate-500 hover:text-red-500 transition-colors f-text-xs flex items-center" style="padding:var(--space-sm)"><i class="fas fa-times mr-1"></i>필터 초기화</a>` : ''}
         </div>
       </form>
 
@@ -482,23 +496,25 @@ export function progressPage(items: ProgressItem[], page: number = 1, total: num
                 <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:11px 10px">번호</th>
                 ${!categoryFilter ? '<th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:11px 10px">사업분류</th>' : ''}
                 <th class="text-left text-slate-300 f-text-xs font-semibold" style="padding:11px 14px">제품명</th>
-                <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:11px 10px">${categoryFilter ? meta.col2 : '등급'}</th>
-                <th class="text-center text-slate-300 f-text-xs font-semibold hidden sm:table-cell" style="padding:11px 10px">${categoryFilter ? meta.col3 : '구분'}</th>
-                <th class="text-center text-slate-300 f-text-xs font-semibold hidden md:table-cell" style="padding:11px 10px">${categoryFilter ? meta.col4 : '유형'}</th>
+                <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:11px 10px">${categoryFilter ? escapeHtml(meta.col2) : '등급'}</th>
+                <th class="text-center text-slate-300 f-text-xs font-semibold hidden sm:table-cell" style="padding:11px 10px">${categoryFilter ? escapeHtml(meta.col3) : '구분'}</th>
+                <th class="text-center text-slate-300 f-text-xs font-semibold hidden md:table-cell" style="padding:11px 10px">${categoryFilter ? escapeHtml(meta.col4) : '유형'}</th>
                 <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:11px 10px">진행상태</th>
               </tr>
             </thead>
             <tbody>
               ${items.map((p, i) => {
                 const cm = getCatMeta(p.category);
+                const cmColor = safeColor(cm.color) || '#64748B';
+                const cmIcon = safeFaIcon(cm.icon) || 'fa-circle';
                 return `
               <tr class="border-t border-slate-100/70 hover:bg-blue-50/25 transition-colors" style="border-left:3px solid transparent;">
                 <td class="text-center text-slate-400 f-text-xs" style="padding:10px 10px">${startNum - i}</td>
-                ${!categoryFilter ? `<td class="text-center" style="padding:10px 10px"><span class="inline-flex items-center gap-1 rounded-full f-text-xs font-medium" style="padding:2px 8px; background:${cm.color}10; color:${cm.color}; white-space:nowrap;"><i class="fas ${cm.icon}" style="font-size:8px"></i>${p.category}</span></td>` : ''}
-                <td style="padding:10px 14px"><span class="font-medium text-slate-800 f-text-sm truncate block" style="max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.product_name}</span></td>
-                <td class="text-center" style="padding:10px 10px"><span class="inline-block bg-slate-100 text-slate-700 rounded font-mono font-medium f-text-xs" style="padding:2px 8px; white-space:nowrap">${p.assurance_level || '-'}</span></td>
-                <td class="text-center text-slate-600 hidden sm:table-cell f-text-xs" style="padding:10px 10px; white-space:nowrap">${p.cert_type || '-'}</td>
-                <td class="text-center text-slate-600 hidden md:table-cell f-text-xs" style="padding:10px 10px; white-space:nowrap">${p.eval_type || '-'}</td>
+                ${!categoryFilter ? `<td class="text-center" style="padding:10px 10px"><span class="inline-flex items-center gap-1 rounded-full f-text-xs font-medium" style="padding:2px 8px; background:${cmColor}10; color:${cmColor}; white-space:nowrap;"><i class="fas ${cmIcon}" style="font-size:8px"></i>${escapeHtml(p.category)}</span></td>` : ''}
+                <td style="padding:10px 14px"><span class="font-medium text-slate-800 f-text-sm truncate block" style="max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(p.product_name)}</span></td>
+                <td class="text-center" style="padding:10px 10px"><span class="inline-block bg-slate-100 text-slate-700 rounded font-mono font-medium f-text-xs" style="padding:2px 8px; white-space:nowrap">${escapeHtml(p.assurance_level || '-')}</span></td>
+                <td class="text-center text-slate-600 hidden sm:table-cell f-text-xs" style="padding:10px 10px; white-space:nowrap">${escapeHtml(p.cert_type || '-')}</td>
+                <td class="text-center text-slate-600 hidden md:table-cell f-text-xs" style="padding:10px 10px; white-space:nowrap">${escapeHtml(p.eval_type || '-')}</td>
                 <td class="text-center" style="padding:10px 10px">${statusBadge(p.status)}</td>
               </tr>`;
               }).join('')}
@@ -516,16 +532,16 @@ export function progressPage(items: ProgressItem[], page: number = 1, total: num
       <div class="flex flex-col sm:flex-row justify-between items-center" style="margin-top:var(--space-lg); gap:var(--space-md)">
         <p class="text-slate-500 f-text-xs">${total}건 중 ${(page - 1) * perPage + 1}~${Math.min(page * perPage, total)}건 표시 <span class="text-slate-400">(${page}/${totalPages})</span></p>
         <div class="flex items-center" style="gap:4px">
-          ${page > 1 ? `<a href="${pageUrl(1)}" class="flex items-center justify-center rounded-lg bg-white border border-slate-200/70 text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all f-text-xs" style="width:32px; height:32px" title="처음"><i class="fas fa-angles-left"></i></a>
-          <a href="${pageUrl(page - 1)}" class="flex items-center justify-center rounded-lg bg-white border border-slate-200/70 text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all f-text-xs" style="width:32px; height:32px" title="이전"><i class="fas fa-chevron-left"></i></a>` : ''}
+          ${page > 1 ? `<a href="${escapeAttr(pageUrl(1))}" class="flex items-center justify-center rounded-lg bg-white border border-slate-200/70 text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all f-text-xs" style="width:32px; height:32px" title="처음"><i class="fas fa-angles-left"></i></a>
+          <a href="${escapeAttr(pageUrl(page - 1))}" class="flex items-center justify-center rounded-lg bg-white border border-slate-200/70 text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all f-text-xs" style="width:32px; height:32px" title="이전"><i class="fas fa-chevron-left"></i></a>` : ''}
           ${Array.from({ length: totalPages }, (_, i) => i + 1)
             .filter(p => p === 1 || p === totalPages || (p >= page - 2 && p <= page + 2))
             .map((p, idx, arr) => {
               let dots = idx > 0 && p - arr[idx - 1] > 1 ? '<span class="text-slate-400 f-text-xs" style="padding:0 3px">…</span>' : '';
-              return dots + `<a href="${pageUrl(p)}" class="flex items-center justify-center rounded-lg font-medium f-text-xs transition-all ${p === page ? 'text-white' : 'bg-white text-slate-600 border border-slate-200/70 hover:bg-slate-50 hover:text-slate-700'}" style="width:32px; height:32px; ${p === page ? 'background: linear-gradient(135deg, #2563EB, #3B82F6); box-shadow: 0 2px 8px rgba(37,99,235,0.25);' : ''}">${p}</a>`;
+              return dots + `<a href="${escapeAttr(pageUrl(p))}" class="flex items-center justify-center rounded-lg font-medium f-text-xs transition-all ${p === page ? 'text-white' : 'bg-white text-slate-600 border border-slate-200/70 hover:bg-slate-50 hover:text-slate-700'}" style="width:32px; height:32px; ${p === page ? 'background: linear-gradient(135deg, #2563EB, #3B82F6); box-shadow: 0 2px 8px rgba(37,99,235,0.25);' : ''}">${p}</a>`;
             }).join('')}
-          ${page < totalPages ? `<a href="${pageUrl(page + 1)}" class="flex items-center justify-center rounded-lg bg-white border border-slate-200/70 text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all f-text-xs" style="width:32px; height:32px" title="다음"><i class="fas fa-chevron-right"></i></a>
-          <a href="${pageUrl(totalPages)}" class="flex items-center justify-center rounded-lg bg-white border border-slate-200/70 text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all f-text-xs" style="width:32px; height:32px" title="맨끝"><i class="fas fa-angles-right"></i></a>` : ''}
+          ${page < totalPages ? `<a href="${escapeAttr(pageUrl(page + 1))}" class="flex items-center justify-center rounded-lg bg-white border border-slate-200/70 text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all f-text-xs" style="width:32px; height:32px" title="다음"><i class="fas fa-chevron-right"></i></a>
+          <a href="${escapeAttr(pageUrl(totalPages))}" class="flex items-center justify-center rounded-lg bg-white border border-slate-200/70 text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-all f-text-xs" style="width:32px; height:32px" title="맨끝"><i class="fas fa-angles-right"></i></a>` : ''}
         </div>
       </div>` : ''}
     </div>
@@ -540,6 +556,11 @@ export function serviceProgressContent(items: ProgressItem[], page: number = 1, 
   const totalPages = Math.ceil(total / perPage);
   const startNum = total - (page - 1) * perPage;
 
+  // v39.0: Reflected XSS 방어
+  const searchAttr = escapeAttr(search);
+  const categoryFilterEsc = escapeHtml(categoryFilter);
+  const categoryFilterAttr = escapeAttr(categoryFilter);
+
   function pageUrl(p: number) {
     const params = new URLSearchParams();
     params.set('page', String(p));
@@ -549,14 +570,15 @@ export function serviceProgressContent(items: ProgressItem[], page: number = 1, 
   }
 
   const meta = getCatMeta(categoryFilter);
+  const metaIconSafe = safeFaIcon(meta.icon) || 'fa-circle';
   const grandTotal = categoryCounts.reduce((sum, c) => sum + c.cnt, 0);
 
   return `
     <h2 class="font-bold text-primary f-text-lg flex items-center" style="margin-bottom:var(--space-md); gap: var(--space-sm)">
       <div class="rounded-lg flex items-center justify-center" style="width:28px;height:28px; background: linear-gradient(135deg, rgba(16,185,129,0.10), rgba(6,182,212,0.08));">
-        <i class="fas ${categoryFilter ? meta.icon : 'fa-chart-bar'} text-emerald-500" style="font-size:12px"></i>
+        <i class="fas ${categoryFilter ? metaIconSafe : 'fa-chart-bar'} text-emerald-500" style="font-size:12px"></i>
       </div>
-      ${categoryFilter ? categoryFilter + ' 현황' : '평가·시험·인증 현황'} <span class="text-slate-400 font-normal f-text-sm">(총 ${total}건)</span>
+      ${categoryFilter ? categoryFilterEsc + ' 현황' : '평가·시험·인증 현황'} <span class="text-slate-400 font-normal f-text-sm">(총 ${total}건)</span>
     </h2>
 
     <!-- Category Tabs (inline) -->
@@ -566,13 +588,17 @@ export function serviceProgressContent(items: ProgressItem[], page: number = 1, 
       ${categoryCounts.map(cc => {
         const m = getCatMeta(cc.category);
         const active = categoryFilter === cc.category;
-        return `<a href="?category=${encodeURIComponent(cc.category)}" class="inline-flex items-center gap-1 rounded-full f-text-xs font-medium transition-all ${active ? 'text-white' : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'}" style="padding:4px 12px; ${active ? `background:${m.color};` : ''}"><i class="fas ${m.icon}" style="font-size:8px"></i>${cc.category} ${cc.cnt}</a>`;
+        const mColor = safeColor(m.color) || '#3B82F6';
+        const mIcon = safeFaIcon(m.icon) || 'fa-circle';
+        const ccCategoryEsc = escapeHtml(cc.category);
+        const ccCntEsc = escapeHtml(String(cc.cnt ?? 0));
+        return `<a href="?category=${encodeURIComponent(cc.category)}" class="inline-flex items-center gap-1 rounded-full f-text-xs font-medium transition-all ${active ? 'text-white' : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'}" style="padding:4px 12px; ${active ? `background:${mColor};` : ''}"><i class="fas ${mIcon}" style="font-size:8px"></i>${ccCategoryEsc} ${ccCntEsc}</a>`;
       }).join('')}
     </div>` : ''}
 
     <!-- Search & Filter -->
     <form method="GET" class="rounded-lg border border-slate-200/70" style="padding:var(--space-md); margin-bottom:var(--space-md); background: rgba(248,250,252,0.80);">
-      ${categoryFilter ? `<input type="hidden" name="category" value="${categoryFilter}">` : ''}
+      ${categoryFilter ? `<input type="hidden" name="category" value="${categoryFilterAttr}">` : ''}
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center" style="gap:var(--space-sm)">
         <select name="status" class="input-premium" style="width:auto; min-width:140px;" onchange="this.form.submit()">
           <option value="">전체 상태</option>
@@ -584,7 +610,7 @@ export function serviceProgressContent(items: ProgressItem[], page: number = 1, 
           <option value="시험접수" ${statusFilter === '시험접수' ? 'selected' : ''}>시험접수</option>
         </select>
         <div class="flex-1 relative">
-          <input type="text" name="q" value="${search}" placeholder="제품명 검색..." class="input-premium" style="padding-right:2.5rem">
+          <input type="text" name="q" value="${searchAttr}" placeholder="제품명 검색..." class="input-premium" style="padding-right:2.5rem">
           <button type="submit" class="absolute right-0 top-0 bottom-0 text-slate-400 hover:text-accent transition-colors" style="padding:0 var(--space-md)">
             <i class="fas fa-search f-text-sm"></i>
           </button>
@@ -609,9 +635,9 @@ export function serviceProgressContent(items: ProgressItem[], page: number = 1, 
             <tr style="background: linear-gradient(135deg, #0F172A, #1E293B);">
               <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:11px 10px">번호</th>
               <th class="text-left text-slate-300 f-text-xs font-semibold" style="padding:11px 14px">제품명</th>
-              <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:11px 10px">${categoryFilter ? meta.col2 : '등급'}</th>
-              <th class="text-center text-slate-300 f-text-xs font-semibold hidden sm:table-cell" style="padding:11px 10px">${categoryFilter ? meta.col3 : '구분'}</th>
-              <th class="text-center text-slate-300 f-text-xs font-semibold hidden md:table-cell" style="padding:11px 10px">${categoryFilter ? meta.col4 : '유형'}</th>
+              <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:11px 10px">${categoryFilter ? escapeHtml(meta.col2) : '등급'}</th>
+              <th class="text-center text-slate-300 f-text-xs font-semibold hidden sm:table-cell" style="padding:11px 10px">${categoryFilter ? escapeHtml(meta.col3) : '구분'}</th>
+              <th class="text-center text-slate-300 f-text-xs font-semibold hidden md:table-cell" style="padding:11px 10px">${categoryFilter ? escapeHtml(meta.col4) : '유형'}</th>
               <th class="text-center text-slate-300 f-text-xs font-semibold" style="padding:11px 10px">진행상태</th>
             </tr>
           </thead>
@@ -620,13 +646,13 @@ export function serviceProgressContent(items: ProgressItem[], page: number = 1, 
             <tr class="border-t border-slate-100/70 hover:bg-blue-50/25 transition-colors">
               <td class="text-center text-slate-400 f-text-xs" style="padding:10px 10px">${startNum - i}</td>
               <td style="padding:10px 14px">
-                <span class="font-medium text-slate-800 f-text-sm truncate block" style="max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.product_name}</span>
+                <span class="font-medium text-slate-800 f-text-sm truncate block" style="max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(p.product_name)}</span>
               </td>
               <td class="text-center" style="padding:10px 10px">
-                <span class="inline-block bg-slate-100 text-slate-700 rounded font-mono font-medium f-text-xs" style="padding:2px 8px; white-space:nowrap">${p.assurance_level || '-'}</span>
+                <span class="inline-block bg-slate-100 text-slate-700 rounded font-mono font-medium f-text-xs" style="padding:2px 8px; white-space:nowrap">${escapeHtml(p.assurance_level || '-')}</span>
               </td>
-              <td class="text-center text-slate-600 hidden sm:table-cell f-text-xs" style="padding:10px 10px; white-space:nowrap">${p.cert_type || '-'}</td>
-              <td class="text-center text-slate-600 hidden md:table-cell f-text-xs" style="padding:10px 10px; white-space:nowrap">${p.eval_type || '-'}</td>
+              <td class="text-center text-slate-600 hidden sm:table-cell f-text-xs" style="padding:10px 10px; white-space:nowrap">${escapeHtml(p.cert_type || '-')}</td>
+              <td class="text-center text-slate-600 hidden md:table-cell f-text-xs" style="padding:10px 10px; white-space:nowrap">${escapeHtml(p.eval_type || '-')}</td>
               <td class="text-center" style="padding:10px 10px">
                 ${statusBadge(p.status)}
               </td>
@@ -646,16 +672,16 @@ export function serviceProgressContent(items: ProgressItem[], page: number = 1, 
     <div class="flex flex-col sm:flex-row justify-between items-center" style="margin-top:var(--space-lg); gap:var(--space-md)">
       <p class="text-slate-500 f-text-xs">${total}건 중 ${(page - 1) * perPage + 1}~${Math.min(page * perPage, total)}건 표시 <span class="text-slate-400">(${page}/${totalPages})</span></p>
       <div class="flex items-center" style="gap:4px">
-        ${page > 1 ? `<a href="${pageUrl(1)}" class="flex items-center justify-center rounded-lg bg-white border border-slate-200/70 text-slate-500 hover:bg-slate-50 transition-all f-text-xs" style="width:32px; height:32px"><i class="fas fa-angles-left"></i></a>
-        <a href="${pageUrl(page - 1)}" class="flex items-center justify-center rounded-lg bg-white border border-slate-200/70 text-slate-500 hover:bg-slate-50 transition-all f-text-xs" style="width:32px; height:32px"><i class="fas fa-chevron-left"></i></a>` : ''}
+        ${page > 1 ? `<a href="${escapeAttr(pageUrl(1))}" class="flex items-center justify-center rounded-lg bg-white border border-slate-200/70 text-slate-500 hover:bg-slate-50 transition-all f-text-xs" style="width:32px; height:32px"><i class="fas fa-angles-left"></i></a>
+        <a href="${escapeAttr(pageUrl(page - 1))}" class="flex items-center justify-center rounded-lg bg-white border border-slate-200/70 text-slate-500 hover:bg-slate-50 transition-all f-text-xs" style="width:32px; height:32px"><i class="fas fa-chevron-left"></i></a>` : ''}
         ${Array.from({ length: totalPages }, (_, i) => i + 1)
           .filter(p => p === 1 || p === totalPages || (p >= page - 2 && p <= page + 2))
           .map((p, idx, arr) => {
             let dots = idx > 0 && p - arr[idx - 1] > 1 ? '<span class="text-slate-400 f-text-xs" style="padding:0 3px">…</span>' : '';
-            return dots + `<a href="${pageUrl(p)}" class="flex items-center justify-center rounded-lg font-medium f-text-xs transition-all ${p === page ? 'text-white' : 'bg-white text-slate-600 border border-slate-200/70 hover:bg-slate-50'}" style="width:32px; height:32px; ${p === page ? 'background: linear-gradient(135deg, #2563EB, #3B82F6); box-shadow: 0 2px 8px rgba(37,99,235,0.25);' : ''}">${p}</a>`;
+            return dots + `<a href="${escapeAttr(pageUrl(p))}" class="flex items-center justify-center rounded-lg font-medium f-text-xs transition-all ${p === page ? 'text-white' : 'bg-white text-slate-600 border border-slate-200/70 hover:bg-slate-50'}" style="width:32px; height:32px; ${p === page ? 'background: linear-gradient(135deg, #2563EB, #3B82F6); box-shadow: 0 2px 8px rgba(37,99,235,0.25);' : ''}">${p}</a>`;
           }).join('')}
-        ${page < totalPages ? `<a href="${pageUrl(page + 1)}" class="flex items-center justify-center rounded-lg bg-white border border-slate-200/70 text-slate-500 hover:bg-slate-50 transition-all f-text-xs" style="width:32px; height:32px"><i class="fas fa-chevron-right"></i></a>
-        <a href="${pageUrl(totalPages)}" class="flex items-center justify-center rounded-lg bg-white border border-slate-200/70 text-slate-500 hover:bg-slate-50 transition-all f-text-xs" style="width:32px; height:32px"><i class="fas fa-angles-right"></i></a>` : ''}
+        ${page < totalPages ? `<a href="${escapeAttr(pageUrl(page + 1))}" class="flex items-center justify-center rounded-lg bg-white border border-slate-200/70 text-slate-500 hover:bg-slate-50 transition-all f-text-xs" style="width:32px; height:32px"><i class="fas fa-chevron-right"></i></a>
+        <a href="${escapeAttr(pageUrl(totalPages))}" class="flex items-center justify-center rounded-lg bg-white border border-slate-200/70 text-slate-500 hover:bg-slate-50 transition-all f-text-xs" style="width:32px; height:32px"><i class="fas fa-angles-right"></i></a>` : ''}
       </div>
     </div>` : ''}
   `;
@@ -683,10 +709,10 @@ export function downloadsPage(downloads: { id: number; title: string; descriptio
           </div>
           <div class="min-w-0">
             <h3 class="font-medium text-slate-800 truncate f-text-sm group-hover:text-accent transition-colors">${escapeHtml(d.title)}</h3>
-            <p class="text-slate-400 f-text-xs" style="margin-top:2px">${d.file_name || ''} · ${d.created_at?.split('T')[0] || ''} · 다운로드 ${d.download_count}회</p>
+            <p class="text-slate-400 f-text-xs" style="margin-top:2px">${escapeHtml(d.file_name || '')} · ${escapeHtml((d.created_at || '').split('T')[0] || '')} · 다운로드 ${escapeHtml(String(d.download_count ?? 0))}회</p>
           </div>
         </div>
-        <a href="/api/downloads/${d.id}/file" class="shrink-0 btn-primary f-text-xs ripple-btn" style="padding:var(--space-xs) var(--space-md); border-radius: var(--radius-sm);">
+        <a href="/api/downloads/${parseInt(String(d.id), 10) || 0}/file" class="shrink-0 btn-primary f-text-xs ripple-btn" style="padding:var(--space-xs) var(--space-md); border-radius: var(--radius-sm);">
           <i class="fas fa-download" style="font-size:10px"></i> 다운로드
         </a>
       </div>

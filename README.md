@@ -1,11 +1,66 @@
-# KOIST Website v38.1
+# KOIST Website v39.0
 
-**(주)한국정보보안기술원** 공식 웹사이트 - Security Hardening + 8K Ultra Sharp
+**(주)한국정보보안기술원** 공식 웹사이트 - XSS Hardening + 8K Ultra Sharp
 
 ## URLs
 - **Production**: https://koist-website.pages.dev
 - **GitHub**: https://github.com/wwwkoistkr/HOMEPAGE
 - **관리자**: /admin (스크립트로 생성, 아래 "관리자 계정 설정" 참조)
+
+## 🔒 v39.0 XSS 긴급 보안 패치 (2026-04-20)
+
+### 보안 점검 결과 대응 (KOIST v38.3 종합분석보고서 기준)
+
+| # | 취약점 | 파일 | 위험도 | 조치 | 상태 |
+|---|--------|------|--------|------|------|
+| 1 | Stored XSS - site_settings | `layout.tsx` (24곳) | 🔴 Critical | `escapeHtml`/`escapeAttr`/`safeUrl` 적용 | ✅ |
+| 2 | Stored XSS - site_settings/popup/notice | `home.tsx` (50+곳) | 🔴 Critical | 전체 이스케이프 + `safeColor`/`safeFaIcon`/`safeOpacity` 적용 | ✅ |
+| 3 | Stored XSS - progress_items/dept/notice | `pages.tsx` (DB 필드 다수) | 🔴 Critical | `product_name`, `category`, `assurance_level`, `cert_type`, `eval_type` 등 모두 이스케이프 | ✅ |
+| 4 | Reflected XSS - 검색/카테고리 필터 | `pages.tsx` (`q`, `category`, `status` 쿼리) | 🔴 Critical | `escapeHtml`/`escapeAttr` 입력값 이스케이프 | ✅ |
+| 5 | HTML 인젝션 - `<source src>` 속성 | `home.tsx` hero_video_url | 🔴 Critical | 화이트리스트 정규식 검증 + `escapeAttr` | ✅ |
+| 6 | CSS 인젝션 - `background-image` URL | `home.tsx` hero_bg_url | 🟠 High | `bgStyle()` 탈출문자 검증 + `safeOpacity` | ✅ |
+| 7 | CSS 인젝션 - `color`/`background` hex | 모든 템플릿 | 🟠 High | `safeColor()`로 hex/rgb/hsl/named 색상만 허용 | ✅ |
+| 8 | Attribute 인젝션 - `fa-` icon class | 모든 템플릿 | 🟠 High | `safeFaIcon()`로 `fa-[a-z0-9\-]+` 패턴만 허용 | ✅ |
+| 9 | URL 인젝션 - `javascript:` 프로토콜 | 모든 링크 | 🟠 High | `safeUrl()`로 위험 프로토콜 차단 | ✅ |
+| 10 | CSP `unsafe-eval` | `index.tsx` | 🟡 Medium | **연기** - Tailwind CDN JIT 필수 의존 (중기 과제로 분리) | ⏸️ |
+
+### 새로 추가된 보안 유틸리티 (`src/utils/sanitize.ts`)
+
+```typescript
+escapeHtml(unknown) → string      // & < > " ' null/undefined 안전
+escapeAttr(unknown) → string      // + 백틱(`) 추가 방어
+safeUrl(unknown) → string         // javascript: / vbscript: / data:text/* 차단
+safeCss(unknown) → string         // {}, /* */, expression(), url(), @import 제거
+safeColor(unknown) → string       // #abc / rgb() / rgba() / hsl() / 색상명만 허용
+safeFaIcon(unknown) → string      // /^fa-[a-z0-9\-]+$/i 패턴만 허용
+safeOpacity(value, fallback)      // 0.0 ~ 1.0 숫자만 (home.tsx 로컬)
+safeNum(value, fallback)          // 숫자/숫자문자열만 (home.tsx 로컬)
+```
+
+### XSS 방어 테스트 통과
+
+```
+Payload                                    → 결과
+<script>alert(1)</script>                  → &lt;script&gt;alert(1)&lt;/script&gt;  ✅
+"><img src=x onerror=alert(1)>             → &quot;&gt;&lt;img...&gt;               ✅
+javascript:alert(1)                        → 링크에 삽입되지 않음 (safeUrl 차단)   ✅
+'; alert(1);//                             → &#039;; alert(1);//                    ✅
+```
+
+### 수정 파일 (v39.0)
+- `src/utils/sanitize.ts` — 보안 유틸리티 6종 추가/강화
+- `src/utils/db.ts` — 이스케이프 함수 re-export
+- `src/templates/layout.tsx` — 24개 site_settings 이스케이프
+- `src/templates/home.tsx` — 50+곳 이스케이프 + hero video/bg URL 검증
+- `src/templates/pages.tsx` — Reflected XSS + DB 필드 이스케이프 (progressPage, serviceProgressContent, servicePage, noticeListPage, noticeDetailPage, downloadsPage)
+
+### 롤백 백업
+- `/home/user/webapp-backup-20260420-100642/` — 패치 전 스냅샷
+
+### 연기된 중기 과제
+- **CSP `unsafe-eval` 제거**: Tailwind CDN(https://cdn.tailwindcss.com) 런타임 JIT 컴파일러가 eval()을 사용하므로, 제거하려면 Tailwind CLI로 CSS를 프리빌드하여 정적으로 서빙하는 리팩터링 필요 (예상 2-3일). 현재는 CSP 다른 레이어(`frame-src 'none'`, `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`)로 공격면 차단.
+
+---
 
 ## v38.1 Hero UI 4가지 추가 변경 (2026-04-20)
 
