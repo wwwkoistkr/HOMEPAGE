@@ -391,13 +391,18 @@ admin.post('/images', async (c) => {
         return c.json({ error: 'SVG 파일은 보안상 업로드할 수 없습니다.' }, 400);
       }
 
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      const allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      const allowedVideoTypes = ['video/mp4', 'video/webm'];
+      const allowedTypes = [...allowedImageTypes, ...allowedVideoTypes];
+      const isVideo = allowedVideoTypes.includes(file.type);
       if (!allowedTypes.includes(file.type)) {
-        return c.json({ error: '지원하지 않는 파일 형식입니다. (JPG, PNG, GIF, WebP만 가능)' }, 400);
+        return c.json({ error: '지원하지 않는 파일 형식입니다. (JPG, PNG, GIF, WebP, MP4, WebM 가능)' }, 400);
       }
 
-      if (file.size > maxBytes) {
-        return c.json({ error: `파일 크기는 ${Math.round(maxBytes / 1024 / 1024)}MB 이하만 가능합니다.` }, 400);
+      // Video files allow up to 20 MB; images use default maxBytes
+      const effectiveMaxBytes = isVideo ? Math.max(maxBytes, 20 * 1024 * 1024) : maxBytes;
+      if (file.size > effectiveMaxBytes) {
+        return c.json({ error: `파일 크기는 ${Math.round(effectiveMaxBytes / 1024 / 1024)}MB 이하만 가능합니다.` }, 400);
       }
 
       // Validate magic bytes
@@ -408,9 +413,12 @@ admin.post('/images', async (c) => {
         return c.json({ error: '파일 내용이 확장자와 일치하지 않습니다.' }, 400);
       }
 
+      // Video files use 'videos/' prefix in R2
+      const uploadCategory = isVideo ? 'videos' : category;
+
       const timestamp = Date.now();
-      const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-      const safeName = `${category}/${timestamp}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+      const ext = file.name.split('.').pop()?.toLowerCase() || (isVideo ? 'mp4' : 'jpg');
+      const safeName = `${uploadCategory}/${timestamp}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
       
       if (hasR2(c.env)) {
         await c.env.R2.put(safeName, arrayBuffer, {
@@ -481,10 +489,18 @@ function validateMagicBytes(header: Uint8Array, mimeType: string): boolean {
     'image/png': [[0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]],
     'image/gif': [[0x47, 0x49, 0x46, 0x38, 0x37, 0x61], [0x47, 0x49, 0x46, 0x38, 0x39, 0x61]], // GIF87a, GIF89a
     'image/webp': [[0x52, 0x49, 0x46, 0x46]], // RIFF (then WEBP at offset 8)
+    // Video formats — ftyp box at offset 4 (ISO Base Media File Format)
+    'video/mp4': [[0x66, 0x74, 0x79, 0x70]], // "ftyp" at offset 4
+    'video/webm': [[0x1A, 0x45, 0xDF, 0xA3]], // EBML header
   };
 
   const sigs = signatures[mimeType];
   if (!sigs) return false;
+
+  // MP4: ftyp box starts at byte 4, not byte 0
+  if (mimeType === 'video/mp4') {
+    return sigs.some(sig => sig.every((byte, i) => header[i + 4] === byte));
+  }
 
   return sigs.some(sig => sig.every((byte, i) => header[i] === byte));
 }

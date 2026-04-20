@@ -28,6 +28,7 @@ app.use('*', secureHeaders({
     styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
     imgSrc: ["'self'", "data:", "https:", "blob:"],
     fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdn.jsdelivr.net"],
+    mediaSrc: ["'self'", "blob:", "data:"],
     connectSrc: ["'self'", "https://www.google-analytics.com", "https://www.googletagmanager.com"],
     frameSrc: ["'none'"],
     objectSrc: ["'none'"],

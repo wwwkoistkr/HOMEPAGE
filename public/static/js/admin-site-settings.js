@@ -119,8 +119,9 @@
       const isHeroVideo = s.key === 'hero_video_url';
       const isHeroPoster = s.key === 'hero_video_poster';
       const isVideoOpacity = s.key === 'hero_video_opacity';
+      const isResponsivePoster = ['hero_video_poster_4k', 'hero_video_poster_fhd', 'hero_video_poster_mobile'].includes(s.key);
 
-      // R5: Hero video URL — dedicated field with video preview
+      // R5+R6: Hero video URL — dedicated field with video preview + direct upload
       if (isHeroVideo) {
         html += `
         <div class="p-5 bg-violet-50/50 border border-violet-200 rounded-xl">
@@ -133,9 +134,23 @@
                 <i class="fas fa-play mr-1"></i>미리보기
               </button>
             </div>
+            <!-- MP4 Direct Upload -->
+            <div class="flex items-center gap-2">
+              <input type="file" id="video_upload_input" accept="video/mp4,video/webm" class="hidden" onchange="uploadHeroVideo(this)">
+              <button type="button" onclick="document.getElementById('video_upload_input').click()" class="inline-flex items-center gap-2 px-4 py-2 bg-violet-500 hover:bg-violet-600 text-white rounded-lg text-sm font-medium transition-colors">
+                <i class="fas fa-cloud-arrow-up"></i> MP4 직접 업로드
+              </button>
+              <span id="video_upload_status" class="text-xs text-gray-400"></span>
+            </div>
+            <div id="video_upload_progress" class="hidden">
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div id="video_upload_bar" class="bg-violet-500 h-2 rounded-full transition-all" style="width:0%"></div>
+              </div>
+              <p id="video_upload_msg" class="text-xs text-violet-600 mt-1"></p>
+            </div>
             <video id="preview_video_hero" src="${s.value || ''}" muted loop playsinline
               class="w-full max-h-40 rounded-lg object-cover border border-gray-200 bg-black" style="display:${s.value ? 'block' : 'none'}"></video>
-            <p class="text-xs text-gray-400"><i class="fas fa-info-circle mr-1 text-violet-400"></i>MP4 형식 권장. R2 스토리지 또는 외부 URL 사용. 비워두면 기존 그라디언트/이미지 배경을 사용합니다.</p>
+            <p class="text-xs text-gray-400"><i class="fas fa-info-circle mr-1 text-violet-400"></i>MP4/WebM 형식 (최대 20MB). R2에 직접 업로드하거나 외부 URL을 입력하세요. 비워두면 기존 그라디언트/이미지 배경을 사용합니다.</p>
           </div>
         </div>`;
       // R5: Hero video poster image
@@ -163,6 +178,44 @@
             <span id="video_opacity_val" class="text-sm font-mono text-violet-600 w-10 text-center">${s.value || '0.3'}</span>
           </div>
           <p class="text-xs text-gray-400 mt-1"><i class="fas fa-info-circle mr-1"></i>0.0 = 완전 투명, 1.0 = 완전 불투명. 권장: 0.3~0.7</p>
+        </div>`;
+      // R7: Responsive poster images (4K, FHD, Mobile)
+      } else if (isResponsivePoster) {
+        const posterMeta = {
+          'hero_video_poster_4k': { label: '4K 포스터 (3840x2160)', icon: 'fa-display', hint: 'HiDPI 데스크탑용. WebP 권장 (400~800KB)', color: 'emerald' },
+          'hero_video_poster_fhd': { label: 'FHD 포스터 (1920x1080)', icon: 'fa-desktop', hint: '표준 데스크탑용. WebP 권장 (200~400KB)', color: 'blue' },
+          'hero_video_poster_mobile': { label: '모바일 포스터 (1080p)', icon: 'fa-mobile-screen', hint: '모바일/태블릿용. WebP 권장 (100~300KB). 이 이미지가 모바일에서 비디오 대신 표시됩니다.', color: 'orange' },
+        };
+        const pm = posterMeta[s.key] || { label: s.description, icon: 'fa-image', hint: '', color: 'gray' };
+        html += `
+        <div class="p-4 bg-${pm.color}-50/30 border border-${pm.color}-200 rounded-xl">
+          <label class="block text-sm font-bold text-${pm.color}-700 mb-2">
+            <i class="fas ${pm.icon} mr-2"></i>${pm.label}
+          </label>
+          <div class="flex flex-col gap-2">
+            <div class="flex gap-2">
+              <input type="text" data-key="${s.key}" value="${(s.value || '').replace(/"/g, '&quot;')}" id="input_${s.key}"
+                placeholder="이미지 URL 또는 /api/images/..." class="flex-1 px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-${pm.color}-500/30">
+              <button type="button" onclick="openImagePicker('${s.key}')" class="px-3 py-2 bg-${pm.color}-100 hover:bg-${pm.color}-200 text-${pm.color}-700 rounded-lg text-sm font-medium transition-colors">
+                <i class="fas fa-folder-open mr-1"></i>선택
+              </button>
+              <input type="file" id="poster_upload_${s.key}" accept="image/webp,image/jpeg,image/png" class="hidden" onchange="uploadPosterImage(this, '${s.key}')">
+              <button type="button" onclick="document.getElementById('poster_upload_${s.key}').click()" class="px-3 py-2 bg-${pm.color}-500 hover:bg-${pm.color}-600 text-white rounded-lg text-sm font-medium transition-colors">
+                <i class="fas fa-cloud-arrow-up mr-1"></i>업로드
+              </button>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="shrink-0 w-40 h-24 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center bg-white overflow-hidden" id="preview_${s.key}">
+                ${s.value && s.value.trim() !== '' ?
+                  '<img src="' + s.value + '" alt="미리보기" class="w-full h-full object-cover" onerror="this.parentNode.innerHTML=\\'<span class=\\\\'text-xs text-gray-400\\\\'>없음</span>\\'">' :
+                  '<span class="text-xs text-gray-400 text-center"><i class="fas fa-image text-xl text-gray-300 block mb-1"></i>없음</span>'}
+              </div>
+              <div class="flex-1">
+                <p class="text-xs text-gray-400"><i class="fas fa-info-circle mr-1 text-${pm.color}-400"></i>${pm.hint}</p>
+                <span id="poster_upload_status_${s.key}" class="text-xs text-gray-400 mt-1 block"></span>
+              </div>
+            </div>
+          </div>
         </div>`;
       // Hero gradient color picker
       } else if (isGradientColor) {
@@ -559,4 +612,156 @@
       }
     }
   }, 150);
+
+  // ── R6: Hero Video Direct Upload to R2 ──
+  window.uploadHeroVideo = async function(input) {
+    var file = input.files && input.files[0];
+    if (!file) return;
+
+    var allowed = ['video/mp4', 'video/webm'];
+    if (allowed.indexOf(file.type) === -1) {
+      alert('MP4 또는 WebM 파일만 업로드 가능합니다.');
+      input.value = '';
+      return;
+    }
+    var maxMB = 20;
+    if (file.size > maxMB * 1024 * 1024) {
+      alert('파일 크기는 ' + maxMB + 'MB 이하만 가능합니다. (현재: ' + (file.size / 1024 / 1024).toFixed(1) + 'MB)');
+      input.value = '';
+      return;
+    }
+
+    var statusEl = document.getElementById('video_upload_status');
+    var progressWrap = document.getElementById('video_upload_progress');
+    var progressBar = document.getElementById('video_upload_bar');
+    var progressMsg = document.getElementById('video_upload_msg');
+
+    if (statusEl) statusEl.textContent = '업로드 중...';
+    if (progressWrap) progressWrap.classList.remove('hidden');
+    if (progressBar) progressBar.style.width = '30%';
+    if (progressMsg) progressMsg.textContent = file.name + ' (' + (file.size / 1024 / 1024).toFixed(1) + 'MB) 업로드 중...';
+
+    try {
+      var formData = new FormData();
+      formData.append('file', file);
+      formData.append('category', 'videos');
+
+      var token = localStorage.getItem('admin_token');
+      var resp = await fetch('/api/admin/images', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body: formData
+      });
+      var result = await resp.json();
+
+      if (progressBar) progressBar.style.width = '100%';
+
+      if (result.success && result.url) {
+        // Set the URL in input and auto-fill hero_video_url
+        var urlInput = document.getElementById('input_hero_video_url');
+        // Use /api/media/ path for Range-supported streaming
+        var mediaUrl = result.url.replace('/api/images/', '/api/media/');
+        if (urlInput) urlInput.value = mediaUrl;
+
+        // Show preview
+        var preview = document.getElementById('preview_video_hero');
+        if (preview) {
+          preview.src = mediaUrl;
+          preview.style.display = 'block';
+          preview.play();
+        }
+
+        if (statusEl) statusEl.textContent = '업로드 완료!';
+        if (progressMsg) progressMsg.textContent = '업로드 성공: ' + mediaUrl;
+
+        // Flash green
+        if (progressBar) {
+          progressBar.classList.remove('bg-violet-500');
+          progressBar.classList.add('bg-green-500');
+          setTimeout(function() {
+            progressBar.classList.remove('bg-green-500');
+            progressBar.classList.add('bg-violet-500');
+          }, 2000);
+        }
+      } else {
+        if (statusEl) statusEl.textContent = '업로드 실패: ' + (result.error || '알 수 없는 오류');
+        if (progressMsg) progressMsg.textContent = '오류: ' + (result.error || '');
+        if (progressBar) {
+          progressBar.classList.remove('bg-violet-500');
+          progressBar.classList.add('bg-red-500');
+        }
+      }
+    } catch (err) {
+      if (statusEl) statusEl.textContent = '업로드 오류: ' + (err.message || '');
+      if (progressMsg) progressMsg.textContent = '네트워크 오류';
+      if (progressBar) {
+        progressBar.classList.remove('bg-violet-500');
+        progressBar.classList.add('bg-red-500');
+      }
+    }
+
+    input.value = '';
+  };
+
+  // ── R7: Responsive Poster Upload ──
+  window.uploadPosterImage = async function(input, settingKey) {
+    var file = input.files && input.files[0];
+    if (!file) return;
+
+    var allowed = ['image/webp', 'image/jpeg', 'image/png'];
+    if (allowed.indexOf(file.type) === -1) {
+      alert('WebP, JPEG, PNG 파일만 업로드 가능합니다.');
+      input.value = '';
+      return;
+    }
+    var maxMB = 5;
+    if (file.size > maxMB * 1024 * 1024) {
+      alert('파일 크기는 ' + maxMB + 'MB 이하만 가능합니다.');
+      input.value = '';
+      return;
+    }
+
+    var statusEl = document.getElementById('poster_upload_status_' + settingKey);
+    if (statusEl) statusEl.textContent = '업로드 중...';
+
+    try {
+      var formData = new FormData();
+      formData.append('file', file);
+      formData.append('category', 'poster');
+      formData.append('alt_text', settingKey.replace('hero_video_poster_', '') + ' hero poster');
+
+      var token = localStorage.getItem('admin_token');
+      var resp = await fetch('/api/admin/images', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body: formData
+      });
+      var result = await resp.json();
+
+      if (result.success && result.url) {
+        var urlInput = document.getElementById('input_' + settingKey);
+        if (urlInput) urlInput.value = result.url;
+
+        // Update preview
+        var preview = document.getElementById('preview_' + settingKey);
+        if (preview) {
+          preview.innerHTML = '<img src="' + result.url + '" alt="미리보기" class="w-full h-full object-cover">';
+        }
+
+        if (statusEl) statusEl.textContent = '업로드 완료: ' + result.url;
+        statusEl.className = statusEl.className.replace('text-gray-400', 'text-green-600');
+        setTimeout(function() {
+          if (statusEl) statusEl.className = statusEl.className.replace('text-green-600', 'text-gray-400');
+        }, 3000);
+      } else {
+        if (statusEl) statusEl.textContent = '업로드 실패: ' + (result.error || '알 수 없는 오류');
+        statusEl.className = statusEl.className.replace('text-gray-400', 'text-red-500');
+      }
+    } catch (err) {
+      if (statusEl) statusEl.textContent = '네트워크 오류: ' + (err.message || '');
+      statusEl.className = statusEl.className.replace('text-gray-400', 'text-red-500');
+    }
+
+    input.value = '';
+  };
 })();

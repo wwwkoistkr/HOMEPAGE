@@ -125,6 +125,64 @@ api.get('/sim-cert-types', async (c) => {
   return c.json({ success: true, data: result.results });
 });
 
+// GET /api/media/:key+ - Serve videos from R2 with Range request support (streaming)
+api.get('/media/*', async (c) => {
+  const key = c.req.path.replace('/api/media/', '');
+  if (!key) return c.json({ error: 'Media key required' }, 400);
+
+  if (!(c.env as any).R2) {
+    return c.json({ error: 'R2 storage not configured.' }, 503);
+  }
+
+  try {
+    const rangeHeader = c.req.header('range');
+
+    // If Range header present, use partial content
+    if (rangeHeader) {
+      // First, get object metadata via head
+      const head = await c.env.R2.head(key);
+      if (!head) return c.json({ error: 'Media not found' }, 404);
+
+      const totalSize = head.size;
+      const match = rangeHeader.match(/bytes=(\d+)-(\d*)/);
+      if (!match) return c.json({ error: 'Invalid Range header' }, 416);
+
+      const start = parseInt(match[1], 10);
+      const end = match[2] ? parseInt(match[2], 10) : Math.min(start + 2 * 1024 * 1024 - 1, totalSize - 1);
+      const chunkSize = end - start + 1;
+
+      const object = await c.env.R2.get(key, {
+        range: { offset: start, length: chunkSize },
+      });
+      if (!object) return c.json({ error: 'Media not found' }, 404);
+
+      const headers = new Headers();
+      headers.set('Content-Type', head.httpMetadata?.contentType || 'video/mp4');
+      headers.set('Content-Range', `bytes ${start}-${end}/${totalSize}`);
+      headers.set('Content-Length', String(chunkSize));
+      headers.set('Accept-Ranges', 'bytes');
+      headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+
+      return new Response(object.body, { status: 206, headers });
+    }
+
+    // No Range header — serve entire file
+    const object = await c.env.R2.get(key);
+    if (!object) return c.json({ error: 'Media not found' }, 404);
+
+    const headers = new Headers();
+    headers.set('Content-Type', object.httpMetadata?.contentType || 'video/mp4');
+    headers.set('Accept-Ranges', 'bytes');
+    headers.set('Content-Length', String(object.size));
+    headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+    headers.set('ETag', object.etag || '');
+
+    return new Response(object.body, { headers });
+  } catch {
+    return c.json({ error: 'Failed to retrieve media' }, 500);
+  }
+});
+
 // GET /api/images/:key+ - Serve images from R2 (public, cached) or redirect for external URLs
 api.get('/images/*', async (c) => {
   const key = c.req.path.replace('/api/images/', '');

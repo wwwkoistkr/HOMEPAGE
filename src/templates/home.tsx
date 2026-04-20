@@ -437,9 +437,24 @@ export function homePage(opts: {
        R5: Video background served from R2 Storage (MP4)
        ════════════════════════════════════════════════════════════════════════ -->
   <section class="unified-hero-section relative" role="region" aria-label="히어로 배너" style="overflow: visible; ${s.hero_video_url ? `background: linear-gradient(135deg, ${s.hero_gradient_color1 || '#070B14'} 0%, ${s.hero_gradient_color2 || '#0A1128'} 25%, ${s.hero_gradient_color3 || '#0F1E3D'} 45%, ${s.hero_gradient_color4 || '#162D5A'} 70%, ${s.hero_gradient_color5 || '#1A3A6E'} 100%);` : bgStyle(s.hero_bg_url, `linear-gradient(135deg, ${s.hero_gradient_color1 || '#070B14'} 0%, ${s.hero_gradient_color2 || '#0A1128'} 25%, ${s.hero_gradient_color3 || '#0F1E3D'} 45%, ${s.hero_gradient_color4 || '#162D5A'} 70%, ${s.hero_gradient_color5 || '#1A3A6E'} 100%)`, heroOpacity)}">
-    <!-- R5: Video Background from R2 Storage -->
+    <!-- R5+R7: Video Background with Responsive Poster Fallback -->
     ${s.hero_video_url ? `
-    <div class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+    <div class="absolute inset-0 overflow-hidden pointer-events-none hero-video-container" aria-hidden="true"
+      ${(() => {
+        // Set background-image on container for mobile fallback (when video display:none)
+        const mobilePoster = s.hero_video_poster_mobile || s.hero_video_poster_fhd || s.hero_video_poster || '';
+        return mobilePoster ? `style="background-image:url('${mobilePoster}'); background-size:cover; background-position:center;"` : '';
+      })()}>
+      <!-- R7: Responsive poster <picture> — visible on mobile (video hidden), hidden on desktop (video shows) -->
+      ${(s.hero_video_poster_mobile || s.hero_video_poster_fhd || s.hero_video_poster_4k || s.hero_video_poster) ? `
+      <picture class="hero-poster-picture">
+        ${s.hero_video_poster_mobile ? `<source media="(max-width: 768px)" srcset="${s.hero_video_poster_mobile}">` : ''}
+        ${s.hero_video_poster_fhd ? `<source media="(max-width: 1920px)" srcset="${s.hero_video_poster_fhd}">` : ''}
+        ${s.hero_video_poster_4k ? `<source media="(min-width: 1921px)" srcset="${s.hero_video_poster_4k}">` : ''}
+        <img src="${s.hero_video_poster_fhd || s.hero_video_poster || s.hero_video_poster_4k || s.hero_video_poster_mobile}" 
+          alt="KOIST Hero Background" class="hero-poster-img" loading="eager" decoding="async">
+      </picture>
+      ` : ''}
       <video class="hero-video-bg" autoplay muted loop playsinline preload="auto"
         ${s.hero_video_poster ? `poster="${s.hero_video_poster}"` : ''}
         style="position:absolute; top:50%; left:50%; min-width:100%; min-height:100%; width:auto; height:auto; transform:translate(-50%,-50%); object-fit:cover;">
@@ -642,18 +657,46 @@ export function homePage(opts: {
 
   <!-- ═══════ Unified Hero + Simulator Styles — v36.0 Video R2, 8K Mobile, Modern ═══════ -->
   <style>
-    /* R5: Hero Video Background */
+    /* R5+R7: Hero Video Background + Responsive Poster */
     .hero-video-bg {
       will-change: transform;
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
     }
+    /* R7: Poster <picture> — hidden on desktop (video plays), visible on mobile */
+    .hero-poster-picture {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+    .hero-poster-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
     @media (prefers-reduced-motion: reduce) {
       .hero-video-bg { display: none; }
+      .hero-poster-picture { display: block; }
     }
-    /* R5: Pause video on mobile to save battery */
+    /* R5+R7: Pause video on mobile, show poster instead */
     @media (hover: none) and (pointer: coarse) and (max-width: 768px) {
       .hero-video-bg { display: none; }
+      .hero-poster-picture { display: block; }
+      /* CSS fallback: if <picture> fails, container background-image shows */
+      .hero-video-container { background-size: cover; background-position: center; }
+    }
+    /* R7: Also show poster on tablets in portrait (pointer:coarse but wider) */
+    @media (hover: none) and (pointer: coarse) and (max-width: 1024px) {
+      .hero-video-bg { display: none; }
+      .hero-poster-picture { display: block; }
+      .hero-video-container { background-size: cover; background-position: center; }
+    }
+    /* R7: Fallback for low-bandwidth connections via Save-Data hint */
+    @media (prefers-reduced-data: reduce) {
+      .hero-video-bg { display: none; }
+      .hero-poster-picture { display: block; }
     }
 
     .unified-hero-section {
