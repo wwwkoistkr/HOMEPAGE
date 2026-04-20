@@ -117,7 +117,7 @@ export function layout(opts: {
           <!-- Logo -->
           <a href="/" class="flex items-center shrink-0 group" data-admin-edit="site_logo">
             ${s.logo_url && s.logo_url.trim() !== '' && s.logo_url !== '/static/images/logo.png' ? `
-            <img src="${s.logo_url}" alt="${siteName}" style="height:clamp(48px, 40px + 1.6vw, 72px); max-width:clamp(280px, 24vw, 440px);" sizes="(min-width: 7680px) 440px, (min-width: 3840px) 360px, (min-width: 2560px) 320px, (max-width: 640px) 200px, 300px" class="site-logo-img w-auto object-contain transition-transform group-hover:scale-[1.02]">
+            <img src="${s.logo_url}" alt="${siteName}" style="height:clamp(33.6px, 28px + 1.12vw, 50.4px); max-width:clamp(196px, 16.8vw, 308px);" sizes="(min-width: 7680px) 308px, (min-width: 3840px) 252px, (min-width: 2560px) 224px, (max-width: 640px) 140px, 210px" class="site-logo-img w-auto object-contain transition-transform group-hover:scale-[1.02]">
             ` : `
             <div class="flex items-center" style="gap: clamp(8px, 0.8vw, 14px)">
               <div class="relative">
