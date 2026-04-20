@@ -1,4 +1,4 @@
-# KOIST Website v38.0
+# KOIST Website v38.1
 
 **(주)한국정보보안기술원** 공식 웹사이트 - Security Hardening + 8K Ultra Sharp
 
@@ -6,6 +6,15 @@
 - **Production**: https://koist-website.pages.dev
 - **GitHub**: https://github.com/wwwkoistkr/HOMEPAGE
 - **관리자**: /admin (스크립트로 생성, 아래 "관리자 계정 설정" 참조)
+
+## v38.1 Hero UI 4가지 추가 변경 (2026-04-20)
+
+| # | 항목 | Before | After | 상태 |
+|---|------|--------|-------|------|
+| 1 | 1층 로고 | 349×71px | 245×50px (30% 축소) | ✅ |
+| 2 | 뱃지 텍스트 | 33.12px | 19.87px (60% 축소) | ✅ |
+| 3 | CTA 버튼 글자 | 11.14px | 15.59px (40% 확대) | ✅ |
+| 4 | 슬라이더 위치 | left 791, right 1772 | left 923 (GNB "시" 정렬), right 1678 (-2.5cm) | ✅ |
 
 ## v38.0 Hero UI 6가지 변경 (2026-04-20)
 
