@@ -111,7 +111,7 @@ export function layout(opts: {
 
           <!-- KOLAS Mark -->
           <div class="hidden md:flex items-center shrink-0" style="padding:0;margin:0 0 0 5cm;">
-            <img src="/static/images/kolas.png" alt="KOLAS 국제공인시험기관" loading="lazy" decoding="async" sizes="(min-width: 7680px) 220px, (min-width: 3840px) 140px, (min-width: 2560px) 110px, (max-width: 767px) 0px, 68px" style="height:clamp(44px, 38px + 1.4vw, 68px);" class="kolas-mark w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" title="KOLAS 국제공인시험기관 인정 (KTL-F-588)" data-admin-edit="kolas_image">
+            <img src="/static/images/kolas.png" alt="KOLAS 국제공인시험기관" loading="lazy" decoding="async" sizes="(min-width: 7680px) 110px, (min-width: 3840px) 70px, (min-width: 2560px) 55px, (max-width: 767px) 0px, 34px" style="height:clamp(22px, 19px + 0.7vw, 34px);" class="kolas-mark w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" title="KOLAS 국제공인시험기관 인정 (KTL-F-588)" data-admin-edit="kolas_image">
           </div>
 
           <!-- Logo -->

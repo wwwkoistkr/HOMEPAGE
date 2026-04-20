@@ -483,31 +483,23 @@ export function homePage(opts: {
 
         <!-- ═══════ LEFT: Hero Text ═══════ -->
         <div class="unified-hero-left" data-aos="fade-right" data-aos-duration="700">
-          <!-- Badge (8K fluid, admin-editable) -->
-          <div class="inline-flex items-center rounded-full hero-badge-pill" style="gap:clamp(4px,0.29vw,8px); padding:clamp(4px,0.29vw,8px) clamp(9px,0.66vw,22px); margin-bottom:clamp(0.59rem,0.81vw,1.57rem); background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.18); backdrop-filter: blur(12px);">
-            <span class="relative flex" style="height:clamp(7px,0.42vw,16px); width:clamp(7px,0.42vw,16px);">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-50"></span>
-              <span class="relative inline-flex rounded-full h-full w-full bg-emerald-400"></span>
-            </span>
-            <span class="text-blue-300 font-semibold tracking-wide" data-admin-edit="hero_badge_text" style="font-size:clamp(0.69rem,0.51vw,2.45rem); font-family:'Inter','Noto Sans KR',sans-serif; letter-spacing:0.04em;">${s.hero_badge_text || 'Korean Information Security Technology'}</span>
+          <!-- Badge (v36 — KOIST logo + text ×3, 8K fluid) -->
+          <div class="inline-flex items-center rounded-full hero-badge-pill" style="gap:clamp(6px,0.44vw,14px); padding:clamp(6px,0.44vw,12px) clamp(14px,1.02vw,36px); margin-bottom:clamp(0.59rem,0.81vw,1.57rem); background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.18); backdrop-filter: blur(12px);">
+            <img src="/static/images/koist-circle-logo.png" alt="KOIST" loading="eager" style="height:clamp(20px,1.47vw,56px); width:clamp(20px,1.47vw,56px); border-radius:50%; object-fit:contain; flex-shrink:0;">
+            <span class="text-blue-300 font-semibold tracking-wide" data-admin-edit="hero_badge_text" style="font-size:clamp(2.07rem,1.53vw,7.35rem); font-family:'Inter','Noto Sans KR',sans-serif; letter-spacing:0.04em;">${s.hero_badge_text || 'Korean Information Security Technology'}</span>
           </div>
 
-          <!-- Headline — 8K fluid (admin-editable) -->
-          <h1 class="text-white font-black hero-headline" data-admin-edit="hero_line1" style="font-size:clamp(3.24rem, 4.59vw, 22.05rem); line-height:1.1; margin-bottom:clamp(0.39rem,0.55vw,1.18rem); letter-spacing:-0.03em; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
-            ${s.hero_line1 || '정보보안 시험·인증 전문기관'}
-          </h1>
-
-          <!-- Subtitle — 8K fluid (admin-editable) -->
-          <p class="text-slate-300/90 font-medium hero-subtitle" data-admin-edit="hero_line2" style="font-size:clamp(0.69rem, 0.66vw, 3.15rem); line-height:1.35; margin-bottom:clamp(0.88rem,1.09vw,2.35rem); max-width:clamp(336px,24.5vw,1260px); text-rendering:optimizeLegibility;">
+          <!-- v36: Headline removed, Subtitle upgraded to h1 (×2 size, hero position) -->
+          <h1 class="text-white font-bold hero-subtitle-promoted" data-admin-edit="hero_line2" style="font-size:clamp(1.38rem, 1.32vw, 6.3rem); line-height:1.25; margin-bottom:clamp(0.88rem,1.09vw,2.35rem); max-width:clamp(672px,49vw,2520px); letter-spacing:-0.02em; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
             ${s.hero_line2 || 'IT제품 보안성 평가·인증의 원스톱 서비스, <span class="hero-gradient-text">한국정보보안기술원</span>'}
-          </p>
+          </h1>
 
           <!-- CTA Buttons — 8K fluid (admin-editable) -->
           <div class="flex flex-wrap" style="gap:clamp(0.39rem,0.44vw,1.09rem); margin-bottom:clamp(0.98rem,1.27vw,2.74rem);">
-            <a href="/support/inquiry" class="btn-glow ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:clamp(4px,0.29vw,10px); padding:clamp(0.44rem,0.48vw,0.94rem) clamp(calc(0.88rem + 2cm),calc(1.02vw + 2cm),calc(2.20rem + 2cm)); font-size:clamp(0.69rem,0.58vw,2.8rem);">
+            <a href="/support/inquiry" class="btn-glow ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:clamp(4px,0.29vw,10px); padding:clamp(0.44rem,0.48vw,0.94rem) clamp(calc(0.88rem + 1.2cm),calc(1.02vw + 1.2cm),calc(2.20rem + 1.2cm)); font-size:clamp(0.69rem,0.58vw,2.8rem);">
               <i class="fas fa-paper-plane" style="font-size:clamp(0.50rem,0.36vw,0.86rem)"></i> <span data-admin-edit="hero_btn_primary">${s.hero_btn_primary || '온라인 상담'}</span>
             </a>
-            <a href="#services" class="btn-ghost ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:clamp(4px,0.29vw,10px); padding:clamp(0.44rem,0.48vw,0.94rem) clamp(calc(0.88rem + 2cm),calc(1.02vw + 2cm),calc(2.20rem + 2cm)); font-size:clamp(0.69rem,0.58vw,2.8rem);">
+            <a href="#services" class="btn-ghost ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:clamp(4px,0.29vw,10px); padding:clamp(0.44rem,0.48vw,0.94rem) clamp(calc(0.88rem + 1.2cm),calc(1.02vw + 1.2cm),calc(2.20rem + 1.2cm)); font-size:clamp(0.69rem,0.58vw,2.8rem);">
               <i class="fas fa-th-large" style="font-size:clamp(0.50rem,0.36vw,0.86rem)"></i> <span data-admin-edit="hero_btn_secondary">${s.hero_btn_secondary || '사업분야 보기'}</span>
             </a>
           </div>
@@ -722,8 +714,8 @@ export function homePage(opts: {
     .unified-hero-right {
       display: flex;
       flex-direction: column;
-      margin-left: -8cm;
-      width: calc(100% + 11cm);
+      margin-left: -5cm;
+      width: calc(100% + 8.5cm);
       min-width: 0;
     }
     
@@ -791,7 +783,7 @@ export function homePage(opts: {
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255,255,255,0.06);
       border-radius: clamp(7px,0.88vw,14px);
-      max-width: 380px;
+      max-width: calc(380px + 1cm);
     }
     @supports not (backdrop-filter: blur(1px)) {
       .hero-contact-card { background: rgba(10,15,30,0.88); }
@@ -799,7 +791,7 @@ export function homePage(opts: {
     .hero-contact-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: clamp(0.34rem,0.54vw,0.59rem) clamp(0.59rem,1.08vw,1.08rem);
+      gap: clamp(0.17rem,0.27vw,0.30rem) clamp(0.30rem,0.54vw,0.54rem);
     }
     .hero-contact-item {
       display: flex;
@@ -846,10 +838,11 @@ export function homePage(opts: {
       .hero-contact-card { margin-left: auto; margin-right: auto; text-align: left; max-width: 94%; padding: clamp(0.7rem,2.5vw,1rem) clamp(0.9rem,3vw,1.2rem); }
       .hero-contact-item { font-size: clamp(0.70rem, 1.96vw, 1.02rem); }
       .hero-contact-icon { width: clamp(27px, 4.2vw, 35px); height: clamp(27px, 4.2vw, 35px); font-size: clamp(10px, 1.75vw, 14px); }
-      /* Hero text mobile adapt — headline ×3 then scaled down for mobile */
-      .hero-headline { font-size: clamp(1.6rem, 6.5vw, 3.24rem) !important; }
-      .hero-subtitle { font-size: clamp(0.63rem, 1.96vw, 0.81rem) !important; max-width: 100% !important; }
-      .hero-badge-pill span[data-admin-edit] { font-size: clamp(0.53rem, 1.54vw, 0.67rem) !important; }
+      /* Hero text tablet adapt — v36: headline removed, subtitle promoted */
+      .hero-headline { display: none !important; }
+      .hero-subtitle-promoted { font-size: clamp(1.0rem, 3.9vw, 1.62rem) !important; max-width: 100% !important; }
+      .hero-subtitle { display: none !important; }
+      .hero-badge-pill span[data-admin-edit] { font-size: clamp(1.59rem, 4.62vw, 2.01rem) !important; }
       /* Sim panel mobile adapt */
       .sim-panel-title { font-size: clamp(0.9rem, 3vw, 1.15rem) !important; }
       .sim-panel-subtitle { font-size: clamp(0.72rem, 2.2vw, 0.88rem) !important; }
@@ -863,27 +856,30 @@ export function homePage(opts: {
       .hero-contact-icon { width: 28px; height: 28px; font-size: 11px; border-radius: 7px; }
       .hero-contact-card { padding: clamp(0.84rem,2.8vw,1.12rem) clamp(0.98rem,3.15vw,1.26rem); border-radius: 11px; }
       .hero-contact-card p { font-size: clamp(0.74rem, 2.94vw, 0.91rem) !important; }
-      .hero-headline { font-size: clamp(0.98rem, 4.55vw, 1.4rem) !important; }
-      .hero-subtitle { font-size: clamp(0.60rem, 2.45vw, 0.74rem) !important; }
+      .hero-headline { display: none !important; }
+      .hero-subtitle-promoted { font-size: clamp(0.85rem, 3.5vw, 1.2rem) !important; }
+      .hero-subtitle { display: none !important; }
     }
     /* Very small mobile (375px) */
     @media (max-width: 375px) {
       .hero-contact-item { font-size: 0.64rem; gap: 6px; }
       .hero-contact-icon { width: 24px; height: 24px; font-size: 10px; }
-      .hero-headline { font-size: 0.91rem !important; }
-      .hero-subtitle { font-size: 0.57rem !important; }
+      .hero-headline { display: none !important; }
+      .hero-subtitle-promoted { font-size: 0.85rem !important; }
+      .hero-subtitle { display: none !important; }
     }
 
     /* ── 2.5K (2560px) — Hero + Slider Overrides (hero text ×0.7) ── */
     @media (min-width: 2560px) {
-      .hero-badge-pill span[data-admin-edit] { font-size: 0.82rem !important; }
-      .hero-headline { font-size: 2.45rem !important; }
-      .hero-subtitle { font-size: 1.05rem !important; }
+      .hero-badge-pill span[data-admin-edit] { font-size: 2.46rem !important; }
+      .hero-headline { display: none !important; }
+      .hero-subtitle-promoted { font-size: 2.1rem !important; }
+      .hero-subtitle { display: none !important; }
       .sim-panel-title { font-size: 1.67rem !important; }
       .sim-panel-subtitle { font-size: 1.17rem !important; }
       .hero-contact-item { font-size: 1.26rem; gap: 13px; }
       .hero-contact-icon { width: 41px; height: 41px; font-size: 17px; border-radius: 10px; }
-      .hero-contact-card { max-width: 630px; padding: 1.75rem 2.24rem; border-radius: 20px; }
+      .hero-contact-card { max-width: calc(630px + 1cm); padding: 1.75rem 2.24rem; border-radius: 20px; }
       .hero-contact-card p { font-size: 1.33rem !important; }
       .hero-contact-label { font-size: 1.17rem !important; }
     }
@@ -894,9 +890,10 @@ export function homePage(opts: {
       .unified-hero-left { }
       /* Hero text 4K overrides (×0.7) */
       .hero-badge-pill { padding: 8px 22px !important; gap: 8px !important; border-width: 2px !important; }
-      .hero-badge-pill span[data-admin-edit] { font-size: 1.23rem !important; }
-      .hero-headline { font-size: 3.68rem !important; }
-      .hero-subtitle { font-size: 1.58rem !important; max-width: 672px !important; }
+      .hero-badge-pill span[data-admin-edit] { font-size: 3.69rem !important; }
+      .hero-headline { display: none !important; }
+      .hero-subtitle-promoted { font-size: 3.16rem !important; max-width: 1344px !important; }
+      .hero-subtitle { display: none !important; }
       /* Sim panel 4K overrides (unchanged) */
       .unified-sim-panel { border-radius: 28px; }
       .unified-sim-header { padding: 1.8rem 2.5rem; }
@@ -905,10 +902,10 @@ export function homePage(opts: {
       .sim-panel-subtitle { font-size: 1.75rem !important; }
       .eal-tab { padding: 14px 0 !important; font-size: 1.75rem !important; }
       .prep-range::-webkit-slider-thumb { width: 44px !important; height: 44px !important; border-width: 5px !important; }
-      .hero-contact-card { max-width: 770px; padding: 2.24rem 2.8rem; border-radius: 22px; border-width: 2px !important; }
+      .hero-contact-card { max-width: calc(770px + 1cm); padding: 2.24rem 2.8rem; border-radius: 22px; border-width: 2px !important; }
       .hero-contact-icon { width: 53px; height: 53px; font-size: 21px; border-radius: 13px; }
       .hero-contact-item { font-size: 1.61rem; gap: 15px; }
-      .hero-contact-grid { gap: 1.26rem 2.45rem; }
+      .hero-contact-grid { gap: 0.63rem 1.23rem; }
       .hero-contact-card p { font-size: 1.68rem !important; }
       .hero-contact-label { font-size: 1.75rem !important; }
       /* Bar chart 4K overrides (unchanged) */
@@ -922,9 +919,10 @@ export function homePage(opts: {
       .unified-hero-left { }
       /* Hero text 8K overrides (×0.7) */
       .hero-badge-pill { padding: 17px 45px !important; gap: 17px !important; margin-bottom: 3.15rem !important; border-width: 3px !important; border-radius: 56px !important; }
-      .hero-badge-pill span[data-admin-edit] { font-size: 2.45rem !important; }
-      .hero-headline { font-size: 7.35rem !important; margin-bottom: 2.38rem !important; }
-      .hero-subtitle { font-size: 3.15rem !important; margin-bottom: 4.69rem !important; max-width: 1260px !important; line-height: 1.4 !important; }
+      .hero-badge-pill span[data-admin-edit] { font-size: 7.35rem !important; }
+      .hero-headline { display: none !important; }
+      .hero-subtitle-promoted { font-size: 6.3rem !important; margin-bottom: 4.69rem !important; max-width: 2520px !important; line-height: 1.3 !important; }
+      .hero-subtitle { display: none !important; }
       /* Sim panel 8K overrides (unchanged) */
       .unified-sim-panel { border-radius: 56px; box-shadow: 0 24px 120px rgba(0,0,0,0.3), 0 8px 40px rgba(0,0,0,0.12); }
       .unified-sim-header { padding: 3rem 4rem; }
@@ -933,10 +931,10 @@ export function homePage(opts: {
       .sim-panel-subtitle { font-size: 3.5rem !important; }
       .eal-tab { padding: 28px 0 !important; font-size: 3.5rem !important; }
       .prep-range::-webkit-slider-thumb { width: 88px !important; height: 88px !important; border-width: 10px !important; }
-      .hero-contact-card { max-width: 1260px; padding: 3.5rem 4.55rem; border-radius: 39px; border-width: 3px !important; }
+      .hero-contact-card { max-width: calc(1260px + 1cm); padding: 3.5rem 4.55rem; border-radius: 39px; border-width: 3px !important; }
       .hero-contact-icon { width: 77px; height: 77px; font-size: 31px; border-radius: 18px; }
       .hero-contact-item { font-size: 2.52rem; gap: 22px; }
-      .hero-contact-grid { gap: 1.96rem 3.85rem; }
+      .hero-contact-grid { gap: 0.98rem 1.93rem; }
       .hero-contact-card p { font-size: 2.38rem !important; }
       .hero-contact-label { font-size: 3.5rem !important; }
       /* Bar chart 8K overrides (unchanged) */
