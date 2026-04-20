@@ -493,7 +493,7 @@ export function homePage(opts: {
           </div>
 
           <!-- Headline — 8K fluid (admin-editable) -->
-          <h1 class="text-white font-black hero-headline" data-admin-edit="hero_line1" style="font-size:clamp(1.08rem, 1.53vw, 7.35rem); line-height:1.1; margin-bottom:clamp(0.39rem,0.55vw,1.18rem); letter-spacing:-0.03em; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
+          <h1 class="text-white font-black hero-headline" data-admin-edit="hero_line1" style="font-size:clamp(3.24rem, 4.59vw, 22.05rem); line-height:1.1; margin-bottom:clamp(0.39rem,0.55vw,1.18rem); letter-spacing:-0.03em; -webkit-font-smoothing:antialiased; text-rendering:geometricPrecision;">
             ${s.hero_line1 || '정보보안 시험·인증 전문기관'}
           </h1>
 
@@ -504,10 +504,10 @@ export function homePage(opts: {
 
           <!-- CTA Buttons — 8K fluid (admin-editable) -->
           <div class="flex flex-wrap" style="gap:clamp(0.39rem,0.44vw,1.09rem); margin-bottom:clamp(0.98rem,1.27vw,2.74rem);">
-            <a href="/support/inquiry" class="btn-glow ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:clamp(4px,0.29vw,10px); padding:clamp(0.44rem,0.48vw,0.94rem) clamp(0.88rem,1.02vw,2.20rem); font-size:clamp(0.69rem,0.58vw,2.8rem);">
+            <a href="/support/inquiry" class="btn-glow ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:clamp(4px,0.29vw,10px); padding:clamp(0.44rem,0.48vw,0.94rem) clamp(calc(0.88rem + 2cm),calc(1.02vw + 2cm),calc(2.20rem + 2cm)); font-size:clamp(0.69rem,0.58vw,2.8rem);">
               <i class="fas fa-paper-plane" style="font-size:clamp(0.50rem,0.36vw,0.86rem)"></i> <span data-admin-edit="hero_btn_primary">${s.hero_btn_primary || '온라인 상담'}</span>
             </a>
-            <a href="#services" class="btn-ghost ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:clamp(4px,0.29vw,10px); padding:clamp(0.44rem,0.48vw,0.94rem) clamp(0.88rem,1.02vw,2.20rem); font-size:clamp(0.69rem,0.58vw,2.8rem);">
+            <a href="#services" class="btn-ghost ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:clamp(4px,0.29vw,10px); padding:clamp(0.44rem,0.48vw,0.94rem) clamp(calc(0.88rem + 2cm),calc(1.02vw + 2cm),calc(2.20rem + 2cm)); font-size:clamp(0.69rem,0.58vw,2.8rem);">
               <i class="fas fa-th-large" style="font-size:clamp(0.50rem,0.36vw,0.86rem)"></i> <span data-admin-edit="hero_btn_secondary">${s.hero_btn_secondary || '사업분야 보기'}</span>
             </a>
           </div>
@@ -722,8 +722,8 @@ export function homePage(opts: {
     .unified-hero-right {
       display: flex;
       flex-direction: column;
-      margin-left: -6cm;
-      width: calc(100% + 9cm);
+      margin-left: -8cm;
+      width: calc(100% + 11cm);
       min-width: 0;
     }
     
@@ -846,8 +846,8 @@ export function homePage(opts: {
       .hero-contact-card { margin-left: auto; margin-right: auto; text-align: left; max-width: 94%; padding: clamp(0.7rem,2.5vw,1rem) clamp(0.9rem,3vw,1.2rem); }
       .hero-contact-item { font-size: clamp(0.70rem, 1.96vw, 1.02rem); }
       .hero-contact-icon { width: clamp(27px, 4.2vw, 35px); height: clamp(27px, 4.2vw, 35px); font-size: clamp(10px, 1.75vw, 14px); }
-      /* Hero text mobile adapt (×0.7) */
-      .hero-headline { font-size: clamp(1.12rem, 3.85vw, 1.68rem) !important; }
+      /* Hero text mobile adapt — headline ×3 then scaled down for mobile */
+      .hero-headline { font-size: clamp(1.6rem, 6.5vw, 3.24rem) !important; }
       .hero-subtitle { font-size: clamp(0.63rem, 1.96vw, 0.81rem) !important; max-width: 100% !important; }
       .hero-badge-pill span[data-admin-edit] { font-size: clamp(0.53rem, 1.54vw, 0.67rem) !important; }
       /* Sim panel mobile adapt */
