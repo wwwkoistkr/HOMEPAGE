@@ -1,10 +1,39 @@
-# KOIST Website v37.0
+# KOIST Website v38.0
 
 **(주)한국정보보안기술원** 공식 웹사이트 - Security Hardening + 8K Ultra Sharp
 
 ## URLs
 - **Production**: https://koist-website.pages.dev
+- **GitHub**: https://github.com/wwwkoistkr/HOMEPAGE
 - **관리자**: /admin (스크립트로 생성, 아래 "관리자 계정 설정" 참조)
+
+## v38.0 Hero UI 6가지 변경 (2026-04-20)
+
+### 변경사항
+
+| # | 항목 | Before | After | 상태 |
+|---|------|--------|-------|------|
+| 1 | KOLAS 인정마크 | 112×65px | 56×32px (2배 축소) | ✅ |
+| 2 | 뱃지 (3층) | 초록점 + 11px 텍스트 | KOIST 로고 + 33px 텍스트 (3배) | ✅ |
+| 3 | 히어로 제목/서브타이틀 | h1 88px 제목 + p 12.7px 서브 | 제목 삭제 → 서브타이틀 h1 승격 25.3px | ✅ |
+| 4 | CTA 버튼 | 256×37px, 268×37px | 195×37px, 207×37px (가로 30% 축소) | ✅ |
+| 5 | 연락처 카드 | 380px 폭, gap 9.4/17.3px | 418px (+1cm), gap 4.8/8.6px (50% 축소) | ✅ |
+| 6 | 시뮬레이터 패널 | left 778px, width 1076px | left 891px (GNB "가" 정렬), width 981px (-2.5cm) | ✅ |
+
+### 반응형 지원
+- **8K (7680px)**: 전용 미디어쿼리 + 스케일링
+- **4K (3840px)**: 전용 미디어쿼리
+- **2.5K (2560px)**: 전용 미디어쿼리
+- **Tablet (≤1023px)**: 1컬럼 스택
+- **Mobile (≤639px)**: 모바일 최적화
+- **Small Mobile (≤375px)**: 최소 글꼴 보장
+
+### 수정 파일
+- `src/templates/home.tsx` — 히어로 섹션 HTML + CSS
+- `src/templates/layout.tsx` — KOLAS 마크 크기
+- `public/static/images/koist-circle-logo.png` — 뱃지 로고 (신규)
+
+---
 
 ## v37.0 보안 강화 (2026-04-18)
 
