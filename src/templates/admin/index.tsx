@@ -183,6 +183,8 @@ export function changePasswordContent() {
 export function adminDashboardPage(content: string, activeMenu = 'dashboard', logoUrl = '') {
   const menuItems = [
     { id: 'dashboard', icon: 'fa-chart-pie', label: '대시보드', href: '/admin/dashboard' },
+    { id: 'home-content', icon: 'fa-home', label: '홈 콘텐츠', href: '/admin/home-content' },
+    { id: 'background-media', icon: 'fa-palette', label: '배경/미디어', href: '/admin/background-media' },
     { id: 'site-settings', icon: 'fa-cog', label: '사이트 설정', href: '/admin/site-settings' },
     { id: 'departments', icon: 'fa-building', label: '사업분야 관리', href: '/admin/departments' },
     { id: 'popups', icon: 'fa-window-restore', label: '팝업 관리', href: '/admin/popups' },

@@ -111,7 +111,7 @@ export function layout(opts: {
 
           <!-- KOLAS Mark -->
           <div class="hidden md:flex items-center shrink-0" style="padding:0;margin:0 0 0 5cm;">
-            <img src="/static/images/kolas.png" alt="KOLAS 국제공인시험기관" loading="lazy" decoding="async" sizes="(min-width: 7680px) 110px, (min-width: 3840px) 70px, (min-width: 2560px) 55px, (max-width: 767px) 0px, 34px" style="height:clamp(22px, 19px + 0.7vw, 34px);" class="kolas-mark w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" title="KOLAS 국제공인시험기관 인정 (KTL-F-588)" data-admin-edit="kolas_image">
+            <img src="${s.kolas_image_url || '/static/images/kolas.png'}" alt="KOLAS 국제공인시험기관" loading="lazy" decoding="async" sizes="(min-width: 7680px) 110px, (min-width: 3840px) 70px, (min-width: 2560px) 55px, (max-width: 767px) 0px, 34px" style="height:clamp(22px, 19px + 0.7vw, 34px);" class="kolas-mark w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" title="KOLAS 국제공인시험기관 인정 (KTL-F-588)" data-admin-edit="kolas_image">
           </div>
 
           <!-- Logo -->
@@ -127,8 +127,8 @@ export function layout(opts: {
                 </div>
               </div>
               <div>
-                <div class="font-bold text-white leading-tight tracking-tight" style="font-size:clamp(1.15rem, 0.95rem + 0.7vw, 1.65rem);">한국정보보안기술원</div>
-                <div class="tracking-[0.18em] font-medium" style="font-size:clamp(0.72rem, 0.60rem + 0.35vw, 1.0rem); background: linear-gradient(90deg, #94A3B8, #64748B); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">KOIST</div>
+                <div class="font-bold text-white leading-tight tracking-tight" style="font-size:clamp(1.15rem, 0.95rem + 0.7vw, 1.65rem);">${s.site_name || '한국정보보안기술원'}</div>
+                <div class="tracking-[0.18em] font-medium" style="font-size:clamp(0.72rem, 0.60rem + 0.35vw, 1.0rem); background: linear-gradient(90deg, #94A3B8, #64748B); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">${s.site_slogan || 'KOIST'}</div>
               </div>
             </div>
             `}

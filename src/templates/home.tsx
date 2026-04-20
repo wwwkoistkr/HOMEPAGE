@@ -485,7 +485,7 @@ export function homePage(opts: {
         <div class="unified-hero-left" data-aos="fade-right" data-aos-duration="700">
           <!-- Badge (v38.1 — KOIST logo + text ×3→60% shrink, 8K fluid) -->
           <div class="inline-flex items-center rounded-full hero-badge-pill" style="gap:clamp(6px,0.44vw,14px); padding:clamp(6px,0.44vw,12px) clamp(14px,1.02vw,36px); margin-bottom:clamp(0.59rem,0.81vw,1.57rem); background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.18); backdrop-filter: blur(12px);">
-            <img src="/static/images/koist-circle-logo.png" alt="KOIST" loading="eager" style="height:clamp(20px,1.47vw,56px); width:clamp(20px,1.47vw,56px); border-radius:50%; object-fit:contain; flex-shrink:0;">
+            <img src="${s.hero_badge_logo_url || '/static/images/koist-circle-logo.png'}" alt="KOIST" loading="eager" style="height:clamp(20px,1.47vw,56px); width:clamp(20px,1.47vw,56px); border-radius:50%; object-fit:contain; flex-shrink:0;">
             <span class="text-blue-300 font-semibold tracking-wide" data-admin-edit="hero_badge_text" style="font-size:clamp(1.242rem,0.918vw,4.41rem); font-family:'Inter','Noto Sans KR',sans-serif; letter-spacing:0.04em;">${s.hero_badge_text || 'Korean Information Security Technology'}</span>
           </div>
 
@@ -496,11 +496,11 @@ export function homePage(opts: {
 
           <!-- CTA Buttons — 8K fluid (v38.1 font ×1.4) -->
           <div class="flex flex-wrap" style="gap:clamp(0.39rem,0.44vw,1.09rem); margin-bottom:clamp(0.98rem,1.27vw,2.74rem);">
-            <a href="/support/inquiry" class="btn-glow ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:clamp(4px,0.29vw,10px); padding:clamp(0.44rem,0.48vw,0.94rem) clamp(calc(0.88rem + 1.2cm),calc(1.02vw + 1.2cm),calc(2.20rem + 1.2cm)); font-size:clamp(0.966rem,0.812vw,3.92rem);">
-              <i class="fas fa-paper-plane" style="font-size:clamp(0.50rem,0.36vw,0.86rem)"></i> <span data-admin-edit="hero_btn_primary">${s.hero_btn_primary || '온라인 상담'}</span>
+            <a href="${s.hero_btn_primary_url || '/support/inquiry'}" class="btn-glow ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:clamp(4px,0.29vw,10px); padding:clamp(0.44rem,0.48vw,0.94rem) clamp(calc(0.88rem + 1.2cm),calc(1.02vw + 1.2cm),calc(2.20rem + 1.2cm)); font-size:clamp(0.966rem,0.812vw,3.92rem);">
+              <i class="fas ${s.hero_btn_primary_icon || 'fa-paper-plane'}" style="font-size:clamp(0.50rem,0.36vw,0.86rem)"></i> <span data-admin-edit="hero_btn_primary">${s.hero_btn_primary || '온라인 상담'}</span>
             </a>
-            <a href="#services" class="btn-ghost ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:clamp(4px,0.29vw,10px); padding:clamp(0.44rem,0.48vw,0.94rem) clamp(calc(0.88rem + 1.2cm),calc(1.02vw + 1.2cm),calc(2.20rem + 1.2cm)); font-size:clamp(0.966rem,0.812vw,3.92rem);">
-              <i class="fas fa-th-large" style="font-size:clamp(0.50rem,0.36vw,0.86rem)"></i> <span data-admin-edit="hero_btn_secondary">${s.hero_btn_secondary || '사업분야 보기'}</span>
+            <a href="${s.hero_btn_secondary_url || '#services'}" class="btn-ghost ripple-btn inline-flex items-center font-bold rounded-xl transition-all hover:scale-[1.03] active:scale-[0.98]" style="gap:clamp(4px,0.29vw,10px); padding:clamp(0.44rem,0.48vw,0.94rem) clamp(calc(0.88rem + 1.2cm),calc(1.02vw + 1.2cm),calc(2.20rem + 1.2cm)); font-size:clamp(0.966rem,0.812vw,3.92rem);">
+              <i class="fas ${s.hero_btn_secondary_icon || 'fa-th-large'}" style="font-size:clamp(0.50rem,0.36vw,0.86rem)"></i> <span data-admin-edit="hero_btn_secondary">${s.hero_btn_secondary || '사업분야 보기'}</span>
             </a>
           </div>
 

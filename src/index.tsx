@@ -16,6 +16,8 @@ import adminApi from './routes/admin';
 import { layout } from './templates/layout';
 import { homePage } from './templates/home';
 import { adminLoginPage, changePasswordContent, adminDashboardPage, adminDashboardContent } from './templates/admin/index';
+import { homeContentPage } from './templates/admin/home-content';
+import { backgroundMediaPage } from './templates/admin/background-media';
 import { servicePage, noticeListPage, noticeDetailPage, faqPage, inquiryPage, progressPage, serviceProgressContent, downloadsPage } from './templates/pages';
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -484,6 +486,22 @@ app.get('/admin/dashboard', authMiddleware, csrfCookieMiddleware, async (c) => {
   });
 
   return c.html(adminDashboardPage(content, 'dashboard', settings.logo_url || ''));
+});
+
+// Admin Home Content Management
+app.get('/admin/home-content', authMiddleware, csrfCookieMiddleware, async (c) => {
+  const db = c.env.DB;
+  const settings = await getSettings(db);
+  const content = homeContentPage();
+  return c.html(adminDashboardPage(content, 'home-content', settings.logo_url || ''));
+});
+
+// Admin Background & Media Management
+app.get('/admin/background-media', authMiddleware, csrfCookieMiddleware, async (c) => {
+  const db = c.env.DB;
+  const settings = await getSettings(db);
+  const content = backgroundMediaPage();
+  return c.html(adminDashboardPage(content, 'background-media', settings.logo_url || ''));
 });
 
 // Admin CRUD pages
