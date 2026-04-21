@@ -1877,10 +1877,21 @@ export function homePage(opts: {
       var kEvalF = lerp(d.koist.evalMin, d.koist.evalMax, t);
       var gTotalF = gPrepF + gEvalF;
       var kTotalF = kPrepF + kEvalF;
+      // v39.2 FIX: 바 너비 기준점을 "슬라이더에 따라 변하는 gTotalF"가 아니라
+      // "해당 EAL에서 도달 가능한 최대 개월 수(절대 기준)"로 고정.
+      // 이렇게 해야 슬라이더를 움직일 때 CCRA 바의 길이가 실제 개월 수에 비례해 움직임.
+      // 과거(v39.1 이하): maxBar=gTotalF → CCRA 바는 항상 width=100% 고정 (움직이지 않음)
+      var gMaxAbs = (typeof g.prepMax === 'number' && typeof g.evalMax === 'number')
+        ? (g.prepMax + g.evalMax)
+        : (g.prep + g.eval);
+      var kMaxAbs = d.koist.prepMax + d.koist.evalMax;
+      var absMax = Math.max(gMaxAbs, kMaxAbs, 0.1);
       return {
         general: { prep: gPrepF, eval: gEvalF, total: gTotalF },
         koist: { prep: kPrepF, eval: kEvalF, total: kTotalF },
-        maxBar: gTotalF,
+        maxBar: absMax,
+        gMaxAbs: gMaxAbs,
+        kMaxAbs: kMaxAbs,
         // 단축률은 반올림 전 실수값으로 계산 → 마지막 단계에서만 round
         reduction: gTotalF > 0 ? Math.round((1 - kTotalF / gTotalF) * 100) : 0,
         saving: gTotalF - kTotalF
@@ -1902,11 +1913,14 @@ export function homePage(opts: {
 
       document.querySelectorAll('.eal-tab').forEach(function(t) { t.classList.toggle('active', t.getAttribute('data-eal') === currentEAL); });
 
-      var gPrepPct = d.maxBar > 0 ? Math.round((d.general.prep / d.maxBar) * 100) : 50;
+      // v39.2 FIX: CCRA 바 너비도 absMax 대비 현재 g.total 비율로 동적 계산
+      // (과거엔 width=100% 고정이라 개월 수가 변해도 바가 움직이지 않음)
+      var gWidthPct = d.maxBar > 0 ? Math.round((d.general.total / d.maxBar) * 100) : 50;
+      var gPrepPct = d.general.total > 0 ? Math.round((d.general.prep / d.general.total) * 100) : 50;
       var gBar = document.getElementById('ealGeneralBar');
       if (gBar) {
         gBar.style.transition = 'width 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-        gBar.style.width = '100%';
+        gBar.style.width = Math.max(gWidthPct, 15) + '%';
         gBar.style.background = 'linear-gradient(90deg, #F59E0B 0%, #F59E0B ' + gPrepPct + '%, #94A3B8 ' + gPrepPct + '%, #94A3B8 100%)';
       }
       var gTotal = document.getElementById('ealGeneralTotal');
@@ -1921,7 +1935,7 @@ export function homePage(opts: {
       var kBar = document.getElementById('ealKoistBar');
       if (kBar) {
         kBar.style.transition = 'width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-        kBar.style.width = Math.max(kWidthPct, 15) + '%';
+        kBar.style.width = Math.max(kWidthPct, 8) + '%';
         kBar.style.background = 'linear-gradient(90deg, #F59E0B 0%, #F59E0B ' + kPrepPct + '%, #3B82F6 ' + kPrepPct + '%, #3B82F6 100%)';
       }
       var kTotal = document.getElementById('ealKoistTotal');
