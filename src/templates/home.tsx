@@ -207,6 +207,64 @@ export function homePage(opts: {
     ? String(adminOverrideReduction)
     : String(computedInitReduction);
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // v39.4 — 슬라이더 UI 관리자 설정 (site_settings.category='slider')
+  //   모든 색상·텍스트 포맷·반올림 정책을 DB에서 읽어 SLIDER_CFG로 클라이언트에 주입
+  //   → 관리자 모드(/admin/slider-settings)에서 실시간 변경 가능
+  // ═══════════════════════════════════════════════════════════════════════════
+  const sliderCfg = {
+    // 반올림·표시 정책
+    totalMode:       s.slider_total_mode       || 'sum',      // sum(권장) / round / decimal
+    roundMode:       s.slider_round_mode       || 'round',    // round / ceil / floor
+    decimalPlaces:   parseInt(s.slider_decimal_places || '0', 10) || 0,
+    numberUnit:      s.slider_number_unit      || '개월',
+    // 텍스트 포맷 ({N} → 숫자)
+    totalFormat:     s.slider_total_format     || '약 {N}개월',
+    prepFormat:      s.slider_prep_format      || '준비 {N}개월',
+    evalFormat:      s.slider_eval_format      || '평가 {N}개월',
+    reductionFormat: s.slider_reduction_format || '{N}%',
+    savingFormat:    s.slider_saving_format    || '약 {N}개월 절감',
+    prepLabel:       s.slider_prep_label       || '준비',
+    evalLabel:       s.slider_eval_label       || '평가',
+    // CCRA(일반) 바
+    genPrepColor:    s.slider_gen_prep_color   || '#F59E0B',
+    genEvalColor:    s.slider_gen_eval_color   || '#94A3B8',
+    genMinWidth:     parseFloat(s.slider_gen_min_width || '15') || 15,
+    genTransition:   parseFloat(s.slider_gen_transition || '0.7') || 0.7,
+    // KOIST 바
+    koistPrepColor:  s.slider_koist_prep_color || '#F59E0B',
+    koistEvalColor:  s.slider_koist_eval_color || '#3B82F6',
+    koistMinWidth:   parseFloat(s.slider_koist_min_width || '8') || 8,
+    koistTransition: parseFloat(s.slider_koist_transition || '0.5') || 0.5,
+    // 사전준비 트랙 4단계
+    trackColor1:     s.slider_track_color_1    || '#EF4444',
+    trackColor2:     s.slider_track_color_2    || '#F59E0B',
+    trackColor3:     s.slider_track_color_3    || '#10B981',
+    trackColor4:     s.slider_track_color_4    || '#3B82F6',
+    trackOpacity:    parseFloat(s.slider_track_opacity || '0.20') || 0.20,
+    // 단축률 뱃지
+    badgeGradStart:  s.slider_badge_grad_start || '#10B981',
+    badgeGradEnd:    s.slider_badge_grad_end   || '#059669',
+    badgeTextColor:  s.slider_badge_text_color || '#FFFFFF',
+  };
+  // 안전한 색상 폴백 (잘못된 값 들어오면 기본 사용)
+  const safeHex = (v: string, fb: string): string => /^#[0-9A-Fa-f]{6}$/.test(v || '') ? v : fb;
+  sliderCfg.genPrepColor = safeHex(sliderCfg.genPrepColor, '#F59E0B');
+  sliderCfg.genEvalColor = safeHex(sliderCfg.genEvalColor, '#94A3B8');
+  sliderCfg.koistPrepColor = safeHex(sliderCfg.koistPrepColor, '#F59E0B');
+  sliderCfg.koistEvalColor = safeHex(sliderCfg.koistEvalColor, '#3B82F6');
+  sliderCfg.trackColor1 = safeHex(sliderCfg.trackColor1, '#EF4444');
+  sliderCfg.trackColor2 = safeHex(sliderCfg.trackColor2, '#F59E0B');
+  sliderCfg.trackColor3 = safeHex(sliderCfg.trackColor3, '#10B981');
+  sliderCfg.trackColor4 = safeHex(sliderCfg.trackColor4, '#3B82F6');
+  sliderCfg.badgeGradStart = safeHex(sliderCfg.badgeGradStart, '#10B981');
+  sliderCfg.badgeGradEnd = safeHex(sliderCfg.badgeGradEnd, '#059669');
+  sliderCfg.badgeTextColor = safeHex(sliderCfg.badgeTextColor, '#FFFFFF');
+  // JSON 직렬화 (텍스트 내부에 " 가 있을 수 있으므로 JSON.stringify 필수)
+  const sliderCfgJson = JSON.stringify(sliderCfg);
+  // 초기 HTML에서 사용할 숏컷 변수
+  const cfg = sliderCfg;
+
   return `
   <!-- ════════════════════════════════════════════════
        POPUP SYSTEM v35.5.4 — HTML popup 13cm, Image popup per-card cm size, 8K Responsive
@@ -699,8 +757,8 @@ export function homePage(opts: {
                   <div class="flex-1 flex items-center" style="gap:clamp(0.2rem,0.31vw,0.64rem)">
                     <span class="text-slate-400 shrink-0" style="font-size:clamp(9px,0.52vw,16px); font-weight:600;">1</span>
                     <div class="flex-1 relative" style="height:clamp(30px,2.08vw,60px);">
-                      <div class="absolute left-0 right-0" style="top:50%; transform:translateY(-50%); height:clamp(6px,0.42vw,12px); border-radius:clamp(3px,0.21vw,6px); background: linear-gradient(90deg, #EF4444 0%, #F59E0B 25%, #10B981 60%, #3B82F6 100%); opacity:0.20;"></div>
-                      <div id="prepFill" class="absolute left-0" style="top:50%; transform:translateY(-50%); height:clamp(6px,0.42vw,12px); border-radius:clamp(3px,0.21vw,6px); width:50%; background: linear-gradient(90deg, #EF4444 0%, #F59E0B 30%, #10B981 70%, #3B82F6 100%); transition: width 0.12s ease; box-shadow:0 2px 6px rgba(0,0,0,0.08);"></div>
+                      <div class="absolute left-0 right-0" style="top:50%; transform:translateY(-50%); height:clamp(6px,0.42vw,12px); border-radius:clamp(3px,0.21vw,6px); background: linear-gradient(90deg, ${cfg.trackColor1} 0%, ${cfg.trackColor2} 25%, ${cfg.trackColor3} 60%, ${cfg.trackColor4} 100%); opacity:${cfg.trackOpacity};"></div>
+                      <div id="prepFill" class="absolute left-0" style="top:50%; transform:translateY(-50%); height:clamp(6px,0.42vw,12px); border-radius:clamp(3px,0.21vw,6px); width:50%; background: linear-gradient(90deg, ${cfg.trackColor1} 0%, ${cfg.trackColor2} 30%, ${cfg.trackColor3} 70%, ${cfg.trackColor4} 100%); transition: width 0.12s ease; box-shadow:0 2px 6px rgba(0,0,0,0.08);"></div>
                       <input type="range" id="prepSlider" min="1" max="100" step="1" value="50"
                         class="prep-range"
                         style="width:100%; position:absolute; top:50%; transform:translateY(-50%); cursor:pointer; -webkit-appearance:none; appearance:none; height:clamp(6px,0.42vw,12px); border-radius:clamp(3px,0.21vw,6px); background: transparent; outline:none; z-index:2;"
@@ -714,10 +772,10 @@ export function homePage(opts: {
                 </div>
                 <!-- Level guide dots (admin-editable) -->
                 <div class="flex items-center justify-between" style="margin-top:clamp(3px,0.21vw,8px); padding:0 0 0 clamp(65px,5.73vw,140px);">
-                  <div class="flex items-center" style="gap:clamp(2px,0.16vw,4px)"><span class="inline-block rounded-full" style="width:clamp(4px,0.31vw,8px); height:clamp(4px,0.31vw,8px); background:#EF4444;"></span><span class="text-slate-400 font-medium" data-admin-edit="sim_slider_level1" style="font-size:clamp(8px,0.63vw,3rem)">${escapeHtml(s.sim_slider_level1 || '미흡')}</span></div>
-                  <div class="flex items-center" style="gap:clamp(2px,0.16vw,4px)"><span class="inline-block rounded-full" style="width:clamp(4px,0.31vw,8px); height:clamp(4px,0.31vw,8px); background:#F59E0B;"></span><span class="text-slate-400 font-medium" data-admin-edit="sim_slider_level2" style="font-size:clamp(8px,0.63vw,3rem)">${escapeHtml(s.sim_slider_level2 || '보통')}</span></div>
-                  <div class="flex items-center" style="gap:clamp(2px,0.16vw,4px)"><span class="inline-block rounded-full" style="width:clamp(4px,0.31vw,8px); height:clamp(4px,0.31vw,8px); background:#10B981;"></span><span class="text-slate-400 font-medium" data-admin-edit="sim_slider_level3" style="font-size:clamp(8px,0.63vw,3rem)">${escapeHtml(s.sim_slider_level3 || '양호')}</span></div>
-                  <div class="flex items-center" style="gap:clamp(2px,0.16vw,4px)"><span class="inline-block rounded-full" style="width:clamp(4px,0.31vw,8px); height:clamp(4px,0.31vw,8px); background:#3B82F6;"></span><span class="text-slate-400 font-medium" data-admin-edit="sim_slider_level4" style="font-size:clamp(8px,0.63vw,3rem)">${escapeHtml(s.sim_slider_level4 || '우수')}</span></div>
+                  <div class="flex items-center" style="gap:clamp(2px,0.16vw,4px)"><span class="inline-block rounded-full" style="width:clamp(4px,0.31vw,8px); height:clamp(4px,0.31vw,8px); background:${cfg.trackColor1};"></span><span class="text-slate-400 font-medium" data-admin-edit="sim_slider_level1" style="font-size:clamp(8px,0.63vw,3rem)">${escapeHtml(s.sim_slider_level1 || '미흡')}</span></div>
+                  <div class="flex items-center" style="gap:clamp(2px,0.16vw,4px)"><span class="inline-block rounded-full" style="width:clamp(4px,0.31vw,8px); height:clamp(4px,0.31vw,8px); background:${cfg.trackColor2};"></span><span class="text-slate-400 font-medium" data-admin-edit="sim_slider_level2" style="font-size:clamp(8px,0.63vw,3rem)">${escapeHtml(s.sim_slider_level2 || '보통')}</span></div>
+                  <div class="flex items-center" style="gap:clamp(2px,0.16vw,4px)"><span class="inline-block rounded-full" style="width:clamp(4px,0.31vw,8px); height:clamp(4px,0.31vw,8px); background:${cfg.trackColor3};"></span><span class="text-slate-400 font-medium" data-admin-edit="sim_slider_level3" style="font-size:clamp(8px,0.63vw,3rem)">${escapeHtml(s.sim_slider_level3 || '양호')}</span></div>
+                  <div class="flex items-center" style="gap:clamp(2px,0.16vw,4px)"><span class="inline-block rounded-full" style="width:clamp(4px,0.31vw,8px); height:clamp(4px,0.31vw,8px); background:${cfg.trackColor4};"></span><span class="text-slate-400 font-medium" data-admin-edit="sim_slider_level4" style="font-size:clamp(8px,0.63vw,3rem)">${escapeHtml(s.sim_slider_level4 || '우수')}</span></div>
                 </div>
               </div>
 
@@ -730,7 +788,7 @@ export function homePage(opts: {
                     <span id="ealGeneralTotal" class="text-slate-400 font-bold" style="font-size:clamp(0.68rem,0.73vw,3.5rem)">약 24개월</span>
                   </div>
                   <div class="relative rounded-xl overflow-hidden" style="height:clamp(32px,2.34vw,72px); background: linear-gradient(90deg, #F1F5F9, #E2E8F0);">
-                    <div id="ealGeneralBar" class="bar-animate eal-bar absolute left-0 top-0 h-full rounded-xl flex items-center" style="width:100%; background: linear-gradient(90deg, #F59E0B 0%, #F59E0B 50%, #94A3B8 50%, #94A3B8 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 2px 6px rgba(0,0,0,0.06);">
+                    <div id="ealGeneralBar" class="bar-animate eal-bar absolute left-0 top-0 h-full rounded-xl flex items-center" style="width:100%; background: linear-gradient(90deg, ${cfg.genPrepColor} 0%, ${cfg.genPrepColor} 50%, ${cfg.genEvalColor} 50%, ${cfg.genEvalColor} 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 2px 6px rgba(0,0,0,0.06);">
                       <span id="ealGeneralPrep" class="absolute text-white font-bold" style="left:clamp(6px,0.47vw,14px); font-size:clamp(0.6rem,0.68vw,3.25rem); text-shadow:0 1px 4px rgba(0,0,0,0.35); letter-spacing:-0.01em;">준비 12개월</span>
                       <span id="ealGeneralEval" class="absolute text-white font-bold" style="right:clamp(6px,0.47vw,14px); font-size:clamp(0.6rem,0.68vw,3.25rem); text-shadow:0 1px 4px rgba(0,0,0,0.35); letter-spacing:-0.01em;">평가 12개월</span>
                     </div>
@@ -744,7 +802,7 @@ export function homePage(opts: {
                     <span id="ealKoistTotal" class="text-accent font-bold" style="font-size:clamp(0.68rem,0.73vw,3.5rem)">약 15개월</span>
                   </div>
                   <div class="relative rounded-xl overflow-hidden" style="height:clamp(32px,2.34vw,72px); background: linear-gradient(90deg, #F1F5F9, #E2E8F0);">
-                    <div id="ealKoistBar" class="bar-animate eal-bar absolute left-0 top-0 h-full rounded-xl flex items-center" style="width:62.5%; background: linear-gradient(90deg, #F59E0B 0%, #F59E0B 40%, #3B82F6 40%, #3B82F6 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 2px 6px rgba(0,0,0,0.06);">
+                    <div id="ealKoistBar" class="bar-animate eal-bar absolute left-0 top-0 h-full rounded-xl flex items-center" style="width:62.5%; background: linear-gradient(90deg, ${cfg.koistPrepColor} 0%, ${cfg.koistPrepColor} 40%, ${cfg.koistEvalColor} 40%, ${cfg.koistEvalColor} 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 2px 6px rgba(0,0,0,0.06);">
                       <span id="ealKoistPrep" class="absolute text-white font-bold" style="left:clamp(6px,0.47vw,14px); font-size:clamp(0.6rem,0.68vw,3.25rem); text-shadow:0 1px 4px rgba(0,0,0,0.35); letter-spacing:-0.01em;">준비 6개월</span>
                       <span id="ealKoistEval" class="absolute text-white font-bold" style="right:clamp(6px,0.47vw,14px); font-size:clamp(0.6rem,0.68vw,3.25rem); text-shadow:0 1px 4px rgba(0,0,0,0.35); letter-spacing:-0.01em;">평가 9개월</span>
                     </div>
@@ -754,8 +812,8 @@ export function homePage(opts: {
                 <!-- Result Summary Strip — 8K fluid (admin-editable) -->
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-xl" style="gap:clamp(0.4rem,0.36vw,0.8rem); padding:clamp(0.5rem,0.52vw,1.12rem) clamp(0.6rem,0.68vw,1.44rem); background: linear-gradient(135deg, rgba(59,130,246,0.04), rgba(6,182,212,0.025)); border: clamp(1px,0.05vw,4px) solid rgba(59,130,246,0.10);">
                   <div class="flex items-center" style="gap:clamp(0.4rem,0.36vw,0.8rem)">
-                    <div id="ealReductionBadge" class="shrink-0 rounded-xl flex items-center justify-center" style="width:clamp(36px,2.08vw,72px); height:clamp(36px,2.08vw,72px); background: linear-gradient(135deg, #2563EB, #06B6D4); box-shadow: 0 4px 16px rgba(37,99,235,0.25); border-radius:clamp(8px,0.63vw,24px);">
-                      <span class="text-white font-black" style="font-size:clamp(0.78rem,0.73vw,3.5rem); text-rendering:geometricPrecision;">${defaultReduction}%</span>
+                    <div id="ealReductionBadge" class="shrink-0 rounded-xl flex items-center justify-center" style="width:clamp(36px,2.08vw,72px); height:clamp(36px,2.08vw,72px); background: linear-gradient(135deg, ${cfg.badgeGradStart}, ${cfg.badgeGradEnd}); box-shadow: 0 4px 16px rgba(37,99,235,0.25); border-radius:clamp(8px,0.63vw,24px);">
+                      <span class="font-black" style="color:${cfg.badgeTextColor}; font-size:clamp(0.78rem,0.73vw,3.5rem); text-rendering:geometricPrecision;">${defaultReduction}%</span>
                     </div>
                     <div>
                       <p id="ealReductionText" class="text-primary font-bold" style="font-size:clamp(0.72rem,0.68vw,3.25rem)">평가기간 약 ${defaultReduction}% 단축</p>
@@ -763,8 +821,8 @@ export function homePage(opts: {
                     </div>
                   </div>
                   <div class="flex items-center flex-wrap" style="gap:clamp(6px,0.36vw,12px)">
-                    <span id="simKoistPrepResult" class="font-medium" style="font-size:clamp(0.62rem,0.57vw,2.75rem); color:#F59E0B"><i class="fas fa-file-pen" style="font-size:clamp(7px,0.42vw,14px); margin-right:2px;"></i>준비 <strong>6</strong>개월</span>
-                    <span id="simKoistEvalResult" class="font-medium" style="font-size:clamp(0.62rem,0.57vw,2.75rem); color:#3B82F6"><i class="fas fa-magnifying-glass" style="font-size:clamp(7px,0.42vw,14px); margin-right:2px;"></i>평가 <strong>9</strong>개월</span>
+                    <span id="simKoistPrepResult" class="font-medium" style="font-size:clamp(0.62rem,0.57vw,2.75rem); color:${cfg.koistPrepColor}"><i class="fas fa-file-pen" style="font-size:clamp(7px,0.42vw,14px); margin-right:2px;"></i>준비 <strong>6</strong>개월</span>
+                    <span id="simKoistEvalResult" class="font-medium" style="font-size:clamp(0.62rem,0.57vw,2.75rem); color:${cfg.koistEvalColor}"><i class="fas fa-magnifying-glass" style="font-size:clamp(7px,0.42vw,14px); margin-right:2px;"></i>평가 <strong>9</strong>개월</span>
                     <span class="text-slate-300">|</span>
                     <span class="font-medium" style="font-size:clamp(0.62rem,0.57vw,2.75rem); color:#64748B"><strong>${totalEvals}</strong>건 평가실적</span>
                   </div>
@@ -1839,6 +1897,29 @@ export function homePage(opts: {
       observer.observe(bars[0].closest('.bar-chart-container') || bars[0]);
     }
 
+    // v39.4: 슬라이더 UI 관리자 설정 (색상·텍스트·반올림 정책) — 서버에서 주입
+    window.SLIDER_CFG = ${sliderCfgJson};
+
+    // v39.4: 공통 표시 포맷터 — SLIDER_CFG.totalMode 에 따라 동작
+    //   sum     : round(prep)+round(eval)  (Option C, 준비+평가 합 = 총합, 권장)
+    //   round   : round(total)             (v39.2 이전 방식, ±1개월 오차 가능)
+    //   decimal : total.toFixed(N)         (소수점 N자리 표시)
+    function roundByMode(v) {
+      var m = (window.SLIDER_CFG && window.SLIDER_CFG.roundMode) || 'round';
+      if (m === 'ceil')  return Math.ceil(v);
+      if (m === 'floor') return Math.floor(v);
+      return Math.round(v);
+    }
+    function formatNumber(v) {
+      var cfg = window.SLIDER_CFG || {};
+      var dp = parseInt(cfg.decimalPlaces, 10) || 0;
+      if (cfg.totalMode === 'decimal' && dp > 0) return (+v).toFixed(dp);
+      return String(roundByMode(v));
+    }
+    function applyTpl(tpl, n) {
+      return String(tpl == null ? '{N}' : tpl).replace(/\\{N\\}/g, n);
+    }
+
     // v39.1: ealData는 소수점 1자리 정밀도로 서버에서 계산된 값 (반올림 손실 제거)
     //        - general.prepMin/prepMax/evalMin/evalMax: traditional_min_weeks 반영을 위한 보간 범위
     //        - general.prep/eval: 레거시 호환용 50%지점 기본값 (현재 simulate에서는 사용하지 않음)
@@ -1887,21 +1968,40 @@ export function homePage(opts: {
       var kMaxAbs = d.koist.prepMax + d.koist.evalMax;
       var absMax = Math.max(gMaxAbs, kMaxAbs, 0.1);
 
-      // v39.3 FIX: "바 위 총합 = 바 안 준비+평가" 시각적 정합성 확보
+      // v39.3/v39.4 FIX: "바 위 총합 = 바 안 준비+평가" 시각적 정합성 확보
       // ─────────────────────────────────────────────────────────────
+      // v39.4: totalMode 에 따른 분기
+      //   - 'sum'     : displayTotal = round(prep) + round(eval)   (Option C, 정합성 100%, 권장)
+      //   - 'round'   : displayTotal = round(total)                (v39.2 이전 방식, ±1 오차 가능)
+      //   - 'decimal' : displayTotal = total.toFixed(N)            (소수 N자리 문자열)
       // 과거(v39.2): round(prep), round(eval), round(total)을 독립 적용
       //   → round(a)+round(b) ≠ round(a+b) 현상으로 25%의 포인트에서
       //     "준비 5 + 평가 4 ≠ 약 8개월" 같은 덧셈 불일치 발생
-      // v39.3(Option C): displayTotal = round(prep) + round(eval) 강제
-      //   → 사용자가 보는 "준비+평가"의 합이 항상 "약 N개월"과 일치
-      //   → 단축률(reduction)·바 너비 계산은 여전히 실수값 유지
-      var rgP = Math.round(gPrepF);
-      var rgE = Math.round(gEvalF);
-      var rkP = Math.round(kPrepF);
-      var rkE = Math.round(kEvalF);
-      var gDisplayTotal = rgP + rgE;   // ← CCRA 바 위 "약 N개월" 표시값
-      var kDisplayTotal = rkP + rkE;   // ← KOIST 바 위 "약 N개월" 표시값
-      var displaySaving = gDisplayTotal - kDisplayTotal;  // ← 바 뺄셈과 정합
+      var mode = (window.SLIDER_CFG && window.SLIDER_CFG.totalMode) || 'sum';
+      var rgP, rgE, rkP, rkE, gDisplayTotal, kDisplayTotal, displaySaving;
+      if (mode === 'decimal') {
+        var dp = parseInt((window.SLIDER_CFG && window.SLIDER_CFG.decimalPlaces) || '1', 10) || 1;
+        rgP = (+gPrepF).toFixed(dp);
+        rgE = (+gEvalF).toFixed(dp);
+        rkP = (+kPrepF).toFixed(dp);
+        rkE = (+kEvalF).toFixed(dp);
+        gDisplayTotal = (+gTotalF).toFixed(dp);
+        kDisplayTotal = (+kTotalF).toFixed(dp);
+        displaySaving = (+(gTotalF - kTotalF)).toFixed(dp);
+      } else if (mode === 'round') {
+        rgP = roundByMode(gPrepF); rgE = roundByMode(gEvalF);
+        rkP = roundByMode(kPrepF); rkE = roundByMode(kEvalF);
+        gDisplayTotal = roundByMode(gTotalF);
+        kDisplayTotal = roundByMode(kTotalF);
+        displaySaving = roundByMode(gTotalF - kTotalF);
+      } else {
+        // sum (Option C) — 기본/권장
+        rgP = roundByMode(gPrepF); rgE = roundByMode(gEvalF);
+        rkP = roundByMode(kPrepF); rkE = roundByMode(kEvalF);
+        gDisplayTotal = rgP + rgE;
+        kDisplayTotal = rkP + rkE;
+        displaySaving = gDisplayTotal - kDisplayTotal;
+      }
 
       return {
         general: {
@@ -1926,15 +2026,18 @@ export function homePage(opts: {
     function fmtM(v) { return Math.round(v).toString(); }
 
     function getColor(prepVal) {
-      if (prepVal <= 25) return '#EF4444';
-      if (prepVal <= 50) return '#F59E0B';
-      if (prepVal <= 75) return '#10B981';
-      return '#3B82F6';
+      // v39.4: 사전준비 트랙 4단계 색상도 관리자 설정 반영
+      var C = window.SLIDER_CFG || {};
+      if (prepVal <= 25) return C.trackColor1 || '#EF4444';
+      if (prepVal <= 50) return C.trackColor2 || '#F59E0B';
+      if (prepVal <= 75) return C.trackColor3 || '#10B981';
+      return C.trackColor4 || '#3B82F6';
     }
 
     function updateChart() {
       var d = simulate(currentEAL, currentPrep);
       if (!d) return;
+      var C = window.SLIDER_CFG || {};
 
       document.querySelectorAll('.eal-tab').forEach(function(t) { t.classList.toggle('active', t.getAttribute('data-eal') === currentEAL); });
 
@@ -1944,50 +2047,73 @@ export function homePage(opts: {
       var gPrepPct = d.general.total > 0 ? Math.round((d.general.prep / d.general.total) * 100) : 50;
       var gBar = document.getElementById('ealGeneralBar');
       if (gBar) {
-        gBar.style.transition = 'width 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-        gBar.style.width = Math.max(gWidthPct, 15) + '%';
-        gBar.style.background = 'linear-gradient(90deg, #F59E0B 0%, #F59E0B ' + gPrepPct + '%, #94A3B8 ' + gPrepPct + '%, #94A3B8 100%)';
+        var gTrans = (C.genTransition != null ? C.genTransition : 0.7);
+        var gMinW = (C.genMinWidth != null ? C.genMinWidth : 15);
+        var gPC = C.genPrepColor || '#F59E0B';
+        var gEC = C.genEvalColor || '#94A3B8';
+        gBar.style.transition = 'width ' + gTrans + 's cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        gBar.style.width = Math.max(gWidthPct, gMinW) + '%';
+        gBar.style.background = 'linear-gradient(90deg, ' + gPC + ' 0%, ' + gPC + ' ' + gPrepPct + '%, ' + gEC + ' ' + gPrepPct + '%, ' + gEC + ' 100%)';
       }
-      // v39.3 FIX: 바 위 총합을 displayTotal(=displayPrep+displayEval)로 고정
-      //   → "준비 N개월 + 평가 M개월 = 약 (N+M)개월" 덧셈 정합성 100% 보장
+      // v39.3/v39.4 FIX: 바 위 총합을 displayTotal(=displayPrep+displayEval)로 고정 — 텍스트 포맷 관리자 설정
       var gTotal = document.getElementById('ealGeneralTotal');
-      if (gTotal) gTotal.textContent = '약 ' + d.general.displayTotal + '개월';
+      if (gTotal) gTotal.textContent = applyTpl(C.totalFormat, d.general.displayTotal);
       var gPrep = document.getElementById('ealGeneralPrep');
-      if (gPrep) gPrep.textContent = '준비 ' + d.general.displayPrep + '개월';
+      if (gPrep) gPrep.textContent = applyTpl(C.prepFormat, d.general.displayPrep);
       var gEval = document.getElementById('ealGeneralEval');
-      if (gEval) gEval.textContent = '평가 ' + d.general.displayEval + '개월';
+      if (gEval) gEval.textContent = applyTpl(C.evalFormat, d.general.displayEval);
 
       var kWidthPct = d.maxBar > 0 ? Math.round((d.koist.total / d.maxBar) * 100) : 50;
       var kPrepPct = d.koist.total > 0 ? Math.round((d.koist.prep / d.koist.total) * 100) : 50;
       var kBar = document.getElementById('ealKoistBar');
       if (kBar) {
-        kBar.style.transition = 'width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-        kBar.style.width = Math.max(kWidthPct, 8) + '%';
-        kBar.style.background = 'linear-gradient(90deg, #F59E0B 0%, #F59E0B ' + kPrepPct + '%, #3B82F6 ' + kPrepPct + '%, #3B82F6 100%)';
+        var kTrans = (C.koistTransition != null ? C.koistTransition : 0.5);
+        var kMinW = (C.koistMinWidth != null ? C.koistMinWidth : 8);
+        var kPC = C.koistPrepColor || '#F59E0B';
+        var kEC = C.koistEvalColor || '#3B82F6';
+        kBar.style.transition = 'width ' + kTrans + 's cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        kBar.style.width = Math.max(kWidthPct, kMinW) + '%';
+        kBar.style.background = 'linear-gradient(90deg, ' + kPC + ' 0%, ' + kPC + ' ' + kPrepPct + '%, ' + kEC + ' ' + kPrepPct + '%, ' + kEC + ' 100%)';
       }
-      // v39.3 FIX: KOIST 바도 동일 정합성 보장
+      // v39.3/v39.4 FIX: KOIST 바도 동일 정합성 보장 + 텍스트 포맷 관리자 설정
       var kTotal = document.getElementById('ealKoistTotal');
-      if (kTotal) kTotal.textContent = '약 ' + d.koist.displayTotal + '개월';
+      if (kTotal) kTotal.textContent = applyTpl(C.totalFormat, d.koist.displayTotal);
       var kPrep = document.getElementById('ealKoistPrep');
-      if (kPrep) kPrep.textContent = '준비 ' + d.koist.displayPrep + '개월';
+      if (kPrep) kPrep.textContent = applyTpl(C.prepFormat, d.koist.displayPrep);
       var kEval = document.getElementById('ealKoistEval');
-      if (kEval) kEval.textContent = '평가 ' + d.koist.displayEval + '개월';
+      if (kEval) kEval.textContent = applyTpl(C.evalFormat, d.koist.displayEval);
 
       var badge = document.getElementById('ealReductionBadge');
-      if (badge) badge.querySelector('span').textContent = d.reduction + '%';
+      if (badge) {
+        badge.querySelector('span').textContent = applyTpl(C.reductionFormat, d.reduction);
+        // v39.4: 단축률 뱃지 색상도 관리자 설정 적용
+        if (C.badgeGradStart && C.badgeGradEnd) {
+          badge.style.background = 'linear-gradient(135deg, ' + C.badgeGradStart + ', ' + C.badgeGradEnd + ')';
+        }
+        if (C.badgeTextColor) {
+          var bs = badge.querySelector('span');
+          if (bs) bs.style.color = C.badgeTextColor;
+        }
+      }
       var hdrPct = document.getElementById('headerReductionPct');
-      if (hdrPct) hdrPct.textContent = d.reduction + '%';
+      if (hdrPct) hdrPct.textContent = applyTpl(C.reductionFormat, d.reduction);
       var redText = document.getElementById('ealReductionText');
-      if (redText) redText.textContent = '평가기간 약 ' + d.reduction + '% 단축';
-      // v39.3 FIX: 절감 = (바 위 CCRA총) - (바 위 KOIST총) 으로 정합
+      if (redText) redText.textContent = '평가기간 약 ' + applyTpl(C.reductionFormat, d.reduction) + ' 단축';
+      // v39.3/v39.4 FIX: 절감 = (바 위 CCRA총) - (바 위 KOIST총) 으로 정합 + 포맷 관리자 설정
       var savText = document.getElementById('ealSavingText');
-      if (savText) savText.textContent = '약 ' + d.displaySaving + '개월 절감 \\u00b7 원스톱 서비스';
+      if (savText) savText.textContent = applyTpl(C.savingFormat, d.displaySaving) + ' \\u00b7 원스톱 서비스';
 
-      // v39.3 FIX: 하단 요약 영역도 displayPrep/displayEval 사용 (KOIST 바와 동일한 숫자)
+      // v39.3/v39.4 FIX: 하단 요약 영역도 displayPrep/displayEval 사용 (KOIST 바와 동일한 숫자)
       var simPrep = document.getElementById('simKoistPrepResult');
-      if (simPrep) simPrep.innerHTML = '<i class="fas fa-file-pen" style="font-size:8px; margin-right:2px;"></i>준비 <strong>' + d.koist.displayPrep + '</strong>개월';
+      if (simPrep) {
+        simPrep.innerHTML = '<i class="fas fa-file-pen" style="font-size:8px; margin-right:2px;"></i>' + applyTpl(C.prepFormat.replace('{N}', '<strong>{N}</strong>'), d.koist.displayPrep);
+        if (C.koistPrepColor) simPrep.style.color = C.koistPrepColor;
+      }
       var simEval = document.getElementById('simKoistEvalResult');
-      if (simEval) simEval.innerHTML = '<i class="fas fa-magnifying-glass" style="font-size:8px; margin-right:2px;"></i>평가 <strong>' + d.koist.displayEval + '</strong>개월';
+      if (simEval) {
+        simEval.innerHTML = '<i class="fas fa-magnifying-glass" style="font-size:8px; margin-right:2px;"></i>' + applyTpl(C.evalFormat.replace('{N}', '<strong>{N}</strong>'), d.koist.displayEval);
+        if (C.koistEvalColor) simEval.style.color = C.koistEvalColor;
+      }
     }
 
     function updatePrepUI(val) {

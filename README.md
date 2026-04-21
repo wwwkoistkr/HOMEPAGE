@@ -1,11 +1,84 @@
-# KOIST Website v39.1
+# KOIST Website v39.4
 
-**(주)한국정보보안기술원** 공식 웹사이트 - AI Simulator Sensitivity Improvement + XSS Hardening + 8K Ultra Sharp
+**(주)한국정보보안기술원** 공식 웹사이트 — AI Simulator Slider Admin Control + Bar Sum Consistency
 
 ## URLs
-- **Production**: https://koist-website.pages.dev
+- **Production**: https://koist-website.pages.dev (메인)
+- **Latest Deploy**: https://288bf665.koist-website.pages.dev (v39.4)
 - **GitHub**: https://github.com/wwwkoistkr/HOMEPAGE
-- **관리자**: /admin (스크립트로 생성, 아래 "관리자 계정 설정" 참조)
+- **관리자**: /admin
+- **🆕 슬라이더 UI 설정**: /admin/slider-settings (v39.4 신규)
+
+## 🎨 v39.4 — 슬라이더 UI 관리자 제어 (2026-04-21)
+
+### 목표
+AI 시뮬레이터 히어로 배너에 표시되는 **모든 숫자 포맷·색상·반올림 정책**을 관리자 모드에서 실시간으로 제어할 수 있도록 통합.
+
+### 신규 기능 (32개 설정 키, category='slider')
+| 그룹 | 키 개수 | 대표 키 |
+|---|:---:|---|
+| 반올림·표시 정책 | 4 | `slider_total_mode` (sum/round/decimal), `slider_round_mode` |
+| 텍스트 포맷 템플릿 | 7 | `slider_total_format` ("약 {N}개월") |
+| CCRA 바 | 4 | `slider_gen_prep_color`, `slider_gen_eval_color` |
+| KOIST 바 | 4 | `slider_koist_prep_color`, `slider_koist_eval_color` |
+| 사전준비 트랙 4단계 | 5 | `slider_track_color_1` ~ `_4` |
+| 단축률 뱃지 | 3 | `slider_badge_grad_start`/`_end` |
+| 분배 비율 & 변환 | 5 | `slider_gen_prep_ratio`, `slider_weeks_per_month` |
+
+### 관리자 UI (`/admin/slider-settings`)
+- 🎨 **라이브 프리뷰**: 색상 변경 즉시 샘플 바에 반영
+- 🔧 **컬러 피커 + HEX 동기화**: 양방향 입력
+- 📦 **4종 프리셋**: 기본 / 모노톤 / 다크 / 파스텔 (1클릭 전체 적용)
+- 🔄 **전체 기본값 복원** 버튼
+- 💾 **전체 저장** (한 번의 PUT 요청으로 32개 키 일괄 처리)
+
+### API 엔드포인트 (신규)
+- `GET  /api/admin/slider-settings` — 전체 조회
+- `PUT  /api/admin/slider-settings` — 일괄 저장 `{key: value, ...}`
+- `POST /api/admin/slider-settings/reset` — 기본값 복원
+- `POST /api/admin/slider-settings/preset/:name` — 프리셋 적용 (default/monotone/dark/pastel)
+
+### 핵심 "합계 정합성" 옵션
+- `slider_total_mode = 'sum'` (기본·권장): **round(준비) + round(평가) = 총합** — 108/108 정합
+- `slider_total_mode = 'round'`: round(total) — v39.2 이전 방식, ±1개월 오차 허용
+- `slider_total_mode = 'decimal'`: 소수 N자리 표시 ("8.3개월") — 정합성 100%
+
+### 검증 결과 (Playwright, 프로덕션)
+- CCRA 바 정합성: **36/36 (100%)**
+- KOIST 바 정합성: **36/36 (100%)**
+- 절감값 정합성: **36/36 (100%)**
+- 합계 **108/108 포인트 PASS**, 0 에러
+- SLIDER_CFG 주입: 27 keys 정상 로드 확인
+- E2E: DB 색상 변경 → 홈페이지 즉시 반영 확인
+
+### 변경 파일
+- `migrations/0029_slider_admin_settings.sql` — 신규 32개 키 INSERT
+- `src/routes/admin.ts` — slider-settings CRUD + preset + reset API
+- `src/templates/admin/index.tsx` — 메뉴에 "슬라이더 UI 설정" 추가
+- `src/index.tsx` — `/admin/slider-settings` 페이지 라우트
+- `src/templates/home.tsx` — SLIDER_CFG 주입 + 모든 하드코딩 색상을 DB 값으로 대체
+- `public/static/js/admin-slider-settings.js` — 관리자 UI (신규, ~500줄)
+
+---
+
+## 🎯 v39.3 — CCRA/KOIST 바 합계 = 준비+평가 정합성 (2026-04-21)
+
+### 문제
+EAL2·EAL4 설정 시 "바 위 N개월" ≠ "바 안의 준비 + 평가 개월 합" (±1개월 차이).
+
+### 원인
+`Math.round(a) + Math.round(b) ≠ Math.round(a+b)` — 각자 반올림 시 최대 1의 오차 발생.
+
+### 해결 (Option C)
+`displayTotal = round(prep) + round(eval)` 강제 → 108/108 포인트 100% 정합.
+
+### 관련 문서
+- `docs/FINAL_PRECISION_ANALYSIS_v39.3_EAL2_EAL4_20260421.md`
+- `docs/BAR_TOTAL_MISMATCH_ANALYSIS_20260421.md`
+- `docs/PRECISION_ANALYSIS_REPORT_v39.2.1_20260421.md`
+- `docs/SLIDER_ADMIN_CONTROL_FEASIBILITY_20260421.md`
+
+---
 
 ## 🎯 v39.1 AI 시뮬레이터 감도 개선 패치 (2026-04-21)
 

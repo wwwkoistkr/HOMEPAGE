@@ -505,7 +505,7 @@ app.get('/admin/background-media', authMiddleware, csrfCookieMiddleware, async (
 });
 
 // Admin CRUD pages
-const adminPages = ['site-settings', 'departments', 'popups', 'notices', 'progress', 'downloads', 'faqs', 'inquiries', 'images', 'about', 'sim-cert-types'];
+const adminPages = ['site-settings', 'departments', 'popups', 'notices', 'progress', 'downloads', 'faqs', 'inquiries', 'images', 'about', 'sim-cert-types', 'slider-settings'];
 for (const page of adminPages) {
   app.get(`/admin/${page}`, authMiddleware, csrfCookieMiddleware, async (c) => {
     const db = c.env.DB;
@@ -536,6 +536,7 @@ function getAdminPageTitle(page: string): string {
     inquiries: '<i class="fas fa-envelope text-orange-500 mr-2"></i>상담문의 관리',
     about: '<i class="fas fa-info-circle text-indigo-500 mr-2"></i>소개 페이지 관리',
     'sim-cert-types': '<i class="fas fa-robot text-cyan-500 mr-2"></i>AI 시뮬레이터 인증유형 관리',
+    'slider-settings': '<i class="fas fa-sliders text-amber-500 mr-2"></i>슬라이더 UI 설정 (색상·텍스트·반올림)',
   };
   return titles[page] || page;
 }

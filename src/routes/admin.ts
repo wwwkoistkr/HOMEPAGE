@@ -58,6 +58,159 @@ admin.put('/settings/:key', async (c) => {
   return c.json({ success: true });
 });
 
+// ──────────────────────────────────────────────────────────────────────────
+// v39.4: AI 시뮬레이터 슬라이더 전용 설정 (category='slider') CRUD
+// ──────────────────────────────────────────────────────────────────────────
+// GET  /api/admin/slider-settings          → 전체 조회 (카테고리='slider')
+// PUT  /api/admin/slider-settings          → 여러 키 일괄 저장 {key:value, ...}
+// POST /api/admin/slider-settings/reset    → 기본값으로 리셋
+// POST /api/admin/slider-settings/preset/:name → 사전 정의 프리셋 적용
+// ──────────────────────────────────────────────────────────────────────────
+
+admin.get('/slider-settings', async (c) => {
+  const result = await c.env.DB.prepare(
+    "SELECT key, value, description FROM site_settings WHERE category = 'slider' ORDER BY key"
+  ).all();
+  return c.json({ success: true, data: result.results });
+});
+
+admin.put('/slider-settings', async (c) => {
+  const body = await c.req.json<Record<string, string>>();
+  if (!body || typeof body !== 'object') {
+    return c.json({ error: 'Request body must be a key-value object' }, 400);
+  }
+  const db = c.env.DB;
+  const stmts: any[] = [];
+  let updated = 0;
+  for (const [key, val] of Object.entries(body)) {
+    if (typeof key !== 'string' || !key.startsWith('slider_')) continue; // 안전장치
+    const value = val == null ? '' : String(val);
+    stmts.push(
+      db.prepare(
+        "UPDATE site_settings SET value = ?, updated_at = CURRENT_TIMESTAMP WHERE key = ? AND category = 'slider'"
+      ).bind(value, key)
+    );
+    updated++;
+  }
+  if (stmts.length > 0) {
+    await db.batch(stmts);
+  }
+  return c.json({ success: true, updated });
+});
+
+// 슬라이더 기본값 (마이그레이션 0029와 동일)
+const SLIDER_DEFAULTS: Record<string, string> = {
+  slider_total_mode: 'sum',
+  slider_round_mode: 'round',
+  slider_decimal_places: '0',
+  slider_number_unit: '개월',
+  slider_total_format: '약 {N}개월',
+  slider_prep_format: '준비 {N}개월',
+  slider_eval_format: '평가 {N}개월',
+  slider_reduction_format: '{N}%',
+  slider_saving_format: '약 {N}개월 절감',
+  slider_prep_label: '준비',
+  slider_eval_label: '평가',
+  slider_gen_prep_color: '#F59E0B',
+  slider_gen_eval_color: '#94A3B8',
+  slider_gen_min_width: '15',
+  slider_gen_transition: '0.7',
+  slider_koist_prep_color: '#F59E0B',
+  slider_koist_eval_color: '#3B82F6',
+  slider_koist_min_width: '8',
+  slider_koist_transition: '0.5',
+  slider_track_color_1: '#EF4444',
+  slider_track_color_2: '#F59E0B',
+  slider_track_color_3: '#10B981',
+  slider_track_color_4: '#3B82F6',
+  slider_track_opacity: '0.20',
+  slider_badge_grad_start: '#10B981',
+  slider_badge_grad_end: '#059669',
+  slider_badge_text_color: '#FFFFFF',
+  slider_gen_prep_ratio: '55',
+  slider_gen_eval_ratio: '45',
+  slider_koist_prep_ratio: '40',
+  slider_koist_eval_ratio: '60',
+  slider_weeks_per_month: '4.345',
+};
+
+admin.post('/slider-settings/reset', async (c) => {
+  const db = c.env.DB;
+  const stmts = Object.entries(SLIDER_DEFAULTS).map(([k, v]) =>
+    db.prepare(
+      "UPDATE site_settings SET value = ?, updated_at = CURRENT_TIMESTAMP WHERE key = ? AND category = 'slider'"
+    ).bind(v, k)
+  );
+  await db.batch(stmts);
+  return c.json({ success: true, reset: stmts.length });
+});
+
+// 색상 프리셋: 기본/모노톤/다크/파스텔
+const SLIDER_PRESETS: Record<string, Record<string, string>> = {
+  default: {
+    slider_gen_prep_color: '#F59E0B',
+    slider_gen_eval_color: '#94A3B8',
+    slider_koist_prep_color: '#F59E0B',
+    slider_koist_eval_color: '#3B82F6',
+    slider_track_color_1: '#EF4444',
+    slider_track_color_2: '#F59E0B',
+    slider_track_color_3: '#10B981',
+    slider_track_color_4: '#3B82F6',
+    slider_badge_grad_start: '#10B981',
+    slider_badge_grad_end: '#059669',
+  },
+  monotone: {
+    slider_gen_prep_color: '#64748B',
+    slider_gen_eval_color: '#CBD5E1',
+    slider_koist_prep_color: '#475569',
+    slider_koist_eval_color: '#94A3B8',
+    slider_track_color_1: '#334155',
+    slider_track_color_2: '#64748B',
+    slider_track_color_3: '#94A3B8',
+    slider_track_color_4: '#CBD5E1',
+    slider_badge_grad_start: '#334155',
+    slider_badge_grad_end: '#1E293B',
+  },
+  dark: {
+    slider_gen_prep_color: '#DC2626',
+    slider_gen_eval_color: '#1F2937',
+    slider_koist_prep_color: '#DC2626',
+    slider_koist_eval_color: '#1D4ED8',
+    slider_track_color_1: '#991B1B',
+    slider_track_color_2: '#B91C1C',
+    slider_track_color_3: '#15803D',
+    slider_track_color_4: '#1D4ED8',
+    slider_badge_grad_start: '#065F46',
+    slider_badge_grad_end: '#064E3B',
+  },
+  pastel: {
+    slider_gen_prep_color: '#FCD34D',
+    slider_gen_eval_color: '#E5E7EB',
+    slider_koist_prep_color: '#FCD34D',
+    slider_koist_eval_color: '#93C5FD',
+    slider_track_color_1: '#FCA5A5',
+    slider_track_color_2: '#FCD34D',
+    slider_track_color_3: '#6EE7B7',
+    slider_track_color_4: '#93C5FD',
+    slider_badge_grad_start: '#6EE7B7',
+    slider_badge_grad_end: '#34D399',
+  },
+};
+
+admin.post('/slider-settings/preset/:name', async (c) => {
+  const name = c.req.param('name');
+  const preset = SLIDER_PRESETS[name];
+  if (!preset) return c.json({ error: `Unknown preset: ${name}` }, 400);
+  const db = c.env.DB;
+  const stmts = Object.entries(preset).map(([k, v]) =>
+    db.prepare(
+      "UPDATE site_settings SET value = ?, updated_at = CURRENT_TIMESTAMP WHERE key = ? AND category = 'slider'"
+    ).bind(v, k)
+  );
+  await db.batch(stmts);
+  return c.json({ success: true, preset: name, applied: stmts.length });
+});
+
 // ---- Popups CRUD ----
 admin.get('/popups', async (c) => {
   const result = await c.env.DB.prepare('SELECT * FROM popups ORDER BY sort_order').all();
