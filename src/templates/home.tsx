@@ -1886,15 +1886,40 @@ export function homePage(opts: {
         : (g.prep + g.eval);
       var kMaxAbs = d.koist.prepMax + d.koist.evalMax;
       var absMax = Math.max(gMaxAbs, kMaxAbs, 0.1);
+
+      // v39.3 FIX: "바 위 총합 = 바 안 준비+평가" 시각적 정합성 확보
+      // ─────────────────────────────────────────────────────────────
+      // 과거(v39.2): round(prep), round(eval), round(total)을 독립 적용
+      //   → round(a)+round(b) ≠ round(a+b) 현상으로 25%의 포인트에서
+      //     "준비 5 + 평가 4 ≠ 약 8개월" 같은 덧셈 불일치 발생
+      // v39.3(Option C): displayTotal = round(prep) + round(eval) 강제
+      //   → 사용자가 보는 "준비+평가"의 합이 항상 "약 N개월"과 일치
+      //   → 단축률(reduction)·바 너비 계산은 여전히 실수값 유지
+      var rgP = Math.round(gPrepF);
+      var rgE = Math.round(gEvalF);
+      var rkP = Math.round(kPrepF);
+      var rkE = Math.round(kEvalF);
+      var gDisplayTotal = rgP + rgE;   // ← CCRA 바 위 "약 N개월" 표시값
+      var kDisplayTotal = rkP + rkE;   // ← KOIST 바 위 "약 N개월" 표시값
+      var displaySaving = gDisplayTotal - kDisplayTotal;  // ← 바 뺄셈과 정합
+
       return {
-        general: { prep: gPrepF, eval: gEvalF, total: gTotalF },
-        koist: { prep: kPrepF, eval: kEvalF, total: kTotalF },
+        general: {
+          prep: gPrepF, eval: gEvalF, total: gTotalF,
+          // v39.3: 화면 표시 전용 (Option C, 바 정합성 보장)
+          displayPrep: rgP, displayEval: rgE, displayTotal: gDisplayTotal
+        },
+        koist: {
+          prep: kPrepF, eval: kEvalF, total: kTotalF,
+          displayPrep: rkP, displayEval: rkE, displayTotal: kDisplayTotal
+        },
         maxBar: absMax,
         gMaxAbs: gMaxAbs,
         kMaxAbs: kMaxAbs,
-        // 단축률은 반올림 전 실수값으로 계산 → 마지막 단계에서만 round
+        // 단축률은 반올림 전 실수값으로 계산 → 마지막 단계에서만 round (무변경)
         reduction: gTotalF > 0 ? Math.round((1 - kTotalF / gTotalF) * 100) : 0,
-        saving: gTotalF - kTotalF
+        saving: gTotalF - kTotalF,         // 실수 saving (내부용)
+        displaySaving: displaySaving       // v39.3: 바 뺄셈과 정합된 표시값
       };
     }
 
@@ -1923,12 +1948,14 @@ export function homePage(opts: {
         gBar.style.width = Math.max(gWidthPct, 15) + '%';
         gBar.style.background = 'linear-gradient(90deg, #F59E0B 0%, #F59E0B ' + gPrepPct + '%, #94A3B8 ' + gPrepPct + '%, #94A3B8 100%)';
       }
+      // v39.3 FIX: 바 위 총합을 displayTotal(=displayPrep+displayEval)로 고정
+      //   → "준비 N개월 + 평가 M개월 = 약 (N+M)개월" 덧셈 정합성 100% 보장
       var gTotal = document.getElementById('ealGeneralTotal');
-      if (gTotal) gTotal.textContent = '약 ' + Math.round(d.general.total) + '개월';
+      if (gTotal) gTotal.textContent = '약 ' + d.general.displayTotal + '개월';
       var gPrep = document.getElementById('ealGeneralPrep');
-      if (gPrep) gPrep.textContent = '준비 ' + Math.round(d.general.prep) + '개월';
+      if (gPrep) gPrep.textContent = '준비 ' + d.general.displayPrep + '개월';
       var gEval = document.getElementById('ealGeneralEval');
-      if (gEval) gEval.textContent = '평가 ' + Math.round(d.general.eval) + '개월';
+      if (gEval) gEval.textContent = '평가 ' + d.general.displayEval + '개월';
 
       var kWidthPct = d.maxBar > 0 ? Math.round((d.koist.total / d.maxBar) * 100) : 50;
       var kPrepPct = d.koist.total > 0 ? Math.round((d.koist.prep / d.koist.total) * 100) : 50;
@@ -1938,12 +1965,13 @@ export function homePage(opts: {
         kBar.style.width = Math.max(kWidthPct, 8) + '%';
         kBar.style.background = 'linear-gradient(90deg, #F59E0B 0%, #F59E0B ' + kPrepPct + '%, #3B82F6 ' + kPrepPct + '%, #3B82F6 100%)';
       }
+      // v39.3 FIX: KOIST 바도 동일 정합성 보장
       var kTotal = document.getElementById('ealKoistTotal');
-      if (kTotal) kTotal.textContent = '약 ' + fmtM(d.koist.total) + '개월';
+      if (kTotal) kTotal.textContent = '약 ' + d.koist.displayTotal + '개월';
       var kPrep = document.getElementById('ealKoistPrep');
-      if (kPrep) kPrep.textContent = '준비 ' + fmtM(d.koist.prep) + '개월';
+      if (kPrep) kPrep.textContent = '준비 ' + d.koist.displayPrep + '개월';
       var kEval = document.getElementById('ealKoistEval');
-      if (kEval) kEval.textContent = '평가 ' + fmtM(d.koist.eval) + '개월';
+      if (kEval) kEval.textContent = '평가 ' + d.koist.displayEval + '개월';
 
       var badge = document.getElementById('ealReductionBadge');
       if (badge) badge.querySelector('span').textContent = d.reduction + '%';
@@ -1951,13 +1979,15 @@ export function homePage(opts: {
       if (hdrPct) hdrPct.textContent = d.reduction + '%';
       var redText = document.getElementById('ealReductionText');
       if (redText) redText.textContent = '평가기간 약 ' + d.reduction + '% 단축';
+      // v39.3 FIX: 절감 = (바 위 CCRA총) - (바 위 KOIST총) 으로 정합
       var savText = document.getElementById('ealSavingText');
-      if (savText) savText.textContent = '약 ' + fmtM(d.saving) + '개월 절감 \\u00b7 원스톱 서비스';
+      if (savText) savText.textContent = '약 ' + d.displaySaving + '개월 절감 \\u00b7 원스톱 서비스';
 
+      // v39.3 FIX: 하단 요약 영역도 displayPrep/displayEval 사용 (KOIST 바와 동일한 숫자)
       var simPrep = document.getElementById('simKoistPrepResult');
-      if (simPrep) simPrep.innerHTML = '<i class="fas fa-file-pen" style="font-size:8px; margin-right:2px;"></i>준비 <strong>' + fmtM(d.koist.prep) + '</strong>개월';
+      if (simPrep) simPrep.innerHTML = '<i class="fas fa-file-pen" style="font-size:8px; margin-right:2px;"></i>준비 <strong>' + d.koist.displayPrep + '</strong>개월';
       var simEval = document.getElementById('simKoistEvalResult');
-      if (simEval) simEval.innerHTML = '<i class="fas fa-magnifying-glass" style="font-size:8px; margin-right:2px;"></i>평가 <strong>' + fmtM(d.koist.eval) + '</strong>개월';
+      if (simEval) simEval.innerHTML = '<i class="fas fa-magnifying-glass" style="font-size:8px; margin-right:2px;"></i>평가 <strong>' + d.koist.displayEval + '</strong>개월';
     }
 
     function updatePrepUI(val) {
