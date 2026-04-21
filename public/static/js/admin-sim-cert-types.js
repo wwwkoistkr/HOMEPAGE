@@ -20,9 +20,21 @@
       <div class="flex items-start gap-2 text-sm text-cyan-700">
         <i class="fas fa-robot mt-0.5"></i>
         <div>
-          <p class="font-medium mb-1">AI 인증 소요시간 시뮬레이터 데이터</p>
+          <p class="font-medium mb-1">AI 인증 소요시간 시뮬레이터 데이터 <span class="text-[10px] bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 font-bold ml-1">v39.1 감도 개선</span></p>
           <p class="text-xs text-cyan-600">홈페이지 상단 AI 시뮬레이터 히어로 배너에 표시되는 인증유형별 기간 데이터를 관리합니다.</p>
           <p class="text-xs text-cyan-600 mt-1"><strong>CCRA평가일수</strong>: 일반 프로세스의 최소~최대 기간(주) / <strong>KOIST</strong>: KOIST 프로세스의 최소~최대 기간(주)</p>
+          <p class="text-[11px] text-amber-700 mt-2 bg-amber-50 border border-amber-200 rounded-lg p-2">
+            <i class="fas fa-circle-info mr-1"></i>
+            <strong>입력 가이드</strong>:
+            <br>• <strong>최소(사전준비 100%)</strong>: 고객이 사전준비를 완벽히 했을 때의 예상 기간(가장 짧음)
+            <br>• <strong>최대(사전준비 1%)</strong>: 사전준비가 전혀 없을 때의 예상 기간(가장 김)
+            <br>• 홈 슬라이더(사전준비 1~100%)가 이 최소~최대 사이를 <strong>실시간 보간</strong>합니다.
+            <br>• 홈 시뮬레이터에 <strong>실제 반영되는 항목은 CC평가 (EAL2), EAL3, EAL4 3개</strong>이며, KCMVP/보안기능확인서/성능평가는 참고용 데이터입니다.
+          </p>
+          <p class="text-[11px] text-emerald-700 mt-1 bg-emerald-50 border border-emerald-200 rounded-lg p-2">
+            <i class="fas fa-check-circle mr-1"></i>
+            <strong>v39.1 개선 사항</strong>: 입력값을 1~2주만 변경해도 홈 시뮬레이터에 즉시 반영됩니다(기존 반올림 손실 제거). CCRA 평가일수 "최소" 필드도 이제 슬라이더에 정상 반영됩니다.
+          </p>
         </div>
       </div>
     </div>

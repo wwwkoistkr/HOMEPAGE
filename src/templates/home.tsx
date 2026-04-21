@@ -1,4 +1,9 @@
-// KOIST - Home Page Template (v39.0 - XSS Hardening)
+// KOIST - Home Page Template (v39.1 - AI Simulator Sensitivity Improvement)
+// v39.1 Changes:
+//   1) simTypeToEal: 소수점 1자리(0.1개월) 정밀도 유지 → 관리자가 주(week)를 1~2주 바꿔도
+//      슬라이더 결과가 반드시 변함 (기존 3회 Math.round → 1회 최종 round로 축소)
+//   2) traditional_min_weeks: 슬라이더 연동에 정상 반영 (유령 필드 해소)
+//   3) Hero Badge(%) 초기값: 서버사이드에서 슬라이더=50 기준 실제 계산값 주입
 import type { SettingsMap, Department, Popup, Notice, ProgressItem, SimCertType } from '../types';
 import { sanitizeHtml, escapeHtml, escapeAttr, safeUrl, safeColor, safeFaIcon } from '../utils/sanitize';
 
@@ -50,60 +55,136 @@ export function homePage(opts: {
   const heroOpacity = s.hero_overlay_opacity || '0.85';
   const simTypes = opts.simCertTypes || [];
 
-  // P0-2: Build ealData from sim_cert_types (weeks→months conversion)
-  // Mapping: cc-eal2→EAL2, cc-eal3→EAL3, cc-eal4→EAL4, overall→weighted average
-  const W2M = 4.33; // weeks per month
-  function simTypeToEal(st: SimCertType) {
-    const tradMinM = Math.round(st.traditional_min_weeks / W2M);
-    const tradMaxM = Math.round(st.traditional_max_weeks / W2M);
-    const koistMinM = Math.round(st.koist_min_weeks / W2M);
-    const koistMaxM = Math.round(st.koist_max_weeks / W2M);
-    // Split traditional into prep (55%) + eval (45%) based on industry norms
-    const gPrep = Math.round(tradMaxM * 0.55);
-    const gEval = Math.round(tradMaxM * 0.45);
-    // KOIST: min=high prep effort → shorter, max=low prep effort → longer
-    // Split koist total into prep (40%) + eval (60%)
-    const kPrepMin = Math.round(koistMinM * 0.40);
-    const kEvalMin = Math.round(koistMinM * 0.60);
-    const kPrepMax = Math.round(koistMaxM * 0.40);
-    const kEvalMax = Math.round(koistMaxM * 0.60);
-    return { gPrep, gEval, kPrepMin, kEvalMin, kPrepMax, kEvalMax };
+  // ════════════════════════════════════════════════════════════════════════════
+  // v39.1 — ealData 계산 재설계 (반올림 손실 제거 + traditional_min 활용)
+  // ════════════════════════════════════════════════════════════════════════════
+  // [설계 원칙]
+  //  - 내부 계산은 모두 "소수점 1자리(0.1개월)" 정밀도 유지
+  //  - Math.round는 오직 "최종 화면 표시" 단계(클라이언트 JS)에서 1번만 사용
+  //  - W2M은 4.345(52주/12개월)로 표준화
+  //  - traditional_min_weeks도 슬라이더(사전준비 100%) 시 일반 기간으로 정상 반영
+  // [호환성]
+  //  - ealData 객체 스키마는 그대로(general.prep, general.eval, koist.prepMin/Max, evalMin/Max)
+  //  - 값만 number → 소수점 1자리 number로 바뀜. 기존 JS는 이 값을 lerp 후 round하므로 안전
+  //  - 추가로 general에도 prepMin/prepMax/evalMin/evalMax를 함께 담아 보간 가능하게 확장
+  //    (기존 prep/eval은 "표시 기본값 = 50%지점"으로 계속 유지)
+  const W2M = 4.345; // 52주 / 12개월 (표준)
+  const round1 = (n: number) => Math.round(n * 10) / 10; // 소수점 1자리 유지
+  // 표준 분배비
+  const G_PREP_RATIO = 0.55; // 일반: 준비 55%
+  const G_EVAL_RATIO = 0.45; // 일반: 평가 45%
+  const K_PREP_RATIO = 0.40; // KOIST: 준비 40%
+  const K_EVAL_RATIO = 0.60; // KOIST: 평가 60%
+
+  interface EalEntry {
+    // 일반(CCRA): 슬라이더 100%(사전준비 최대)일 때 min, 1%일 때 max로 보간
+    gPrepMin: number; gPrepMax: number;
+    gEvalMin: number; gEvalMax: number;
+    // KOIST
+    kPrepMin: number; kPrepMax: number;
+    kEvalMin: number; kEvalMax: number;
+    // 50%지점 기본 표시값(Hero Badge 초기값 및 레거시 general.prep/eval 호환)
+    gPrepMid: number; gEvalMid: number;
+  }
+
+  function simTypeToEal(st: SimCertType): EalEntry {
+    const tradMinM = st.traditional_min_weeks / W2M;  // 사전준비 100%일 때 일반기간(개월)
+    const tradMaxM = st.traditional_max_weeks / W2M;  // 사전준비 1%일 때 일반기간(개월)
+    const koistMinM = st.koist_min_weeks / W2M;
+    const koistMaxM = st.koist_max_weeks / W2M;
+
+    const gPrepMin = round1(tradMinM * G_PREP_RATIO);
+    const gEvalMin = round1(tradMinM * G_EVAL_RATIO);
+    const gPrepMax = round1(tradMaxM * G_PREP_RATIO);
+    const gEvalMax = round1(tradMaxM * G_EVAL_RATIO);
+
+    const kPrepMin = round1(koistMinM * K_PREP_RATIO);
+    const kEvalMin = round1(koistMinM * K_EVAL_RATIO);
+    const kPrepMax = round1(koistMaxM * K_PREP_RATIO);
+    const kEvalMax = round1(koistMaxM * K_EVAL_RATIO);
+
+    // 50%지점 기본 표시값 (간단 평균)
+    const gPrepMid = round1((gPrepMin + gPrepMax) / 2);
+    const gEvalMid = round1((gEvalMin + gEvalMax) / 2);
+
+    return { gPrepMin, gPrepMax, gEvalMin, gEvalMax, kPrepMin, kPrepMax, kEvalMin, kEvalMax, gPrepMid, gEvalMid };
   }
 
   const eal2Type = simTypes.find(t => t.slug === 'cc-eal2');
   const eal3Type = simTypes.find(t => t.slug === 'cc-eal3');
   const eal4Type = simTypes.find(t => t.slug === 'cc-eal4');
 
-  // Build ealData entries from sim_cert_types with eval_* fallback
-  function buildEalEntry(st: SimCertType | undefined, prefix: string) {
-    if (st) {
-      const d = simTypeToEal(st);
-      return `{ general:{prep:${d.gPrep},eval:${d.gEval}}, koist:{prepMin:${d.kPrepMin},prepMax:${d.kPrepMax},evalMin:${d.kEvalMin},evalMax:${d.kEvalMax}} }`;
-    }
-    // Fallback to eval_* settings
-    const gp = s[`eval_${prefix}_general_prep`] || '12';
-    const ge = s[`eval_${prefix}_general_eval`] || '12';
-    const kph = s[`eval_${prefix}_koist_prep_high`] || '4';
-    const kpl = s[`eval_${prefix}_koist_prep_low`] || '9';
-    const keh = s[`eval_${prefix}_koist_eval_high`] || '7';
-    const kel = s[`eval_${prefix}_koist_eval_low`] || '11';
-    return `{ general:{prep:${gp},eval:${ge}}, koist:{prepMin:${kph},prepMax:${kpl},evalMin:${keh},evalMax:${kel}} }`;
+  // 숫자 기본값 대체(sim_cert_types에 slug가 없을 때만 사용되는 fallback)
+  function fallbackEalEntry(prefix: string): EalEntry {
+    const n = (key: string, def: number) => {
+      const v = parseFloat(s[key] || '');
+      return Number.isFinite(v) ? v : def;
+    };
+    // site_settings의 eval_* 키가 있을 경우 사용(레거시 호환)
+    const gp = n(`eval_${prefix}_general_prep`, 12);
+    const ge = n(`eval_${prefix}_general_eval`, 12);
+    const kph = n(`eval_${prefix}_koist_prep_high`, 4);
+    const kpl = n(`eval_${prefix}_koist_prep_low`, 9);
+    const keh = n(`eval_${prefix}_koist_eval_high`, 7);
+    const kel = n(`eval_${prefix}_koist_eval_low`, 11);
+    // 일반은 보간값이 없으므로 min=max=기본값으로 통일(=슬라이더 무관 고정)
+    return {
+      gPrepMin: round1(gp), gPrepMax: round1(gp),
+      gEvalMin: round1(ge), gEvalMax: round1(ge),
+      kPrepMin: round1(kph), kPrepMax: round1(kpl),
+      kEvalMin: round1(keh), kEvalMax: round1(kel),
+      gPrepMid: round1(gp),  gEvalMid: round1(ge),
+    };
   }
 
-  // overall = weighted average of EAL2/3/4
-  function buildOverallEntry() {
-    if (eal2Type && eal3Type && eal4Type) {
-      const types = [eal2Type, eal3Type, eal4Type].map(simTypeToEal);
-      const avg = (vals: number[]) => Math.round(vals.reduce((a,b) => a+b, 0) / vals.length);
-      return `{ general:{prep:${avg(types.map(t=>t.gPrep))},eval:${avg(types.map(t=>t.gEval))}}, koist:{prepMin:${avg(types.map(t=>t.kPrepMin))},prepMax:${avg(types.map(t=>t.kPrepMax))},evalMin:${avg(types.map(t=>t.kEvalMin))},evalMax:${avg(types.map(t=>t.kEvalMax))}} }`;
-    }
-    return buildEalEntry(undefined, 'overall');
+  function buildEalEntryObj(st: SimCertType | undefined, prefix: string): EalEntry {
+    return st ? simTypeToEal(st) : fallbackEalEntry(prefix);
   }
 
-  const ealDataOverall = buildOverallEntry();
-  const ealDataEAL2 = buildEalEntry(eal2Type, 'eal2');
-  const ealDataEAL3 = buildEalEntry(eal3Type, 'eal3');
-  const ealDataEAL4 = buildEalEntry(eal4Type, 'eal4');
+  const entryEAL2 = buildEalEntryObj(eal2Type, 'eal2');
+  const entryEAL3 = buildEalEntryObj(eal3Type, 'eal3');
+  const entryEAL4 = buildEalEntryObj(eal4Type, 'eal4');
+
+  // overall = EAL2/3/4 평균 (소수점 1자리 유지)
+  function avgEntry(entries: EalEntry[]): EalEntry {
+    const avg = (k: keyof EalEntry) => round1(entries.reduce((a, e) => a + e[k], 0) / entries.length);
+    return {
+      gPrepMin: avg('gPrepMin'), gPrepMax: avg('gPrepMax'),
+      gEvalMin: avg('gEvalMin'), gEvalMax: avg('gEvalMax'),
+      kPrepMin: avg('kPrepMin'), kPrepMax: avg('kPrepMax'),
+      kEvalMin: avg('kEvalMin'), kEvalMax: avg('kEvalMax'),
+      gPrepMid: avg('gPrepMid'), gEvalMid: avg('gEvalMid'),
+    };
+  }
+  const entryOverall: EalEntry = (eal2Type && eal3Type && eal4Type)
+    ? avgEntry([entryEAL2, entryEAL3, entryEAL4])
+    : fallbackEalEntry('overall');
+
+  // 직렬화 (JSON으로 안전하게 삽입 — 숫자만이므로 XSS 안전)
+  function serializeEntry(e: EalEntry): string {
+    // 일반(gPrep/gEval)은 기본 표시값(Mid) + min/max 보간을 위해 Min/Max도 함께 담음
+    return `{ general:{prep:${e.gPrepMid},eval:${e.gEvalMid},prepMin:${e.gPrepMin},prepMax:${e.gPrepMax},evalMin:${e.gEvalMin},evalMax:${e.gEvalMax}}, koist:{prepMin:${e.kPrepMin},prepMax:${e.kPrepMax},evalMin:${e.kEvalMin},evalMax:${e.kEvalMax}} }`;
+  }
+  const ealDataOverall = serializeEntry(entryOverall);
+  const ealDataEAL2 = serializeEntry(entryEAL2);
+  const ealDataEAL3 = serializeEntry(entryEAL3);
+  const ealDataEAL4 = serializeEntry(entryEAL4);
+
+  // v39.1 패치 #3 — Hero Badge(%) 초기값을 서버사이드에서 실제 계산
+  // 기본 슬라이더=50 지점 reduction 계산 (클라이언트 JS 로직과 동일식)
+  function computeReductionAt(entry: EalEntry, prepVal: number): number {
+    const t = 1 - (prepVal - 1) / 99;
+    const lerp = (min: number, max: number) => min + (max - min) * t;
+    const gPrep = lerp(entry.gPrepMin, entry.gPrepMax);
+    const gEval = lerp(entry.gEvalMin, entry.gEvalMax);
+    const kPrep = lerp(entry.kPrepMin, entry.kPrepMax);
+    const kEval = lerp(entry.kEvalMin, entry.kEvalMax);
+    const gTotal = gPrep + gEval;
+    const kTotal = kPrep + kEval;
+    if (gTotal <= 0) return 0;
+    return Math.round((1 - kTotal / gTotal) * 100);
+  }
+  const computedInitReduction = computeReductionAt(entryOverall, 50);
 
   const catMeta: Record<string, {icon: string; color: string}> = {
     'CC평가':       { icon: 'fa-shield-halved', color: '#3B82F6' },
@@ -119,7 +200,12 @@ export function homePage(opts: {
   };
 
   const totalEvals = catCounts.reduce((sum, c) => sum + c.cnt, 0);
-  const defaultReduction = s.unified_reduction_default || '35';
+  // v39.1: Hero Badge 초기값 — 관리자가 unified_reduction_default를 명시 설정한 경우에만 그 값을 쓰고,
+  // 그렇지 않으면 현재 DB의 EAL2/3/4 값으로 실제 계산된 overall reduction을 주입.
+  const adminOverrideReduction = s.unified_reduction_default;
+  const defaultReduction = (adminOverrideReduction && String(adminOverrideReduction).trim() !== '')
+    ? String(adminOverrideReduction)
+    : String(computedInitReduction);
 
   return `
   <!-- ════════════════════════════════════════════════
@@ -1753,7 +1839,10 @@ export function homePage(opts: {
       observer.observe(bars[0].closest('.bar-chart-container') || bars[0]);
     }
 
-    // P0-2: ealData now generated from sim_cert_types (weeks→months) with eval_* fallback
+    // v39.1: ealData는 소수점 1자리 정밀도로 서버에서 계산된 값 (반올림 손실 제거)
+    //        - general.prepMin/prepMax/evalMin/evalMax: traditional_min_weeks 반영을 위한 보간 범위
+    //        - general.prep/eval: 레거시 호환용 50%지점 기본값 (현재 simulate에서는 사용하지 않음)
+    //        - koist.prepMin/prepMax/evalMin/evalMax: 기존 방식 그대로
     var ealData = {
       overall: ${ealDataOverall},
       EAL2: ${ealDataEAL2},
@@ -1766,21 +1855,35 @@ export function homePage(opts: {
 
     function lerp(min, max, t) { return min + (max - min) * t; }
 
+    // v39.1 simulate:
+    //   - 내부 계산은 실수 그대로 유지(반올림 없음)
+    //   - 최종 화면 표시 시점에서만 round(표시값 생성 책임: updateChart)
+    //   - general(CCRA)도 slider로 보간 가능(traditional_min_weeks 반영)
     function simulate(level, prepVal) {
       var d = ealData[level];
       if (!d) return null;
-      var t = 1 - (prepVal - 1) / 99;
-      var kPrep = Math.round(lerp(d.koist.prepMin, d.koist.prepMax, t));
-      var kEval = Math.round(lerp(d.koist.evalMin, d.koist.evalMax, t));
+      var t = 1 - (prepVal - 1) / 99; // 0=prep100%, 1=prep1%
+      // 일반(CCRA) — min/max 보간 (신규). 구버전 호환을 위해 min/max가 없으면 prep/eval 고정값 사용
       var g = d.general;
-      var gTotal = g.prep + g.eval;
-      var kTotal = kPrep + kEval;
+      var gPrepF, gEvalF;
+      if (typeof g.prepMin === 'number' && typeof g.prepMax === 'number') {
+        gPrepF = lerp(g.prepMin, g.prepMax, t);
+        gEvalF = lerp(g.evalMin, g.evalMax, t);
+      } else {
+        gPrepF = g.prep;
+        gEvalF = g.eval;
+      }
+      var kPrepF = lerp(d.koist.prepMin, d.koist.prepMax, t);
+      var kEvalF = lerp(d.koist.evalMin, d.koist.evalMax, t);
+      var gTotalF = gPrepF + gEvalF;
+      var kTotalF = kPrepF + kEvalF;
       return {
-        general: { prep: g.prep, eval: g.eval, total: gTotal },
-        koist: { prep: kPrep, eval: kEval, total: kTotal },
-        maxBar: gTotal,
-        reduction: gTotal > 0 ? Math.round((1 - kTotal / gTotal) * 100) : 0,
-        saving: gTotal - kTotal
+        general: { prep: gPrepF, eval: gEvalF, total: gTotalF },
+        koist: { prep: kPrepF, eval: kEvalF, total: kTotalF },
+        maxBar: gTotalF,
+        // 단축률은 반올림 전 실수값으로 계산 → 마지막 단계에서만 round
+        reduction: gTotalF > 0 ? Math.round((1 - kTotalF / gTotalF) * 100) : 0,
+        saving: gTotalF - kTotalF
       };
     }
 

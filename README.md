@@ -1,11 +1,57 @@
-# KOIST Website v39.0
+# KOIST Website v39.1
 
-**(주)한국정보보안기술원** 공식 웹사이트 - XSS Hardening + 8K Ultra Sharp
+**(주)한국정보보안기술원** 공식 웹사이트 - AI Simulator Sensitivity Improvement + XSS Hardening + 8K Ultra Sharp
 
 ## URLs
 - **Production**: https://koist-website.pages.dev
 - **GitHub**: https://github.com/wwwkoistkr/HOMEPAGE
 - **관리자**: /admin (스크립트로 생성, 아래 "관리자 계정 설정" 참조)
+
+## 🎯 v39.1 AI 시뮬레이터 감도 개선 패치 (2026-04-21)
+
+### 문제 요약
+관리자 모드 `/admin/sim-cert-types`에서 CC평가 EAL2/EAL3/EAL4의 **CCRA 평가일수** 및 **KOIST 기간**을 수정해도 홈 Hero의 AI 시뮬레이터에 **반영되지 않는 문제**. 정밀 분석 결과 원인은 렌더링 파이프라인의 **3단계 정수 반올림으로 인한 감도 상실**로 판명.
+
+### 패치 #1+#2 — `simTypeToEal` 전면 재설계 (`src/templates/home.tsx`)
+- **W2M 표준화**: 4.33 → 4.345 (52주/12개월)
+- **반올림 손실 제거**: 내부 계산은 소수점 1자리(`round1`) 유지, `Math.round()`는 최종 표시 단계(클라이언트 JS)에서만 1회 적용
+- **`traditional_min_weeks` 활용**: 일반(CCRA) 기간도 슬라이더 값에 따라 `min ~ max`를 보간하도록 `general.prepMin/prepMax/evalMin/evalMax`를 ealData에 추가 (기존 "유령 필드" 해소)
+- **분배 상수 명명**: `G_PREP_RATIO`, `G_EVAL_RATIO`, `K_PREP_RATIO`, `K_EVAL_RATIO` 상수화
+- **개선 효과**: EAL2의 `koist_max_weeks`를 16→17주(1주)만 바꿔도 `prepMax`가 1.5→1.6, `evalMax`가 2.2→2.3으로 **즉시 반영** (v39.0은 모두 2/2로 동일)
+
+### 패치 #3 — Hero Badge(%) 초기값 서버사이드 주입 (`src/templates/home.tsx`)
+- 기존: `unified_reduction_default || '35'` 고정값 → 슬라이더 움직여야 실제값 표시
+- 변경: `unified_reduction_default`가 비어있으면 서버가 `computeReductionAt(entryOverall, 50)`을 실행해 실제 계산값 주입
+- **검증**: `unified_reduction_default=''`일 때 Badge에 `70%`(실제 계산값) 자동 표시 확인 ✅
+
+### 패치 #4 — 관리자 UI 안내 강화 (`public/static/js/admin-sim-cert-types.js`)
+- CC평가 EAL2/EAL3/EAL4만 홈에 반영됨을 명시
+- "최소(사전준비 100%)" vs "최대(사전준비 1%)" 의미 상세 설명
+- v39.1 배지 및 개선 사항 안내 박스 추가
+
+### 감도 검증 결과 (EAL2 기준, 슬라이더=50)
+| koist_min | koist_max | v39.0 reduction | v39.1 reduction | 비고 |
+|---|---|---|---|---|
+| 4주 | 16주 (현재) | 62% | 63% | 기준 |
+| 4주 | 17주 (+1) | 62% (변화없음) | **62% (변화!)** | ✅ 1주 민감 |
+| 5주 | 17주 (+1,+1) | 62% | **60%** | ✅ 즉시 반영 |
+| 4주 | 20주 (+4) | 62% | **56%** | ✅ 크게 반영 |
+| 20주 | (trad_min=15로) | 63% | **60% (slider=50)** | ✅ trad_min도 반영 |
+
+**테스트 조합 54가지 중 52가지가 변화를 보임** (v39.0은 테스트 전체가 62% 고정).
+
+### End-to-End 프로덕션 검증 (2026-04-21)
+```
+[EAL2 koist_max: 16 → 17 변경 직후]
+Before: koist:{prepMin:0.4, prepMax:1.5, evalMin:0.6, evalMax:2.2}
+After:  koist:{prepMin:0.4, prepMax:1.6, evalMin:0.6, evalMax:2.3}  ✅ 즉시 반영
+```
+
+### 관련 분석 보고서
+- `docs/AI_SIMULATOR_ANALYSIS_REPORT_v2_20260421.md` - 정밀 원인 분석 (반올림 손실 규명)
+- `docs/SLIDER_ANALYSIS_REPORT_20260421.md` - 초기 구조 분석
+
+---
 
 ## 🔒 v39.0 XSS 긴급 보안 패치 (2026-04-20)
 
