@@ -1,13 +1,43 @@
-# KOIST Website v39.4
+# KOIST Website v39.5
 
-**(주)한국정보보안기술원** 공식 웹사이트 — AI Simulator Slider Admin Control + Bar Sum Consistency
+**(주)한국정보보안기술원** 공식 웹사이트 — Slider Month-Label Font +50% & Mobile Overflow Guard
 
 ## URLs
 - **Production**: https://koist-website.pages.dev (메인)
-- **Latest Deploy**: https://288bf665.koist-website.pages.dev (v39.4)
+- **Latest Deploy**: https://dab84020.koist-website.pages.dev (v39.5)
+- **Previous (v39.4)**: https://288bf665.koist-website.pages.dev
 - **GitHub**: https://github.com/wwwkoistkr/HOMEPAGE
 - **관리자**: /admin
-- **🆕 슬라이더 UI 설정**: /admin/slider-settings (v39.4 신규)
+- **슬라이더 UI 설정**: /admin/slider-settings (v39.4)
+
+## 🔤 v39.5 — AI 시뮬레이터 슬라이더 월수 글자 +50% 확대 (2026-04-21)
+
+### 목표
+사용자 요구: **CCRA / KOIST 슬라이더 바에 표시된 준비·평가·총 월수 6개 텍스트의 글자 크기를 50% 확대**하여 가독성을 WCAG 권장 16px 수준으로 개선.
+
+### 변경 사항
+| 대상 ID | 위치 | 이전 `clamp()` | 신규 `clamp()` | +50% |
+|---------|------|--------------|--------------|:---:|
+| `ealGeneralTotal` | CCRA 총월수 | `0.68rem, 0.73vw, 3.5rem` | `1.02rem, 1.095vw, 5.25rem` | ✅ |
+| `ealGeneralPrep` | CCRA 준비월수 | `0.6rem, 0.68vw, 3.25rem` | `0.9rem, 1.02vw, 4.875rem` | ✅ |
+| `ealGeneralEval` | CCRA 평가월수 | 동일 | 동일 | ✅ |
+| `ealKoistTotal` | KOIST 총월수 | `0.68rem, 0.73vw, 3.5rem` | `1.02rem, 1.095vw, 5.25rem` | ✅ |
+| `ealKoistPrep` | KOIST 준비월수 | `0.6rem, 0.68vw, 3.25rem` | `0.9rem, 1.02vw, 4.875rem` | ✅ |
+| `ealKoistEval` | KOIST 평가월수 | 동일 | 동일 | ✅ |
+
+### 모바일 오버플로우 Guard (신규)
+폰트 +50% 확대 시 좁은 모바일(<480px)에서 Prep/Eval 텍스트가 바 폭을 초과 → **3단계 자동 축약**:
+1. **1차 축약**: `준비 6개월` → `6개월` (바 폭 < P+E+36px일 때)
+2. **2차 축약**: `6개월` → `6` (바 폭 < P+E+24px일 때)
+3. **3차 축약**: Eval 숨김 (바 폭 < P+E+12px일 때)
+
+모든 조치는 JS 런타임에서 동작하며, 데스크톱 해상도에서는 영향 없음.
+
+### 검증 결과
+- ✅ **폰트 크기**: 375/768/1440/1920px 모두 정확히 **1.500× 확대** 측정
+- ✅ **v39.4 정합성 회귀**: 4레벨 × 10포지션 × 3항목 = **120/120 통과** (JS 오류 0)
+- ✅ **프로덕션 오버랩 검증**: 3해상도 × 4레벨 × 10포지션 × 2바 = **240/240 통과**
+- ✅ **WCAG 1.4.4**: 모바일 최소 폰트 9.6px → **14.4px**로 상승 (16px 근접)
 
 ## 🎨 v39.4 — 슬라이더 UI 관리자 제어 (2026-04-21)
 

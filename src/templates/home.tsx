@@ -785,12 +785,12 @@ export function homePage(opts: {
                 <div>
                   <div class="flex justify-between items-center" style="margin-bottom:clamp(3px,0.21vw,6px)">
                     <span class="text-slate-500 font-semibold flex items-center" style="gap:clamp(3px,0.21vw,6px); font-size:clamp(0.68rem,0.73vw,3.5rem)"><span class="inline-block rounded-full" style="width:clamp(5px,0.36vw,10px); height:clamp(5px,0.36vw,10px); background: linear-gradient(135deg, #94A3B8, #64748B);"></span><span data-admin-edit="sim_label_traditional">${escapeHtml(s.sim_label_traditional || 'CCRA평가일수')}</span></span>
-                    <span id="ealGeneralTotal" class="text-slate-400 font-bold" style="font-size:clamp(0.68rem,0.73vw,3.5rem)">약 24개월</span>
+                    <span id="ealGeneralTotal" class="text-slate-400 font-bold" style="font-size:clamp(1.02rem,1.095vw,5.25rem)">약 24개월</span>
                   </div>
                   <div class="relative rounded-xl overflow-hidden" style="height:clamp(32px,2.34vw,72px); background: linear-gradient(90deg, #F1F5F9, #E2E8F0);">
                     <div id="ealGeneralBar" class="bar-animate eal-bar absolute left-0 top-0 h-full rounded-xl flex items-center" style="width:100%; background: linear-gradient(90deg, ${cfg.genPrepColor} 0%, ${cfg.genPrepColor} 50%, ${cfg.genEvalColor} 50%, ${cfg.genEvalColor} 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 2px 6px rgba(0,0,0,0.06);">
-                      <span id="ealGeneralPrep" class="absolute text-white font-bold" style="left:clamp(6px,0.47vw,14px); font-size:clamp(0.6rem,0.68vw,3.25rem); text-shadow:0 1px 4px rgba(0,0,0,0.35); letter-spacing:-0.01em;">준비 12개월</span>
-                      <span id="ealGeneralEval" class="absolute text-white font-bold" style="right:clamp(6px,0.47vw,14px); font-size:clamp(0.6rem,0.68vw,3.25rem); text-shadow:0 1px 4px rgba(0,0,0,0.35); letter-spacing:-0.01em;">평가 12개월</span>
+                      <span id="ealGeneralPrep" class="absolute text-white font-bold" style="left:clamp(6px,0.47vw,14px); font-size:clamp(0.9rem,1.02vw,4.875rem); text-shadow:0 1px 4px rgba(0,0,0,0.35); letter-spacing:-0.01em;">준비 12개월</span>
+                      <span id="ealGeneralEval" class="absolute text-white font-bold" style="right:clamp(6px,0.47vw,14px); font-size:clamp(0.9rem,1.02vw,4.875rem); text-shadow:0 1px 4px rgba(0,0,0,0.35); letter-spacing:-0.01em;">평가 12개월</span>
                     </div>
                   </div>
                 </div>
@@ -799,12 +799,12 @@ export function homePage(opts: {
                 <div>
                   <div class="flex justify-between items-center" style="margin-bottom:clamp(3px,0.21vw,6px)">
                     <span class="text-accent font-bold flex items-center" style="gap:clamp(3px,0.21vw,6px); font-size:clamp(0.68rem,0.73vw,3.5rem)"><span class="inline-block rounded-full" style="width:clamp(5px,0.36vw,10px); height:clamp(5px,0.36vw,10px); background: linear-gradient(135deg, #2563EB, #06B6D4);"></span><i class="fas fa-bolt text-yellow-500" style="font-size:clamp(7px,0.42vw,14px); margin-right:2px;"></i><span data-admin-edit="sim_label_koist">${escapeHtml(s.sim_label_koist || 'KOIST 평가 프로세스')}</span></span>
-                    <span id="ealKoistTotal" class="text-accent font-bold" style="font-size:clamp(0.68rem,0.73vw,3.5rem)">약 15개월</span>
+                    <span id="ealKoistTotal" class="text-accent font-bold" style="font-size:clamp(1.02rem,1.095vw,5.25rem)">약 15개월</span>
                   </div>
                   <div class="relative rounded-xl overflow-hidden" style="height:clamp(32px,2.34vw,72px); background: linear-gradient(90deg, #F1F5F9, #E2E8F0);">
                     <div id="ealKoistBar" class="bar-animate eal-bar absolute left-0 top-0 h-full rounded-xl flex items-center" style="width:62.5%; background: linear-gradient(90deg, ${cfg.koistPrepColor} 0%, ${cfg.koistPrepColor} 40%, ${cfg.koistEvalColor} 40%, ${cfg.koistEvalColor} 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 2px 6px rgba(0,0,0,0.06);">
-                      <span id="ealKoistPrep" class="absolute text-white font-bold" style="left:clamp(6px,0.47vw,14px); font-size:clamp(0.6rem,0.68vw,3.25rem); text-shadow:0 1px 4px rgba(0,0,0,0.35); letter-spacing:-0.01em;">준비 6개월</span>
-                      <span id="ealKoistEval" class="absolute text-white font-bold" style="right:clamp(6px,0.47vw,14px); font-size:clamp(0.6rem,0.68vw,3.25rem); text-shadow:0 1px 4px rgba(0,0,0,0.35); letter-spacing:-0.01em;">평가 9개월</span>
+                      <span id="ealKoistPrep" class="absolute text-white font-bold" style="left:clamp(6px,0.47vw,14px); font-size:clamp(0.9rem,1.02vw,4.875rem); text-shadow:0 1px 4px rgba(0,0,0,0.35); letter-spacing:-0.01em;">준비 6개월</span>
+                      <span id="ealKoistEval" class="absolute text-white font-bold" style="right:clamp(6px,0.47vw,14px); font-size:clamp(0.9rem,1.02vw,4.875rem); text-shadow:0 1px 4px rgba(0,0,0,0.35); letter-spacing:-0.01em;">평가 9개월</span>
                     </div>
                   </div>
                 </div>
@@ -2114,6 +2114,43 @@ export function homePage(opts: {
         simEval.innerHTML = '<i class="fas fa-magnifying-glass" style="font-size:8px; margin-right:2px;"></i>' + applyTpl(C.evalFormat.replace('{N}', '<strong>{N}</strong>'), d.koist.displayEval);
         if (C.koistEvalColor) simEval.style.color = C.koistEvalColor;
       }
+
+      // v39.5: 폰트 +50% 확대에 따른 모바일·좁은 바 오버랩 방지 안전장치
+      // 바 폭 < (Prep폭 + Eval폭 + 24px 여백)일 때 월수만 표시하여 오버랩 제거
+      try {
+        function applyOverflowGuard(barEl, prepEl, evalEl, prepVal, evalVal, prepTplRaw, evalTplRaw) {
+          if (!barEl || !prepEl || !evalEl) return;
+          prepEl.style.whiteSpace = 'nowrap';
+          evalEl.style.whiteSpace = 'nowrap';
+          // 전체 표시 복원
+          prepEl.textContent = applyTpl(prepTplRaw, prepVal);
+          evalEl.textContent = applyTpl(evalTplRaw, evalVal);
+          var bw = barEl.getBoundingClientRect().width;
+          var pw = prepEl.getBoundingClientRect().width;
+          var ew = evalEl.getBoundingClientRect().width;
+          var needed = pw + ew + 36; // 36px = 좌우 여백(최대 28) + 텍스트 간격(8) — 보수적 여유
+          if (bw < needed) {
+            // 1차 축약: '준비 N개월' → 'N개월' / '평가 N개월' → 'N개월'
+            prepEl.textContent = prepVal + '개월';
+            evalEl.textContent = evalVal + '개월';
+            pw = prepEl.getBoundingClientRect().width;
+            ew = evalEl.getBoundingClientRect().width;
+            if (bw < pw + ew + 24) {
+              // 2차 축약: 숫자만
+              prepEl.textContent = String(prepVal);
+              evalEl.textContent = String(evalVal);
+              pw = prepEl.getBoundingClientRect().width;
+              ew = evalEl.getBoundingClientRect().width;
+              if (bw < pw + ew + 12) {
+                // 3차 축약: 공간 극소 시 Eval 숨김
+                evalEl.textContent = '';
+              }
+            }
+          }
+        }
+        applyOverflowGuard(gBar, gPrep, gEval, d.general.displayPrep, d.general.displayEval, C.prepFormat, C.evalFormat);
+        applyOverflowGuard(kBar, kPrep, kEval, d.koist.displayPrep, d.koist.displayEval, C.prepFormat, C.evalFormat);
+      } catch (e) { /* noop */ }
     }
 
     function updatePrepUI(val) {
