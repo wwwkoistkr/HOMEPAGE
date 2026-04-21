@@ -999,7 +999,7 @@ export function layout(opts: {
         // P1-2: Show refresh notice
         setTimeout(function() {
           saveBtn.innerHTML = '<i class="fas fa-save" style="margin-right:4px;"></i>저장';
-          if (confirm('저장 완료! 변경사항을 확인하려면 페이지를 새로고침해야 합니다.\n\n지금 새로고침 하시겠습니까?')) {
+          if (confirm('저장 완료! 변경사항을 확인하려면 페이지를 새로고침해야 합니다. 지금 새로고침 하시겠습니까?')) {
             location.reload();
           }
         }, 800);
