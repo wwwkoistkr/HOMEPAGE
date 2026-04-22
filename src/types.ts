@@ -58,6 +58,8 @@ export type Department = {
   header_bg_url: string;
   sort_order: number;
   is_active: number;
+  use_legacy_theme?: number; // v39.7: 1=koist.kr 원본 디자인 적용, 0=기존 디자인
+  english_subtitle?: string; // v39.7: tit_cm span 영문 서브타이틀 (선택)
 };
 
 export type DepPage = {

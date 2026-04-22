@@ -123,9 +123,23 @@ export function servicePage(dept: Department, pages: DepPage[], currentPage: Dep
         <!-- Main -->
         <div class="flex-1 min-w-0">
           <div class="bg-white rounded-xl border border-slate-200/60" style="padding:clamp(1.25rem, 2.5vw, 2.25rem); box-shadow: var(--shadow-sm);">
+            ${((dept as any).use_legacy_theme === undefined || (dept as any).use_legacy_theme === 1) ? `
+            <!-- v39.7: KOIST 원본 디자인 (koist.kr) 적용 -->
+            <div class="koist-legacy-theme">
+              <div class="tit_cm">
+                <span>${escapeHtml((dept as any).english_subtitle || (dept.slug || 'SERVICE').toUpperCase().replace(/-/g, ' '))}</span>
+                <p>${escapeHtml(currentPage?.title || (pages[0]?.title) || dept.name)}</p>
+              </div>
+              <div class="pagecommon-content">
+                ${currentPage ? sanitizeHtml(currentPage.content) : (pages.length > 0 ? sanitizeHtml(pages[0].content) : '<p style="text-align:center;color:#aaa">콘텐츠가 준비 중입니다.</p>')}
+              </div>
+            </div>
+            ` : `
+            <!-- Legacy prose theme (use_legacy_theme=0) -->
             <div class="prose prose-slate max-w-none prose-headings:text-primary prose-p:text-slate-600 prose-li:text-slate-600 prose-a:text-accent" style="font-size:var(--text-sm)">
               ${currentPage ? sanitizeHtml(currentPage.content) : (pages.length > 0 ? sanitizeHtml(pages[0].content) : '<p class="text-slate-400">콘텐츠가 준비 중입니다.</p>')}
             </div>
+            `}
           </div>
 
           <!-- CTA -->

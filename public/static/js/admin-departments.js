@@ -55,6 +55,17 @@
       +'<div><label class="block text-xs text-gray-400 mb-1">담당자명</label><input id="dContactName" value="'+(dept?.contact_name||'')+'" placeholder="예: 홍길동 팀장" class="w-full px-3 py-2 border rounded-lg text-sm"></div>'
       +'<div><label class="block text-xs text-gray-400 mb-1">전화번호</label><input id="dContactPhone" value="'+(dept?.contact_phone||'')+'" placeholder="예: 02-1234-5678" class="w-full px-3 py-2 border rounded-lg text-sm"></div>'
       +'</div></div>'
+      +'<div class="mb-3 border-t pt-3 mt-3"><label class="block text-xs font-semibold text-indigo-600 mb-2"><i class="fas fa-palette mr-1"></i>v39.7: 원본 koist.kr 디자인 테마 (서비스 페이지)</label>'
+      +'<div class="grid grid-cols-2 gap-3">'
+      +'<div><label class="block text-xs text-gray-400 mb-1">원본 디자인 사용 여부</label>'
+      +'<select id="dUseLegacyTheme" class="w-full px-3 py-2 border rounded-lg text-sm">'
+      +'<option value="1"'+((dept?.use_legacy_theme===1||dept?.use_legacy_theme===undefined)?' selected':'')+'>✓ ON — koist.kr 원본 디자인 적용 (권장)</option>'
+      +'<option value="0"'+(dept?.use_legacy_theme===0?' selected':'')+'>✗ OFF — 기존 prose 디자인 사용</option>'
+      +'</select></div>'
+      +'<div><label class="block text-xs text-gray-400 mb-1">영문 서브타이틀 (tit_cm span)</label>'
+      +'<input id="dEnglishSubtitle" value="'+(dept?.english_subtitle||'')+'" placeholder="예: CC EVALUATION, KCMVP" class="w-full px-3 py-2 border rounded-lg text-sm uppercase" style="font-family:\'Play\',sans-serif"></div>'
+      +'</div>'
+      +'<p class="text-xs text-gray-400 mt-2"><i class="fas fa-info-circle mr-1"></i>ON: 네이비 #005f9b 기반 200px 컬럼 레이아웃, 60px 섹션 간격 — 원본과 동일 / OFF: 기존 파란색 카드 스타일</p></div>'
       +'<div class="flex gap-2">'
       +'<button onclick="saveDept('+(dept?.id||'null')+')" class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm">저장</button>'
       +'<button onclick="document.getElementById(\'deptFormArea\').classList.add(\'hidden\')" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm">취소</button>'
@@ -88,7 +99,9 @@
       header_bg_url: document.getElementById('dHeaderBg').value,
       contact_dept: (document.getElementById('dContactDept').value||'').trim(),
       contact_name: (document.getElementById('dContactName').value||'').trim(),
-      contact_phone: (document.getElementById('dContactPhone').value||'').trim()
+      contact_phone: (document.getElementById('dContactPhone').value||'').trim(),
+      use_legacy_theme: parseInt(document.getElementById('dUseLegacyTheme')?.value || '1'),
+      english_subtitle: (document.getElementById('dEnglishSubtitle')?.value||'').trim().toUpperCase()
     };
     if(id) await apiCall('/api/admin/departments/'+id, 'PUT', body);
     else await apiCall('/api/admin/departments', 'POST', body);

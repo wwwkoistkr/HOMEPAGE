@@ -96,12 +96,17 @@ export function layout(opts: {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- v39.7: Play font for koist-legacy-theme English subtitles -->
+  <link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap" rel="stylesheet">
 
   <!-- FontAwesome Icons -->
   <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css" rel="stylesheet">
 
   <!-- AOS Animation -->
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+  <!-- v39.7: KOIST Legacy Theme + v39.6 service-section styles (Scoped to /services/*) -->
+  <link href="/static/style.css" rel="stylesheet">
 
   ${layoutCSS()}
   ${opts.headExtra || ''}

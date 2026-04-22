@@ -262,7 +262,7 @@ admin.post('/departments', async (c) => {
 admin.put('/departments/:id', async (c) => {
   const id = c.req.param('id');
   const body = await c.req.json();
-  const fields = ['name', 'slug', 'description', 'icon', 'color', 'sort_order', 'is_active', 'image_url', 'header_bg_url', 'contact_dept', 'contact_name', 'contact_phone'];
+  const fields = ['name', 'slug', 'description', 'icon', 'color', 'sort_order', 'is_active', 'image_url', 'header_bg_url', 'contact_dept', 'contact_name', 'contact_phone', 'use_legacy_theme', 'english_subtitle'];
   const updates: string[] = [];
   const values: any[] = [];
   for (const f of fields) { if (body[f] !== undefined) { updates.push(`${f} = ?`); values.push(body[f]); } }

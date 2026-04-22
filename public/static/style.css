@@ -201,3 +201,663 @@ img, svg {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ================================================================
+   v39.7 KOIST Legacy Theme — 원본 koist.kr 디자인 복제 (Scoped)
+   ================================================================
+   모든 규칙은 .koist-legacy-theme 네임스페이스 하위에만 적용되어
+   전역 스타일 오염을 방지합니다. 서비스 페이지(/services/*)에만
+   부착됩니다.
+   ================================================================ */
+
+.koist-legacy-theme {
+  --koist-primary: #005f9b;
+  --koist-secondary: #3ea6de;
+  --koist-primary-10: rgba(0, 95, 155, 0.1);
+  --koist-primary-25: rgba(0, 95, 155, 0.25);
+  --koist-border: #e1e1e1;
+  --koist-bg-soft: #f5f5f5;
+  --koist-text: #666;
+  --koist-title: #222;
+  --koist-sub: #888;
+
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 17px;
+  font-weight: 300;
+  color: var(--koist-text);
+  line-height: 1.8;
+  letter-spacing: -0.2px;
+  word-break: keep-all;
+}
+
+/* ────────────── Hero Title (tit_cm) ────────────── */
+.koist-legacy-theme .tit_cm {
+  font-size: 19px;
+  font-weight: 400;
+  text-align: center;
+  color: var(--koist-sub);
+  word-break: keep-all;
+  margin: 0 0 50px 0;
+}
+.koist-legacy-theme .tit_cm span {
+  display: block;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--koist-primary);
+  text-transform: uppercase;
+  font-family: 'Play', 'Noto Sans KR', sans-serif;
+  letter-spacing: 0.05em;
+}
+.koist-legacy-theme .tit_cm p {
+  padding: 10px 0;
+  margin: 0;
+  font-size: 40px;
+  letter-spacing: -0.5px;
+  color: var(--koist-title);
+  word-break: keep-all;
+  font-family: 'LotteMartDreamBold', 'Noto Sans KR', sans-serif;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+/* ────────────── Section Block (.service-section == dl_cm) ────────────── */
+.koist-legacy-theme .pagecommon-content {
+  display: block;
+}
+.koist-legacy-theme .service-section {
+  display: flex;
+  padding: 0 5%;
+  margin: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  position: static;
+}
+.koist-legacy-theme .service-section + .service-section {
+  margin-top: 60px;
+  padding-top: 60px;
+  border-top: 1px solid var(--koist-border);
+}
+.koist-legacy-theme .service-section-title {
+  flex-shrink: 0;
+  width: 200px;
+  margin: 0;
+  padding: 0;
+  font-size: 24px;
+  color: var(--koist-title) !important;
+  word-break: keep-all;
+  line-height: 1.5;
+  font-family: 'LotteMartDreamBold', 'Noto Sans KR', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  background: none;
+}
+.koist-legacy-theme .service-section-title::before,
+.koist-legacy-theme .service-section-title::after {
+  display: none;
+}
+.koist-legacy-theme .service-section-body {
+  width: calc(100% - 200px);
+  word-break: keep-all;
+  color: var(--koist-text);
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.8;
+}
+
+/* ────────────── Bullet List (.service-bullets == ul_dot_cm) ────────────── */
+.koist-legacy-theme .service-bullets,
+.koist-legacy-theme .service-section-body ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.koist-legacy-theme .service-bullets li,
+.koist-legacy-theme .service-section-body ul > li {
+  position: static;
+  text-indent: -14px;
+  margin: 0 0 0 14px;
+  padding: 0;
+  background: none;
+  line-height: 1.8;
+}
+.koist-legacy-theme .service-bullets li + li,
+.koist-legacy-theme .service-section-body ul > li + li {
+  margin-top: 5px;
+}
+.koist-legacy-theme .service-bullets li::before,
+.koist-legacy-theme .service-section-body ul > li::before {
+  display: inline-block;
+  vertical-align: 5px;
+  content: "";
+  position: static;
+  top: auto;
+  left: auto;
+  width: 4px;
+  height: 4px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background: var(--koist-primary);
+  box-shadow: none;
+}
+/* 내부 강조 박스 (li > p) */
+.koist-legacy-theme .service-bullets li p,
+.koist-legacy-theme .service-section-body ul > li p {
+  padding: 10px 15px 10px;
+  margin: 10px 0 0 0;
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--koist-sub);
+  text-indent: 0;
+  background: var(--koist-bg-soft);
+  border-radius: 0;
+  border: none;
+}
+
+/* ────────────── Image Box (.service-image == img_box) ────────────── */
+.koist-legacy-theme .service-image,
+.koist-legacy-theme figure.service-image {
+  padding: 50px;
+  background: var(--koist-bg-soft);
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  text-align: center;
+}
+.koist-legacy-theme .service-image img,
+.koist-legacy-theme figure.service-image > img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 0;
+  display: inline-block;
+}
+.koist-legacy-theme .service-image figcaption,
+.koist-legacy-theme figure.service-image > figcaption {
+  margin-top: 20px;
+  color: var(--koist-sub);
+  font-size: 15px;
+  text-align: center;
+}
+
+/* ────────────── Numbered Steps (.service-steps == num_dl_cm) ────────────── */
+.koist-legacy-theme .service-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: block;
+  counter-reset: none;
+}
+.koist-legacy-theme .service-steps + .service-steps {
+  margin-top: 40px;
+}
+.koist-legacy-theme .service-step,
+.koist-legacy-theme ol.service-steps > li.service-step {
+  display: flex;
+  padding: 12px;
+  border: 1px solid var(--koist-border);
+  color: var(--koist-title);
+  background: #fff;
+  border-radius: 0;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+}
+.koist-legacy-theme .service-step + .service-step {
+  margin-top: 12px;
+}
+.koist-legacy-theme .service-step-num {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  padding: 0;
+  margin: 0 10px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 32px;
+  text-align: center;
+  background: var(--koist-primary);
+  font-family: 'Play', 'Noto Sans KR', sans-serif;
+  border-radius: 0;
+}
+
+/* ────────────── Process Flow (cc/apply 등 프로세스 블록) ────────────── */
+.koist-legacy-theme .process,
+.koist-legacy-theme ul.process {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 50px 0 100px;
+  list-style: none;
+  padding: 0;
+  gap: 0;
+  grid-template-columns: none;
+}
+.koist-legacy-theme .process > li,
+.koist-legacy-theme ul.process > li {
+  position: relative;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: calc(100% / 6);
+  padding: 50px 10px 40px;
+  border: 1px solid var(--koist-border);
+  text-align: center;
+  background: #fff;
+  border-radius: 0;
+  box-shadow: none;
+  transition: none;
+  transform: none;
+}
+.koist-legacy-theme .process > li:hover,
+.koist-legacy-theme ul.process > li:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--koist-border);
+}
+.koist-legacy-theme .process > li + li,
+.koist-legacy-theme ul.process > li + li {
+  border-left: none;
+}
+.koist-legacy-theme .process > li + li::before,
+.koist-legacy-theme ul.process > li + li::before {
+  display: block;
+  content: "\f105";
+  position: absolute;
+  left: -18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 35px;
+  height: 35px;
+  border: 1px solid var(--koist-border);
+  border-radius: 6px;
+  text-align: center;
+  line-height: 31px;
+  font-size: 16px;
+  color: var(--koist-primary);
+  background: #fff;
+  font-family: 'Font Awesome 6 Free', 'FontAwesome', 'fontawesome';
+  font-weight: 900;
+  z-index: 2;
+}
+.koist-legacy-theme .process > li > img,
+.koist-legacy-theme ul.process > li > img {
+  width: auto;
+  max-width: 80px;
+  height: auto;
+  margin: 0 auto 30px;
+  object-fit: contain;
+}
+.koist-legacy-theme .process > li > span,
+.koist-legacy-theme ul.process > li > span {
+  display: block;
+  margin-top: auto;
+  font-size: 14px;
+  font-weight: 700;
+  color: #aaa;
+  text-transform: uppercase;
+  font-family: 'Play', 'Noto Sans KR', sans-serif;
+  letter-spacing: 0.05em;
+}
+.koist-legacy-theme .process > li > p,
+.koist-legacy-theme ul.process > li > p {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--koist-title);
+  word-break: keep-all;
+  font-family: 'LotteMartDreamBold', 'Noto Sans KR', sans-serif;
+}
+
+/* ────────────── Contact Block (cs_cm L-shape) ────────────── */
+.koist-legacy-theme .cs_cm .tit {
+  margin: 100px 0 30px;
+  font-size: 25px;
+  text-align: center;
+  color: var(--koist-title);
+  font-family: 'LotteMartDreamBold', 'Noto Sans KR', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+.koist-legacy-theme .cs_cm .tit::before {
+  display: block;
+  content: "";
+  width: 8px;
+  height: 8px;
+  margin: 0 auto 15px;
+  border-radius: 50%;
+  background: var(--koist-primary);
+}
+.koist-legacy-theme .cs_cm ul {
+  display: flex;
+  justify-content: center;
+  padding: 0 20px;
+  list-style: none;
+  gap: 20px;
+  margin: 0;
+}
+.koist-legacy-theme .cs_cm ul li {
+  position: relative;
+  max-width: 350px;
+  width: 100%;
+  padding: 30px 40px;
+  border: 1px solid var(--koist-border);
+  border-radius: 0 0 20px 0;
+  font-size: 18px;
+  line-height: 2.2;
+  margin: 0;
+  background: #fff;
+  text-indent: 0;
+}
+.koist-legacy-theme .cs_cm ul li::before {
+  display: none;
+}
+.koist-legacy-theme .cs_cm ul li::after {
+  display: block;
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 0 0 20px 0;
+  border-top: 1px solid var(--koist-border);
+  border-left: 1px solid var(--koist-border);
+  background: var(--koist-bg-soft);
+}
+.koist-legacy-theme .cs_cm ul li p {
+  margin: 0 0 12px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--koist-border);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--koist-title);
+  background: none;
+  text-indent: 0;
+}
+.koist-legacy-theme .cs_cm ul li i {
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  margin-right: 10px;
+  border-radius: 50%;
+  font-size: 12px;
+  text-align: center;
+  line-height: 26px;
+  color: var(--koist-primary);
+  background: #f2f2f2;
+  font-style: normal;
+}
+
+/* ────────────── Generic elements inside koist-legacy-theme ────────────── */
+.koist-legacy-theme p {
+  margin: 0 0 0.8em 0;
+  color: var(--koist-text);
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.8;
+}
+.koist-legacy-theme strong,
+.koist-legacy-theme b {
+  font-weight: 500;
+  color: var(--koist-title);
+}
+.koist-legacy-theme a {
+  color: var(--koist-primary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.koist-legacy-theme a:hover {
+  color: var(--koist-secondary);
+  text-decoration: underline;
+}
+.koist-legacy-theme table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+.koist-legacy-theme table th {
+  height: 50px;
+  padding: 10px;
+  font-size: 17px;
+  font-weight: 500;
+  color: #fff;
+  background: var(--koist-primary);
+  text-align: center;
+  border-bottom: 1px solid var(--koist-border);
+}
+.koist-legacy-theme table td {
+  padding: 15px 10px;
+  border-bottom: 1px solid #d4d4d4;
+  border-left: 1px solid #d4d4d4;
+  font-size: 16px;
+  text-align: center;
+  color: var(--koist-title);
+}
+.koist-legacy-theme table td:first-child {
+  border-left: none;
+}
+
+/* ────────────── Responsive: Tablet (1024px 이하) ────────────── */
+@media (max-width: 1024px) {
+  .koist-legacy-theme {
+    font-size: 16px;
+  }
+  .koist-legacy-theme .service-section {
+    padding: 0 3%;
+  }
+  .koist-legacy-theme .service-section-title {
+    width: 160px;
+    font-size: 20px;
+  }
+  .koist-legacy-theme .service-section-body {
+    width: calc(100% - 160px);
+    font-size: 16px;
+  }
+  .koist-legacy-theme .tit_cm p {
+    font-size: 34px;
+  }
+  .koist-legacy-theme .process > li,
+  .koist-legacy-theme ul.process > li {
+    width: calc(100% / 3);
+  }
+  .koist-legacy-theme .process > li + li::before,
+  .koist-legacy-theme ul.process > li + li::before {
+    display: none;
+  }
+}
+
+/* ────────────── Responsive: Mobile (768px 이하) ────────────── */
+@media (max-width: 768px) {
+  .koist-legacy-theme .service-section {
+    display: block;
+    padding: 0 2%;
+  }
+  .koist-legacy-theme .service-section + .service-section {
+    margin-top: 40px;
+    padding-top: 40px;
+  }
+  .koist-legacy-theme .service-section-title {
+    width: auto;
+    margin-bottom: 15px;
+    font-size: 20px;
+  }
+  .koist-legacy-theme .service-section-body {
+    width: auto;
+    font-size: 15px;
+  }
+  .koist-legacy-theme .tit_cm {
+    margin-bottom: 30px;
+  }
+  .koist-legacy-theme .tit_cm p {
+    font-size: 28px;
+  }
+  .koist-legacy-theme .service-step-num {
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+  }
+  .koist-legacy-theme .cs_cm ul {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .koist-legacy-theme .cs_cm ul li {
+    max-width: none;
+  }
+  .koist-legacy-theme .cs_cm .tit {
+    margin: 50px 0 20px;
+    font-size: 22px;
+  }
+  .koist-legacy-theme .process > li,
+  .koist-legacy-theme ul.process > li {
+    width: 50%;
+    padding: 30px 10px 20px;
+  }
+  .koist-legacy-theme table {
+    font-size: 14px;
+  }
+  .koist-legacy-theme table th,
+  .koist-legacy-theme table td {
+    padding: 10px 6px;
+  }
+}
+
+/* ────────────── Responsive: Small Mobile (480px 이하) ────────────── */
+@media (max-width: 480px) {
+  .koist-legacy-theme {
+    font-size: 15px;
+  }
+  .koist-legacy-theme .tit_cm span {
+    font-size: 15px;
+  }
+  .koist-legacy-theme .tit_cm p {
+    font-size: 24px;
+  }
+  .koist-legacy-theme .service-section-title {
+    font-size: 18px;
+  }
+  .koist-legacy-theme .service-section-body {
+    font-size: 14px;
+  }
+  .koist-legacy-theme .service-image,
+  .koist-legacy-theme figure.service-image {
+    padding: 20px;
+  }
+  .koist-legacy-theme .process > li,
+  .koist-legacy-theme ul.process > li {
+    width: 100%;
+  }
+  .koist-legacy-theme .process > li > p,
+  .koist-legacy-theme ul.process > li > p {
+    font-size: 17px;
+  }
+}
+
+/* ────────────── High-specificity overrides for conflicting prose rules ────────────── */
+/* These rules use higher specificity (#id or duplicated class) to defeat existing
+   .prose .service-* rules without using 'all: revert' (which nullifies everything). */
+
+.koist-legacy-theme.koist-legacy-theme .service-section {
+  display: flex;
+  padding: 0 5%;
+  margin: 0;
+  background: none;
+  border: none;
+  border-left: none;
+  border-radius: 0;
+  position: static;
+}
+.koist-legacy-theme.koist-legacy-theme .service-section + .service-section {
+  margin-top: 60px;
+  padding-top: 60px;
+  border-top: 1px solid var(--koist-border);
+}
+.koist-legacy-theme.koist-legacy-theme .service-section-title {
+  flex-shrink: 0;
+  width: 200px;
+  margin: 0 0 0 0 !important;
+  padding: 0;
+  font-size: 24px;
+  color: var(--koist-title) !important;
+  word-break: keep-all;
+  line-height: 1.5;
+  font-family: 'LotteMartDreamBold', 'Noto Sans KR', sans-serif;
+  font-weight: 800 !important;
+  letter-spacing: -0.3px;
+  background: none;
+}
+.koist-legacy-theme.koist-legacy-theme .service-section-body {
+  width: calc(100% - 200px);
+  word-break: keep-all;
+  color: var(--koist-text) !important;
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.8;
+}
+.koist-legacy-theme.koist-legacy-theme .service-bullets {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.koist-legacy-theme.koist-legacy-theme .service-bullets li {
+  position: static !important;
+  text-indent: -14px;
+  margin: 0 0 0 14px !important;
+  padding: 0 !important;
+  background: none !important;
+  line-height: 1.8;
+  list-style: none !important;
+}
+.koist-legacy-theme.koist-legacy-theme .service-bullets li + li {
+  margin-top: 5px !important;
+}
+.koist-legacy-theme.koist-legacy-theme .service-bullets li::before {
+  display: inline-block !important;
+  vertical-align: 5px !important;
+  content: "" !important;
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  width: 4px !important;
+  height: 4px !important;
+  margin-right: 10px !important;
+  border-radius: 50% !important;
+  background: var(--koist-primary) !important;
+  box-shadow: none !important;
+}
+.koist-legacy-theme.koist-legacy-theme figure.service-image {
+  padding: 50px !important;
+  background: var(--koist-bg-soft) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  text-align: center;
+}
+.koist-legacy-theme.koist-legacy-theme figure.service-image > img {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  margin: 0 auto !important;
+  border-radius: 0 !important;
+  display: inline-block !important;
+}
+
+/* Responsive high-specificity overrides */
+@media (max-width: 1024px) {
+  .koist-legacy-theme.koist-legacy-theme .service-section { padding: 0 3%; }
+  .koist-legacy-theme.koist-legacy-theme .service-section-title { width: 160px; font-size: 20px; }
+  .koist-legacy-theme.koist-legacy-theme .service-section-body { width: calc(100% - 160px); font-size: 16px; }
+}
+@media (max-width: 768px) {
+  .koist-legacy-theme.koist-legacy-theme .service-section { display: block; padding: 0 2%; }
+  .koist-legacy-theme.koist-legacy-theme .service-section-title { width: auto; margin-bottom: 15px !important; font-size: 20px; }
+  .koist-legacy-theme.koist-legacy-theme .service-section-body { width: auto; font-size: 15px; }
+}
+
+/* End of v39.7 KOIST Legacy Theme */

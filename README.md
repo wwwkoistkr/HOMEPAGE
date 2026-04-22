@@ -1,15 +1,43 @@
-# KOIST Website v39.6
+# KOIST Website v39.7
 
-**(주)한국정보보안기술원** 공식 웹사이트 — koist.kr 원본 콘텐츠 마이그레이션 (25개 사업분야 하위페이지)
+**(주)한국정보보안기술원** 공식 웹사이트 — **koist.kr 원본 디자인 완전 복제** (Scoped Legacy Theme)
 
 ## URLs
 - **Production**: https://koist-website.pages.dev (메인)
-- **Latest Deploy**: https://4666afa7.koist-website.pages.dev (v39.6)
-- **Previous (v39.5)**: https://dab84020.koist-website.pages.dev
+- **Latest Deploy**: https://1c8cd969.koist-website.pages.dev (v39.7 — 원본 디자인)
+- **Previous (v39.6)**: https://4666afa7.koist-website.pages.dev (콘텐츠 마이그레이션)
+- **Previous (v39.5)**: https://dab84020.koist-website.pages.dev (슬라이더 폰트)
 - **GitHub**: https://github.com/wwwkoistkr/HOMEPAGE
 - **관리자**: /admin
-- **사업분야 관리**: /admin/departments (v39.6에서 WYSIWYG 편집 가능)
+- **사업분야 관리**: /admin/departments (v39.7에서 **원본 디자인 토글** + 영문 서브타이틀 + WYSIWYG)
 - **슬라이더 UI 설정**: /admin/slider-settings (v39.4)
+
+## 🎨 v39.7 — koist.kr 원본 디자인 완전 복제 (Scoped Legacy Theme, 2026-04-22)
+
+### 목표
+v39.6 에서 콘텐츠 마이그레이션은 완료했으나 "디자인이 원본과 다르다"는 사용자 피드백에 대응.
+**원본 koist.kr 의 네이비(`#005f9b`) 기반 정의형 레이아웃** 을 서비스 페이지에 픽셀 단위로 복제.
+
+### 핵심 결과
+- **14/14 픽셀 속성 원본과 100% 일치** (section-title 200px, bullet 4×4px #005f9b, image-box 50px padding #f5f5f5 등)
+- **Scoped**: `.koist-legacy-theme` 네임스페이스 → 홈/관리자/공지 영향 **0**
+- **Feature Flag**: `departments.use_legacy_theme` → 부서별 ON/OFF + 즉시 롤백 가능
+- **Admin 호환**: v39.6 HTML 에디터 편집 시 원본 디자인 자동 적용
+- **테스트**: 로컬 8/8 + 프로덕션 6/6 + 슬라이더 회귀 6/6 = **20/20 통과**
+
+### 신규/변경 파일 (8개)
+- `public/static/style.css` (+594 LoC, `.koist-legacy-theme` 블록)
+- `src/templates/layout.tsx` (+4 LoC, `/static/style.css` 링크 추가 + Play 폰트)
+- `src/templates/pages.tsx` (±18 LoC, dual-theme 분기 렌더링)
+- `src/types.ts`, `src/routes/admin.ts`, `public/static/js/admin-departments.js`
+- `migrations/0031_legacy_theme_flag.sql` (use_legacy_theme + english_subtitle)
+- `migrations/0032_certificate_overview_hotfix.sql` (고아 `</div>` 제거)
+
+### 🐛 숨겨진 버그 수정
+v39.6 이 `public/static/style.css` 에 추가한 `.service-*` CSS 규칙이 **`layout.tsx` 에 `<link>` 태그 부재로 실제 로드되지 않고 있었음** → v39.7에서 `<link href="/static/style.css">` 추가로 해결. **v39.6 의 콘텐츠 마이그레이션도 이제 비로소 시각적으로 반영됨**.
+
+---
+
 
 ## 📄 v39.6 — 원본 koist.kr 25개 사업분야 하위페이지 1회 크롤링 마이그레이션 (2026-04-22)
 
