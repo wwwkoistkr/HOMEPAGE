@@ -183,6 +183,40 @@ api.get('/media/*', async (c) => {
   }
 });
 
+// GET /api/images/legacy/* - HTTPS proxy for legacy koist.kr images (v39.6)
+// Resolves Mixed-Content warnings when embedding original koist.kr assets
+// in HTTPS-served Cloudflare Pages. All images are company-owned assets.
+api.get('/images/legacy/*', async (c) => {
+  const key = c.req.path.replace('/api/images/legacy/', '');
+  if (!key) return c.json({ error: 'Legacy image key required' }, 400);
+
+  // Safety: only allow koist.kr path prefixes (sh_page/, img/, data/, files/, bbs/, etc.)
+  // Reject any absolute URLs or parent-directory traversal
+  if (key.includes('..') || /^https?:\/\//i.test(key)) {
+    return c.json({ error: 'Invalid legacy image path' }, 400);
+  }
+
+  const upstream = `http://www.koist.kr/${key}`;
+  try {
+    const res = await fetch(upstream, {
+      // @ts-ignore - cf property is available in Cloudflare Workers runtime
+      cf: { cacheEverything: true, cacheTtl: 31536000 },
+      headers: { 'User-Agent': 'KOIST-Legacy-Proxy/1.0' },
+    });
+    if (!res.ok) return c.json({ error: `Upstream ${res.status}` }, res.status === 404 ? 404 : 502);
+
+    const headers = new Headers();
+    const ct = res.headers.get('Content-Type') || 'image/png';
+    headers.set('Content-Type', ct);
+    headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+    headers.set('X-Legacy-Proxy', 'koist.kr');
+    headers.set('X-Legacy-Path', key);
+    return new Response(res.body, { headers, status: 200 });
+  } catch (err) {
+    return c.json({ error: 'Failed to proxy legacy image', detail: String(err) }, 502);
+  }
+});
+
 // GET /api/images/:key+ - Serve images from R2 (public, cached) or redirect for external URLs
 api.get('/images/*', async (c) => {
   const key = c.req.path.replace('/api/images/', '');

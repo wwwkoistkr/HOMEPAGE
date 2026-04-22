@@ -1,14 +1,48 @@
-# KOIST Website v39.5
+# KOIST Website v39.6
 
-**(주)한국정보보안기술원** 공식 웹사이트 — Slider Month-Label Font +50% & Mobile Overflow Guard
+**(주)한국정보보안기술원** 공식 웹사이트 — koist.kr 원본 콘텐츠 마이그레이션 (25개 사업분야 하위페이지)
 
 ## URLs
 - **Production**: https://koist-website.pages.dev (메인)
-- **Latest Deploy**: https://dab84020.koist-website.pages.dev (v39.5)
-- **Previous (v39.4)**: https://288bf665.koist-website.pages.dev
+- **Latest Deploy**: https://4666afa7.koist-website.pages.dev (v39.6)
+- **Previous (v39.5)**: https://dab84020.koist-website.pages.dev
 - **GitHub**: https://github.com/wwwkoistkr/HOMEPAGE
 - **관리자**: /admin
+- **사업분야 관리**: /admin/departments (v39.6에서 WYSIWYG 편집 가능)
 - **슬라이더 UI 설정**: /admin/slider-settings (v39.4)
+
+## 📄 v39.6 — 원본 koist.kr 25개 사업분야 하위페이지 1회 크롤링 마이그레이션 (2026-04-22)
+
+### 목표
+현재 `/services/:dept/:page` 페이지들이 원본 http://www.koist.kr 대비 구조/배열/섹션이 누락되어 단순 텍스트만 표시되던 문제를 해결하기 위해, **원본 사이트에서 25개 하위페이지를 1회 배치 크롤링**하여 DB에 자동 마이그레이션.
+
+### 핵심 숫자
+- **25개 페이지** 성공적 크롤링 & 마이그레이션 (27개 대상 중 2개는 원본에 URL 부재)
+- **콘텐츠 증가**: 총 1,898 B → **114,176 B (60×)**, 평균 76 B → 4,567 B
+- **신규 이미지**: 62개 이미지 모두 **HTTPS 프록시**로 재작성 (Mixed Content 0건)
+- **변환 규칙 7종**: `dl.dl_cm`→`section`, `dl.num_dl_cm`→`ol.service-steps`, `ul.ul_dot_cm`→`ul.service-bullets`, `div.img_box`→`figure.service-image`, 기타
+
+### HTTPS 이미지 프록시 라우트 (신규)
+`GET /api/images/legacy/*`
+- 서버→서버 fetch(`http://www.koist.kr/...`) + Cloudflare Edge Cache 1년
+- Path traversal/절대 URL 인젝션 방어 (HTTP 400 반환)
+- 예: `/api/images/legacy/sh_page/img/p38_img.png` → 32.6 KB PNG ✅
+
+### 콘텐츠 구조 변환 예시
+| 원본 (koist.kr) | v39.6 변환 결과 |
+|-|-|
+| `<dl class="dl_cm"><dt>개요</dt><dd>…</dd></dl>` | `<section class="service-section"><h3>개요</h3>…</section>` |
+| `<ul class="ul_dot_cm">` | `<ul class="service-bullets">` + CSS `::before` 파란 점 |
+| `<div class="img_box"><img src="/sh_page/img/x.png"/></div>` | `<figure class="service-image"><img src="/api/images/legacy/sh_page/img/x.png" loading="lazy"></figure>` |
+
+### 관리자 편집 호환성
+모든 변환된 HTML은 기존 `sanitizeHtml()` allowlist 내에 있으므로 관리자 WYSIWYG 에디터에서 **자유롭게 수정/저장** 가능.
+
+### 검증 결과
+- ✅ **Local Playwright**: 23/23 페이지 통과, Mixed Content 0건, 페이지 에러 0건
+- ✅ **Production Playwright**: 5/5 샘플 페이지 통과, Mixed Content 0건
+- ✅ **v39.5 슬라이더 회귀**: 6/6 통과 (1920px 폰트 크기 정확)
+- ✅ **D1 마이그레이션**: local + production 모두 26 commands OK
 
 ## 🔤 v39.5 — AI 시뮬레이터 슬라이더 월수 글자 +50% 확대 (2026-04-21)
 
