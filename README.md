@@ -1,13 +1,108 @@
-# KOIST Website v39.7
+# KOIST Website v39.18
 
 **(주)한국정보보안기술원** 공식 웹사이트 — **koist.kr 원본 디자인 완전 복제** (Scoped Legacy Theme)
 
 ## URLs
 - **Production**: https://koist-website.pages.dev (메인)
-- **Latest Deploy**: https://1c8cd969.koist-website.pages.dev (v39.7 — 원본 디자인)
+- **Latest Deploy**: https://24aa3149.koist-website.pages.dev (v39.18 — 시스템 문서 관리자화 + R2 업로드)
+- **관리자 시스템 문서**: /admin/system-docs (v39.18, R2 업로드 + URL 등록)
+- **Previous (v39.7)**: https://1c8cd969.koist-website.pages.dev (원본 디자인)
 - **Previous (v39.6)**: https://4666afa7.koist-website.pages.dev (콘텐츠 마이그레이션)
 - **Previous (v39.5)**: https://dab84020.koist-website.pages.dev (슬라이더 폰트)
 - **GitHub**: https://github.com/wwwkoistkr/HOMEPAGE
+
+---
+
+## 📘 v39.18 — 시스템 문서(/support/documents)를 관리자 모드로 이동 + R2 파일 업로드 (2026-04-24)
+
+### 목표
+지금까지 `/support/documents` 페이지는 하드코딩된 2개 카드(Architecture Diagram + Development Guide)로만 구성되어 있어 문서 추가/수정 시 코드 배포가 필요했음.
+→ **홈페이지 관리자 모드에서 직접 CRUD 가능**하도록 전용 페이지 `/admin/system-docs` 신설. 파일은 **Cloudflare R2**에 업로드.
+
+### v39.17과의 차이점 (실패 교훈 반영)
+v39.17은 `/admin/downloads`에 카테고리만 추가했다가 UX 복잡도로 롤백됨. v39.18은:
+1. **전용 페이지 `/admin/system-docs`** 신설 (기존 자료실과 완전 분리)
+2. **`/support/documents` 디자인 100% 보존** (기존 카드 디자인 그대로, DB 데이터만 주입)
+3. **DB가 비어있으면 하드코딩 fallback** → 사용자 화면은 현재와 **완전 동일**
+4. **R2 파일 업로드 추가** (HTML/PDF/Office/이미지/ZIP, 최대 20MB)
+
+### 주요 구현
+
+#### 1) 관리자 페이지: `/admin/system-docs` (전용 페이지)
+- 사이드바 메뉴 `시스템 문서` (fa-book) 신설
+- 문서 목록 테이블 (아이콘·제목·크기·다운로드수·등록일·작업)
+- **2가지 등록 방식**:
+  - `URL로 등록` (파란 버튼) — 외부/내부 URL 문자열 저장 (R2 불필요)
+  - `파일 업로드` (보라 버튼) — R2에 업로드 후 `/api/docs/{key}`로 서빙
+- 편집/삭제 모달 (R2 파일은 삭제 시 R2에서도 제거)
+
+#### 2) API 엔드포인트 신설 (src/routes/admin.ts)
+```
+GET    /api/admin/system-docs       목록 조회 (+ r2_available 플래그)
+POST   /api/admin/system-docs       multipart: R2 업로드 / JSON: URL 등록
+PUT    /api/admin/system-docs/:id   메타데이터 수정 (category='system-docs' 잠금)
+DELETE /api/admin/system-docs/:id   DB + R2 동시 삭제
+```
+
+#### 3) R2 서빙 엔드포인트: `/api/docs/*` (src/routes/api.ts)
+- **`system-docs/` prefix 전용** — 다른 R2 객체 접근 차단 (HTTP 400)
+- Content-Type은 R2 메타데이터 그대로 (HTML→text/html, PDF→application/pdf 등)
+- 기존 `/api/media/*`와 분리 (video/mp4 기본값 충돌 방지)
+- Cache-Control: `public, max-age=3600`
+
+#### 4) 보안 검증
+- **허용 확장자 화이트리스트**: html/htm/pdf/docx/xlsx/pptx/doc/xls/ppt/hwp/txt/zip/png/jpg/jpeg/gif/webp
+- **최대 20MB** 파일 크기 제한
+- **경로 prefix 검증** — `/api/docs/`는 `system-docs/`로 시작하는 키만 허용 (`..` 포함 불가)
+- **CSRF 토큰** 기존 admin-fetch.js 미들웨어 재사용
+
+#### 5) `/support/documents` 리팩토링 (src/index.tsx)
+- DB 조회: `SELECT ... FROM downloads WHERE category = 'system-docs' ORDER BY created_at DESC`
+- **DB 비어있으면 기존 하드코딩 2개 카드 fallback** → 사용자 화면 0 변화
+- 파일 유형별 아이콘/색상 자동 매핑 (PDF=빨강/HTML=파랑/Office=각 색상/이미지=보라)
+- XSS 방지: 모든 사용자 입력은 `esc()`로 HTML escape
+
+### 검증 결과 (Local + Production 모두 통과)
+
+| 검증 항목 | 결과 |
+|---|---|
+| 프로덕션 `/support/documents` | HTTP 200 + fallback 2개 카드 정상 ✅ |
+| 프로덕션 `/admin/system-docs` | HTTP 302 (미로그인 리다이렉트 정상) ✅ |
+| 프로덕션 `/static/js/admin-system-docs.js` | HTTP 200 ✅ |
+| 프로덕션 `/api/admin/system-docs` | HTTP 401 (인증 필요 정상) ✅ |
+| 프로덕션 `/api/docs/videos/xxx.mp4` (보안) | HTTP 400 (system-docs prefix 아님) ✅ |
+| 프로덕션 `/api/docs/system-docs/fake.html` | HTTP 404 (R2에 없음) ✅ |
+| 로컬 인증 후 `/api/admin/system-docs` | `{"success":true,"data":[],"r2_available":true}` ✅ |
+| R2 바인딩 | 활성 (koist-images bucket) ✅ |
+
+### 신규/수정 파일 (5개)
+| 파일 | 변경 |
+|---|---|
+| `src/index.tsx` | `/support/documents` 리팩토링 (DB+fallback), adminPages에 `system-docs` 추가, 제목 추가 |
+| `src/routes/admin.ts` | `/system-docs` CRUD 4개 엔드포인트 추가 (R2 업로드 포함, +135 LoC) |
+| `src/routes/api.ts` | `/api/docs/*` 엔드포인트 신설 (R2 서빙, 보안 prefix 검증) |
+| `src/templates/admin/index.tsx` | 사이드바에 `시스템 문서` 메뉴 추가 |
+| `public/static/js/admin-system-docs.js` | **신규** — 관리자 CRUD UI (업로드/URL/편집/삭제 모달, 18 KB) |
+
+### DB 변경
+- **스키마 변경 없음** — 기존 `downloads` 테이블의 `category` 컬럼 활용
+- 마이그레이션 파일 없음 (v39.17 때 추가했던 0045 시드는 적용 안 함 → 하드코딩 fallback 유지)
+
+### 사용법
+1. 관리자 로그인 → 사이드바 **시스템 문서** 클릭
+2. 문서 추가:
+   - **파일 업로드** → 제목·설명·파일 선택 → 업로드 (R2 저장)
+   - **URL로 등록** → 외부 URL 또는 `/static/docs/xxx.html` 등 내부 경로 입력
+3. `/support/documents` 페이지에 **즉시 반영** (등록 순서대로 최신순 정렬)
+4. DB에 문서가 1건도 없으면 기존 하드코딩 2개 카드 자동 표시 (fallback)
+
+### 롤백 방법
+v39.17과 달리 DB 변경이 없어 **코드만 revert하면 완전 복구**:
+```bash
+git revert <v39.18 commit>  # 1-commit revert로 모두 원복
+```
+
+---
 - **관리자**: /admin
 - **사업분야 관리**: /admin/departments (v39.7에서 **원본 디자인 토글** + 영문 서브타이틀 + WYSIWYG)
 - **슬라이더 UI 설정**: /admin/slider-settings (v39.4)

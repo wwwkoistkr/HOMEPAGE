@@ -437,6 +437,140 @@ admin.delete('/downloads/:id', async (c) => {
   return c.json({ success: true });
 });
 
+// ---- System Docs CRUD (downloads 테이블의 category='system-docs' 사용) ----
+// R2 파일 업로드 + 외부 URL 등록 모두 지원. 삭제 시 R2 객체도 제거.
+
+// GET /api/admin/system-docs - 시스템 문서 목록 (category='system-docs')
+admin.get('/system-docs', async (c) => {
+  const result = await c.env.DB.prepare(
+    "SELECT * FROM downloads WHERE category = 'system-docs' ORDER BY created_at DESC"
+  ).all();
+  return c.json({ success: true, data: result.results, r2_available: !!(c.env as any).R2 });
+});
+
+// POST /api/admin/system-docs - R2 파일 업로드 또는 URL 등록
+// - multipart/form-data: file 업로드 → R2 'system-docs/' prefix에 저장
+// - application/json   : { title, description, file_url } 외부 URL 등록
+admin.post('/system-docs', async (c) => {
+  try {
+    const contentType = c.req.header('content-type') || '';
+    // 시스템 문서는 최대 20MB (HTML/PDF/DOCX/XLSX/이미지 모두 허용)
+    const maxBytes = 20 * 1024 * 1024;
+
+    if (contentType.includes('multipart/form-data')) {
+      const formData = await c.req.formData();
+      const file = formData.get('file') as File | null;
+      const title = (formData.get('title') as string) || '';
+      const description = (formData.get('description') as string) || '';
+
+      if (!file) return c.json({ error: '파일을 선택해주세요.' }, 400);
+      if (!title.trim()) return c.json({ error: '제목을 입력해주세요.' }, 400);
+
+      // 허용 확장자 (XSS/실행 위험 파일 차단)
+      const allowedExts = ['html', 'htm', 'pdf', 'docx', 'xlsx', 'pptx', 'doc', 'xls', 'ppt', 'hwp', 'txt', 'zip', 'png', 'jpg', 'jpeg', 'gif', 'webp'];
+      const ext = (file.name.split('.').pop() || '').toLowerCase();
+      if (!allowedExts.includes(ext)) {
+        return c.json({ error: `지원하지 않는 파일 형식입니다. (허용: ${allowedExts.join(', ')})` }, 400);
+      }
+
+      if (file.size > maxBytes) {
+        return c.json({ error: `파일 크기는 ${Math.round(maxBytes / 1024 / 1024)}MB 이하만 가능합니다.` }, 400);
+      }
+
+      if (!(c.env as any).R2) {
+        return c.json({ error: 'R2 storage not configured.' }, 503);
+      }
+
+      const arrayBuffer = await file.arrayBuffer();
+      const timestamp = Date.now();
+      const rand = Math.random().toString(36).substring(2, 8);
+      // 원본 파일명 보존 (한글 등 깨짐 방지 위해 timestamp-rand로 고유화)
+      const r2Key = `system-docs/${timestamp}-${rand}.${ext}`;
+
+      // MIME 매핑
+      const mimeMap: Record<string, string> = {
+        html: 'text/html', htm: 'text/html',
+        pdf: 'application/pdf',
+        docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        doc: 'application/msword', xls: 'application/vnd.ms-excel', ppt: 'application/vnd.ms-powerpoint',
+        hwp: 'application/x-hwp', txt: 'text/plain', zip: 'application/zip',
+        png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp',
+      };
+      const mime = mimeMap[ext] || file.type || 'application/octet-stream';
+
+      await c.env.R2.put(r2Key, arrayBuffer, {
+        httpMetadata: { contentType: mime },
+      });
+
+      // file_url은 /api/docs/{key} (system-docs 전용 R2 서빙 엔드포인트)
+      const fileUrl = `/api/docs/${r2Key}`;
+
+      await c.env.DB.prepare(
+        "INSERT INTO downloads (title, description, file_url, file_name, file_size, category) VALUES (?,?,?,?,?, 'system-docs')"
+      ).bind(title, description, fileUrl, file.name, file.size).run();
+
+      const record = await c.env.DB.prepare(
+        "SELECT * FROM downloads WHERE file_url = ? ORDER BY id DESC LIMIT 1"
+      ).bind(fileUrl).first();
+
+      return c.json({ success: true, data: record, url: fileUrl });
+    } else if (contentType.includes('application/json')) {
+      // URL 기반 등록 (R2 업로드 없이 외부/내부 URL 지정)
+      const { title, description, file_url, file_name, file_size } = await c.req.json();
+      if (!title?.trim()) return c.json({ error: '제목을 입력해주세요.' }, 400);
+      if (!file_url?.trim()) return c.json({ error: 'URL을 입력해주세요.' }, 400);
+
+      await c.env.DB.prepare(
+        "INSERT INTO downloads (title, description, file_url, file_name, file_size, category) VALUES (?,?,?,?,?, 'system-docs')"
+      ).bind(title, description || '', file_url, file_name || '', file_size || 0).run();
+
+      return c.json({ success: true });
+    } else {
+      return c.json({ error: 'Content-Type must be multipart/form-data or application/json' }, 400);
+    }
+  } catch (err: any) {
+    return c.json({ error: '업로드 실패: ' + (err.message || '알 수 없는 오류') }, 500);
+  }
+});
+
+// PUT /api/admin/system-docs/:id - 메타데이터 수정 (파일 교체는 삭제 후 재업로드)
+admin.put('/system-docs/:id', async (c) => {
+  const body = await c.req.json();
+  const fields = ['title', 'description', 'file_url', 'file_name', 'file_size'];
+  const updates: string[] = [];
+  const values: any[] = [];
+  for (const f of fields) { if (body[f] !== undefined) { updates.push(`${f} = ?`); values.push(body[f]); } }
+  if (updates.length === 0) return c.json({ error: 'No fields' }, 400);
+  values.push(c.req.param('id'));
+  // category='system-docs' 잠금: 다른 카테고리 문서는 건드리지 않음
+  await c.env.DB.prepare(
+    `UPDATE downloads SET ${updates.join(', ')} WHERE id = ? AND category = 'system-docs'`
+  ).bind(...values).run();
+  return c.json({ success: true });
+});
+
+// DELETE /api/admin/system-docs/:id - DB + R2 동시 삭제
+admin.delete('/system-docs/:id', async (c) => {
+  const id = c.req.param('id');
+  const row = await c.env.DB.prepare(
+    "SELECT file_url FROM downloads WHERE id = ? AND category = 'system-docs'"
+  ).bind(id).first<{ file_url: string }>();
+  if (!row) return c.json({ error: '문서를 찾을 수 없습니다.' }, 404);
+
+  // R2 업로드 파일이면 R2에서도 삭제 (file_url이 /api/docs/system-docs/로 시작)
+  if ((c.env as any).R2 && row.file_url?.startsWith('/api/docs/system-docs/')) {
+    const r2Key = row.file_url.replace('/api/docs/', '');
+    try { await c.env.R2.delete(r2Key); } catch { /* R2 삭제 실패는 non-critical */ }
+  }
+
+  await c.env.DB.prepare(
+    "DELETE FROM downloads WHERE id = ? AND category = 'system-docs'"
+  ).bind(id).run();
+  return c.json({ success: true });
+});
+
 // ---- About Pages CRUD ----
 admin.get('/about-pages', async (c) => {
   const result = await c.env.DB.prepare('SELECT * FROM about_pages ORDER BY sort_order').all();

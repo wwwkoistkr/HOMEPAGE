@@ -125,6 +125,42 @@ api.get('/sim-cert-types', async (c) => {
   return c.json({ success: true, data: result.results });
 });
 
+// GET /api/docs/*  - Serve system-docs files from R2 (HTML/PDF/Office/etc.)
+// 별도 엔드포인트로 분리하여 기존 /api/media/*의 video/mp4 fallback과 충돌 방지
+// - Content-Type은 R2 메타데이터를 그대로 사용 (업로드 시 올바른 MIME 저장됨)
+// - fallback은 application/octet-stream (브라우저가 다운로드로 처리)
+// - system-docs/ prefix에 저장된 파일만 서빙 (보안: 다른 R2 객체 접근 차단)
+api.get('/docs/*', async (c) => {
+  const key = c.req.path.replace('/api/docs/', '');
+  if (!key) return c.json({ error: 'Doc key required' }, 400);
+
+  // 보안: system-docs/ prefix 외의 키는 접근 금지
+  if (!key.startsWith('system-docs/') || key.includes('..')) {
+    return c.json({ error: 'Invalid doc key' }, 400);
+  }
+
+  if (!(c.env as any).R2) {
+    return c.json({ error: 'R2 storage not configured.' }, 503);
+  }
+
+  try {
+    const object = await c.env.R2.get(key);
+    if (!object) return c.json({ error: 'Doc not found' }, 404);
+
+    const headers = new Headers();
+    headers.set('Content-Type', object.httpMetadata?.contentType || 'application/octet-stream');
+    headers.set('Content-Length', String(object.size));
+    headers.set('Cache-Control', 'public, max-age=3600');
+    headers.set('ETag', object.etag || '');
+    // HTML 파일은 브라우저에서 직접 렌더, 그 외는 뷰어/다운로드는 브라우저 기본 동작 따름
+    // (Content-Disposition은 설정하지 않음: 브라우저가 MIME 보고 알아서 처리)
+
+    return new Response(object.body, { headers });
+  } catch {
+    return c.json({ error: 'Failed to retrieve doc' }, 500);
+  }
+});
+
 // GET /api/media/:key+ - Serve videos from R2 with Range request support (streaming)
 api.get('/media/*', async (c) => {
   const key = c.req.path.replace('/api/media/', '');
