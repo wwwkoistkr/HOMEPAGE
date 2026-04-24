@@ -98,17 +98,6 @@
       + '<div><label class="block text-xs font-medium text-gray-500 mb-1">시작일</label><input id="pStart" type="date" value="' + (popup?.start_date ? popup.start_date.split('T')[0] : '') + '" class="w-full px-3 py-2 border rounded-lg text-sm"></div>'
       + '<div><label class="block text-xs font-medium text-gray-500 mb-1">종료일</label><input id="pEnd" type="date" value="' + (popup?.end_date ? popup.end_date.split('T')[0] : '') + '" class="w-full px-3 py-2 border rounded-lg text-sm"></div>'
       + '</div>'
-      // v39.16 Phase 2-E: 이미지 팝업 카드 cm 크기 (auto-fit 지원)
-      + '<div id="cardCmFields" style="' + (isImage || !popup ? '' : 'display:none') + '" class="mb-4 bg-amber-50 border border-amber-200 rounded-lg p-3">'
-      + '<div class="flex items-center gap-2 mb-2"><i class="fas fa-ruler-combined text-amber-600"></i><span class="text-sm font-semibold text-amber-800">이미지 팝업 카드 실측 크기 (cm)</span></div>'
-      + '<p class="text-xs text-amber-700 mb-2">비어있으면 이미지 비율에 맞춰 자동 조정됩니다. 값을 지정하면 해당 cm 크기로 고정됩니다.</p>'
-      + '<div class="grid grid-cols-2 gap-3">'
-      + '<div><label class="block text-xs font-medium text-gray-600 mb-1">카드 너비 (cm)</label>'
-      + '<input id="pCardWidthCm" type="number" step="0.1" min="0" value="' + (popup?.card_width_cm ?? '') + '" placeholder="auto (비워두기)" class="w-full px-3 py-2 border rounded-lg text-sm"></div>'
-      + '<div><label class="block text-xs font-medium text-gray-600 mb-1">카드 높이 (cm)</label>'
-      + '<input id="pCardHeightCm" type="number" step="0.1" min="0" value="' + (popup?.card_height_cm ?? '') + '" placeholder="auto (비워두기)" class="w-full px-3 py-2 border rounded-lg text-sm"></div>'
-      + '</div>'
-      + '</div>'
       // === IMAGE TYPE FIELDS ===
       + '<div id="imageUrlField" style="' + (isImage || !popup ? '' : 'display:none') + '">'
       + '<label class="block text-xs font-medium text-gray-500 mb-1"><i class="fas fa-image mr-1"></i>이미지 설정</label>'
@@ -282,15 +271,6 @@
       title_color: document.getElementById('pTitleColorText')?.value || '#1f2937',
       line_height: parseFloat(document.getElementById('pLineHeight')?.value) || 1.7,
       padding: parseInt(document.getElementById('pPadding')?.value) || 20,
-      // v39.16 Phase 2-E: card_width_cm / card_height_cm (빈 값이면 null = auto-fit)
-      card_width_cm: (function() {
-        var v = document.getElementById('pCardWidthCm')?.value;
-        return (v === undefined || v === null || v === '') ? null : (parseFloat(v) || null);
-      })(),
-      card_height_cm: (function() {
-        var v = document.getElementById('pCardHeightCm')?.value;
-        return (v === undefined || v === null || v === '') ? null : (parseFloat(v) || null);
-      })(),
     };
     if (!body.title) { alert('제목을 입력해 주세요.'); return; }
     if (type === 'image' && !body.image_url) { alert('이미지 URL을 입력하거나 이미지를 업로드해 주세요.'); return; }
@@ -304,15 +284,12 @@
     var type = document.getElementById('pType').value;
     var imgField = document.getElementById('imageUrlField');
     var htmlField = document.getElementById('htmlContentField');
-    var cardCmField = document.getElementById('cardCmFields'); // v39.16 Phase 2-E
     if (type === 'image') {
       if (imgField) imgField.style.display = '';
       if (htmlField) htmlField.style.display = 'none';
-      if (cardCmField) cardCmField.style.display = '';
     } else {
       if (imgField) imgField.style.display = 'none';
       if (htmlField) htmlField.style.display = '';
-      if (cardCmField) cardCmField.style.display = 'none';
     }
   };
 

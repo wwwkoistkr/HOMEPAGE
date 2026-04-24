@@ -1266,7 +1266,7 @@ export function homePage(opts: {
   <!-- ════════════════════════════════════════════════════════
        SERVICES SECTION (v32 - 2x Text Enlarged, Premium Bento Grid)
        ════════════════════════════════════════════════════════ -->
-  <section id="services" class="relative overflow-hidden" role="region" aria-label="사업분야" style="${bgStyle(s.services_bg_url, s.services_bg_color || '#FFFFFF', s.services_bg_opacity || '0.85')}; padding: clamp(1.5rem,2.5vw,2.5rem) 0;">
+  <section id="services" class="relative overflow-hidden" role="region" aria-label="사업분야" style="background: #FFFFFF; padding: clamp(1.5rem,2.5vw,2.5rem) 0;">
     <div class="absolute inset-0 opacity-[0.012]" style="background-image: radial-gradient(circle at 1px 1px, rgba(15,23,42,0.15) 1px, transparent 0); background-size: 32px 32px;"></div>
 
     <div class="relative fluid-container">
@@ -1336,21 +1336,8 @@ export function homePage(opts: {
        v33: INLINE ACCORDION — 공지사항/자료실/시스템문서/오시는길
        사업분야 바로 아래, 클릭 → 펼치기 → 항목 클릭 → 내용 → 닫기 → 원위치
        ════════════════════════════════════════════════════════ -->
-  <section id="homeAccordionSection" class="relative overflow-hidden" style="${bgStyle(s.accordion_bg_url, s.accordion_bg_color || '#FFFFFF', s.accordion_bg_opacity || '0.85')}; border-top:1px solid rgba(226,232,240,0.40);">
-    ${(() => {
-      // v39.16 Phase 2-C: 3층 MP4 비디오 배경 (선택)
-      const accVideoUrl = s.accordion_video_url || '';
-      if (!accVideoUrl || /[<>"'`\s\\\n\r]/.test(accVideoUrl)) return '';
-      const accOp = safeOpacity(s.accordion_video_opacity || '0.75', '0.75');
-      const safeAccVideo = escapeAttr(accVideoUrl);
-      return `
-      <video autoplay muted loop playsinline preload="auto" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;">
-        <source src="${safeAccVideo}" type="video/mp4">
-      </video>
-      <div style="position:absolute; inset:0; background:rgba(255,255,255,${accOp}); z-index:1;"></div>
-      `;
-    })()}
-    <div class="fluid-container" style="padding-top:0; padding-bottom:0; position:relative; z-index:2;">
+  <section id="homeAccordionSection" class="relative" style="background:#FFFFFF; border-top:1px solid rgba(226,232,240,0.40);">
+    <div class="fluid-container" style="padding-top:0; padding-bottom:0;">
       <!-- Accordion Trigger Bar -->
       <button id="accordionTrigger" onclick="toggleHomeAccordion()" class="w-full flex items-center justify-between transition-all hover:bg-blue-50/30" style="padding:clamp(0.7rem,1.1vw,1rem) clamp(0.5rem,1vw,1rem); border-radius:0; cursor:pointer; border:none; background:transparent;">
         <span class="flex items-center" style="gap:clamp(6px,0.6vw,10px);">
