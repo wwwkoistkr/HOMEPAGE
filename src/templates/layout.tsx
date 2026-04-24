@@ -10,7 +10,9 @@ export function layout(opts: {
   bodyClass?: string;
   content: string;
   headExtra?: string;
+  isAdmin?: boolean; // v39.19: 로그인 관리자에게만 시스템 문서 링크 표시
 }) {
+  const isAdmin = !!opts.isAdmin;
   const s = opts.settings;
   const siteName = s.site_name || '(주)한국정보보안기술원';
   const siteNameEsc = escapeAttr(siteName);
@@ -257,7 +259,9 @@ export function layout(opts: {
                 html += '<ul><li><a href="/support/notice">공지사항</a></li>';
                 html += '<li><a href="/support/faq">FAQ</a></li>';
                 html += '<li><a href="/support/downloads">자료실</a></li>';
-                html += '<li><a href="/support/documents">시스템 문서</a></li>';
+                if (isAdmin) {
+                  html += '<li><a href="/support/documents">시스템 문서 <i class="fas fa-lock" style="font-size:10px; color:#A78BFA; margin-left:4px;"></i></a></li>';
+                }
                 html += '<li><a href="/support/inquiry">온라인 상담</a></li></ul>';
                 html += '</div>';
                 html += '</div>';
@@ -350,7 +354,7 @@ export function layout(opts: {
         <a href="/support/notice"    class="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg f-text-sm transition-colors" onclick="closeMobileMenu()"><i class="fas fa-bullhorn w-5 text-center text-gray-400 f-text-xs"></i>공지사항</a>
         <a href="/support/faq"       class="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg f-text-sm transition-colors" onclick="closeMobileMenu()"><i class="fas fa-circle-question w-5 text-center text-gray-400 f-text-xs"></i>FAQ</a>
         <a href="/support/downloads" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg f-text-sm transition-colors" onclick="closeMobileMenu()"><i class="fas fa-download w-5 text-center text-gray-400 f-text-xs"></i>자료실</a>
-        <a href="/support/documents" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg f-text-sm transition-colors" onclick="closeMobileMenu()"><i class="fas fa-book w-5 text-center text-gray-400 f-text-xs"></i>시스템 문서</a>
+        ${isAdmin ? `<a href="/support/documents" class="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg f-text-sm transition-colors" onclick="closeMobileMenu()"><i class="fas fa-book w-5 text-center text-gray-400 f-text-xs"></i>시스템 문서 <i class="fas fa-lock" style="font-size:10px; color:#A78BFA; margin-left:auto;"></i></a>` : ''}
         <a href="/support/inquiry"   class="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg f-text-sm transition-colors" onclick="closeMobileMenu()"><i class="fas fa-envelope w-5 text-center text-gray-400 f-text-xs"></i>온라인 상담</a>
       </div>
     </div>
@@ -423,7 +427,7 @@ export function layout(opts: {
           <ul class="space-y-3 f-text-base">
             <li><a href="/support/notice" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>공지사항</a></li>
             <li><a href="/support/downloads" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>자료실</a></li>
-            <li><a href="/support/documents" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>시스템 문서</a></li>
+            ${isAdmin ? `<li><a href="/support/documents" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #8B5CF6, #A78BFA);"></span>시스템 문서 <i class="fas fa-lock" style="font-size:9px; color:#A78BFA; margin-left:4px;"></i></a></li>` : ''}
             <li><a href="/about/location" class="hover:text-white transition-colors inline-flex items-center text-gray-500 hover:translate-x-1 transform transition-all" style="gap:6px"><span class="w-1 h-1 rounded-full" style="background: linear-gradient(135deg, #3B82F6, #06B6D4);"></span>오시는길</a></li>
           </ul>
         </div>

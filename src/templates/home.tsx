@@ -45,7 +45,9 @@ export function homePage(opts: {
   progressItems: ProgressItem[];
   progressCategoryCounts: {category: string; cnt: number}[];
   simCertTypes: SimCertType[];
+  isAdmin?: boolean; // v39.19
 }) {
+  const isAdmin = !!opts.isAdmin;
   const s = opts.settings;
   const deps = opts.departments.filter(d => d.is_active);
   const popups = opts.popups;
@@ -1375,9 +1377,9 @@ export function homePage(opts: {
             <button class="acc-tab" data-acctab="acc-downloads" onclick="switchAccTab('acc-downloads')">
               <i class="fas fa-download" style="font-size:clamp(9px,0.7vw,12px); margin-right:3px;"></i>자료실
             </button>
-            <button class="acc-tab" data-acctab="acc-documents" onclick="switchAccTab('acc-documents')">
-              <i class="fas fa-book" style="font-size:clamp(9px,0.7vw,12px); margin-right:3px;"></i>시스템문서
-            </button>
+            ${isAdmin ? `<button class="acc-tab" data-acctab="acc-documents" onclick="switchAccTab('acc-documents')">
+              <i class="fas fa-book" style="font-size:clamp(9px,0.7vw,12px); margin-right:3px;"></i>시스템문서 <i class="fas fa-lock" style="font-size:8px; color:#A78BFA; margin-left:2px;"></i>
+            </button>` : ''}
             <button class="acc-tab" data-acctab="acc-location" onclick="switchAccTab('acc-location')">
               <i class="fas fa-location-dot" style="font-size:clamp(9px,0.7vw,12px); margin-right:3px;"></i>오시는길
             </button>
@@ -1409,26 +1411,38 @@ export function homePage(opts: {
             </div>
           </div>
 
-          <!-- Tab Content: 시스템문서 (static) -->
+          <!-- Tab Content: 시스템문서 (관리자 전용, v39.19 R2 서빙) -->
           <div class="acc-tab-content" id="acc-documents">
+            ${isAdmin ? `
             <div class="space-y-2">
-              <a href="/static/docs/architecture-diagram.html" target="_blank" class="flex items-center hover:bg-blue-50/30 px-2 rounded-lg transition-colors group" style="gap:clamp(6px,0.6vw,10px); padding-top:clamp(0.35rem,0.5vw,0.5rem); padding-bottom:clamp(0.35rem,0.5vw,0.5rem);">
+              <a href="/api/docs/architecture-diagram.html" target="_blank" class="flex items-center hover:bg-blue-50/30 px-2 rounded-lg transition-colors group" style="gap:clamp(6px,0.6vw,10px); padding-top:clamp(0.35rem,0.5vw,0.5rem); padding-bottom:clamp(0.35rem,0.5vw,0.5rem);">
                 <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(30px,2.5vw,40px); height:clamp(30px,2.5vw,40px); background:rgba(59,130,246,0.06);"><i class="fas fa-sitemap text-blue-400" style="font-size:clamp(11px,0.9vw,15px)"></i></div>
                 <div class="flex-1 min-w-0">
-                  <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(0.8rem,0.7rem+0.25vw,0.95rem); line-height:1.3;">시스템 설계서 (Architecture Diagram)</span>
+                  <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(0.8rem,0.7rem+0.25vw,0.95rem); line-height:1.3;">시스템 설계서 (Architecture Diagram) <i class="fas fa-lock" style="font-size:9px; color:#A78BFA; margin-left:4px;"></i></span>
                   <span class="text-slate-400" style="font-size:clamp(0.65rem,0.56rem+0.18vw,0.78rem);">v8.0 · 시스템 아키텍처, DB 스키마, API 설계</span>
                 </div>
                 <i class="fas fa-external-link-alt text-slate-300 group-hover:text-accent" style="font-size:clamp(9px,0.7vw,12px)"></i>
               </a>
-              <a href="/static/docs/development-guide.html" target="_blank" class="flex items-center hover:bg-blue-50/30 px-2 rounded-lg transition-colors group" style="gap:clamp(6px,0.6vw,10px); padding-top:clamp(0.35rem,0.5vw,0.5rem); padding-bottom:clamp(0.35rem,0.5vw,0.5rem);">
+              <a href="/api/docs/development-guide.html" target="_blank" class="flex items-center hover:bg-blue-50/30 px-2 rounded-lg transition-colors group" style="gap:clamp(6px,0.6vw,10px); padding-top:clamp(0.35rem,0.5vw,0.5rem); padding-bottom:clamp(0.35rem,0.5vw,0.5rem);">
                 <div class="shrink-0 rounded-lg flex items-center justify-center" style="width:clamp(30px,2.5vw,40px); height:clamp(30px,2.5vw,40px); background:rgba(16,185,129,0.06);"><i class="fas fa-code text-emerald-400" style="font-size:clamp(11px,0.9vw,15px)"></i></div>
                 <div class="flex-1 min-w-0">
-                  <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(0.8rem,0.7rem+0.25vw,0.95rem); line-height:1.3;">개발지침서 (Development Guide)</span>
+                  <span class="text-slate-700 font-medium group-hover:text-accent block truncate" style="font-size:clamp(0.8rem,0.7rem+0.25vw,0.95rem); line-height:1.3;">개발지침서 (Development Guide) <i class="fas fa-lock" style="font-size:9px; color:#A78BFA; margin-left:4px;"></i></span>
                   <span class="text-slate-400" style="font-size:clamp(0.65rem,0.56rem+0.18vw,0.78rem);">v8.0 · 기술 스택, 디렉터리 구조, API 가이드</span>
                 </div>
                 <i class="fas fa-external-link-alt text-slate-300 group-hover:text-accent" style="font-size:clamp(9px,0.7vw,12px)"></i>
               </a>
             </div>
+            ` : `
+            <div class="text-center" style="padding:clamp(1.2rem,2vw,2rem) clamp(0.8rem,1.2vw,1.2rem);">
+              <i class="fas fa-shield-alt" style="font-size:clamp(22px,2vw,32px); color:#A78BFA; margin-bottom:8px;"></i>
+              <p class="text-slate-500" style="font-size:clamp(0.8rem,0.7rem+0.25vw,0.95rem); line-height:1.5;">
+                시스템 문서는 <strong style="color:#7C3AED;">관리자 인증</strong> 후에만 열람할 수 있습니다.
+              </p>
+              <a href="/admin" class="inline-flex items-center mt-3 font-semibold text-white rounded-lg transition-all hover:opacity-90" style="gap:5px; padding:clamp(0.35rem,0.55vw,0.5rem) clamp(0.9rem,1.4vw,1.2rem); font-size:clamp(0.72rem,0.62rem+0.2vw,0.85rem); background:linear-gradient(135deg,#7C3AED,#A78BFA);">
+                <i class="fas fa-sign-in-alt" style="font-size:10px"></i> 관리자 로그인
+              </a>
+            </div>
+            `}
           </div>
 
           <!-- Tab Content: 오시는길 (static from settings) -->
@@ -1684,9 +1698,9 @@ export function homePage(opts: {
             <button class="notice-tab" data-tab="downloads" onclick="switchNoticeTab('downloads')">
               <i class="fas fa-download" style="font-size:clamp(10px,0.8vw,14px); margin-right:4px;"></i>자료실
             </button>
-            <button class="notice-tab" data-tab="documents" onclick="switchNoticeTab('documents')">
-              <i class="fas fa-book" style="font-size:clamp(10px,0.8vw,14px); margin-right:4px;"></i>시스템문서
-            </button>
+            ${isAdmin ? `<button class="notice-tab" data-tab="documents" onclick="switchNoticeTab('documents')">
+              <i class="fas fa-book" style="font-size:clamp(10px,0.8vw,14px); margin-right:4px;"></i>시스템문서 <i class="fas fa-lock" style="font-size:9px; color:#A78BFA; margin-left:2px;"></i>
+            </button>` : ''}
             <button class="notice-tab" data-tab="location" onclick="switchNoticeTab('location')">
               <i class="fas fa-location-dot" style="font-size:clamp(10px,0.8vw,14px); margin-right:4px;"></i>오시는길
             </button>
@@ -1745,7 +1759,8 @@ export function homePage(opts: {
             </div>
           </div>
 
-          <!-- Tab Content: 시스템문서 -->
+          <!-- Tab Content: 시스템문서 (관리자 전용, v39.19) -->
+          ${isAdmin ? `
           <div class="notice-tab-content" id="tab-documents">
             <div class="flex justify-end" style="margin-bottom:clamp(0.3rem,0.5vw,0.5rem);">
               <a href="/support/documents" class="text-accent font-semibold hover:underline inline-flex items-center" style="gap:4px; font-size:clamp(1.0rem, 0.85rem + 0.4vw, 1.5rem);">전체보기 <i class="fas fa-chevron-right" style="font-size:clamp(9px,0.7vw,12px)"></i></a>
@@ -1776,6 +1791,7 @@ export function homePage(opts: {
               </div>
             </div>
           </div>
+          ` : ''}
 
           <!-- Tab Content: 오시는길 -->
           <div class="notice-tab-content" id="tab-location">

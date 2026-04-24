@@ -1,0 +1,27 @@
+# KOIST Website - robots.txt (v39.19 보안 강화)
+# 관리자 전용·보안 영역은 전 검색엔진에 색인 금지
+
+User-agent: *
+# 관리자 영역
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/admin
+Disallow: /api/admin/
+
+# 시스템 문서 (관리자 전용, 서버 측 authMiddleware로 차단)
+Disallow: /support/documents
+Disallow: /api/docs
+Disallow: /api/docs/
+
+# 과거 위치(v39.19에서 R2로 이전, 파일 삭제됨)
+Disallow: /static/docs
+Disallow: /static/docs/
+
+# 검색/파라미터 노이즈 방지
+Disallow: /*?*
+
+# 나머지 공개 영역은 전체 허용
+Allow: /
+
+# 사이트맵(있을 경우)
+# Sitemap: https://koist-website.pages.dev/sitemap.xml

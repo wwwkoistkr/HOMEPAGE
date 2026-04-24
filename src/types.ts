@@ -10,6 +10,7 @@ export type Bindings = {
 
 export type Variables = {
   admin?: { id: number; username: string };
+  isAdmin?: boolean; // v39.19: 공개 페이지에서 관리자 세션 여부 판정용
 };
 
 export type SiteSetting = {

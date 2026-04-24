@@ -3,7 +3,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import type { Bindings, Variables, Department, DepartmentWithPages, Popup, Notice, ProgressItem, DepPage, FAQ, AboutPage, SimCertType } from './types';
 import { getSettings, getDepartmentsWithPages } from './utils/db';
-import { verifyPassword, createJWT } from './utils/crypto';
+import { verifyPassword, createJWT, verifyJWT } from './utils/crypto';
 import { authMiddleware, getJwtSecret } from './middleware/auth';
 import { sanitizeHtml, escapeHtml } from './utils/sanitize';
 import { csrfCookieMiddleware, csrfValidationMiddleware } from './middleware/csrf';
@@ -21,6 +21,24 @@ import { backgroundMediaPage } from './templates/admin/background-media';
 import { servicePage, noticeListPage, noticeDetailPage, faqPage, inquiryPage, progressPage, serviceProgressContent, downloadsPage } from './templates/pages';
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
+
+// ===== Helpers =====
+// v39.19: 공개 페이지에서 "현재 사용자가 유효한 관리자 세션인지"를 판정해
+// 시스템 문서 등 관리자 전용 UI 요소의 렌더링 여부를 결정한다.
+// 실제 접근 보호는 /support/documents 및 /api/docs/* 의 authMiddleware에서 수행.
+async function isAuthenticatedAdmin(c: any): Promise<boolean> {
+  try {
+    const cookie = c.req.header('Cookie') || '';
+    const m = cookie.match(/(?:^|;\s*)koist_token=([^;]+)/);
+    if (!m) return false;
+    const token = decodeURIComponent(m[1]);
+    const secret = getJwtSecret(c.env);
+    const payload = await verifyJWT(token, secret);
+    return !!payload;
+  } catch {
+    return false;
+  }
+}
 
 // ===== Security Headers =====
 app.use('*', secureHeaders({
@@ -50,6 +68,13 @@ app.use('*', secureHeaders({
 app.use('/api/*', cors());
 
 // NOTE: /api/init-db removed (security hardening). Use scripts/init-admin.cjs instead.
+
+// v39.19: 모든 공개 페이지 요청에서 관리자 세션 여부를 컨텍스트에 미리 판정
+// — 템플릿(layout/home)에서 시스템 문서 UI를 조건부 렌더링하기 위함
+app.use('*', async (c, next) => {
+  c.set('isAdmin', await isAuthenticatedAdmin(c));
+  await next();
+});
 
 // ===== Public API Routes =====
 app.route('/api', publicApi);
@@ -100,6 +125,51 @@ app.use('/api/admin/*', authMiddleware);
 app.use('/api/admin/*', csrfValidationMiddleware);
 app.route('/api/admin', adminApi);
 
+// ===== Secure Docs (v39.19) =====
+// /api/docs/* — 관리자 전용 보안 문서 서빙 (R2 secure-docs/ prefix)
+// 반드시 authMiddleware로 보호되며, 경로 traversal 차단 + 허용 파일만 서빙
+app.get('/api/docs/*', authMiddleware, async (c) => {
+  // 허용 파일 화이트리스트 (확장 시 여기만 수정)
+  const ALLOWED_FILES: Record<string, string> = {
+    'architecture-diagram.html': 'text/html; charset=utf-8',
+    'development-guide.html': 'text/html; charset=utf-8',
+  };
+
+  const rawKey = c.req.path.replace('/api/docs/', '');
+  // 경로 traversal / 빈 경로 차단
+  if (!rawKey || rawKey.includes('..') || rawKey.includes('/') || rawKey.startsWith('.')) {
+    return c.json({ error: 'Invalid document path' }, 400);
+  }
+  // 화이트리스트 검증
+  if (!(rawKey in ALLOWED_FILES)) {
+    return c.json({ error: 'Document not found' }, 404);
+  }
+
+  if (!(c.env as any).R2) {
+    return c.json({ error: 'R2 storage not configured' }, 503);
+  }
+
+  try {
+    const r2Key = `secure-docs/${rawKey}`;
+    const object = await c.env.R2.get(r2Key);
+    if (!object) {
+      return c.json({ error: 'Document not found in storage' }, 404);
+    }
+
+    const headers = new Headers();
+    headers.set('Content-Type', object.httpMetadata?.contentType || ALLOWED_FILES[rawKey]);
+    headers.set('Content-Length', String(object.size));
+    // 보안: 캐싱 금지 + 검색엔진 배제 + 다운로드 방어
+    headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+    headers.set('X-Content-Type-Options', 'nosniff');
+    headers.set('Referrer-Policy', 'no-referrer');
+    return new Response(object.body, { headers });
+  } catch {
+    return c.json({ error: 'Failed to retrieve document' }, 500);
+  }
+});
+
 // ===== Page Routes =====
 
 // Home Page
@@ -123,8 +193,10 @@ app.get('/', async (c) => {
   // AI 시뮬레이터 인증유형 데이터
   const simCertTypes = (await db.prepare('SELECT * FROM sim_cert_types WHERE is_active = 1 ORDER BY sort_order').all<SimCertType>()).results || [];
 
-  const content = homePage({ settings, departments, popups, notices, progressItems, progressCategoryCounts, simCertTypes });
-  return c.html(layout({ settings, departments, content }));
+  // v39.19: 시스템 문서 탭/링크를 관리자에게만 노출 (보호는 서버 미들웨어에서 최종 수행)
+  const isAdmin = !!c.get('isAdmin');
+  const content = homePage({ settings, departments, popups, notices, progressItems, progressCategoryCounts, simCertTypes, isAdmin });
+  return c.html(layout({ settings, departments, content, isAdmin }));
 });
 
 // v39.8 Issue A-2: mock-test/overview → diagnosis/ddos 301 리다이렉트
@@ -144,13 +216,13 @@ app.get('/services/:slug', async (c) => {
   const departments = await getDepartmentsWithPages(db);
   
   const dept = await db.prepare('SELECT * FROM departments WHERE slug = ?').bind(slug).first<Department>();
-  if (!dept) return c.html(layout({ settings, departments, title: '페이지를 찾을 수 없습니다', content: '<div class="py-20 text-center"><h1 class="text-2xl font-bold text-gray-400">페이지를 찾을 수 없습니다</h1><a href="/" class="mt-4 inline-block text-accent hover:underline">홈으로 돌아가기</a></div>' }), 404);
+  if (!dept) return c.html(layout({ settings, departments, isAdmin: !!c.get('isAdmin'), title: '페이지를 찾을 수 없습니다', content: '<div class="py-20 text-center"><h1 class="text-2xl font-bold text-gray-400">페이지를 찾을 수 없습니다</h1><a href="/" class="mt-4 inline-block text-accent hover:underline">홈으로 돌아가기</a></div>' }), 404);
 
   const pages = (await db.prepare('SELECT * FROM dep_pages WHERE dept_id = ? AND is_active = 1 ORDER BY sort_order').bind(dept.id).all<DepPage>()).results || [];
   const firstPage = pages.length > 0 ? pages[0] : null;
 
   const content = servicePage(dept, pages, firstPage, settings);
-  return c.html(layout({ settings, departments, title: dept.name, content }));
+  return c.html(layout({ settings, departments, isAdmin: !!c.get('isAdmin'), title: dept.name, content }));
 });
 
 app.get('/services/:slug/:pageSlug', async (c) => {
@@ -195,11 +267,11 @@ app.get('/services/:slug/:pageSlug', async (c) => {
     const overriddenPage = currentPage ? { ...currentPage, content: dynamicContent } : { id: 0, dept_id: dept.id, title: '평가현황', slug: 'progress', content: dynamicContent, meta_description: '', sort_order: 0, is_active: 1 } as DepPage;
 
     const content = servicePage(dept, pages, overriddenPage, settings);
-    return c.html(layout({ settings, departments, title: `평가현황 - ${dept.name}`, content }));
+    return c.html(layout({ settings, departments, isAdmin: !!c.get('isAdmin'), title: `평가현황 - ${dept.name}`, content }));
   }
 
   const content = servicePage(dept, pages, currentPage, settings);
-  return c.html(layout({ settings, departments, title: currentPage ? `${currentPage.title} - ${dept.name}` : dept.name, content }));
+  return c.html(layout({ settings, departments, isAdmin: !!c.get('isAdmin'), title: currentPage ? `${currentPage.title} - ${dept.name}` : dept.name, content }));
 });
 
 // Notice Pages
@@ -213,7 +285,7 @@ app.get('/support/notice', async (c) => {
   const notices = (await db.prepare('SELECT * FROM notices ORDER BY is_pinned DESC, created_at DESC LIMIT ? OFFSET ?').bind(perPage, (page - 1) * perPage).all<Notice>()).results || [];
 
   const content = noticeListPage(notices, page, total, perPage, settings);
-  return c.html(layout({ settings, departments, title: '공지사항', content }));
+  return c.html(layout({ settings, departments, isAdmin: !!c.get('isAdmin'), title: '공지사항', content }));
 });
 
 app.get('/support/notice/:id', async (c) => {
@@ -227,7 +299,7 @@ app.get('/support/notice/:id', async (c) => {
   if (!notice) return c.redirect('/support/notice');
 
   const content = noticeDetailPage(notice, settings);
-  return c.html(layout({ settings, departments, title: notice.title, content }));
+  return c.html(layout({ settings, departments, isAdmin: !!c.get('isAdmin'), title: notice.title, content }));
 });
 
 // FAQ Page
@@ -238,7 +310,7 @@ app.get('/support/faq', async (c) => {
   const faqs = (await db.prepare('SELECT * FROM faqs WHERE is_active = 1 ORDER BY sort_order').all<FAQ>()).results || [];
 
   const content = faqPage(faqs, settings);
-  return c.html(layout({ settings, departments, title: 'FAQ', content }));
+  return c.html(layout({ settings, departments, isAdmin: !!c.get('isAdmin'), title: 'FAQ', content }));
 });
 
 // Inquiry Page
@@ -248,7 +320,7 @@ app.get('/support/inquiry', async (c) => {
   const departments = await getDepartmentsWithPages(db);
 
   const content = inquiryPage(settings);
-  return c.html(layout({ settings, departments, title: '온라인 상담문의', content }));
+  return c.html(layout({ settings, departments, isAdmin: !!c.get('isAdmin'), title: '온라인 상담문의', content }));
 });
 
 // Progress Page (with pagination, search, filter)
@@ -291,25 +363,33 @@ app.get('/support/progress', async (c) => {
   const items = (await dataStmt.bind(...allBinds).all<ProgressItem>()).results || [];
 
   const content = progressPage(items, page, total, perPage, search, statusFilter, categoryFilter, categoryCounts, settings);
-  return c.html(layout({ settings, departments, title: categoryFilter ? `${categoryFilter} 현황` : '평가현황', content }));
+  return c.html(layout({ settings, departments, isAdmin: !!c.get('isAdmin'), title: categoryFilter ? `${categoryFilter} 현황` : '평가현황', content }));
 });
 
 // Documents Page (Architecture Diagram + Dev Guide downloads)
-app.get('/support/documents', async (c) => {
+// v39.19: 보안 강화 — 관리자 전용(authMiddleware), 파일은 R2(secure-docs/)에서 서빙
+app.get('/support/documents', authMiddleware, async (c) => {
   const db = c.env.DB;
   const settings = await getSettings(db);
   const departments = await getDepartmentsWithPages(db);
+  const admin = c.get('admin');
 
   const content = `
   <section class="page-header relative overflow-hidden" style="padding: clamp(2.5rem,4vw,4.5rem) 0; background: linear-gradient(135deg, #0A0F1E 0%, #111D35 50%, #0D1525 100%);">
     <div class="relative fluid-container">
-      <div class="flex items-center" style="gap:var(--space-sm)">
-        <div class="rounded-lg flex items-center justify-center shrink-0" style="width:clamp(38px,3.2vw,46px); height:clamp(38px,3.2vw,46px); background: linear-gradient(135deg, rgba(139,92,246,0.20), rgba(139,92,246,0.10)); border: 1px solid rgba(139,92,246,0.15);">
-          <i class="fas fa-book" style="color:#A78BFA; font-size:var(--text-lg)"></i>
+      <div class="flex items-center justify-between">
+        <div class="flex items-center" style="gap:var(--space-sm)">
+          <div class="rounded-lg flex items-center justify-center shrink-0" style="width:clamp(38px,3.2vw,46px); height:clamp(38px,3.2vw,46px); background: linear-gradient(135deg, rgba(139,92,246,0.20), rgba(139,92,246,0.10)); border: 1px solid rgba(139,92,246,0.15);">
+            <i class="fas fa-lock" style="color:#A78BFA; font-size:var(--text-lg)"></i>
+          </div>
+          <div>
+            <h1 class="text-white font-bold f-text-xl tracking-tight">시스템 문서 <span class="f-text-xs" style="color:#A78BFA; font-weight:500; margin-left:8px;"><i class="fas fa-shield-alt"></i> 관리자 전용</span></h1>
+            <p class="text-slate-400/80 f-text-xs" style="margin-top:3px">설계서 및 개발지침서 (보안 문서)</p>
+          </div>
         </div>
-        <div>
-          <h1 class="text-white font-bold f-text-xl tracking-tight">시스템 문서</h1>
-          <p class="text-slate-400/80 f-text-xs" style="margin-top:3px">설계서 및 개발지침서 다운로드</p>
+        <div class="flex items-center f-text-xs" style="gap:8px; color:#A78BFA;">
+          <i class="fas fa-user-shield"></i>
+          <span>${admin?.username ? String(admin.username).replace(/[<>&"']/g, '') : 'admin'}</span>
         </div>
       </div>
     </div>
@@ -330,7 +410,7 @@ app.get('/support/documents', async (c) => {
               </div>
             </div>
             <div class="flex shrink-0" style="gap:var(--space-sm)">
-              <a href="/static/docs/architecture-diagram.html" target="_blank" class="btn-primary f-text-xs ripple-btn" style="padding:var(--space-xs) var(--space-md); border-radius:var(--radius-sm);">
+              <a href="/api/docs/architecture-diagram.html" target="_blank" class="btn-primary f-text-xs ripple-btn" style="padding:var(--space-xs) var(--space-md); border-radius:var(--radius-sm);">
                 <i class="fas fa-external-link-alt" style="font-size:10px"></i> 보기
               </a>
             </div>
@@ -349,20 +429,23 @@ app.get('/support/documents', async (c) => {
               </div>
             </div>
             <div class="flex shrink-0" style="gap:var(--space-sm)">
-              <a href="/static/docs/development-guide.html" target="_blank" class="btn-primary f-text-xs ripple-btn" style="padding:var(--space-xs) var(--space-md); border-radius:var(--radius-sm);">
+              <a href="/api/docs/development-guide.html" target="_blank" class="btn-primary f-text-xs ripple-btn" style="padding:var(--space-xs) var(--space-md); border-radius:var(--radius-sm);">
                 <i class="fas fa-external-link-alt" style="font-size:10px"></i> 보기
               </a>
             </div>
           </div>
         </div>
         <p class="text-slate-400 f-text-xs text-center" style="margin-top:var(--space-sm)">
-          <i class="fas fa-info-circle mr-1"></i> 문서를 열고 브라우저의 인쇄 기능(Ctrl+P)으로 PDF로 저장할 수 있습니다.
+          <i class="fas fa-shield-alt mr-1"></i> 본 페이지와 문서는 관리자 인증 후에만 접근 가능합니다. 문서를 열고 브라우저의 인쇄 기능(Ctrl+P)으로 PDF로 저장할 수 있습니다.
         </p>
       </div>
     </div>
   </section>`;
 
-  return c.html(layout({ settings, departments, title: '시스템 문서', content }));
+  // 관리자 전용 페이지는 캐싱 금지
+  c.header('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  c.header('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  return c.html(layout({ settings, departments, isAdmin: !!c.get('isAdmin'), title: '시스템 문서 (관리자 전용)', content }));
 });
 
 // Downloads Page
@@ -373,7 +456,7 @@ app.get('/support/downloads', async (c) => {
   const items = (await db.prepare('SELECT * FROM downloads ORDER BY created_at DESC').all()).results || [];
 
   const content = downloadsPage(items as any[], settings);
-  return c.html(layout({ settings, departments, title: '자료실', content }));
+  return c.html(layout({ settings, departments, isAdmin: !!c.get('isAdmin'), title: '자료실', content }));
 });
 
 // About pages (DB-driven, v27.1 - Premium layout with breadcrumbs)
@@ -460,7 +543,7 @@ app.get('/about/:page', async (c) => {
       </div>
     </section>`;
 
-  return c.html(layout({ settings, departments, title, content: contentHtml }));
+  return c.html(layout({ settings, departments, isAdmin: !!c.get('isAdmin'), title, content: contentHtml }));
 });
 
 // ===== Admin Page Routes =====
