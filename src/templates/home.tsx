@@ -318,7 +318,7 @@ export function homePage(opts: {
             <img src="${pImgSrc}" alt="${pTitleAttr}" class="popup-img-fit" loading="lazy">
           </div>
         </div>
-        <div class="popup-card-imgfooter">
+        <div class="popup-card-imgfooter" style="background:${bodyBgColor};">
           <button onclick="closeSinglePopup(${pidSafe})" class="popup-imgfooter-close-btn">
             <i class="fas fa-times" style="font-size:0.75em; margin-right:4px;"></i>\ub2eb\uae30
           </button>
@@ -363,7 +363,7 @@ export function homePage(opts: {
     /* ═══ CARD — HTML popup: 13cm fixed, Image popup: auto (fits image) ═══ */
     .popup-card {
       width: 13cm; flex: none;
-      background: #fff; border-radius: clamp(10px, 0.8vw, 20px);
+      background: transparent; border-radius: clamp(10px, 0.8vw, 20px);
       overflow: hidden;
       box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1);
       border: 1px solid rgba(226,232,240,0.5);
@@ -444,19 +444,18 @@ export function homePage(opts: {
       flex-shrink: 0;
       display: flex; justify-content: center; align-items: center;
       padding: clamp(8px, 0.6vw, 14px) clamp(10px, 0.8vw, 20px);
-      background: rgba(248,250,252,0.95);
-      border-top: 1px solid rgba(226,232,240,0.4);
+      border-top: 1px solid rgba(255,255,255,0.08);
     }
     .popup-imgfooter-close-btn {
       display: inline-flex; align-items: center; justify-content: center;
       font-size: clamp(11px, 0.7vw, 16px); font-weight: 600;
-      color: #4b5563; background: rgba(0,0,0,0.04);
-      border: 1px solid rgba(226,232,240,0.6);
+      color: rgba(255,255,255,0.92); background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
       border-radius: 8px; padding: clamp(5px, 0.4vw, 10px) clamp(16px, 1.2vw, 32px);
       cursor: pointer; transition: all 0.2s;
     }
     .popup-imgfooter-close-btn:hover {
-      background: rgba(0,0,0,0.08); color: #1f2937; border-color: rgba(203,213,225,0.8);
+      background: rgba(255,255,255,0.15); color: #ffffff; border-color: rgba(255,255,255,0.32);
     }
     .popup-noshow-label {
       display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none;
