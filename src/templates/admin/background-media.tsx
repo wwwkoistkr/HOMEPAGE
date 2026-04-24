@@ -141,6 +141,89 @@ export function backgroundMediaPage() {
       </div>
     </div>
 
+    <!-- ═══ v39.16 Phase 2-A: 2층(Services) / 3층(Accordion) 배경 ═══ -->
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+      <div class="px-6 py-4 bg-gradient-to-r from-emerald-700 to-teal-600 text-white flex items-center gap-2">
+        <i class="fas fa-layer-group"></i>
+        <span class="font-bold">홈 2층(사업분야) / 3층(아코디언) 배경</span>
+      </div>
+      <div class="p-6 space-y-5">
+        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-emerald-800 text-sm">
+          <i class="fas fa-info-circle mr-1"></i>
+          배경 이미지/비디오 URL을 입력하면 해당 레이어의 배경이 바뀝니다. 비우면 색상으로 채워집니다.
+        </div>
+
+        <!-- 2층 Services -->
+        <div class="border-l-4 border-emerald-500 pl-4">
+          <h3 class="text-sm font-bold text-gray-700 mb-3"><i class="fas fa-th-large text-emerald-500 mr-1"></i> 2층 — 핵심 사업분야 (Services)</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">배경 이미지/비디오 URL</label>
+              <input type="text" data-key="services_bg_url" class="setting-input w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="비어있으면 아래 배경 색상 사용">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">배경 색상</label>
+              <div class="flex gap-2 items-center">
+                <input type="text" data-key="services_bg_color" class="setting-input flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="#FFFFFF">
+                <input type="color" data-color-for="services_bg_color" class="w-10 h-10 rounded cursor-pointer border" value="#FFFFFF">
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">오버레이 투명도</label>
+              <div class="flex gap-3 items-center">
+                <input type="range" data-key="services_bg_opacity" class="setting-input flex-1" min="0" max="1" step="0.05" value="0.85">
+                <span id="servicesOpacityValue" class="text-sm font-mono bg-gray-100 px-2 py-1 rounded">0.85</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3층 Accordion -->
+        <div class="border-l-4 border-teal-500 pl-4">
+          <h3 class="text-sm font-bold text-gray-700 mb-3"><i class="fas fa-bars-staggered text-teal-500 mr-1"></i> 3층 — 공지/자료실/오시는길 (Accordion)</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">배경 이미지 URL</label>
+              <input type="text" data-key="accordion_bg_url" class="setting-input w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="비어있으면 아래 배경 색상 사용 (또는 MP4 URL 입력 시 배경 영상으로 재생)">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">배경 색상</label>
+              <div class="flex gap-2 items-center">
+                <input type="text" data-key="accordion_bg_color" class="setting-input flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="#FFFFFF">
+                <input type="color" data-color-for="accordion_bg_color" class="w-10 h-10 rounded cursor-pointer border" value="#FFFFFF">
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">오버레이 투명도</label>
+              <div class="flex gap-3 items-center">
+                <input type="range" data-key="accordion_bg_opacity" class="setting-input flex-1" min="0" max="1" step="0.05" value="0.85">
+                <span id="accordionOpacityValue" class="text-sm font-mono bg-gray-100 px-2 py-1 rounded">0.85</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- v39.16 Phase 2-C: 3층 MP4 비디오 -->
+          <div class="mt-5 bg-cyan-50 border border-cyan-200 rounded-lg p-4">
+            <h4 class="text-sm font-bold text-cyan-800 mb-2"><i class="fas fa-film mr-1"></i> 3층 배경 MP4 비디오 (선택)</h4>
+            <p class="text-xs text-cyan-700 mb-3">MP4 URL 입력 시 3층 배경 대신 비디오 재생 (autoplay, muted, loop)</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">3층 배경 비디오 URL (MP4)</label>
+                <input type="text" data-key="accordion_video_url" class="setting-input w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="예: /static/videos/main_mov1.mp4">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">비디오 오버레이 투명도</label>
+                <div class="flex gap-3 items-center">
+                  <input type="range" data-key="accordion_video_opacity" class="setting-input flex-1" min="0" max="1" step="0.05" value="0.75">
+                  <span id="accordionVideoOpacityValue" class="text-sm font-mono bg-gray-100 px-2 py-1 rounded">0.75</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ═══ Theme Colors ═══ -->
     <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
       <div class="px-6 py-4 bg-gradient-to-r from-gray-700 to-gray-600 text-white flex items-center gap-2">
@@ -275,6 +358,23 @@ export function backgroundMediaPage() {
     // Opacity slider events
     document.querySelector('[data-key="hero_overlay_opacity"]')?.addEventListener('input', updateOpacityDisplay);
     document.querySelector('[data-key="hero_video_opacity"]')?.addEventListener('input', updateVideoOpacityDisplay);
+
+    // v39.16 Phase 2-A/2-C: services/accordion 배경·비디오 슬라이더
+    const sliderMap = [
+      { key: 'services_bg_opacity', label: 'servicesOpacityValue' },
+      { key: 'accordion_bg_opacity', label: 'accordionOpacityValue' },
+      { key: 'accordion_video_opacity', label: 'accordionVideoOpacityValue' }
+    ];
+    sliderMap.forEach(({ key, label }) => {
+      const el = document.querySelector('[data-key="' + key + '"]');
+      const disp = document.getElementById(label);
+      if (el && disp) {
+        const update = () => { disp.textContent = parseFloat(el.value).toFixed(2); };
+        el.addEventListener('input', update);
+        // 초기 로드 후 값 동기화는 loadSettings 후 setTimeout으로
+        setTimeout(update, 100);
+      }
+    });
 
     async function saveAllSettings() {
       const inputs = document.querySelectorAll('.setting-input');
