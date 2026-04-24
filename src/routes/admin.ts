@@ -219,17 +219,19 @@ admin.get('/popups', async (c) => {
 
 admin.post('/popups', async (c) => {
   const body = await c.req.json();
-  const { title, content, image_url, popup_type, width, height, position_top, position_left, start_date, end_date, is_active, sort_order, font_size, title_font_size, bg_color, title_bg_color, text_color, title_color, line_height, padding } = body;
+  // v39.16 Phase 2-E: card_width_cm, card_height_cm 추가
+  const { title, content, image_url, popup_type, width, height, position_top, position_left, start_date, end_date, is_active, sort_order, font_size, title_font_size, bg_color, title_bg_color, text_color, title_color, line_height, padding, card_width_cm, card_height_cm } = body;
   await c.env.DB.prepare(
-    'INSERT INTO popups (title, content, image_url, popup_type, width, height, position_top, position_left, start_date, end_date, is_active, sort_order, font_size, title_font_size, bg_color, title_bg_color, text_color, title_color, line_height, padding) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
-  ).bind(title, content || '', image_url || '', popup_type || 'html', width || 420, height || 300, position_top || 100, position_left || 0, start_date || null, end_date || null, is_active ?? 1, sort_order || 0, font_size || 17, title_font_size || 17, bg_color || '#ffffff', title_bg_color || '', text_color || '#374151', title_color || '#1f2937', line_height || 1.7, padding || 20).run();
+    'INSERT INTO popups (title, content, image_url, popup_type, width, height, position_top, position_left, start_date, end_date, is_active, sort_order, font_size, title_font_size, bg_color, title_bg_color, text_color, title_color, line_height, padding, card_width_cm, card_height_cm) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
+  ).bind(title, content || '', image_url || '', popup_type || 'html', width || 420, height || 300, position_top || 100, position_left || 0, start_date || null, end_date || null, is_active ?? 1, sort_order || 0, font_size || 17, title_font_size || 17, bg_color || '#ffffff', title_bg_color || '', text_color || '#374151', title_color || '#1f2937', line_height || 1.7, padding || 20, card_width_cm ?? null, card_height_cm ?? null).run();
   return c.json({ success: true });
 });
 
 admin.put('/popups/:id', async (c) => {
   const id = c.req.param('id');
   const body = await c.req.json();
-  const fields = ['title', 'content', 'image_url', 'popup_type', 'width', 'height', 'position_top', 'position_left', 'start_date', 'end_date', 'is_active', 'sort_order', 'font_size', 'title_font_size', 'bg_color', 'title_bg_color', 'text_color', 'title_color', 'line_height', 'padding'];
+  // v39.16 Phase 2-E: card_width_cm, card_height_cm 추가
+  const fields = ['title', 'content', 'image_url', 'popup_type', 'width', 'height', 'position_top', 'position_left', 'start_date', 'end_date', 'is_active', 'sort_order', 'font_size', 'title_font_size', 'bg_color', 'title_bg_color', 'text_color', 'title_color', 'line_height', 'padding', 'card_width_cm', 'card_height_cm'];
   const updates: string[] = [];
   const values: any[] = [];
   for (const f of fields) {
