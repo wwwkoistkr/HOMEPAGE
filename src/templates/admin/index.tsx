@@ -191,7 +191,6 @@ export function adminDashboardPage(content: string, activeMenu = 'dashboard', lo
     { id: 'notices', icon: 'fa-bullhorn', label: '공지사항', href: '/admin/notices' },
     { id: 'progress', icon: 'fa-chart-bar', label: '평가현황', href: '/admin/progress' },
     { id: 'downloads', icon: 'fa-download', label: '자료실', href: '/admin/downloads' },
-    { id: 'system-docs', icon: 'fa-book', label: '시스템 문서', href: '/admin/system-docs' },
     { id: 'faqs', icon: 'fa-circle-question', label: 'FAQ', href: '/admin/faqs' },
     { id: 'inquiries', icon: 'fa-envelope', label: '상담문의', href: '/admin/inquiries' },
     { id: 'images', icon: 'fa-images', label: '이미지 관리', href: '/admin/images' },

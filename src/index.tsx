@@ -294,84 +294,11 @@ app.get('/support/progress', async (c) => {
   return c.html(layout({ settings, departments, title: categoryFilter ? `${categoryFilter} 현황` : '평가현황', content }));
 });
 
-// Documents Page (시스템 문서: DB 기반 + 하드코딩 fallback, v39.18)
-// - downloads 테이블의 category='system-docs'를 조회하여 동적 렌더링
-// - DB가 비어있으면 기존 하드코딩 2개 카드(Architecture Diagram + Dev Guide) fallback
-// - 디자인은 기존과 100% 동일 유지 (관리자가 /admin/system-docs에서 편집)
+// Documents Page (Architecture Diagram + Dev Guide downloads)
 app.get('/support/documents', async (c) => {
   const db = c.env.DB;
   const settings = await getSettings(db);
   const departments = await getDepartmentsWithPages(db);
-
-  // HTML escape helper (XSS 방지: 사용자 입력을 HTML에 직접 삽입하지 않음)
-  const esc = (s: any) => String(s ?? '')
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-
-  // 시스템 문서 DB 조회
-  const docs = ((await db.prepare(
-    "SELECT id, title, description, file_url, file_name, file_size FROM downloads WHERE category = 'system-docs' ORDER BY created_at DESC"
-  ).all()).results || []) as Array<{
-    id: number; title: string; description: string | null;
-    file_url: string; file_name: string | null; file_size: number | null;
-  }>;
-
-  // 파일 유형별 아이콘/색상 매핑
-  const iconFor = (url: string, name: string | null) => {
-    const src = String(name || url || '').toLowerCase();
-    if (src.endsWith('.pdf')) return { icon: 'fa-file-pdf', color: '#DC2626', bg: 'rgba(220,38,38,0.10)' };
-    if (src.match(/\.(html|htm)$/)) return { icon: 'fa-sitemap', color: '#3B82F6', bg: 'rgba(59,130,246,0.10)' };
-    if (src.match(/\.(docx?|hwp)$/)) return { icon: 'fa-file-word', color: '#1D4ED8', bg: 'rgba(29,78,216,0.10)' };
-    if (src.match(/\.(xlsx?|csv)$/)) return { icon: 'fa-file-excel', color: '#059669', bg: 'rgba(5,150,105,0.10)' };
-    if (src.match(/\.(pptx?)$/)) return { icon: 'fa-file-powerpoint', color: '#EA580C', bg: 'rgba(234,88,12,0.10)' };
-    if (src.match(/\.(png|jpe?g|gif|webp)$/)) return { icon: 'fa-file-image', color: '#7C3AED', bg: 'rgba(124,58,237,0.10)' };
-    return { icon: 'fa-code', color: '#10B981', bg: 'rgba(16,185,129,0.10)' };
-  };
-
-  // 카드 HTML 생성 (기존 하드코딩 디자인과 100% 일치)
-  const renderCard = (title: string, desc: string, url: string, ic: { icon: string; color: string; bg: string }) => `
-        <div class="bg-white rounded-xl border border-slate-200/60 overflow-hidden" style="box-shadow: var(--shadow-sm);">
-          <div class="flex items-center justify-between" style="padding:clamp(1.25rem, 2vw, 1.75rem)">
-            <div class="flex items-center" style="gap:var(--space-sm)">
-              <div class="rounded-lg flex items-center justify-center shrink-0" style="width:44px; height:44px; background: linear-gradient(135deg, ${ic.bg}, rgba(6,182,212,0.08));">
-                <i class="fas ${ic.icon}" style="color:${ic.color}; font-size:18px"></i>
-              </div>
-              <div>
-                <h3 class="font-bold text-slate-800 f-text-base">${esc(title)}</h3>
-                <p class="text-slate-400 f-text-xs" style="margin-top:2px">${esc(desc)}</p>
-              </div>
-            </div>
-            <div class="flex shrink-0" style="gap:var(--space-sm)">
-              <a href="${esc(url)}" target="_blank" class="btn-primary f-text-xs ripple-btn" style="padding:var(--space-xs) var(--space-md); border-radius:var(--radius-sm);">
-                <i class="fas fa-external-link-alt" style="font-size:10px"></i> 보기
-              </a>
-            </div>
-          </div>
-        </div>`;
-
-  // DB에 문서가 있으면 DB 기반, 없으면 기존 하드코딩 fallback
-  let cardsHtml: string;
-  if (docs.length > 0) {
-    cardsHtml = docs.map(d => renderCard(
-      d.title || '(제목 없음)',
-      d.description || '',
-      d.file_url || '#',
-      iconFor(d.file_url, d.file_name)
-    )).join('');
-  } else {
-    // Fallback: v39.18 이전의 하드코딩 2개 카드
-    cardsHtml = renderCard(
-      '시스템 설계서 (Architecture Diagram)',
-      'v8.0 | 시스템 아키텍처, 10개 사업 카테고리, DB 스키마, API 설계',
-      '/static/docs/architecture-diagram.html',
-      { icon: 'fa-sitemap', color: '#3B82F6', bg: 'rgba(59,130,246,0.10)' }
-    ) + renderCard(
-      '개발지침서 (Development Guide)',
-      'v8.0 | 기술 스택, 디렉터리 구조, API 가이드, 배포 절차, 테스트',
-      '/static/docs/development-guide.html',
-      { icon: 'fa-code', color: '#10B981', bg: 'rgba(16,185,129,0.10)' }
-    );
-  }
 
   const content = `
   <section class="page-header relative overflow-hidden" style="padding: clamp(2.5rem,4vw,4.5rem) 0; background: linear-gradient(135deg, #0A0F1E 0%, #111D35 50%, #0D1525 100%);">
@@ -390,7 +317,44 @@ app.get('/support/documents', async (c) => {
   <section style="padding:var(--space-xl) 0; background: var(--grad-surface);">
     <div class="fluid-container" style="max-width:min(900px, 100% - var(--container-pad) * 2)">
       <div style="display:flex; flex-direction:column; gap:var(--space-md)">
-        ${cardsHtml}
+        <!-- Architecture Diagram -->
+        <div class="bg-white rounded-xl border border-slate-200/60 overflow-hidden" style="box-shadow: var(--shadow-sm);">
+          <div class="flex items-center justify-between" style="padding:clamp(1.25rem, 2vw, 1.75rem)">
+            <div class="flex items-center" style="gap:var(--space-sm)">
+              <div class="rounded-lg flex items-center justify-center shrink-0" style="width:44px; height:44px; background: linear-gradient(135deg, rgba(59,130,246,0.10), rgba(6,182,212,0.08));">
+                <i class="fas fa-sitemap text-blue-500" style="font-size:18px"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-800 f-text-base">시스템 설계서 (Architecture Diagram)</h3>
+                <p class="text-slate-400 f-text-xs" style="margin-top:2px">v8.0 | 시스템 아키텍처, 10개 사업 카테고리, DB 스키마, API 설계</p>
+              </div>
+            </div>
+            <div class="flex shrink-0" style="gap:var(--space-sm)">
+              <a href="/static/docs/architecture-diagram.html" target="_blank" class="btn-primary f-text-xs ripple-btn" style="padding:var(--space-xs) var(--space-md); border-radius:var(--radius-sm);">
+                <i class="fas fa-external-link-alt" style="font-size:10px"></i> 보기
+              </a>
+            </div>
+          </div>
+        </div>
+        <!-- Development Guide -->
+        <div class="bg-white rounded-xl border border-slate-200/60 overflow-hidden" style="box-shadow: var(--shadow-sm);">
+          <div class="flex items-center justify-between" style="padding:clamp(1.25rem, 2vw, 1.75rem)">
+            <div class="flex items-center" style="gap:var(--space-sm)">
+              <div class="rounded-lg flex items-center justify-center shrink-0" style="width:44px; height:44px; background: linear-gradient(135deg, rgba(16,185,129,0.10), rgba(6,182,212,0.08));">
+                <i class="fas fa-code text-emerald-500" style="font-size:18px"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-800 f-text-base">개발지침서 (Development Guide)</h3>
+                <p class="text-slate-400 f-text-xs" style="margin-top:2px">v8.0 | 기술 스택, 디렉터리 구조, API 가이드, 배포 절차, 테스트</p>
+              </div>
+            </div>
+            <div class="flex shrink-0" style="gap:var(--space-sm)">
+              <a href="/static/docs/development-guide.html" target="_blank" class="btn-primary f-text-xs ripple-btn" style="padding:var(--space-xs) var(--space-md); border-radius:var(--radius-sm);">
+                <i class="fas fa-external-link-alt" style="font-size:10px"></i> 보기
+              </a>
+            </div>
+          </div>
+        </div>
         <p class="text-slate-400 f-text-xs text-center" style="margin-top:var(--space-sm)">
           <i class="fas fa-info-circle mr-1"></i> 문서를 열고 브라우저의 인쇄 기능(Ctrl+P)으로 PDF로 저장할 수 있습니다.
         </p>
@@ -550,7 +514,7 @@ app.get('/admin/background-media', authMiddleware, csrfCookieMiddleware, async (
 });
 
 // Admin CRUD pages
-const adminPages = ['site-settings', 'departments', 'popups', 'notices', 'progress', 'downloads', 'system-docs', 'faqs', 'inquiries', 'images', 'about', 'sim-cert-types', 'slider-settings'];
+const adminPages = ['site-settings', 'departments', 'popups', 'notices', 'progress', 'downloads', 'faqs', 'inquiries', 'images', 'about', 'sim-cert-types', 'slider-settings'];
 for (const page of adminPages) {
   app.get(`/admin/${page}`, authMiddleware, csrfCookieMiddleware, async (c) => {
     const db = c.env.DB;
@@ -577,7 +541,6 @@ function getAdminPageTitle(page: string): string {
     progress: '<i class="fas fa-chart-bar text-yellow-500 mr-2"></i>평가현황 관리',
     images: '<i class="fas fa-images text-pink-500 mr-2"></i>이미지 관리',
     downloads: '<i class="fas fa-download text-teal-500 mr-2"></i>자료실 관리',
-    'system-docs': '<i class="fas fa-book text-purple-500 mr-2"></i>시스템 문서 관리',
     faqs: '<i class="fas fa-circle-question text-yellow-500 mr-2"></i>FAQ 관리',
     inquiries: '<i class="fas fa-envelope text-orange-500 mr-2"></i>상담문의 관리',
     about: '<i class="fas fa-info-circle text-indigo-500 mr-2"></i>소개 페이지 관리',
