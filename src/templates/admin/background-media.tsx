@@ -101,8 +101,12 @@ export function backgroundMediaPage() {
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div class="md:col-span-2">
-            <label class="block text-sm font-medium text-gray-700 mb-1">비디오 URL (MP4)</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">비디오 URL #1 (MP4)</label>
             <input type="text" data-key="hero_video_url" class="setting-input w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="이미지 관리에서 업로드한 MP4 URL">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">비디오 URL #2 (MP4) <span class="text-xs text-blue-600">— 입력 시 #1과 번갈아 재생</span></label>
+            <input type="text" data-key="hero_video_url_2" class="setting-input w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" placeholder="비어있으면 #1만 반복 재생 (원본 koist.kr 스타일: 2개 영상 교대 재생)">
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">비디오 오버레이 투명도</label>

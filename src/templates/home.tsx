@@ -621,6 +621,11 @@ export function homePage(opts: {
     const rawVideoUrl = s.hero_video_url || '';
     const isValidVideoUrl = rawVideoUrl && !/[<>"'`\s\\\n\r]/.test(rawVideoUrl);
     const videoUrlAttr = isValidVideoUrl ? escapeAttr(rawVideoUrl) : '';
+    // v39.15 Phase 2-D: 두 번째 비디오 URL (번갈아 재생 기능)
+    const rawVideoUrl2 = s.hero_video_url_2 || '';
+    const isValidVideoUrl2 = rawVideoUrl2 && !/[<>"'`\s\\\n\r]/.test(rawVideoUrl2);
+    const videoUrl2Attr = isValidVideoUrl2 ? escapeAttr(rawVideoUrl2) : '';
+    const hasTwoVideos = isValidVideoUrl && isValidVideoUrl2;
     const heroStyle = isValidVideoUrl
       ? `background: ${gradientCss};`
       : bgStyle(s.hero_bg_url, gradientCss, heroOpacity);
@@ -644,11 +649,63 @@ export function homePage(opts: {
         <img src="${mainImg}" alt="KOIST Hero Background" class="hero-poster-img" loading="eager" decoding="async">
       </picture>
       ` : ''}
-      <video class="hero-video-bg" autoplay muted loop playsinline preload="auto"${pDefault ? ` poster="${pDefault}"` : ''} style="position:absolute; top:50%; left:50%; min-width:100%; min-height:100%; width:auto; height:auto; transform:translate(-50%,-50%); object-fit:cover;">
-        <source src="${videoUrlAttr}" type="video/mp4">
-      </video>
+      <!-- v39.15 Phase 2-D: 단일 비디오 or 번갈아 재생(loop 제거 + JS 제어) -->
+      ${hasTwoVideos ? `
+        <video id="heroVideoA" class="hero-video-bg hero-video-slot" autoplay muted playsinline preload="auto"${pDefault ? ` poster="${pDefault}"` : ''} style="position:absolute; top:50%; left:50%; min-width:100%; min-height:100%; width:auto; height:auto; transform:translate(-50%,-50%); object-fit:cover; opacity:1; transition:opacity 0.8s ease-in-out;">
+          <source src="${videoUrlAttr}" type="video/mp4">
+        </video>
+        <video id="heroVideoB" class="hero-video-bg hero-video-slot" muted playsinline preload="auto" style="position:absolute; top:50%; left:50%; min-width:100%; min-height:100%; width:auto; height:auto; transform:translate(-50%,-50%); object-fit:cover; opacity:0; transition:opacity 0.8s ease-in-out;">
+          <source src="${videoUrl2Attr}" type="video/mp4">
+        </video>
+      ` : `
+        <video class="hero-video-bg" autoplay muted loop playsinline preload="auto"${pDefault ? ` poster="${pDefault}"` : ''} style="position:absolute; top:50%; left:50%; min-width:100%; min-height:100%; width:auto; height:auto; transform:translate(-50%,-50%); object-fit:cover;">
+          <source src="${videoUrlAttr}" type="video/mp4">
+        </video>
+      `}
       <div class="absolute inset-0" style="background:rgba(10,15,30,${vOpacity}); backdrop-filter:blur(1px);"></div>
-    </div>`;
+    </div>
+    ${hasTwoVideos ? `
+    <script>
+      /* v39.15 Phase 2-D: Hero 두 영상 교대 재생 (crossfade) */
+      (function initHeroVideoAlternation() {
+        var vA = document.getElementById('heroVideoA');
+        var vB = document.getElementById('heroVideoB');
+        if (!vA || !vB) return;
+        var current = vA;
+        var next = vB;
+
+        function swap() {
+          /* 다음 영상을 처음부터 재생 */
+          try { next.currentTime = 0; } catch(e) {}
+          var playPromise = next.play();
+          if (playPromise && typeof playPromise.catch === 'function') {
+            playPromise.catch(function() { /* autoplay 거부 시 조용히 무시 */ });
+          }
+          /* Crossfade: 0.8s transition */
+          next.style.opacity = '1';
+          current.style.opacity = '0';
+          /* 역할 교체 (800ms 후 이전 영상은 pause & rewind) */
+          var prev = current;
+          current = next;
+          next = prev;
+          setTimeout(function() {
+            try { prev.pause(); prev.currentTime = 0; } catch(e) {}
+          }, 900);
+        }
+
+        vA.addEventListener('ended', swap);
+        vB.addEventListener('ended', swap);
+
+        /* 탭 전환/페이지 복귀 시 현재 영상 재생 복구 */
+        document.addEventListener('visibilitychange', function() {
+          if (!document.hidden && current.paused) {
+            var p = current.play();
+            if (p && typeof p.catch === 'function') p.catch(function() {});
+          }
+        });
+      })();
+    </script>
+    ` : ''}`;
     })() : ''}`;
   })()}
     <!-- 8K Animated background layers -->
