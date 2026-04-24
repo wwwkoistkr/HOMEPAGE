@@ -127,6 +127,15 @@ app.get('/', async (c) => {
   return c.html(layout({ settings, departments, content }));
 });
 
+// v39.8 Issue A-2: mock-test/overview → diagnosis/ddos 301 리다이렉트
+// 원본 koist.kr/test4/page02 (DDoS 모의훈련) 콘텐츠는 /services/diagnosis/ddos 에 존재
+app.get('/services/mock-test/overview', (c) => {
+  return c.redirect('/services/diagnosis/ddos', 301);
+});
+app.get('/services/mock-test', (c) => {
+  return c.redirect('/services/diagnosis/ddos', 301);
+});
+
 // Service Pages
 app.get('/services/:slug', async (c) => {
   const db = c.env.DB;

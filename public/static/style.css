@@ -1080,3 +1080,375 @@ img, svg {
 }
 
 /* End of v39.7.1 CC Apply Replica + Bold Font */
+
+/* ============================================================
+   v39.8 — 10개 서비스 페이지 원본 복제 신규 컴포넌트
+   스코프: .koist-legacy-theme 하위에만 적용
+   ============================================================ */
+
+/* [1] .koist-data-table — 범용 2단 테이블 (분류+목록 형태) */
+.koist-legacy-theme .koist-data-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  border-top: 2px solid #222 !important;
+  border-bottom: 1px solid #e1e1e1 !important;
+  margin: 20px 0 !important;
+  background: #fff !important;
+  table-layout: auto !important;
+}
+.koist-legacy-theme .koist-data-table thead th {
+  padding: 14px 12px !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  color: #111 !important;
+  background: #f7f9fc !important;
+  border-bottom: 1px solid #d1d5db !important;
+  border-right: 1px solid #e1e1e1 !important;
+  text-align: center !important;
+  letter-spacing: -0.02em !important;
+}
+.koist-legacy-theme .koist-data-table thead th:last-child { border-right: none !important; }
+.koist-legacy-theme .koist-data-table tbody tr { border-bottom: 1px solid #e1e1e1 !important; }
+.koist-legacy-theme .koist-data-table tbody tr:last-child { border-bottom: none !important; }
+.koist-legacy-theme .koist-data-table tbody td {
+  padding: 16px 14px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #222 !important;
+  line-height: 1.7 !important;
+  vertical-align: middle !important;
+  border-right: 1px solid #e1e1e1 !important;
+  word-break: keep-all !important;
+}
+.koist-legacy-theme .koist-data-table tbody td:last-child { border-right: none !important; }
+.koist-legacy-theme .koist-data-table tbody td.cat,
+.koist-legacy-theme .koist-data-table tbody td.subcat {
+  text-align: center !important;
+  font-weight: 800 !important;
+  color: #005f9b !important;
+  background: #fafbfc !important;
+  width: auto !important;
+  min-width: 110px !important;
+}
+.koist-legacy-theme .koist-data-table tbody td ul {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.koist-legacy-theme .koist-data-table tbody td ul > li {
+  position: relative !important;
+  padding-left: 14px !important;
+  margin: 4px 0 !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #222 !important;
+  line-height: 1.7 !important;
+  word-break: keep-all !important;
+}
+.koist-legacy-theme .koist-data-table tbody td ul > li::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 9px !important;
+  width: 5px !important;
+  height: 5px !important;
+  background: #005f9b !important;
+  border-radius: 50% !important;
+}
+
+/* [2] .koist-quality-grid — 소프트웨어 품질특성 9개 그룹 */
+.koist-legacy-theme .koist-quality-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+  gap: 16px !important;
+  margin: 20px 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+.koist-legacy-theme .koist-quality-grid > li {
+  padding: 20px 18px !important;
+  background: #f7f9fc !important;
+  border: 1px solid #e1e1e1 !important;
+  border-top: 3px solid #005f9b !important;
+  border-radius: 0 0 14px 0 !important;
+}
+.koist-legacy-theme .koist-quality-grid > li::before { display: none !important; }
+.koist-legacy-theme .koist-quality-grid > li > h4 {
+  margin: 0 0 10px 0 !important;
+  padding: 0 !important;
+  font-size: 17px !important;
+  font-weight: 800 !important;
+  color: #005f9b !important;
+  letter-spacing: -0.01em !important;
+}
+.koist-legacy-theme .koist-quality-grid > li > .q-tags {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+}
+.koist-legacy-theme .koist-quality-grid > li > .q-tags > span {
+  display: inline-block !important;
+  padding: 5px 10px !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #1f2937 !important;
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 999px !important;
+}
+
+/* [3] .koist-grade-cards — 준비도평가 AAA~B 5단계 등급 카드 */
+.koist-legacy-theme .koist-grade-cards {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+  gap: 14px !important;
+  margin: 20px 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+.koist-legacy-theme .koist-grade-cards > li {
+  padding: 22px 18px !important;
+  background: linear-gradient(180deg, #f7f9fc 0%, #ffffff 100%) !important;
+  border: 1px solid #d1d5db !important;
+  border-left: 5px solid #005f9b !important;
+  border-radius: 10px !important;
+  text-align: center !important;
+}
+.koist-legacy-theme .koist-grade-cards > li::before { display: none !important; }
+.koist-legacy-theme .koist-grade-cards > li .grade-badge {
+  display: inline-block !important;
+  padding: 8px 18px !important;
+  margin-bottom: 12px !important;
+  font-size: 22px !important;
+  font-weight: 900 !important;
+  color: #ffffff !important;
+  background: #005f9b !important;
+  border-radius: 6px !important;
+  letter-spacing: 0.02em !important;
+}
+.koist-legacy-theme .koist-grade-cards > li .grade-score {
+  display: block !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  color: #111 !important;
+  margin-bottom: 6px !important;
+}
+.koist-legacy-theme .koist-grade-cards > li .grade-desc {
+  display: block !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #374151 !important;
+  line-height: 1.5 !important;
+  word-break: keep-all !important;
+}
+
+/* [4] .process-detail — 프로세스 스텝 내부 세부 불릿 (CC컨설팅 등) */
+.koist-legacy-theme .process > li .process-detail {
+  list-style: none !important;
+  padding: 10px 0 0 0 !important;
+  margin: 8px 0 0 0 !important;
+  border-top: 1px solid #e1e1e1 !important;
+  text-align: left !important;
+}
+.koist-legacy-theme .process > li .process-detail > li {
+  position: relative !important;
+  padding-left: 12px !important;
+  margin: 4px 0 !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #1f2937 !important;
+  line-height: 1.55 !important;
+  word-break: keep-all !important;
+  text-indent: 0 !important;
+}
+.koist-legacy-theme .process > li .process-detail > li::before {
+  content: "·" !important;
+  position: absolute !important;
+  left: 2px !important;
+  top: -2px !important;
+  width: auto !important;
+  height: auto !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  font-weight: 900 !important;
+  color: #005f9b !important;
+  font-size: 18px !important;
+}
+
+/* [5] .contact-card — 문의 담당자 카드 */
+.koist-legacy-theme .contact-card {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  padding: 20px 24px !important;
+  margin: 10px 0 !important;
+  background: #f7f9fc !important;
+  border-left: 4px solid #005f9b !important;
+  border-radius: 0 10px 10px 0 !important;
+}
+.koist-legacy-theme .contact-card .contact-name {
+  font-size: 17px !important;
+  font-weight: 800 !important;
+  color: #111 !important;
+}
+.koist-legacy-theme .contact-card .contact-tel,
+.koist-legacy-theme .contact-card .contact-mail {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #005f9b !important;
+}
+
+/* [6] .koist-subgroup — 업무 범위형 (h4 + ul) 반복 */
+.koist-legacy-theme .koist-subgroup {
+  margin: 18px 0 !important;
+  padding: 18px 22px !important;
+  background: #fafbfc !important;
+  border-left: 3px solid #005f9b !important;
+  border-radius: 0 8px 8px 0 !important;
+}
+.koist-legacy-theme .koist-subgroup > h4 {
+  margin: 0 0 10px 0 !important;
+  padding: 0 !important;
+  font-size: 17px !important;
+  font-weight: 800 !important;
+  color: #111 !important;
+}
+.koist-legacy-theme .koist-subgroup > ul {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.koist-legacy-theme .koist-subgroup > ul > li {
+  position: relative !important;
+  padding-left: 14px !important;
+  margin: 4px 0 !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #222 !important;
+  line-height: 1.7 !important;
+  word-break: keep-all !important;
+}
+.koist-legacy-theme .koist-subgroup > ul > li::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 9px !important;
+  width: 5px !important;
+  height: 5px !important;
+  background: #005f9b !important;
+  border-radius: 50% !important;
+}
+
+/* [7] .koist-indicator-grid — 기반/활동 지표 그리드 (준비도평가 필수항목) */
+.koist-legacy-theme .koist-indicator-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+  gap: 14px !important;
+  margin: 16px 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+.koist-legacy-theme .koist-indicator-grid > li {
+  padding: 16px 18px !important;
+  background: #ffffff !important;
+  border: 1px solid #e1e1e1 !important;
+  border-top: 2px solid #005f9b !important;
+  border-radius: 0 0 10px 0 !important;
+}
+.koist-legacy-theme .koist-indicator-grid > li::before { display: none !important; }
+.koist-legacy-theme .koist-indicator-grid > li > strong {
+  display: block !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  color: #005f9b !important;
+  margin-bottom: 8px !important;
+}
+.koist-legacy-theme .koist-indicator-grid > li > ul {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.koist-legacy-theme .koist-indicator-grid > li > ul > li {
+  position: relative !important;
+  padding-left: 12px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #1f2937 !important;
+  line-height: 1.6 !important;
+  margin: 3px 0 !important;
+}
+.koist-legacy-theme .koist-indicator-grid > li > ul > li::before {
+  content: "·" !important;
+  position: absolute !important;
+  left: 2px !important;
+  top: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  font-weight: 900 !important;
+  color: #005f9b !important;
+}
+
+/* [8] .koist-icon-cards — 선택항목 아이콘 카드 5개 */
+.koist-legacy-theme .koist-icon-cards {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
+  gap: 12px !important;
+  margin: 16px 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+.koist-legacy-theme .koist-icon-cards > li {
+  padding: 18px 12px !important;
+  background: #ffffff !important;
+  border: 1px solid #e1e1e1 !important;
+  border-radius: 10px !important;
+  text-align: center !important;
+}
+.koist-legacy-theme .koist-icon-cards > li::before { display: none !important; }
+.koist-legacy-theme .koist-icon-cards > li img {
+  width: 54px !important;
+  height: 54px !important;
+  object-fit: contain !important;
+  margin: 0 auto 10px !important;
+  display: block !important;
+}
+.koist-legacy-theme .koist-icon-cards > li > span {
+  display: block !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  color: #111 !important;
+  line-height: 1.4 !important;
+  word-break: keep-all !important;
+}
+
+/* [9] Bold 정책 추가 — v39.8 신규 컴포넌트에도 동일 적용 */
+.koist-legacy-theme.koist-legacy-theme .koist-data-table,
+.koist-legacy-theme.koist-legacy-theme .koist-data-table * ,
+.koist-legacy-theme.koist-legacy-theme .koist-quality-grid,
+.koist-legacy-theme.koist-legacy-theme .koist-quality-grid *,
+.koist-legacy-theme.koist-legacy-theme .koist-grade-cards,
+.koist-legacy-theme.koist-legacy-theme .koist-grade-cards *,
+.koist-legacy-theme.koist-legacy-theme .koist-subgroup,
+.koist-legacy-theme.koist-legacy-theme .koist-subgroup *,
+.koist-legacy-theme.koist-legacy-theme .koist-indicator-grid,
+.koist-legacy-theme.koist-legacy-theme .koist-indicator-grid *,
+.koist-legacy-theme.koist-legacy-theme .koist-icon-cards,
+.koist-legacy-theme.koist-legacy-theme .koist-icon-cards *,
+.koist-legacy-theme.koist-legacy-theme .contact-card,
+.koist-legacy-theme.koist-legacy-theme .contact-card * {
+  letter-spacing: -0.01em !important;
+}
+
+/* [10] Mobile responsive */
+@media (max-width: 768px) {
+  .koist-legacy-theme .koist-data-table tbody td { padding: 12px 10px !important; font-size: 14px !important; }
+  .koist-legacy-theme .koist-data-table tbody td.cat,
+  .koist-legacy-theme .koist-data-table tbody td.subcat { min-width: 80px !important; font-size: 14px !important; }
+  .koist-legacy-theme .koist-quality-grid { grid-template-columns: 1fr !important; }
+  .koist-legacy-theme .koist-grade-cards { grid-template-columns: repeat(2, 1fr) !important; }
+  .koist-legacy-theme .koist-icon-cards { grid-template-columns: repeat(3, 1fr) !important; }
+}
+
+/* End of v39.8 — 10 pages legacy replica components */
