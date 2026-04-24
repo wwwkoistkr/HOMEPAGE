@@ -294,11 +294,75 @@ app.get('/support/progress', async (c) => {
   return c.html(layout({ settings, departments, title: categoryFilter ? `${categoryFilter} 현황` : '평가현황', content }));
 });
 
-// Documents Page (Architecture Diagram + Dev Guide downloads)
+// Documents Page — v39.17: DB-driven, category='system-docs' in downloads table
+// 관리자 모드(/admin/downloads)의 카테고리 "시스템 문서"로 통합 관리
 app.get('/support/documents', async (c) => {
   const db = c.env.DB;
   const settings = await getSettings(db);
   const departments = await getDepartmentsWithPages(db);
+
+  // v39.17: downloads 테이블에서 system-docs 카테고리 조회
+  const docs = (await db.prepare(
+    "SELECT * FROM downloads WHERE category = 'system-docs' ORDER BY created_at DESC"
+  ).all()).results || [];
+
+  // HTML/PDF/기타 파일에 따라 아이콘·버튼 레이블 동적 선택
+  const escapeHtml = (s: string) => String(s || '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  const escapeAttr = (s: string) => String(s || '').replace(/"/g,'&quot;');
+
+  const docCards = docs.map((d: any, idx: number) => {
+    const url = String(d.file_url || '');
+    const ext = (url.split('.').pop() || '').toLowerCase();
+    const isHtml = ext === 'html' || ext === 'htm';
+    const isPdf = ext === 'pdf';
+    const isImage = ['png','jpg','jpeg','gif','webp','svg'].includes(ext);
+    // 아이콘 팔레트 순환
+    const palettes = [
+      { icon: 'fa-sitemap', color: '#3B82F6', bg: 'rgba(59,130,246,0.10)', bg2: 'rgba(6,182,212,0.08)' },
+      { icon: 'fa-code', color: '#10B981', bg: 'rgba(16,185,129,0.10)', bg2: 'rgba(6,182,212,0.08)' },
+      { icon: 'fa-file-pdf', color: '#EF4444', bg: 'rgba(239,68,68,0.10)', bg2: 'rgba(239,68,68,0.05)' },
+      { icon: 'fa-file-lines', color: '#8B5CF6', bg: 'rgba(139,92,246,0.10)', bg2: 'rgba(139,92,246,0.05)' },
+      { icon: 'fa-book', color: '#F59E0B', bg: 'rgba(245,158,11,0.10)', bg2: 'rgba(245,158,11,0.05)' },
+    ];
+    // PDF는 PDF 아이콘 우선
+    const pal = isPdf ? palettes[2] : palettes[idx % palettes.length];
+    const btnLabel = isHtml ? '<i class="fas fa-external-link-alt" style="font-size:10px"></i> 보기'
+      : isPdf ? '<i class="fas fa-file-pdf" style="font-size:10px"></i> PDF 열기'
+      : isImage ? '<i class="fas fa-image" style="font-size:10px"></i> 보기'
+      : '<i class="fas fa-download" style="font-size:10px"></i> 다운로드';
+    const target = (isHtml || isPdf || isImage) ? 'target="_blank" rel="noopener"' : 'download';
+
+    return `
+        <div class="bg-white rounded-xl border border-slate-200/60 overflow-hidden" style="box-shadow: var(--shadow-sm);">
+          <div class="flex items-center justify-between" style="padding:clamp(1.25rem, 2vw, 1.75rem)">
+            <div class="flex items-center" style="gap:var(--space-sm); min-width:0;">
+              <div class="rounded-lg flex items-center justify-center shrink-0" style="width:44px; height:44px; background: linear-gradient(135deg, ${pal.bg}, ${pal.bg2});">
+                <i class="fas ${pal.icon}" style="color:${pal.color}; font-size:18px"></i>
+              </div>
+              <div style="min-width:0;">
+                <h3 class="font-bold text-slate-800 f-text-base" style="overflow-wrap:anywhere;">${escapeHtml(d.title)}</h3>
+                ${d.description ? `<p class="text-slate-400 f-text-xs" style="margin-top:2px; overflow-wrap:anywhere;">${escapeHtml(d.description)}</p>` : ''}
+              </div>
+            </div>
+            <div class="flex shrink-0" style="gap:var(--space-sm)">
+              <a href="${escapeAttr(url)}" ${target} class="btn-primary f-text-xs ripple-btn" style="padding:var(--space-xs) var(--space-md); border-radius:var(--radius-sm); white-space:nowrap;">
+                ${btnLabel}
+              </a>
+            </div>
+          </div>
+        </div>`;
+  }).join('');
+
+  const emptyState = `
+        <div class="bg-white rounded-xl border border-slate-200/60 overflow-hidden text-center" style="padding:clamp(2rem,3vw,3rem);">
+          <div class="rounded-full mx-auto flex items-center justify-center mb-3" style="width:64px; height:64px; background: linear-gradient(135deg, rgba(148,163,184,0.10), rgba(148,163,184,0.05));">
+            <i class="fas fa-folder-open text-slate-400" style="font-size:24px"></i>
+          </div>
+          <p class="text-slate-600 font-medium f-text-base">등록된 시스템 문서가 없습니다</p>
+          <p class="text-slate-400 f-text-xs" style="margin-top:6px">관리자 모드 → 자료실 관리 → 카테고리 "시스템 문서(system-docs)"에서 등록할 수 있습니다.</p>
+        </div>`;
 
   const content = `
   <section class="page-header relative overflow-hidden" style="padding: clamp(2.5rem,4vw,4.5rem) 0; background: linear-gradient(135deg, #0A0F1E 0%, #111D35 50%, #0D1525 100%);">
@@ -309,7 +373,7 @@ app.get('/support/documents', async (c) => {
         </div>
         <div>
           <h1 class="text-white font-bold f-text-xl tracking-tight">시스템 문서</h1>
-          <p class="text-slate-400/80 f-text-xs" style="margin-top:3px">설계서 및 개발지침서 다운로드</p>
+          <p class="text-slate-400/80 f-text-xs" style="margin-top:3px">설계서 및 개발지침서 다운로드 (총 ${docs.length}건)</p>
         </div>
       </div>
     </div>
@@ -317,46 +381,9 @@ app.get('/support/documents', async (c) => {
   <section style="padding:var(--space-xl) 0; background: var(--grad-surface);">
     <div class="fluid-container" style="max-width:min(900px, 100% - var(--container-pad) * 2)">
       <div style="display:flex; flex-direction:column; gap:var(--space-md)">
-        <!-- Architecture Diagram -->
-        <div class="bg-white rounded-xl border border-slate-200/60 overflow-hidden" style="box-shadow: var(--shadow-sm);">
-          <div class="flex items-center justify-between" style="padding:clamp(1.25rem, 2vw, 1.75rem)">
-            <div class="flex items-center" style="gap:var(--space-sm)">
-              <div class="rounded-lg flex items-center justify-center shrink-0" style="width:44px; height:44px; background: linear-gradient(135deg, rgba(59,130,246,0.10), rgba(6,182,212,0.08));">
-                <i class="fas fa-sitemap text-blue-500" style="font-size:18px"></i>
-              </div>
-              <div>
-                <h3 class="font-bold text-slate-800 f-text-base">시스템 설계서 (Architecture Diagram)</h3>
-                <p class="text-slate-400 f-text-xs" style="margin-top:2px">v8.0 | 시스템 아키텍처, 10개 사업 카테고리, DB 스키마, API 설계</p>
-              </div>
-            </div>
-            <div class="flex shrink-0" style="gap:var(--space-sm)">
-              <a href="/static/docs/architecture-diagram.html" target="_blank" class="btn-primary f-text-xs ripple-btn" style="padding:var(--space-xs) var(--space-md); border-radius:var(--radius-sm);">
-                <i class="fas fa-external-link-alt" style="font-size:10px"></i> 보기
-              </a>
-            </div>
-          </div>
-        </div>
-        <!-- Development Guide -->
-        <div class="bg-white rounded-xl border border-slate-200/60 overflow-hidden" style="box-shadow: var(--shadow-sm);">
-          <div class="flex items-center justify-between" style="padding:clamp(1.25rem, 2vw, 1.75rem)">
-            <div class="flex items-center" style="gap:var(--space-sm)">
-              <div class="rounded-lg flex items-center justify-center shrink-0" style="width:44px; height:44px; background: linear-gradient(135deg, rgba(16,185,129,0.10), rgba(6,182,212,0.08));">
-                <i class="fas fa-code text-emerald-500" style="font-size:18px"></i>
-              </div>
-              <div>
-                <h3 class="font-bold text-slate-800 f-text-base">개발지침서 (Development Guide)</h3>
-                <p class="text-slate-400 f-text-xs" style="margin-top:2px">v8.0 | 기술 스택, 디렉터리 구조, API 가이드, 배포 절차, 테스트</p>
-              </div>
-            </div>
-            <div class="flex shrink-0" style="gap:var(--space-sm)">
-              <a href="/static/docs/development-guide.html" target="_blank" class="btn-primary f-text-xs ripple-btn" style="padding:var(--space-xs) var(--space-md); border-radius:var(--radius-sm);">
-                <i class="fas fa-external-link-alt" style="font-size:10px"></i> 보기
-              </a>
-            </div>
-          </div>
-        </div>
+        ${docs.length > 0 ? docCards : emptyState}
         <p class="text-slate-400 f-text-xs text-center" style="margin-top:var(--space-sm)">
-          <i class="fas fa-info-circle mr-1"></i> 문서를 열고 브라우저의 인쇄 기능(Ctrl+P)으로 PDF로 저장할 수 있습니다.
+          <i class="fas fa-info-circle mr-1"></i> HTML 문서는 브라우저 인쇄(Ctrl+P)로 PDF 저장이 가능합니다.
         </p>
       </div>
     </div>
