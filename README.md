@@ -1,10 +1,11 @@
-# KOIST Website v39.22
+# KOIST Website v39.23
 
 **(주)한국정보보안기술원** 공식 웹사이트 — **koist.kr 원본 디자인 완전 복제** (Scoped Legacy Theme)
 
 ## URLs
 - **Production**: https://koist-website.pages.dev (메인)
-- **v39.22 (Latest)**: 레거시 이미지 12종 → 10개 서비스 페이지 삽입
+- **v39.23 (Latest)**: /services/readiness 깨진 p40 이미지 6개 처리 (FontAwesome 대체)
+- **v39.22**: 레거시 이미지 12종 → 10개 서비스 페이지 삽입
 - **v39.21**: HERO/SIM 위치 미세조정 + SIM 반투명도 HERO 동기화
 - **v39.20**: HERO↔SIMULATOR 좌우 교체 + 시뮬레이터 패널 70% 불투명 (Glassmorphism)
 - **Latest Deploy**: https://1c8cd969.koist-website.pages.dev (v39.7 — 원본 디자인)
@@ -14,6 +15,34 @@
 - **관리자**: /admin
 - **사업분야 관리**: /admin/departments (v39.7에서 **원본 디자인 토글** + 영문 서브타이틀 + WYSIWYG)
 - **슬라이더 UI 설정**: /admin/slider-settings (v39.4)
+
+## 🛠️ v39.23 — /services/readiness 깨진 p40 이미지 6개 처리 (2026-04-27)
+
+### 배경
+v39.22 작업 중 발견: `/services/readiness/overview`, `/services/diagnosis/readiness` 두 페이지에 v39.22 이전부터 누락된 이미지 6개(`p40_img.png`, `p40_select1~5.png`)가 깨진 링크로 존재. koist.kr 원본 사이트에서도 이미 404 (사이트 측 삭제) → R2 업로드 불가.
+
+### 처리 전략
+1. **`p40_img.png`** (figure '정보보호 준비도 등급 평가서') → **단순 제거**
+2. **`p40_select1~5.png`** (icon cards) → **FontAwesome 아이콘으로 대체**
+   | 분야 | 아이콘 | 색상 |
+   |------|--------|------|
+   | 개인정보 보호 | `fa-user-shield` | emerald `#10B981` |
+   | 금융분야 | `fa-coins` | amber `#F59E0B` |
+   | 의료분야 | `fa-heart-pulse` | red `#EF4444` |
+   | 교육분야 | `fa-graduation-cap` | blue `#3B82F6` |
+   | 기타 산업별 요구사항 | `fa-industry` | indigo `#6366F1` |
+
+### 검증 결과 (Production)
+- p40 깨진 링크: **6 → 0** (양 페이지)
+- FontAwesome 아이콘: **5/5** 렌더링
+- Playwright 콘솔 JS 에러: **10 → 5** (404 5건 모두 제거; 남은 5건은 Google Ads CSP — 별개 이슈)
+
+### 마이그레이션
+- `migrations/0052_v3923_fix_p40_broken_images.sql` (3 commands)
+- 멱등 마커: `<!-- KOIST-P40-FIX-v39.23 -->`
+- FontAwesome은 `layout.tsx`에 이미 로드되어 있어 추가 의존성 0
+
+---
 
 ## 🖼️ v39.22 — KOIST 레거시 이미지 12종 → 10개 서비스 페이지 삽입 (2026-04-27)
 
