@@ -58,13 +58,23 @@ export function homePage(opts: {
   const simTypes = opts.simCertTypes || [];
   // v39.20: HERO ↔ SIMULATOR 좌우 교체 + 시뮬레이터 패널 반투명 (Glassmorphism)
   const heroLayoutSwap = (s.hero_layout_swap ?? '1') === '1';        // 기본: 교체 ON
-  const simPanelOpacity = parseFloat(s.sim_panel_opacity || '0.70'); // 본문 70% 불투명
-  const simHeaderOpacity = parseFloat(s.sim_header_opacity || '0.70'); // 헤더 70% 불투명
-  const simPanelBlur = parseInt(s.sim_panel_blur || '20', 10);      // 20px blur
-  // 안전 범위 클램핑 (가독성 보호 - 본문은 최소 0.5)
-  const _simBodyAlpha = Math.max(0.5, Math.min(1, simPanelOpacity));
-  const _simHeaderAlpha = Math.max(0.4, Math.min(1, simHeaderOpacity));
+  // v39.21: SIM 반투명도를 HERO contact card 와 동일한 시각감 (0.03) 으로 적용
+  const simPanelOpacity = parseFloat(s.sim_panel_opacity || '0.03');   // 본문 알파 (HERO card 와 동일)
+  const simHeaderOpacity = parseFloat(s.sim_header_opacity || '0.85'); // 헤더 (HERO 오버레이와 동일)
+  const simPanelBlur = parseInt(s.sim_panel_blur || '16', 10);         // 16px blur (HERO card 와 동일)
+  // v39.21: 가독성 클램프 완화 (사용자가 HERO 와 동일한 매우 투명한 효과 요청)
+  // 본문 최소 0.02 (거의 투명), 최대 1.0
+  const _simBodyAlpha = Math.max(0.02, Math.min(1, simPanelOpacity));
+  const _simHeaderAlpha = Math.max(0.1, Math.min(1, simHeaderOpacity));
   const _simBlurPx = Math.max(0, Math.min(40, simPanelBlur));
+  // v39.21: HERO/SIM 위치 미세조정 (cm 단위)
+  const simOffsetLeftCm = parseFloat(s.sim_offset_left_cm || '-1.5'); // SIM 좌측 시프트 (음수=좌측)
+  const simOffsetTopCm = parseFloat(s.sim_offset_top_cm || '-1.0');   // SIM 상단 시프트 (음수=위로)
+  const heroOffsetRightCm = parseFloat(s.hero_offset_right_cm || '3.0'); // HERO 우측 시프트 (양수=우측)
+  // 위치 클램프 (안전 범위)
+  const _simOffsetLeft = Math.max(-10, Math.min(10, simOffsetLeftCm));
+  const _simOffsetTop = Math.max(-10, Math.min(10, simOffsetTopCm));
+  const _heroOffsetRight = Math.max(-10, Math.min(10, heroOffsetRightCm));
 
   // ════════════════════════════════════════════════════════════════════════════
   // v39.1 — ealData 계산 재설계 (반올림 손실 제거 + traditional_min 활용)
@@ -968,12 +978,16 @@ export function homePage(opts: {
       max-width: none;
       width: calc(100% + 7cm);
       ${heroLayoutSwap ? 'order: 2;' : '/* order: 1; (default) */'}  /* v39.20 */
-      ${heroLayoutSwap ? 'margin-left: -1.5cm;' : ''}                /* v39.20: 좌측 시프트 보존 (HERO가 우측이 되었을 때 우측 끝까지 확장) */
+      /* v39.21: HERO 우측 시프트 (기존 -1.5cm + 사용자 +3cm = 1.5cm) */
+      ${heroLayoutSwap ? `margin-left: calc(-1.5cm + ${_heroOffsetRight}cm);` : ''}
     }
     .unified-hero-right {
       display: flex;
       flex-direction: column;
-      ${heroLayoutSwap ? 'margin-left: 0;' : 'margin-left: -1.5cm;'}  /* v39.20 */
+      /* v39.21: SIM 좌측/위쪽 시프트 (사용자 -1.5cm 좌측, -1cm 위로) */
+      ${heroLayoutSwap
+        ? `margin-left: ${_simOffsetLeft}cm; margin-top: ${_simOffsetTop}cm;`
+        : 'margin-left: -1.5cm;'}
       width: calc(100% + 2.5cm);
       min-width: 0;
       ${heroLayoutSwap ? 'order: 1;' : '/* order: 2; (default) */'}  /* v39.20: 시뮬레이터를 좌측으로 */
