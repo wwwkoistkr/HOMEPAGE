@@ -56,6 +56,15 @@ export function homePage(opts: {
   const catCounts = opts.progressCategoryCounts || [];
   const heroOpacity = s.hero_overlay_opacity || '0.85';
   const simTypes = opts.simCertTypes || [];
+  // v39.20: HERO ↔ SIMULATOR 좌우 교체 + 시뮬레이터 패널 반투명 (Glassmorphism)
+  const heroLayoutSwap = (s.hero_layout_swap ?? '1') === '1';        // 기본: 교체 ON
+  const simPanelOpacity = parseFloat(s.sim_panel_opacity || '0.70'); // 본문 70% 불투명
+  const simHeaderOpacity = parseFloat(s.sim_header_opacity || '0.70'); // 헤더 70% 불투명
+  const simPanelBlur = parseInt(s.sim_panel_blur || '20', 10);      // 20px blur
+  // 안전 범위 클램핑 (가독성 보호 - 본문은 최소 0.5)
+  const _simBodyAlpha = Math.max(0.5, Math.min(1, simPanelOpacity));
+  const _simHeaderAlpha = Math.max(0.4, Math.min(1, simHeaderOpacity));
+  const _simBlurPx = Math.max(0, Math.min(40, simPanelBlur));
 
   // ════════════════════════════════════════════════════════════════════════════
   // v39.1 — ealData 계산 재설계 (반올림 손실 제거 + traditional_min 활용)
@@ -728,8 +737,8 @@ export function homePage(opts: {
       <!-- ═══ v32: Top row — Hero text + Contact side by side ═══ -->
       <div class="unified-hero-grid">
 
-        <!-- ═══════ LEFT: Hero Text ═══════ -->
-        <div class="unified-hero-left" data-aos="fade-right" data-aos-duration="700">
+        <!-- ═══════ HERO TEXT (v39.20: order로 좌/우 위치 동적 결정) ═══════ -->
+        <div class="unified-hero-left" data-aos="${heroLayoutSwap ? 'fade-left' : 'fade-right'}" data-aos-duration="700">
           <!-- Badge (v38.1 — KOIST logo + text ×3→60% shrink, 8K fluid) -->
           <div class="inline-flex items-center rounded-full hero-badge-pill" style="gap:clamp(6px,0.44vw,14px); padding:clamp(6px,0.44vw,12px) clamp(14px,1.02vw,36px); margin-bottom:clamp(0.59rem,0.81vw,1.57rem); background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.18); backdrop-filter: blur(12px);">
             <img src="${safeUrl(s.hero_badge_logo_url) || '/static/images/koist-circle-logo.png'}" alt="KOIST" loading="eager" style="height:clamp(20px,1.47vw,56px); width:clamp(20px,1.47vw,56px); border-radius:50%; object-fit:contain; flex-shrink:0;">
@@ -776,8 +785,8 @@ export function homePage(opts: {
           </div>
         </div>
 
-        <!-- ═══════ RIGHT: Interactive Simulator Panel ═══════ -->
-        <div class="unified-hero-right" data-aos="fade-left" data-aos-duration="700" data-aos-delay="150">
+        <!-- ═══════ SIMULATOR PANEL (v39.20: order로 좌/우 위치 동적 결정) ═══════ -->
+        <div class="unified-hero-right" data-aos="${heroLayoutSwap ? 'fade-right' : 'fade-left'}" data-aos-duration="700" data-aos-delay="150">
           <div class="unified-sim-panel" id="simCard">
             <!-- Panel Header — Dark Navy (8K fluid, admin-editable) -->
             <div class="unified-sim-header">
@@ -944,39 +953,46 @@ export function homePage(opts: {
       -moz-osx-font-smoothing: grayscale;
       text-rendering: geometricPrecision;
     }
-    /* v35.3.1: align-items:end, hero text ×0.7, slider margin-left:-2cm */
+    /* v39.20: align-items:start (상단 맞춤), 좌우 교체는 order 로 제어 */
     .unified-hero-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: clamp(1.5rem, 2.5vw, 2.5rem);
-      align-items: end;
+      align-items: start;        /* v39.20: HERO 상단을 SIMULATOR 상단에 맞춤 */
       overflow: visible;
     }
     .unified-hero-left {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: flex-start;  /* v39.20: 상단 정렬에 맞춰 변경 (기존 space-between) */
       max-width: none;
       width: calc(100% + 7cm);
+      ${heroLayoutSwap ? 'order: 2;' : '/* order: 1; (default) */'}  /* v39.20 */
+      ${heroLayoutSwap ? 'margin-left: -1.5cm;' : ''}                /* v39.20: 좌측 시프트 보존 (HERO가 우측이 되었을 때 우측 끝까지 확장) */
     }
     .unified-hero-right {
       display: flex;
       flex-direction: column;
-      margin-left: -1.5cm;
+      ${heroLayoutSwap ? 'margin-left: 0;' : 'margin-left: -1.5cm;'}  /* v39.20 */
       width: calc(100% + 2.5cm);
       min-width: 0;
+      ${heroLayoutSwap ? 'order: 1;' : '/* order: 2; (default) */'}  /* v39.20: 시뮬레이터를 좌측으로 */
     }
     
     /* Simulator panel card — original height (no stretch) */
+    /* v39.20: Glassmorphism — 70% 불투명 + backdrop-blur */
     .unified-sim-panel {
       border-radius: clamp(12px, 1.2vw, 18px);
       overflow: hidden;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.25), 0 2px 12px rgba(0,0,0,0.10), 0 0 0 1px rgba(255,255,255,0.06);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.25), 0 2px 12px rgba(0,0,0,0.10), 0 0 0 1px rgba(255,255,255,0.10);
       transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s ease;
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
       display: flex;
       flex-direction: column;
+      /* v39.20: 패널 전체에 backdrop-filter 적용해 비디오 배경이 자연스럽게 흐려져 보이게 */
+      backdrop-filter: blur(${_simBlurPx}px) saturate(160%);
+      -webkit-backdrop-filter: blur(${_simBlurPx}px) saturate(160%);
     }
     .unified-sim-body {
       display: flex;
@@ -985,20 +1001,28 @@ export function homePage(opts: {
     }
     .unified-sim-panel:hover {
       transform: translateY(-3px);
-      box-shadow: 0 12px 48px rgba(0,0,0,0.30), 0 4px 16px rgba(0,0,0,0.12), 0 0 0 1px rgba(255,255,255,0.08);
+      box-shadow: 0 12px 48px rgba(0,0,0,0.30), 0 4px 16px rgba(0,0,0,0.12), 0 0 0 1px rgba(255,255,255,0.12);
     }
     .unified-sim-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: clamp(0.7rem, 1.1vw, 1rem) clamp(0.9rem, 1.4vw, 1.4rem);
-      background: linear-gradient(135deg, #0A0F1E 0%, #0F1B33 50%, #111D35 100%);
+      /* v39.20: 헤더 70% 불투명 (rgba 변환) */
+      background: linear-gradient(135deg, rgba(10,15,30,${_simHeaderAlpha}) 0%, rgba(15,27,51,${_simHeaderAlpha}) 50%, rgba(17,29,53,${_simHeaderAlpha}) 100%);
       gap: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
     .unified-sim-body {
       padding: clamp(0.8rem, 1.2vw, 1.2rem) clamp(0.9rem, 1.4vw, 1.4rem);
-      background: #ffffff;
+      /* v39.20: 본문 70% 불투명 */
+      background: rgba(255,255,255,${_simBodyAlpha});
       flex: 1;
+    }
+    /* v39.20: 구형 브라우저 fallback - backdrop-filter 미지원 시 더 불투명하게 */
+    @supports not (backdrop-filter: blur(1px)) {
+      .unified-sim-header { background: linear-gradient(135deg, rgba(10,15,30,0.95) 0%, rgba(15,27,51,0.95) 50%, rgba(17,29,53,0.95) 100%); }
+      .unified-sim-body { background: rgba(255,255,255,0.95); }
     }
 
     /* EAL Tab active state */
@@ -1079,8 +1103,9 @@ export function homePage(opts: {
         gap: clamp(1.5rem, 3vw, 2rem);
         overflow: hidden;
       }
-      .unified-hero-left { max-width: 100%; text-align: center; width: 100%; }
-      .unified-hero-right { margin-left: 0; width: 100%; }
+      /* v39.20: 모바일/태블릿에서는 HERO가 항상 위, SIMULATOR가 아래로 (order reset) */
+      .unified-hero-left { max-width: 100%; text-align: center; width: 100%; margin-left: 0; order: 1; }
+      .unified-hero-right { margin-left: 0; width: 100%; order: 2; }
       .unified-hero-left .flex.flex-wrap { justify-content: center; }
       .unified-hero-left .inline-flex { margin-left: auto; margin-right: auto; }
       .hero-contact-card { margin-left: auto; margin-right: auto; text-align: left; max-width: 94%; padding: clamp(0.7rem,2.5vw,1rem) clamp(0.9rem,3vw,1.2rem); }
