@@ -1,9 +1,12 @@
-# KOIST Website v39.7
+# KOIST Website v39.22
 
 **(주)한국정보보안기술원** 공식 웹사이트 — **koist.kr 원본 디자인 완전 복제** (Scoped Legacy Theme)
 
 ## URLs
 - **Production**: https://koist-website.pages.dev (메인)
+- **v39.22 (Latest)**: 레거시 이미지 12종 → 10개 서비스 페이지 삽입
+- **v39.21**: HERO/SIM 위치 미세조정 + SIM 반투명도 HERO 동기화
+- **v39.20**: HERO↔SIMULATOR 좌우 교체 + 시뮬레이터 패널 70% 불투명 (Glassmorphism)
 - **Latest Deploy**: https://1c8cd969.koist-website.pages.dev (v39.7 — 원본 디자인)
 - **Previous (v39.6)**: https://4666afa7.koist-website.pages.dev (콘텐츠 마이그레이션)
 - **Previous (v39.5)**: https://dab84020.koist-website.pages.dev (슬라이더 폰트)
@@ -11,6 +14,50 @@
 - **관리자**: /admin
 - **사업분야 관리**: /admin/departments (v39.7에서 **원본 디자인 토글** + 영문 서브타이틀 + WYSIWYG)
 - **슬라이더 UI 설정**: /admin/slider-settings (v39.4)
+
+## 🖼️ v39.22 — KOIST 레거시 이미지 12종 → 10개 서비스 페이지 삽입 (2026-04-27)
+
+### 목표
+원본 koist.kr 의 핵심 시각자료(KOLAS 인정마크, 절차 step 아이콘, 등급/분야 다이어그램)를 신규 사이트의 서비스 페이지에 통합 — 사용자 신뢰성 + 정보전달력 향상.
+
+### 작업 내용
+1. **슬라이더 우측 1.5cm 이동** — `sim_offset_left_cm: -2.5 → -1.0` (DB만 수정, 즉시 반영)
+2. **12개 PNG 이미지 R2 업로드** — `koist-images/legacy-icons/` prefix
+3. **10개 서비스 페이지에 이미지 섹션 추가** — `dep_pages.content` UPDATE × 10
+4. **멱등 마커**: `<!-- KOIST-LEGACY-IMAGES-v39.22 -->` (재실행 시 중복 방지)
+
+### 페이지별 삽입 결과 (Production 검증 완료)
+| 페이지 | 이미지 수 | 출처 |
+|--------|----------|------|
+| `/services/performance/overview` | 1 (p50_img) | test2/summary |
+| `/services/certificate` | 1 (kolas) | test3/page01 |
+| `/services/certificate/rnd` | 4 (p48_step1~4) | test3/page02 |
+| `/services/certificate/ai` | 4 (p48_step1~4) | test3/page03 |
+| `/services/certificate/network` | 4 (p48_step1~4) | test3/page04 |
+| `/services/diagnosis/ddos` | 3 (p48_step2~4) | test4/page02 |
+| `/services/consulting/cc` | 4 (p48_step1~4) | consulting/cc |
+| `/services/consulting/kcmvp` | 4 (p48_step1~4) | consulting/vcm |
+| `/services/consulting/isms-p` | 4 (p48_step1~4) | consulting/isms_p |
+| `/services/readiness/overview` | 6 (p54_ctf + p55_icon1~5) | test4/page01 |
+
+### 기술 세부사항
+- **이미지 서빙**: `/api/images/legacy-icons/{filename}.png` → R2 → 200 OK (캐시 max-age=31536000 immutable)
+- **CSS 재활용**: 기존 `.koist-legacy-theme ul.process` 클래스 (style.css 145행)
+- **HTML 구조**: 마지막 "문의 및 상담" 섹션 **앞에** 신규 `<section class="service-section">` 삽입
+- **Mixed Content 안전**: 모든 URL 같은 도메인 (HTTPS only)
+- **DB 변경**: `migrations/0051_v3922_legacy_images.sql` (10 UPDATE문, 696 lines)
+
+### 검증
+- ✅ 10/10 페이지 이미지 렌더링 OK (총 35 인스턴스)
+- ✅ 12/12 R2 이미지 HTTP 200 OK
+- ✅ 멱등성 (마커 중복 방지)
+
+### 백업 / 롤백
+- **사전 백업 (v39.21+위치조정 기준)**: https://www.genspark.ai/api/files/s/1fJE1JDT (35.99 MB)
+- **사후 백업 (v39.22 완료)**: https://www.genspark.ai/api/files/s/CadpDQkQ (36.02 MB)
+- **롤백**: `git revert 69dd0e2` 또는 `migrations/0051_v3922_legacy_images.sql` 역산 SQL 실행
+
+---
 
 ## 🎨 v39.7 — koist.kr 원본 디자인 완전 복제 (Scoped Legacy Theme, 2026-04-22)
 
